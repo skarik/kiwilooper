@@ -17,7 +17,25 @@ function collision4_meeting(check_x, check_y, check_z)
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;
-		// TODO: Handle bodies having higher election
+		
+		// TODO: Handle bodies & doors having higher elevation
+		var results = ds_list_create();
+		
+		// Check all the doors
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, o_livelyDoor, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var door = results[|i];
+				var area_z = door.z + door.doorheight;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
+
+		// Done with results
+		ds_list_destroy(results);
 		
 		// Check against the highest Z
 		if (area_z_max > check_z + 4)

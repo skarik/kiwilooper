@@ -108,7 +108,7 @@ m_mesh = meshb_Begin();
 				
 				// Get tile scale
 				var tile_scale = new Vector2( tile_get_mirror(tile) ? -1 : 1, 1.0 );
-				tile_scale.multiplySelf(0.99);
+				tile_scale.multiplySelf(0.97);
 				
 				// Calculate new UVs for this
 				var tile_x, tile_y, new_uvs, new_uvsTop;

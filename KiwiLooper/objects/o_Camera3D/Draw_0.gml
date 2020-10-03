@@ -33,6 +33,8 @@ surface_set_target(buffer_scene3d);
 	matrix_set(matrix_projection, mat_projection);
 
 	// enable depth testing
+	gpu_set_alphatestenable(true);
+	gpu_set_alphatestref(0.5);
 	gpu_set_ztestenable(true);
 	gpu_set_zfunc(cmpfunc_lessequal);
 	

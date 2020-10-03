@@ -35,8 +35,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Character",
-    "path": "folders/Objects/Game/Character.yy",
+    "name": "Backend",
+    "path": "folders/Objects/Game/Character/Backend.yy",
   },
   "resourceVersion": "1.0",
   "name": "ob_character",
