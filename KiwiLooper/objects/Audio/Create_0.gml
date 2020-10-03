@@ -6,7 +6,7 @@ persistent = true;
 music_filename = [];
 music_creation_time = [];*/
 
-faudioInitialize(1);
+faudioInitialize(0);
 faudioSetSoundSpeed(1125 * 10 * 2); // Assuming each 10 pixels is about a foot + the coolness factor of 3
 
 mainListener = faudioListenerCreate();

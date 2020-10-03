@@ -1,4 +1,5 @@
-function warpi(argument0, argument1, argument2) {
+function warpi(argument0, argument1, argument2)
+{
 	var value = argument0;
 	var minimum = argument1;
 	var maximum = argument2;
@@ -26,6 +27,4 @@ function warpi(argument0, argument1, argument2) {
 
 	return value;
 	// TODO: There is a faster way to do this.
-
-
 }
