@@ -2,6 +2,8 @@
 #macro nullptr 0
 #macro this id
 
+#macro KINDA_SMALL_NUMBER (0.00001)
+
 #macro c_electricity make_color_rgb(100,255,255)
 #macro c_ltblue make_color_rgb(70,90,255)
 #macro c_riftgreen make_color_rgb(103,255,144)

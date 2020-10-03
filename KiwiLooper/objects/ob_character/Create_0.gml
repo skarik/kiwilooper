@@ -25,7 +25,7 @@ m_updateCharacterMesh = function()
 	if (iexists(o_Camera3D))
 	{
 		yscale = image_xscale * sprite_width;
-		zscale = image_yscale * sprite_height / lerp(lengthdir_x(1, o_Camera3D.yrotation), 1.0, 0.2);
+		zscale = image_yscale * sprite_height / lerp(lengthdir_x(1, o_Camera3D.yrotation), 1.0, 0.1);
 		zrotation = o_Camera3D.zrotation;
 	}
 }

@@ -18,6 +18,8 @@ function Character_Create()
 	zspeed = 0.0;
 	facingDirection = 0;
 	currentMovetype = mvtNormal;
+	
+	motionHitWall = false;
 }
 
 function Character_Step()
@@ -29,6 +31,6 @@ function Character_AnimationStep()
 {
 	if (iexists(o_Camera3D))
 	{
-		animationIndex = round(angle_difference(facingDirection, o_Camera3D.zrotation) / 90 + 1);
+		animationIndex = round(angle_difference(facingDirection, o_Camera3D.zrotation) / 90 + 5);
 	}
 }

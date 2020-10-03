@@ -20,12 +20,15 @@ function mvtNormal()
 		xspeed *= kMoveSpeed / total_speed;
 		yspeed *= kMoveSpeed / total_speed;
 	}
-	
+
 	// Update facing direction
 	if (total_speed_sqr > 1)
 	{
 		facingDirection = point_direction(0, 0, xspeed, yspeed);
 	}
+
+	// Do common x-y collision
+	mvtcCollision();
 	
 	// Do the actual motion
 	x += xspeed * Time.deltaTime;

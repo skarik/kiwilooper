@@ -1,7 +1,8 @@
 /// @func controlUpdate(clearInputs)
 /// @description Update inputs.
 /// @param clear_input {boolean} If true, clears all input.
-function controlUpdate(argument0) {
+function controlUpdate(argument0)
+{
 	if (argument0 == false && !(Debug.on && iexists(o_debugCmdline) && o_debugCmdline.focused))
 	{
 		//_controlStructUpdate(xAxis, -keyboard_check(ord("A")) + keyboard_check(ord("D")) + deadzone_bias(gamepad_axis_value(0, gp_axislh)));
