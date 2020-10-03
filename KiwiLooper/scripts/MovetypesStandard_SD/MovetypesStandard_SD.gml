@@ -27,6 +27,9 @@ function mvtNormal()
 		facingDirection = point_direction(0, 0, xspeed, yspeed);
 	}
 
+	// Do common z motion
+	mvtcZMotion();
+
 	// Do common x-y collision
 	mvtcCollision();
 	

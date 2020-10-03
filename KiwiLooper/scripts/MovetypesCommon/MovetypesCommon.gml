@@ -31,3 +31,45 @@ function mvtcCollision()
 		}
 	}
 }
+
+function mvtcZMotion()
+{
+	var highest_z = collision4_get_highest(x, y, z);
+	
+	// Do simple Z collision now
+	if (z < highest_z)
+	{
+		if (highest_z - z < 8)
+		{
+			z = highest_z;
+		}
+		else
+		{
+			// TODO: make this push out of wall otherwise
+		}
+	}
+	else if (z > highest_z)
+	{
+		onGround = false;
+	}
+	
+	// Do falling
+	if (!onGround)
+	{
+		zspeed -= 120 * Time.deltaTime;
+	}
+	
+	// Do Z motion collision:
+	if (z + zspeed * Time.deltaTime <= highest_z)
+	{
+		// Stop motion
+		zspeed = 0;
+		// Seek to floor
+		z = highest_z;
+		// Now on ground
+		onGround = true;
+	}
+	
+	// Do actual motion
+	z += zspeed * Time.deltaTime;
+}

@@ -28,6 +28,7 @@ function Character_Create()
 	facingDirection = 0;
 	currentMovetype = mvtNormal;
 	
+	onGround = true;
 	motionHitWall = false;
 }
 

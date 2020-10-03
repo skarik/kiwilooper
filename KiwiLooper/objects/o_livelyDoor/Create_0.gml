@@ -13,8 +13,17 @@ startz = z;
 // Set up callback
 m_onActivation = function(activatedBy)
 {
+	// first check if something in the way...
+	var blocking_character = collision_rectangle(
+		bbox_left + 1, bbox_top + 1, bbox_right - 1, bbox_bottom - 1,
+		ob_character,
+		true, true);
+	if (iexists(blocking_character))
+	{
+		// Do nothing
+	}
 	// is open?
-	if (opening || (!closing && openstate > 0.5))
+	else if (opening || (!closing && openstate > 0.5))
 	{
 		opening = false;
 		closing = true;
