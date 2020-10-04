@@ -24,6 +24,12 @@ if (!is_undefined(object_listing))
 			inst.image_xscale = object.img.image_xscale;
 			inst.image_yscale = object.img.image_yscale;
 			inst.image_angle = object.img.image_angle;
+			
+		// Do specific init
+		if (object.index == o_usableCorpseKiwi)
+		{
+			inst.m_updateMesh();
+		}
 	}
 	
 	// clear all the tracked objects for this room

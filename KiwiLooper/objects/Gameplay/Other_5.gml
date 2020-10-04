@@ -3,7 +3,7 @@
 // track all needed objects for this room
 var tracker_listing = array_create(0);
 
-var object_types = [o_playerSplatter];
+var object_types = [o_playerSplatter, o_usableCorpseKiwi];
 
 for (var iobjtype = 0; iobjtype < array_length(object_types); ++iobjtype)
 {

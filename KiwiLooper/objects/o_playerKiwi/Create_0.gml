@@ -28,11 +28,20 @@ m_onBeginDeath = function()
 			blood.image_angle = choose(0, 90, 180, 270);
 			blood.image_index = floor(random(blood.image_number));
 	}
+	
+	// No longer visible
+	visible = false;
+	
+	// Spawn a corpse...
+	var corpse = inew(o_usableCorpseKiwi);
+		corpse.x = x;
+		corpse.y = y;
+		corpse.z = z;
+		corpse.image_angle = facingDirection;
+		corpse.m_updateMesh();
 }
 m_onDeath = function()
 {
-	// Spawn a corpse...
-	
 	// Restart the room. Pretty straightforward - we just loop
 	room_restart();
 }

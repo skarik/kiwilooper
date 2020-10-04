@@ -18,6 +18,12 @@ m_weapon.sprite_index = spr_roboAttackAttachment;
 m_onDeath = function()
 {
 	// Spawn a robot corpse...
+	var corpse = inew(o_usableCorpseRobo);
+		corpse.x = x;
+		corpse.y = y;
+		corpse.z = z;
+		corpse.image_angle = facingDirection + 180;
+		corpse.m_updateMesh();
 	
 	// Remove self
 	instance_destroy();
