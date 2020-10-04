@@ -49,11 +49,6 @@ function collision4_get_highest(check_x, check_y, check_z)
 		// Done with results
 		ds_list_destroy(results);
 		
-		// Check against the highest Z
-		/*if (area_z_max > check_z + 4)
-		{
-			return true;
-		}*/
 		return area_z_max;
 	}
 	

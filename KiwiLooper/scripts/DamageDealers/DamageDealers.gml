@@ -34,6 +34,7 @@ function damageTarget(source, target, damage, damageType, source_x, source_y)
 	if (damageCanHit(source, target))
 	{
 		target.hp -= damage;
+		target.lastDamageType = damageType;
 	}
 }
 

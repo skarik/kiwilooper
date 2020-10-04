@@ -92,5 +92,11 @@ function mvtDeath()
 		m_onDeath();
 	}
 	
+	// Update animation
+	if (lastDamageType == kDamageTypeShock)
+	{
+		animationSpeed = 20.0;
+	}
+	
 	return mvtDeath;
 }

@@ -1,4 +1,6 @@
 /// @description Create mesh based on the tilesets we find
+#macro kTileExtras_None 0
+#macro kTileExtras_Shock 1
 
 var all_layers = layer_get_all();
 
@@ -6,6 +8,7 @@ m_minPosition = new Vector3(10000, 10000, 10000);
 m_maxPosition = new Vector3(-10000, -10000, -10000);
 m_heightMap = {
 	array: array_create(0),
+	array_extras: array_create(0),
 	width: 0,
 	height: 0,
 	
@@ -16,6 +19,7 @@ m_heightMap = {
 		if (array_length(array) < width * height)
 		{
 			array = array_create(width * height, -1);
+			array_extras = array_create(width * height, kTileExtras_None);
 		}
 	},
 	get: function(x, y) {
@@ -25,6 +29,15 @@ m_heightMap = {
 	},
 	set: function(x, y, value) {
 		array[x + y * width] = value;
+	},
+	
+	getExtras: function(x, y) {
+		if (x < 0 || y < 0 || x >= width || y >= height)
+			return -1;
+		return array_extras[x + y * width];
+	},
+	setExtras: function(x, y, value) {
+		array_extras[x + y * width] = value;
 	},
 };
 
@@ -68,6 +81,7 @@ m_mesh = meshb_Begin();
 				{
 					zoffset = -4;
 					m_heightMap.set(ix, iy, m_heightMap.get(ix, iy) - 0.25);
+					m_heightMap.setExtras(ix, iy, kTileExtras_Shock);
 				}
 			
 				// Calculate new UVs for this
@@ -162,26 +176,27 @@ m_mesh = meshb_Begin();
 						var y_push = max(offsets[iw].y, 0) * 16;
 						var x_off = (offsets[iw].y == 0) ? 0 : 16;
 						var y_off = (offsets[iw].x == 0) ? 0 : 16;
+						var wall_color = (heightn == -1) ? c_dkgray : c_white;
 						
 						meshb_AddQuad(m_mesh, [
 							new MBVertex(
 								new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			heightn * 16 + min(1.0, height0 - heightn) * 16),
-								c_white, 1.0,
+								wall_color, 1.0,
 								(new Vector2(-1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 							new MBVertex(
 								new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	heightn * 16 + min(1.0, height0 - heightn) * 16),
-								c_white, 1.0,
+								wall_color, 1.0,
 								(new Vector2(+1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 							new MBVertex(
 								new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			heightn * 16 + 0),
-								c_white, 1.0,
+								wall_color, 1.0,
 								(new Vector2(-1, +1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 							new MBVertex(
 								new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	heightn * 16 + 0),
-								c_white, 1.0,
+								wall_color, 1.0,
 								(new Vector2(+1, +1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0))
 							]);
@@ -191,22 +206,22 @@ m_mesh = meshb_Begin();
 							meshb_AddQuad(m_mesh, [
 								new MBVertex(
 									new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			iz * 16 + 16),
-									c_white, 1.0,
+									wall_color, 1.0,
 									(new Vector2(-1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 								new MBVertex(
 									new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	iz * 16 + 16),
-									c_white, 1.0,
+									wall_color, 1.0,
 									(new Vector2(+1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 								new MBVertex(
 									new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			iz * 16 + 0),
-									c_white, 1.0,
+									wall_color, 1.0,
 									(new Vector2(-1, +1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 								new MBVertex(
 									new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	iz * 16 + 0),
-									c_white, 1.0,
+									wall_color, 1.0,
 									(new Vector2(+1, +1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0))
 								]);

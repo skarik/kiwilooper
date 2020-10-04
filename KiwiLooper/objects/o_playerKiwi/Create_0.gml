@@ -39,9 +39,24 @@ m_onBeginDeath = function()
 		corpse.z = z;
 		corpse.image_angle = facingDirection;
 		corpse.m_updateMesh();
+		
+	// Update sprite based on damage
+	if (lastDamageType == kDamageTypeShock)
+	{
+		kAnimDeath = spr_kiwiShock;
+		corpse.visible = false;
+		visible = true;
+	}
 }
 m_onDeath = function()
 {
 	// Restart the room. Pretty straightforward - we just loop
-	room_restart();
+	if (room == Gameplay.m_checkpoint_room)
+	{
+		room_restart();
+	}
+	else
+	{
+		room_goto(Gameplay.m_checkpoint_room);
+	}
 }

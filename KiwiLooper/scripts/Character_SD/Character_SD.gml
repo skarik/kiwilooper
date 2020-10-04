@@ -11,6 +11,7 @@ function Character_Create()
 	kAnimAttack = sprite_index;
 	kAnimWalk = sprite_index;
 	kAnimInteract = sprite_index;
+	kAnimDeath = sprite_index;
 	
 	// Empty callbacks
 	m_onBeginDeath = function(){}
@@ -21,6 +22,7 @@ function Character_Create()
 	hp_previous = 1;
 	hp_max = 1;
 	isDead = false;
+	lastDamageType = kDamageTypeUnarmed;
 	
 	// Animation state
 	image_speed = 0;
@@ -143,6 +145,23 @@ function Character_Step()
 			currentMovetype = attackState;
 		}
 	}
+	
+	// Update on-ground shock death
+	if (onGround)
+	{
+		if (iexists(o_livelyRoomState) && o_livelyRoomState.powered)
+		{
+			if (((z + 64) % 16 > 8) // Quick hack to let us start falling first
+				&& collision4_get_groundtype(x, y, z) == kGroundType_Tileset
+				&& collision4_get_tileextra(x, y) == kTileExtras_Shock)
+			{
+				if (!isDead)
+				{
+					damageTarget(null, id, 1, kDamageTypeShock, x, y);
+				}
+			}
+		}
+	}
 }
 
 function Character_AnimationStep()
@@ -162,6 +181,10 @@ function Character_AnimationStep()
 	else if (currentMovetype == attackState)
 	{
 		sprite_index = kAnimAttack;
+	}
+	else if (currentMovetype == mvtDeath)
+	{
+		sprite_index = kAnimDeath;
 	}
 	
 	// Do animation

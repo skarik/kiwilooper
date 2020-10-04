@@ -2,6 +2,7 @@
 
 event_inherited();
 
+// Show the wrench when performing attacks
 if (sprite_index == kAnimAttack)
 {
 	m_wrench.visible = true;
@@ -15,4 +16,14 @@ if (sprite_index == kAnimAttack)
 else
 {
 	m_wrench.visible = false;
+}
+
+// Show the corpse on shock death after time
+if (isDead && deathTimer > 0.4)
+{
+	visible = false;
+	with (instance_nearest(x, y, o_usableCorpseKiwi))
+	{
+		visible = true;
+	}
 }

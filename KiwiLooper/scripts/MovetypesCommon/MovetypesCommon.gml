@@ -56,7 +56,7 @@ function mvtcZMotion()
 	// Do falling
 	if (!onGround)
 	{
-		zspeed -= 120 * Time.deltaTime;
+		zspeed -= 240 * Time.deltaTime;
 	}
 	
 	// Do Z motion collision:
