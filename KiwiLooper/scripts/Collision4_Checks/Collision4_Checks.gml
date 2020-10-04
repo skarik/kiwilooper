@@ -33,6 +33,18 @@ function collision4_get_highest(check_x, check_y, check_z)
 			}
 			ds_list_clear(results);
 		}
+		// Check all the corpses
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_usableCorpse, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var corpse = results[|i];
+				var area_z = corpse.z + corpse.height;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
 
 		// Done with results
 		ds_list_destroy(results);
@@ -79,6 +91,18 @@ function collision4_meeting(check_x, check_y, check_z)
 			{
 				var door = results[|i];
 				var area_z = door.z + door.doorheight;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
+		// Check all the corpses
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_usableCorpse, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var corpse = results[|i];
+				var area_z = corpse.z + corpse.height;
 				area_z_max = max(area_z_max, area_z);
 			}
 			ds_list_clear(results);

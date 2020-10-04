@@ -6,8 +6,8 @@
   "solid": false,
   "visible": true,
   "spriteMaskId": {
-    "name": "sco_16x16_center",
-    "path": "sprites/sco_16x16_center/sco_16x16_center.yy",
+    "name": "sco_10x10_center",
+    "path": "sprites/sco_10x10_center/sco_10x10_center.yy",
   },
   "persistent": false,
   "parentObjectId": {
