@@ -167,17 +167,17 @@ m_updateMesh = function()
 		new MBVertex(
 			new Vector3(right,	top,	0 + height),
 			c_white, 1.0,
-			(new Vector2((sprite_width > sprite_height) ? 1.0 : 0.0, (sprite_width > sprite_height) ? 0.0 : 1.0)).biasUVSelf(uvs),
+			(new Vector2((sprite_width > sprite_height) ? 1.0 : 0.0, (sprite_width > sprite_height) ? 0.0 : 0.5)).biasUVSelf(uvs),
 			new Vector3(0, 0, 1)),
 		new MBVertex(
 			new Vector3(left,	bottom,	0 + height),
 			c_white, 1.0,
-			(new Vector2((sprite_width > sprite_height) ? 0.0 : 1.0, (sprite_width > sprite_height) ? 1.0 : 0.0)).biasUVSelf(uvs),
+			(new Vector2((sprite_width > sprite_height) ? 0.0 : 1.0, (sprite_width > sprite_height) ? 0.5 : 0.0)).biasUVSelf(uvs),
 			new Vector3(0, 0, 1)),
 		new MBVertex(
 			new Vector3(right,	bottom,	0 + height),
 			c_white, 1.0,
-			(new Vector2(1.0, 1.0)).biasUVSelf(uvs),
+			(new Vector2(1.0, 0.5)).biasUVSelf(uvs),
 			new Vector3(0, 0, 1)),
 		]);
 		

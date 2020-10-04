@@ -41,7 +41,7 @@ surface_set_target(buffer_scene3d);
 	// draw all objects
 	with (ob_3DObject)
 	{
-		if (!translucent)
+		if (visible && !translucent)
 		{
 			var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
 			var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
@@ -50,9 +50,9 @@ surface_set_target(buffer_scene3d);
 			var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, 1, 1, 1);
 		
 			var mat_object = mat_object_scal;
-			mat_object = matrix_multiply(mat_object, mat_object_rotz);
 			mat_object = matrix_multiply(mat_object, mat_object_rotx);
 			mat_object = matrix_multiply(mat_object, mat_object_roty);
+			mat_object = matrix_multiply(mat_object, mat_object_rotz);
 			mat_object = matrix_multiply(mat_object, mat_object_pos);
 			matrix_set(matrix_world, mat_object);
 			m_renderEvent();
@@ -61,15 +61,18 @@ surface_set_target(buffer_scene3d);
 	// draw translucents after
 	with (ob_3DObject)
 	{
-		if (translucent)
+		if (visible && translucent)
 		{
 			var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
+			var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
 			var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
 			var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
-			var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, xscale, yscale, zscale);
+			var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, 1, 1, 1);
 		
-			var mat_object = matrix_multiply(mat_object_rotz, mat_object_rotx);
+			var mat_object = mat_object_scal;
+			mat_object = matrix_multiply(mat_object, mat_object_rotx);
 			mat_object = matrix_multiply(mat_object, mat_object_roty);
+			mat_object = matrix_multiply(mat_object, mat_object_rotz);
 			mat_object = matrix_multiply(mat_object, mat_object_pos);
 			matrix_set(matrix_world, mat_object);
 			m_renderEvent();

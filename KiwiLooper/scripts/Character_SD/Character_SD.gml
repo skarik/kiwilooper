@@ -3,10 +3,30 @@ function Character_Create()
 	// Motion constants
 	kMoveSpeed = 50;
 	
+	// Attack constants
+	attackState = mvtAttack;
+	
+	// Animation constants
+	kAnimStand = sprite_index;
+	kAnimAttack = sprite_index;
+	kAnimWalk = sprite_index;
+	kAnimInteract = sprite_index;
+	
+	// Empty callbacks
+	m_onBeginDeath = function(){}
+	m_onDeath = function(){}
+	
+	// Other state
+	hp = 1;
+	hp_previous = 1;
+	hp_max = 1;
+	isDead = false;
+	
 	// Animation state
 	image_speed = 0;
 	animationSpeed = 0;
 	animationIndex = 0;
+	animationRenderIndex = 0;
 
 	// Control state
 	hasControl = false;
@@ -27,17 +47,51 @@ function Character_Create()
 	zspeed = 0.0;
 	facingDirection = 0;
 	currentMovetype = mvtNormal;
-	
+	previousMovetype = mvtNormal;
 	onGround = true;
 	motionHitWall = false;
+	
+	// Attack state
+	attackTimer = 0.0;
+	
+	// Death state
+	deathTimer = 0.0;
+}
+
+function Character_BeginStep()
+{
+	// Has HP dropped? If so, let's do some EFFECTS.
+	if (hp < hp_previous)
+	{
+		// TODO: Do blood effects
+		
+		// Are we dying here?
+		if (hp <= 0)
+		{
+			if (!isDead)
+			{
+				// TODO: Create initial death effect
+				m_onBeginDeath();
+				
+				// Interrupt everything, and go to death
+				currentMovetype = mvtDeath;
+				isDead = true;
+			}
+		}
+	}
+	// Update previous values
+	hp_previous = hp;
 }
 
 function Character_Step()
 {
+	var lastMovetype = currentMovetype;
 	currentMovetype = currentMovetype();
+	previousMovetype = lastMovetype;
 	
 	// Update interaction
-	if (canInteract && !isInteracting)
+	if (currentMovetype == mvtNormal
+		&& canInteract && !isInteracting)
 	{
 		// Do interaction check
 		var interaction_list = ds_list_create();
@@ -79,12 +133,48 @@ function Character_Step()
 			}
 		}
 	}
+	
+	// Update attacking
+	if (currentMovetype == mvtNormal
+		&& !isInteracting)
+	{
+		if (atkButton.pressed)
+		{	// Simple and clean!
+			currentMovetype = attackState;
+		}
+	}
 }
 
 function Character_AnimationStep()
 {
+	var animationOffset = 0;
 	if (iexists(o_Camera3D))
 	{
-		animationIndex = round(angle_difference(facingDirection, o_Camera3D.zrotation) / 90 + 5);
+		animationOffset = round(angle_difference(facingDirection, o_Camera3D.zrotation) / 90 + 5);
+	}
+	
+	// Update sprite index
+	if (currentMovetype == mvtNormal)
+	{
+		// TODO
+		sprite_index = kAnimStand;
+	}
+	else if (currentMovetype == attackState)
+	{
+		sprite_index = kAnimAttack;
+	}
+	
+	// Do animation
+	animationIndex += animationSpeed * Time.deltaTime;
+	
+	// Update final index to actually display
+	if ((image_number % 4) == 0)
+	{
+		var subanimation_length = floor(image_number / 4);
+		animationRenderIndex = clamp(animationIndex, 0, subanimation_length * 0.99) + (subanimation_length * animationOffset);
+	}
+	else
+	{
+		animationRenderIndex = animationIndex;
 	}
 }

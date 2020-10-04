@@ -17,4 +17,12 @@ function Vector3(n_x, n_y, n_z) constructor
 	{
 		return new Vector3(x, y, z);
 	}
+	
+	static addSelf = function(right)
+	{
+		x += right.x;
+		y += right.y;
+		z += right.z;
+		return self;
+	}
 }
