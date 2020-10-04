@@ -24,7 +24,7 @@ function settingsControlDefaults() {
 		ctAimDown		= [kControlKB, vk_down,		kControlGamepad, gp_axisrv];
 	
 		ctAttack		= [kControlKB, vk_control,	kControlMouse, mb_left,			kControlGamepad, gp_face3];
-		ctUse			= [kControlKB, vk_space,	kControlMouse, mb_left,			kControlGamepad, gp_face1];
+		ctUse			= [kControlKB, vk_space,	kControlGamepad, gp_face1];
 		ctUseItem		= [kControlKB, ord("F"),	kControlGamepad, gp_shoulderrb, kControlGamepad, gp_face2];
 		ctUseKeyItem	= [kControlKB, ord("E"),	kControlGamepad, gp_face3];
 		ctUseSpecial	= [kControlKB, ord("V"),	kControlGamepad, gp_face4];

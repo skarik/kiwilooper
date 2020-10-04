@@ -4,3 +4,5 @@
 event_inherited();
 
 idelete(m_wrench);
+
+idelete(m_uiUsables);

@@ -47,7 +47,8 @@
             {"propertyId":{"name":"m_door1","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"objectId":{"name":"o_livelyDoorRelay","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"value":"inst_ship3_maindoor1","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
             {"propertyId":{"name":"m_door2","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"objectId":{"name":"o_livelyDoorRelay","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"value":"inst_ship3_maindoor2","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
           ],"isDnd":false,"objectId":{"name":"o_livelyDoorRelay","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":272.0,"y":32.0,"resourceVersion":"1.0","name":"inst_76A4A820","tags":[],"resourceType":"GMRInstance",},
-      ],"visible":true,"depth":-2,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
+        {"properties":[],"isDnd":false,"objectId":{"name":"o_uiwExitText","path":"objects/o_uiwExitText/o_uiwExitText.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":180.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":209.0,"y":344.0,"resourceVersion":"1.0","name":"inst_12DD7E29","tags":[],"resourceType":"GMRInstance",},
+      ],"visible":true,"depth":0,"userdefinedDepth":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"tilesetId":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":25,"SerialiseHeight":25,"TileSerialiseData":[
 2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,37,37,37,37,37,37,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
 0,0,0,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,37,2147483648,2147483648,2147483648,2147483648,37,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
@@ -183,6 +184,7 @@
     {"name":"inst_138F58","path":"rooms/rm_Ship3/rm_Ship3.yy",},
     {"name":"inst_106C2E65","path":"rooms/rm_Ship3/rm_Ship3.yy",},
     {"name":"inst_76A4A820","path":"rooms/rm_Ship3/rm_Ship3.yy",},
+    {"name":"inst_12DD7E29","path":"rooms/rm_Ship3/rm_Ship3.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,

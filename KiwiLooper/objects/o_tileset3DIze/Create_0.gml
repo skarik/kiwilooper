@@ -18,7 +18,7 @@ m_heightMap = {
 		
 		if (array_length(array) < width * height)
 		{
-			array = array_create(width * height, -1);
+			array = array_create(width * height, (room == rm_Ship5) ? -4 : -1);
 			array_extras = array_create(width * height, kTileExtras_None);
 		}
 	},

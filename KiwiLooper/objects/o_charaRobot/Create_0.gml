@@ -5,6 +5,10 @@ event_inherited();
 
 airoboCreate();
 
+// Set up motion changes
+attackState = mvtRoboAttack;
+kMoveSpeed = 70; // Robo should be faster than player
+
 // Set up animation
 kAnimStand = spr_roboStand;
 kAnimAttack = spr_roboAttackEmpty;

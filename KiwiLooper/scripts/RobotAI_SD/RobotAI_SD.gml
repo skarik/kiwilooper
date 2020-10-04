@@ -31,8 +31,6 @@ function AiRobo(n_owner) constructor
 function airoboCreate()
 {
 	m_ai = new AiRobo(id);
-	
-	attackState = mvtRoboAttack;
 }
 
 function airoboLogicAndControl()

@@ -31,6 +31,17 @@ surface_set_target(buffer_scene3d);
 		
 	matrix_set(matrix_view, mat_view);
 	matrix_set(matrix_projection, mat_projection);
+	
+	/*var mat_viewprojection = matrix_multiply(mat_view, mat_projection);
+	if (iexists(o_charaRobot))
+	{
+		var test_point = matrix_transform_vertex(mat_viewprojection, o_charaRobot.x, o_charaRobot.y, o_charaRobot.z);
+		//show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + ", " + string(test_point[2]) + "}");
+		test_point[0] = ((test_point[0] / test_point[2]) * 0.5 + 0.5) * GameCamera.width;
+		test_point[1] = ((-test_point[1] / test_point[2]) * 0.5 + 0.5) * GameCamera.height;
+		show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + "}");
+	}*/
+	m_viewprojection = matrix_multiply(mat_view, mat_projection);
 
 	// enable depth testing
 	gpu_set_alphatestenable(true);

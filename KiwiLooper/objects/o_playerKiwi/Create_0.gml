@@ -13,6 +13,9 @@ kAnimAttack = spr_kiwiAttackEmpty;
 m_wrench = inew(o_fxKiwiWrench);
 m_wrench.visible = false;
 
+// Set up UI
+m_uiUsables = inew(o_uisPlayerUsables);
+
 // Set up callbacks
 m_onBeginDeath = function()
 {

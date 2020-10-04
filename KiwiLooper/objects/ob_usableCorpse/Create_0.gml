@@ -3,6 +3,7 @@
 event_inherited();
 
 m_priority = 3; // Lowest priority of all usable
+m_useText = "GRAB";
 m_pickedUp = false;
 m_pickedUpBy = noone;
 height = 3;
@@ -29,6 +30,8 @@ m_onActivation = function(activatedBy)
 			// Mark as picked up
 			m_pickedUp = true;
 			m_pickedUpBy = activatedBy;
+			// Set new text
+			m_useText = "THROW";
 		}
 		else
 		{
@@ -37,6 +40,8 @@ m_onActivation = function(activatedBy)
 			activatedBy.interactionLock = noone;
 			// Update to flat mesh
 			m_updateMesh();
+			// Set new text
+			m_useText = "GRAB";
 			
 			// And throw
 			xspeed = lengthdir_x(100, activatedBy.facingDirection);

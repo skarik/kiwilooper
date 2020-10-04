@@ -24,7 +24,8 @@
         {"properties":[],"isDnd":false,"objectId":{"name":"o_charaRobot","path":"objects/o_charaRobot/o_charaRobot.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":189.0,"y":104.0,"resourceVersion":"1.0","name":"inst_53296EC6","tags":[],"resourceType":"GMRInstance",},
         {"properties":[],"isDnd":false,"objectId":{"name":"o_livelyRoomState","path":"objects/o_livelyRoomState/o_livelyRoomState.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":16.0,"y":16.0,"resourceVersion":"1.0","name":"inst_2819A66C","tags":[],"resourceType":"GMRInstance",},
         {"properties":[],"isDnd":false,"objectId":{"name":"o_livelyGoalArea","path":"objects/o_livelyGoalArea/o_livelyGoalArea.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":2.5,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":240.0,"y":104.0,"resourceVersion":"1.0","name":"inst_658BE19E","tags":[],"resourceType":"GMRInstance",},
-      ],"visible":true,"depth":-2,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
+        {"properties":[],"isDnd":false,"objectId":{"name":"o_uiwExitText","path":"objects/o_uiwExitText/o_uiwExitText.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":270.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":232.0,"y":104.0,"resourceVersion":"1.0","name":"inst_3BC9291A","tags":[],"resourceType":"GMRInstance",},
+      ],"visible":true,"depth":0,"userdefinedDepth":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"tilesetId":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":16,"SerialiseHeight":13,"TileSerialiseData":[
 2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
 2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
@@ -84,6 +85,7 @@
     {"name":"inst_53296EC6","path":"rooms/rm_Ship1/rm_Ship1.yy",},
     {"name":"inst_2819A66C","path":"rooms/rm_Ship1/rm_Ship1.yy",},
     {"name":"inst_658BE19E","path":"rooms/rm_Ship1/rm_Ship1.yy",},
+    {"name":"inst_3BC9291A","path":"rooms/rm_Ship1/rm_Ship1.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,

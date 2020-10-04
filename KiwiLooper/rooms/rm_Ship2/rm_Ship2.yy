@@ -34,7 +34,8 @@
             {"propertyId":{"name":"m_targetDoor","path":"objects/o_livelyExplodingWires/o_livelyExplodingWires.yy",},"objectId":{"name":"o_livelyExplodingWires","path":"objects/o_livelyExplodingWires/o_livelyExplodingWires.yy",},"value":"inst_A77761A","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
           ],"isDnd":false,"objectId":{"name":"o_livelyExplodingWires","path":"objects/o_livelyExplodingWires/o_livelyExplodingWires.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":168.0,"y":120.0,"resourceVersion":"1.0","name":"inst_6BDD6CC3","tags":[],"resourceType":"GMRInstance",},
         {"properties":[],"isDnd":false,"objectId":{"name":"o_livelyDoor","path":"objects/o_livelyDoor/o_livelyDoor.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":0.46875,"scaleY":1.5,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":97.0,"y":64.0,"resourceVersion":"1.0","name":"inst_30A43693","tags":[],"resourceType":"GMRInstance",},
-      ],"visible":true,"depth":-2,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
+        {"properties":[],"isDnd":false,"objectId":{"name":"o_uiwExitText","path":"objects/o_uiwExitText/o_uiwExitText.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":180.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":145.0,"y":264.0,"resourceVersion":"1.0","name":"inst_56030E1C","tags":[],"resourceType":"GMRInstance",},
+      ],"visible":true,"depth":0,"userdefinedDepth":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"tilesetId":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":19,"SerialiseHeight":19,"TileSerialiseData":[
 2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,37,39,37,37,39,37,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
 0,0,0,0,0,0,37,0,0,0,0,37,0,0,0,0,0,2147483648,2147483648,
@@ -116,6 +117,7 @@
     {"name":"inst_7DA2016","path":"rooms/rm_Ship2/rm_Ship2.yy",},
     {"name":"inst_6BDD6CC3","path":"rooms/rm_Ship2/rm_Ship2.yy",},
     {"name":"inst_30A43693","path":"rooms/rm_Ship2/rm_Ship2.yy",},
+    {"name":"inst_56030E1C","path":"rooms/rm_Ship2/rm_Ship2.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,
