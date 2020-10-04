@@ -5,7 +5,7 @@ event_inherited();
 m_priority = 3; // Lowest priority of all usable
 m_pickedUp = false;
 m_pickedUpBy = noone;
-height = 2;
+height = 3;
 
 onGround = false;
 xspeed = 0.0;
