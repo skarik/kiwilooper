@@ -35,6 +35,11 @@ function damageTarget(source, target, damage, damageType, source_x, source_y)
 	{
 		target.hp -= damage;
 		target.lastDamageType = damageType;
+		
+		if (damageType == kDamageTypeBlunt)
+		{
+			sound_play_at(x, y, z, "sound/phys/hit_metal2.wav");
+		}
 	}
 }
 

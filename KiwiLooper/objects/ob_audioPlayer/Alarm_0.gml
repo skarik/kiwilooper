@@ -25,16 +25,9 @@ audio_emitter_falloff(m_emitter, falloff_start, falloff_end, falloff_factor);
 audio_emitter_pitch(m_emitter, pitch);*/
 
 faudioSourceSetGain(m_source, gain);
-if (channel == kSoundChannelWorld || channel == kSoundChannelKey)
-	faudioSourceSetChannel(m_source, kFAMixChannelDefault);
-else if (channel == kSoundChannelMusic)
-	faudioSourceSetChannel(m_source, kFAMixChannelMusic);
-else if (channel == kSoundChannelSpeech)
-	faudioSourceSetChannel(m_source, kFAMixChannelSpeech);
-else if (channel == kSoundChannelUi)
-	faudioSourceSetChannel(m_source, kFAMixChannelHeavy);
+faudioSourceSetChannel(m_source, channel);
 
-faudioSourceSetPosition(m_source, x, y, 0);
+faudioSourceSetPosition(m_source, x, y, z);
 faudioSourceSetSpatial(m_source, spatial);
 	
 // update gain

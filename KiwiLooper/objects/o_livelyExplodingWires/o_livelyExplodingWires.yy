@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "ssy_power",
-    "path": "sprites/ssy_power/ssy_power.yy",
+    "name": "spr_metalWiretile",
+    "path": "sprites/spr_metalWiretile/spr_metalWiretile.yy",
   },
   "solid": false,
   "visible": true,

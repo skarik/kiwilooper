@@ -33,6 +33,12 @@ m_onBeginDeath = function()
 			blood.image_angle = choose(0, 90, 180, 270);
 			blood.image_index = floor(random(blood.image_number));
 	}
+	
+	// Update sprite based on damage
+	if (lastDamageType == kDamageTypeShock)
+	{
+		sound_play_at(x, y, z, "sound/element/shock_death_short.wav");
+	}
 }
 m_onDeath = function()
 {

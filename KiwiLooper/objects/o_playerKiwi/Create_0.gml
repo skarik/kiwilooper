@@ -49,6 +49,8 @@ m_onBeginDeath = function()
 		kAnimDeath = spr_kiwiShock;
 		corpse.visible = false;
 		visible = true;
+		
+		sound_play_at(x, y, z, "sound/element/shock_death.wav");
 	}
 }
 m_onDeath = function()

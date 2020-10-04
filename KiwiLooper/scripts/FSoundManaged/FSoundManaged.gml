@@ -20,12 +20,13 @@ function sound_play_channel(sound_to_play, channel_to_play_on)
 	return sound;
 }
 
-/// @function sound_play_at(x, y, audio)
+/// @function sound_play_at(x, y, z, audio)
 /// @param x
 /// @param y
+/// @param z
 /// @param audio
 /// @notes loop, priority, falloff_start, falloff_end, falloff_factor, gain, pitch, parent
-function sound_play_at(at_x, at_y, sound_to_play)
+function sound_play_at(at_x, at_y, at_z, sound_to_play)
 {
 	if (!is_string(sound_to_play))
 	{
@@ -39,6 +40,7 @@ function sound_play_at(at_x, at_y, sound_to_play)
 		var player = inew(ob_audioPlayer);
 			player.x = at_x;
 			player.y = at_y;
+			player.z = at_z;
 			player.m_sound = sound_to_play;
 			//player.m_streamed = audio_get_type(sound_to_play) == 1;
 			// Streamed doesn't matter anymore!

@@ -75,4 +75,10 @@ function PlayerControl_UpdateCamera()
 
 	o_Camera3D.orthographic = false;
 	o_Camera3D.fov_vertical = 10;
+	
+	// Update listener too
+	faudioListenerSetPosition(Audio.mainListener, x, y, z);
+	faudioListenerSetOrientation(Audio.mainListener,
+		lengthdir_x(-1, o_Camera3D.zrotation), lengthdir_y(-1, o_Camera3D.zrotation), 0,
+		0, 0, 1);
 }

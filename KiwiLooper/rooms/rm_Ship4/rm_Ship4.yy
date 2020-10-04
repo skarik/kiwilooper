@@ -27,6 +27,19 @@
         {"properties":[
             {"propertyId":{"name":"z","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"32","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
           ],"isDnd":false,"objectId":{"name":"o_uiwExitText","path":"objects/o_uiwExitText/o_uiwExitText.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":180.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":208.0,"y":264.0,"resourceVersion":"1.0","name":"inst_793094B8","tags":[],"resourceType":"GMRInstance",},
+        {"properties":[
+            {"propertyId":{"name":"m_gain","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"0.25","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_sound","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"\"sound/ambient/engine_charge.wav\"","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"z","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"64","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+          ],"isDnd":false,"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":208.0,"y":352.0,"resourceVersion":"1.0","name":"inst_43E00553","tags":[],"resourceType":"GMRInstance",},
+        {"properties":[
+            {"propertyId":{"name":"z","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"0","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_sound","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"\"sound/element/shock_loop.wav\"","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_gain","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"0.5","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_pitch","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"0.9","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_falloffStart","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"20","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"m_falloffEnd","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"200","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+          ],"isDnd":false,"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":223.0,"y":126.0,"resourceVersion":"1.0","name":"inst_767766C5","tags":[],"resourceType":"GMRInstance",},
       ],"visible":true,"depth":0,"userdefinedDepth":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"tilesetId":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":25,"SerialiseHeight":25,"TileSerialiseData":[
 2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,
@@ -176,6 +189,8 @@
     {"name":"inst_2819A66C","path":"rooms/rm_Ship4/rm_Ship4.yy",},
     {"name":"inst_658BE19E","path":"rooms/rm_Ship4/rm_Ship4.yy",},
     {"name":"inst_793094B8","path":"rooms/rm_Ship4/rm_Ship4.yy",},
+    {"name":"inst_43E00553","path":"rooms/rm_Ship4/rm_Ship4.yy",},
+    {"name":"inst_767766C5","path":"rooms/rm_Ship4/rm_Ship4.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,

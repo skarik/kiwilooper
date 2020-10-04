@@ -4,6 +4,8 @@
 #macro kAudioSpatial2D 0.0
 #macro kAudioSpatial3D 1.0
 
+z = 0;
+
 loop = false;
 priority = 5;
 
@@ -14,7 +16,7 @@ falloff_model = kAudioFalloffModelExponential;
 
 gain = 1.0;
 pitch = 1.0;
-channel = kSoundChannelWorld;
+channel = kFAMixChannelDefault;
 spatial = kAudioSpatial3D;
 
 parent = null;

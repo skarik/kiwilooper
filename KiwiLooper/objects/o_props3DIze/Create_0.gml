@@ -35,6 +35,7 @@ m_mesh = meshb_Begin();
 		switch (element_sprite)
 		{
 		case spr_metalBoard:
+		case spr_metalScreen0:
 			{
 				var uvs = sprite_get_uvs(element_sprite, element_index);
 				var scale = new Vector3(0.5 * layer_sprite_get_xscale(element), 0.5 * layer_sprite_get_yscale(element), 1.0);

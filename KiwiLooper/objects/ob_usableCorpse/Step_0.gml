@@ -61,7 +61,7 @@ if (!m_pickedUp)
 	x += xspeed * Time.deltaTime;
 	y += yspeed * Time.deltaTime;
 	
-	if (!onGround)
+	if (!onGround && (sqr(xspeed) + sqr(yspeed) > sqr(10)))
 	{
 		// Check if we hit any character
 		var collided_enemy = collision_circle(x, y, 8, ob_character, false, true);

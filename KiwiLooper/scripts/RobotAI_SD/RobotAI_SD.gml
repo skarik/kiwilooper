@@ -109,6 +109,8 @@ function mvtRoboAttack()
 	if (previousMovetype != mvtRoboAttack)
 	{	// Perform initial setup
 		attackTimer = 0.0;
+		// Play sound early
+		sound_play_at(x, y, z, "sound/phys/weapon_swing.wav");
 	}
 	
 	// Run timer
