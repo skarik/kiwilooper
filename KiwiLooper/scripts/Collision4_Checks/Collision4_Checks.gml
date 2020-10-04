@@ -40,6 +40,7 @@ function collision4_get_highest(check_x, check_y, check_z)
 			for (var i = 0; i < results_num; ++i)
 			{
 				var corpse = results[|i];
+				if (!corpse.onGround) continue;
 				var area_z = corpse.z + corpse.height;
 				area_z_max = max(area_z_max, area_z);
 			}
@@ -97,6 +98,7 @@ function collision4_meeting(check_x, check_y, check_z)
 			for (var i = 0; i < results_num; ++i)
 			{
 				var corpse = results[|i];
+				if (!corpse.onGround) continue;
 				var area_z = corpse.z + corpse.height;
 				area_z_max = max(area_z_max, area_z);
 			}

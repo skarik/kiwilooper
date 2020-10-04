@@ -42,6 +42,7 @@ function Character_Create()
 	canInteract = true;
 	isInteracting = false;
 	interactionTarget = noone;
+	interactionLock = noone;
 	
 	// Motion state
 	xspeed = 0.0;
@@ -91,8 +92,21 @@ function Character_Step()
 	currentMovetype = currentMovetype();
 	previousMovetype = lastMovetype;
 	
+	// Update interaction lock
+	if (iexists(interactionLock))
+	{
+		isInteracting = true;
+		if (useButton.pressed)
+		{
+			interactionLock.m_onActivation(id);
+			if (!iexists(interactionLock))
+			{
+				isInteracting = false;
+			}
+		}
+	}
 	// Update interaction
-	if (currentMovetype == mvtNormal
+	else if (currentMovetype == mvtNormal
 		&& canInteract && !isInteracting)
 	{
 		// Do interaction check
@@ -132,6 +146,11 @@ function Character_Step()
 			if (iexists(interactionTarget))
 			{
 				interactionTarget.m_onActivation(id);
+				// Enable interaction lock & isInteracting disable
+				if (iexists(interactionLock))
+				{
+					isInteracting = true;
+				}
 			}
 		}
 	}

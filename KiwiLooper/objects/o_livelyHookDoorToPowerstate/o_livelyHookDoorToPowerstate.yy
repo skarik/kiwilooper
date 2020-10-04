@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "ssy_aiSafe",
-    "path": "sprites/ssy_aiSafe/ssy_aiSafe.yy",
+    "name": "ssy_power",
+    "path": "sprites/ssy_power/ssy_power.yy",
   },
   "solid": false,
   "visible": false,
@@ -21,16 +21,20 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_livelyGoalArea","path":"objects/o_livelyGoalArea/o_livelyGoalArea.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_livelyHookDoorToPowerstate","path":"objects/o_livelyHookDoorToPowerstate/o_livelyHookDoorToPowerstate.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
-  "properties": [],
+  "properties": [
+    {"varType":5,"value":"noone","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[
+        "GMObject",
+      ],"resourceVersion":"1.0","name":"m_doorToCheck","tags":[],"resourceType":"GMObjectProperty",},
+  ],
   "overriddenProperties": [],
   "parent": {
     "name": "Lively",
     "path": "folders/Objects/Game/Lively.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_livelyGoalArea",
+  "name": "o_livelyHookDoorToPowerstate",
   "tags": [],
   "resourceType": "GMObject",
 }

@@ -74,6 +74,7 @@ function collision4_get_groundtype(check_x, check_y, check_z)
 			for (var i = 0; i < results_num; ++i)
 			{
 				var corpse = results[|i];
+				if (!corpse.onGround) continue;
 				var area_z = corpse.z + corpse.height;
 				if (area_z > area_z_max)
 				{
