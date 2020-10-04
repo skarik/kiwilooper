@@ -4,7 +4,7 @@ event_inherited();
 
 m_priority = 3; // Lowest priority of all usable
 m_pickedUp = false;
-height = 3;
+height = 2;
 
 // Set up state
 image_speed = 0;

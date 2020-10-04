@@ -56,10 +56,21 @@ m_mesh = meshb_Begin();
 				m_maxPosition.x = max(ix * 16, m_maxPosition.x);
 				m_maxPosition.y = max(iy * 16, m_maxPosition.y);
 				m_maxPosition.z = max(height * 16, m_maxPosition.z);
-			
-				// Calculate new UVs for this
+				
+				// Get tile X & Y in tileset
 				var tile_x = tile_index % 16;
 				var tile_y = floor(tile_index / 16);
+				
+				// Do specific tile fuckery 
+				var zoffset = 0;
+				// Shock tile specifics
+				if (tile_y >= 8 && tile_y < 12 && tile_x >= 0 && tile_x < 4)
+				{
+					zoffset = -4;
+					m_heightMap.set(ix, iy, m_heightMap.get(ix, iy) - 0.25);
+				}
+			
+				// Calculate new UVs for this
 				var new_uvs = [
 					lerp(uvs[0], uvs[2], tile_x / 16),
 					lerp(uvs[1], uvs[3], tile_y / 16),
@@ -74,13 +85,13 @@ m_mesh = meshb_Begin();
 			
 				// Add a quad for the floor
 				meshb_AddQuad(m_mesh, [
-					new MBVertex(new Vector3(ix * 16,		iy * 16,		height * 16),
+					new MBVertex(new Vector3(ix * 16,		iy * 16,		height * 16 + zoffset),
 						c_white, 1.0, (new Vector2(-1, -1)).rotate(tile_angle).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs), new Vector3(0, 0, 1)),
-					new MBVertex(new Vector3(ix * 16 + 16,	iy * 16,		height * 16),
+					new MBVertex(new Vector3(ix * 16 + 16,	iy * 16,		height * 16 + zoffset),
 						c_white, 1.0, (new Vector2(+1, -1)).rotate(tile_angle).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs), new Vector3(0, 0, 1)),
-					new MBVertex(new Vector3(ix * 16,		iy * 16 + 16,	height * 16),
+					new MBVertex(new Vector3(ix * 16,		iy * 16 + 16,	height * 16 + zoffset),
 						c_white, 1.0, (new Vector2(-1, +1)).rotate(tile_angle).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs), new Vector3(0, 0, 1)),
-					new MBVertex(new Vector3(ix * 16 + 16,	iy * 16 + 16,	height * 16),
+					new MBVertex(new Vector3(ix * 16 + 16,	iy * 16 + 16,	height * 16 + zoffset),
 						c_white, 1.0, (new Vector2(+1, +1)).rotate(tile_angle).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs), new Vector3(0, 0, 1))
 					]);
 				
@@ -154,12 +165,12 @@ m_mesh = meshb_Begin();
 						
 						meshb_AddQuad(m_mesh, [
 							new MBVertex(
-								new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			heightn * 16 + 16),
+								new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			heightn * 16 + min(1.0, height0 - heightn) * 16),
 								c_white, 1.0,
 								(new Vector2(-1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 							new MBVertex(
-								new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	heightn * 16 + 16),
+								new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	heightn * 16 + min(1.0, height0 - heightn) * 16),
 								c_white, 1.0,
 								(new Vector2(+1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvs),
 								new Vector3(offsets[iw].x, offsets[iw].y, 0)),
