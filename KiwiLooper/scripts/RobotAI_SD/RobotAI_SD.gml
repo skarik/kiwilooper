@@ -115,7 +115,7 @@ function mvtRoboAttack()
 	
 	// Run timer
 	var attackTimerPrevious = attackTimer;
-	attackTimer += Time.deltaTime / 0.7;
+	attackTimer += Time.deltaTime / 0.4;
 	
 	// Check for damage point
 	if (attackTimer > 0.90 && attackTimerPrevious <= 0.90)
