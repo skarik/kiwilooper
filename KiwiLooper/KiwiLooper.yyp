@@ -13,6 +13,7 @@
     {"id":{"name":"ds_map_create_copy","path":"scripts/ds_map_create_copy/ds_map_create_copy.yy",},"order":13,},
     {"id":{"name":"dcmdParseGiveItem","path":"scripts/dcmdParseGiveItem/dcmdParseGiveItem.yy",},"order":3,},
     {"id":{"name":"inputGet","path":"scripts/inputGet/inputGet.yy",},"order":10,},
+    {"id":{"name":"rm_Ship4","path":"rooms/rm_Ship4/rm_Ship4.yy",},"order":5,},
     {"id":{"name":"idelete","path":"scripts/idelete/idelete.yy",},"order":0,},
     {"id":{"name":"controlCleanup","path":"scripts/controlCleanup/controlCleanup.yy",},"order":4,},
     {"id":{"name":"paletteUpdate","path":"scripts/paletteUpdate/paletteUpdate.yy",},"order":7,},
@@ -41,6 +42,7 @@
     {"id":{"name":"_controlStructUpdate","path":"scripts/_controlStructUpdate/_controlStructUpdate.yy",},"order":2,},
     {"id":{"name":"object_register_name","path":"scripts/object_register_name/object_register_name.yy",},"order":9,},
     {"id":{"name":"avec2_length","path":"scripts/avec2_length/avec2_length.yy",},"order":3,},
+    {"id":{"name":"o_livelyDoorRelay","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"order":7,},
     {"id":{"name":"instance_get_right","path":"scripts/instance_get_right/instance_get_right.yy",},"order":3,},
     {"id":{"name":"controlParseAndPoll","path":"scripts/controlParseAndPoll/controlParseAndPoll.yy",},"order":6,},
     {"id":{"name":"fmusic_add_track","path":"scripts/fmusic_add_track/fmusic_add_track.yy",},"order":0,},
@@ -298,10 +300,11 @@
   },
   "RoomOrder": [
     {"name":"rm_Loader","path":"rooms/rm_Loader/rm_Loader.yy",},
+    {"name":"rm_Ship5","path":"rooms/rm_Ship5/rm_Ship5.yy",},
     {"name":"rm_Ship1","path":"rooms/rm_Ship1/rm_Ship1.yy",},
     {"name":"rm_Ship2","path":"rooms/rm_Ship2/rm_Ship2.yy",},
     {"name":"rm_Ship3","path":"rooms/rm_Ship3/rm_Ship3.yy",},
-    {"name":"rm_Ship5","path":"rooms/rm_Ship5/rm_Ship5.yy",},
+    {"name":"rm_Ship4","path":"rooms/rm_Ship4/rm_Ship4.yy",},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},

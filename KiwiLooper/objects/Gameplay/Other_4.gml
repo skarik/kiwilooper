@@ -7,6 +7,12 @@ if (!iexists(o_Camera3D))
 
 o_Camera3D.clear_color = c_black;
 
+// Set the checkpoint if player exists
+if (iexists(o_playerKiwi))
+{
+	m_checkpoint_room = room;
+}
+
 //o_playerSplatter
 var object_listing = m_persistent_objects[?room];
 if (!is_undefined(object_listing))
