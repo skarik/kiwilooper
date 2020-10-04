@@ -279,3 +279,6 @@ m_renderEvent = function()
 {
 	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
 }
+
+// Now that we have elevation, we can build props!
+inew(o_props3DIze);

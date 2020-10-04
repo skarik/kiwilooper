@@ -25,4 +25,44 @@ function Vector3(n_x, n_y, n_z) constructor
 		z += right.z;
 		return self;
 	}
+	
+	static multiplySelf = function(right)
+	{
+		x *= right;
+		y *= right;
+		z *= right;
+		return self;
+	}
+	
+	static multiplyComponentSelf = function(right)
+	{
+		x *= right.x;
+		y *= right.y;
+		z *= right.z;
+		return self;
+	}
+	
+	static rotateZ = function(angle)
+	{
+		var trueAngle = angle * pi / 180.0;
+		m0 = cos(trueAngle);
+		m3 = m0;
+		m1 = sin(trueAngle);
+		m2 = -m1;
+		return new Vector3(
+			m0 * x + m1 * y,
+			m2 * x + m3 * y,
+			z
+			);
+	}
+	
+	static rotateZSelf = function(angle)
+	{
+		var result = rotateZ(angle);
+		x = result.x;
+		y = result.y;
+		z = result.z;
+		delete result;
+		return self;
+	}
 }

@@ -35,6 +35,18 @@ function collision4_get_highest(check_x, check_y, check_z)
 			}
 			ds_list_clear(results);
 		}
+		// Check all the props
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_propCollider, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var prop = results[|i];
+				var area_z = prop.z + prop.height;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
 		// Check all the corpses
 		{
 			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_usableCorpse, false, true, results, false);
@@ -96,6 +108,18 @@ function collision4_get_highest_corpseSpecial(check_x, check_y, check_z)
 			}
 			ds_list_clear(results);
 		}
+		// Check all the props
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_propCollider, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var prop = results[|i];
+				var area_z = prop.z + prop.height;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
 		// Check all the corpses
 		{
 			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_usableCorpse, false, true, results, false);
@@ -151,6 +175,18 @@ function collision4_meeting(check_x, check_y, check_z)
 			{
 				var door = results[|i];
 				var area_z = door.z + door.doorheight;
+				area_z_max = max(area_z_max, area_z);
+			}
+			ds_list_clear(results);
+		}
+		// Check all the props
+		{
+			var results_num = collision_rectangle_list(x1, y1, x2, y2, ob_propCollider, false, true, results, false);
+			// Find the one with the highest Z
+			for (var i = 0; i < results_num; ++i)
+			{
+				var prop = results[|i];
+				var area_z = prop.z + prop.height;
 				area_z_max = max(area_z_max, area_z);
 			}
 			ds_list_clear(results);
@@ -246,6 +282,27 @@ function collision4_line(check_x1, check_y1, check_z1, check_x2, check_y2, check
 			
 			// Get rough z for this
 			var check_z = lerp(check_z1, check_z2, point_distance(check_x1, check_y1, door.x, door.y) / check_xy_distance);
+			
+			// Check against rough Z
+			if (area_z > check_z + kMaxStepHeight)
+			{
+				ds_list_destroy(results);
+				return true;
+			}
+		}
+		ds_list_clear(results);
+	}
+	// Check all the props
+	{
+		var results_num = collision_line_list(check_x1, check_y1, check_x2, check_y2, ob_propCollider, false, true, results, false);
+		// Find the one with the highest Z
+		for (var i = 0; i < results_num; ++i)
+		{
+			var prop = results[|i];
+			var area_z = prop.z + prop.height;
+			
+			// Get rough z for this
+			var check_z = lerp(check_z1, check_z2, point_distance(check_x1, check_y1, prop.x, prop.y) / check_xy_distance);
 			
 			// Check against rough Z
 			if (area_z > check_z + kMaxStepHeight)
