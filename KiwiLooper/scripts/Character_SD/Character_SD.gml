@@ -65,7 +65,7 @@ function Character_Create()
 function Character_BeginStep()
 {
 	// Drop HP when underground
-	if (z < -8 && !isDead)
+	if (z < -15 && !isDead)
 	{
 		hp -= 1;
 		lastDamageType = kDamageTypeMagicVoid;

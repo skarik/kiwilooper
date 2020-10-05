@@ -10,6 +10,8 @@ openstate = 0.0;
 doorheight = 32;
 startz = z;
 
+door_open_sound = (room == rm_Ship5) ? "sound/door/doom_door_open0.wav" : "sound/door/door_open0.wav";
+
 // Set up callback
 m_onActivation = function(activatedBy)
 {
@@ -27,18 +29,27 @@ m_onActivation = function(activatedBy)
 	{
 		opening = false;
 		closing = true;
+		
+		var sfx = sound_play_at(x + sprite_width / 2, y + sprite_height / 2, z + doorheight / 2, door_open_sound);
+			sfx.gain = 0.2;
 	}
 	// is closed?
 	else if (closing || openstate < 0.5)
 	{
 		closing = false;
 		opening = true;
+		
+		var sfx = sound_play_at(x + sprite_width / 2, y + sprite_height / 2, z + doorheight / 2, door_open_sound);
+			sfx.gain = 0.2;
 	}
 	// default to open up
 	else
 	{
 		closing = false;
 		opening = true;
+		
+		var sfx = sound_play_at(x + sprite_width / 2, y + sprite_height / 2, z + doorheight / 2, door_open_sound);
+			sfx.gain = 0.2;
 	}
 }
 

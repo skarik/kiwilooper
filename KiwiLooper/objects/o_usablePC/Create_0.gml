@@ -20,6 +20,7 @@ m_onActivation = function(activatedBy)
 		if (iexists(m_targetLively))
 		{
 			m_targetLively.m_onActivation(id);
+			sound_play_at(x, y, z, "sound/door/button0.wav");
 		}
 	}
 }

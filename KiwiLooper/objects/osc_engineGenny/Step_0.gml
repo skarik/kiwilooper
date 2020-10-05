@@ -12,7 +12,7 @@ if (m_gennyCount <= 3 && gennyCountPrev > 3)
 	}
 }
 
-if (m_gennyCount <= 1 && gennyCountPrev > 1)
+if (m_gennyCount <= 2 && gennyCountPrev > 2)
 {
 	with (ot_3DSpinnaz)
 	{

@@ -2,7 +2,7 @@
 
 // Check if we're in gameplay room
 m_isGameplay = true;
-if (room == rm_Menu)
+if (room == rm_Menu || room == rm_Credits)
 {
 	m_isGameplay = false;
 }

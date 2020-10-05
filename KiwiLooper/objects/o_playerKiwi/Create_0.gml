@@ -22,16 +22,19 @@ m_uiTally = inew(o_uisTallyMarks);
 m_onBeginDeath = function()
 {
 	// Create blood here
-	repeat (2)
+	if (lastDamageType != kDamageTypeMagicVoid)
 	{
-		var blood = inew(o_playerSplatter);
-			blood.x = x + random_range(-8, +8);
-			blood.y = y + random_range(-8, +8);
-			blood.z = z;
-			blood.image_xscale = choose(-1, 1);
-			blood.image_yscale = choose(-1, 1);
-			blood.image_angle = choose(0, 90, 180, 270);
-			blood.image_index = floor(random(blood.image_number));
+		repeat (2)
+		{
+			var blood = inew(o_playerSplatter);
+				blood.x = x + random_range(-8, +8);
+				blood.y = y + random_range(-8, +8);
+				blood.z = z;
+				blood.image_xscale = choose(-1, 1);
+				blood.image_yscale = choose(-1, 1);
+				blood.image_angle = choose(0, 90, 180, 270);
+				blood.image_index = floor(random(blood.image_number));
+		}
 	}
 	
 	// No longer visible

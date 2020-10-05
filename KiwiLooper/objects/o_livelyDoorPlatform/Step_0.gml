@@ -1,5 +1,6 @@
 /// @description Update states
 
+// TODO: This block is the same as the door. Can probably reuse.
 if (opening)
 {
 	if (image_index != 1)
@@ -13,7 +14,10 @@ if (opening)
 	{
 		openstate = 1.0;
 		opening = false;
-		// todo: play audio on open full
+		
+		// Play audio on open full
+		var sfx = sound_play_at(x + sprite_width / 2, y + sprite_height / 2, z + doorheight / 2, "sound/door/door_open1.wav");
+			sfx.gain = 0.6;
 	}
 }
 else if (closing)
@@ -29,7 +33,10 @@ else if (closing)
 	{
 		openstate = 0.0;
 		closing = false;
-		// todo: play audio on close full
+		
+		// Play audio on close full
+		var sfx = sound_play_at(x + sprite_width / 2, y + sprite_height / 2, z + doorheight / 2, "sound/door/door_open1.wav");
+			sfx.gain = 0.6;
 	}
 }
 

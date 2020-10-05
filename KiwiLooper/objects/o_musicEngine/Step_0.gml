@@ -31,7 +31,7 @@ else if (m_state == 2)
 	m_player.m_trackVolume[1] = 1.0;
 	m_player.m_trackVolume[2] = 0.0;
 	
-	if (instance_number(o_charaPowercell) < 2)
+	if (instance_number(o_charaPowercell) < 3)
 	{
 		m_state = 3;
 	}
