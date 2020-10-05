@@ -33,3 +33,6 @@ with (GameCamera)
 	y = height / 2;
 	event_user(1);
 }
+
+// start up lighting
+lightInitialize();

@@ -49,11 +49,20 @@ surface_set_target(buffer_scene3d);
 	gpu_set_ztestenable(true);
 	gpu_set_zfunc(cmpfunc_lessequal);
 	
+	// grab lighting arrays
+	var lightParams = lightGatherLights();
+	
 	// draw all objects
 	with (ob_3DObject)
 	{
 		if (visible && !translucent)
 		{
+			if (lit)
+			{
+				shader_set(sh_litEnvironment);
+				lightPushUniforms(lightParams);
+			}
+			
 			var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
 			var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
 			var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
@@ -67,6 +76,11 @@ surface_set_target(buffer_scene3d);
 			mat_object = matrix_multiply(mat_object, mat_object_pos);
 			matrix_set(matrix_world, mat_object);
 			m_renderEvent();
+			
+			if (lit)
+			{
+				shader_reset();
+			}
 		}
 	}
 	// draw translucents after
