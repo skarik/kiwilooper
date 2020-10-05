@@ -10,9 +10,11 @@ if (room == rm_Menu)
 if (!m_isGameplay)
 {
 	// TODO: Disable stuff we don't need
+	m_tallyCount = 5;
 }
 else
 {
+	
 	if (!iexists(o_Camera3D))
 	{
 		inew(o_Camera3D);

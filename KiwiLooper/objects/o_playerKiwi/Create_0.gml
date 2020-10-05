@@ -16,6 +16,7 @@ m_wrench.visible = false;
 
 // Set up UI
 m_uiUsables = inew(o_uisPlayerUsables);
+m_uiTally = inew(o_uisTallyMarks);
 
 // Set up callbacks
 m_onBeginDeath = function()
@@ -53,6 +54,9 @@ m_onBeginDeath = function()
 		
 		sound_play_at(x, y, z, "sound/element/shock_death.wav");
 	}
+	
+	// Tally it up
+	Gameplay.m_tallyCount += 1;
 }
 m_onDeath = function()
 {
