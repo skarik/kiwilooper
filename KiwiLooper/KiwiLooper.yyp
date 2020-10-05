@@ -532,6 +532,11 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"door_open1.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button0.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"doom_door_open0.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/phys","resourceVersion":"1.0","name":"explo_7.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch2.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch1.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch3.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch4.wav","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
     "IDEVersion": "2.3.0.529",

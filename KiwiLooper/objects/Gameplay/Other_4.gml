@@ -52,8 +52,11 @@ else
 	effectAbberate(0.01, 0.08, false);
 	effectAbberate(-0.02, 0.4, false);
 	effectAbberate(0.05, 0.5, true);
-
-	//o_playerSplatter
+	
+	// Play glitch sound
+	sound_play("sound/element/glitch" + choose("1", "2", "3", "4") + ".wav");
+	
+	// Spawn listing
 	var object_listing = m_persistent_objects[?room];
 	if (!is_undefined(object_listing))
 	{

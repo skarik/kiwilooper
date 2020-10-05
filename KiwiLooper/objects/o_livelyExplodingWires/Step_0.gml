@@ -16,7 +16,9 @@ if (explosionDelay > 0.0)
 		// Shake screen
 		effectScreenShake(4, 1.6, true);
 		
-		// TODO: Play 3D explosion sound here
+		// Play 3D explosion sound here
+		var sfx = sound_play_at(x, y, z, "sound/phys/explo_7.wav");
+			sfx.gain = 0.2;
 		
 		// Vaporize nearby corpses
 		var nearby_corpses = ds_list_create();
