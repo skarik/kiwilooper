@@ -12,7 +12,7 @@ function PlayerControl_Create()
 
 function PlayerControl_Step()
 {
-	controlUpdate(false);
+	controlUpdate(iexists(o_uisLogBox));
 }
 
 function PlayerControl_UpdateCamera()

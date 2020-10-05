@@ -35,7 +35,7 @@
     "spriteId": {"name":"spr_metalScreen0","path":"sprites/spr_metalScreen0/spr_metalScreen0.yy",},
     "timeUnits": 1,
     "playback": 1,
-    "playbackSpeed": 0.0,
+    "playbackSpeed": 1.0,
     "playbackSpeedType": 0,
     "autoRecord": true,
     "volume": 1.0,

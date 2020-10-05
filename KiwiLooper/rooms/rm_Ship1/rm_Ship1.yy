@@ -30,6 +30,10 @@
             {"propertyId":{"name":"m_sound","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"\"sound/ambient/engine_charge.wav\"","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
             {"propertyId":{"name":"z","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"value":"64","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
           ],"isDnd":false,"objectId":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":176.0,"y":288.0,"resourceVersion":"1.0","name":"inst_777A393E","tags":[],"resourceType":"GMRInstance",},
+        {"properties":[
+            {"propertyId":{"name":"logString","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"objectId":{"name":"o_usableLogbook","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"value":"\": The robots have ripped up some of the floor paneling to get at the power.\"","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+            {"propertyId":{"name":"logStringQueued","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"objectId":{"name":"o_usableLogbook","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"value":"\": Without human intervention they've adapted to feeding off the exposed wire.\"","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+          ],"isDnd":false,"objectId":{"name":"o_usableLogbook","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":-114.423088,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":119.0,"y":149.0,"resourceVersion":"1.0","name":"inst_67FFEFDA","tags":[],"resourceType":"GMRInstance",},
       ],"visible":true,"depth":0,"userdefinedDepth":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":16,"gridY":16,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"assets":[
         {"x":201.0,"y":74.0,"spriteId":{"name":"spr_metalCrate0","path":"sprites/spr_metalCrate0/spr_metalCrate0.yy",},"ignore":false,"headPosition":0.0,"rotation":107.059784,"scaleX":1.0,"scaleY":1.0,"animationSpeed":1.0,"colour":4294967295,"inheritedItemId":null,"frozen":false,"inheritItemSettings":false,"resourceVersion":"1.0","name":"graphic_2C9D66A7","tags":[],"resourceType":"GMRSpriteGraphic",},
@@ -104,6 +108,7 @@
     {"name":"inst_658BE19E","path":"rooms/rm_Ship1/rm_Ship1.yy",},
     {"name":"inst_3BC9291A","path":"rooms/rm_Ship1/rm_Ship1.yy",},
     {"name":"inst_777A393E","path":"rooms/rm_Ship1/rm_Ship1.yy",},
+    {"name":"inst_67FFEFDA","path":"rooms/rm_Ship1/rm_Ship1.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,
