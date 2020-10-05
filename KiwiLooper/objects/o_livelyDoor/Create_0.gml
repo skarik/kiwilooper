@@ -60,7 +60,7 @@ m_updateMesh = function()
 	var top = 0;
 	var right = sprite_width;
 	var bottom = sprite_height;
-	var height = 32;
+	var height = doorheight;
 	
 	meshb_BeginEdit(m_mesh);
 	

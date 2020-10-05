@@ -19,7 +19,7 @@ if (explosionDelay > 0.0)
 		
 		// Vaporize nearby corpses
 		var nearby_corpses = ds_list_create();
-		var nearby_corpses_count = collision_circle_list(x, y, 48, ob_usableCorpse, false, true, nearby_corpses, false);
+		var nearby_corpses_count = collision_circle_list(x, y, 24, ob_usableCorpse, false, true, nearby_corpses, false);
 		for (var i = 0; i < nearby_corpses_count; ++i)
 		{
 			var corpse = nearby_corpses[|i];

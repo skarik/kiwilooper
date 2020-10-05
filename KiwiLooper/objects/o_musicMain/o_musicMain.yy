@@ -4,7 +4,7 @@
     "path": "sprites/ssy_music/ssy_music.yy",
   },
   "solid": false,
-  "visible": true,
+  "visible": false,
   "spriteMaskId": null,
   "persistent": true,
   "parentObjectId": null,
