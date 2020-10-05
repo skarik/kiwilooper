@@ -19,31 +19,31 @@ update = function()
 		
 		var uvs = sprite_get_uvs(splatter.sprite_index, splatter.image_index);
 		var splatter_halfwidth = sprite_get_width(splatter.sprite_index) * 0.5;
-		var splatter_halfheight = sprite_get_width(splatter.sprite_index) * 0.5;
+		var splatter_halfheight = sprite_get_height(splatter.sprite_index) * 0.5;
 		var splatter_angle = splatter.image_angle;
 		var splatter_scale = new Vector2(splatter.image_xscale, splatter.image_yscale);
 		var splatter_position = new Vector3(splatter.x, splatter.y, splatter.z);
 		
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
-				(new Vector3(-splatter_halfwidth, -splatter_halfheight, 0.5)).addSelf(splatter_position),
+				(new Vector3(-splatter_halfwidth, -splatter_halfheight, 0.5)).rotateZSelf(splatter_angle).addSelf(splatter_position),
 				c_white, 1.0,
-				(new Vector2(-1.0, -1.0)).rotateSelf(splatter_angle).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
+				(new Vector2(-1.0, -1.0)).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
 				new Vector3(0, 0, 1)),
 			new MBVertex(
-				(new Vector3( splatter_halfwidth, -splatter_halfheight, 0.5)).addSelf(splatter_position),
+				(new Vector3( splatter_halfwidth, -splatter_halfheight, 0.5)).rotateZSelf(splatter_angle).addSelf(splatter_position),
 				c_white, 1.0,
-				(new Vector2(1.0, -1.0)).rotateSelf(splatter_angle).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
+				(new Vector2(1.0, -1.0)).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
 				new Vector3(0, 0, 1)),
 			new MBVertex(
-				(new Vector3(-splatter_halfwidth,  splatter_halfheight, 0.5)).addSelf(splatter_position),
+				(new Vector3(-splatter_halfwidth,  splatter_halfheight, 0.5)).rotateZSelf(splatter_angle).addSelf(splatter_position),
 				c_white, 1.0,
-				(new Vector2(-1.0, 1.0)).rotateSelf(splatter_angle).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs), 
+				(new Vector2(-1.0, 1.0)).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs), 
 				new Vector3(0, 0, 1)),
 			new MBVertex(
-				(new Vector3( splatter_halfwidth,  splatter_halfheight, 0.5)).addSelf(splatter_position),
+				(new Vector3( splatter_halfwidth,  splatter_halfheight, 0.5)).rotateZSelf(splatter_angle).addSelf(splatter_position),
 				c_white, 1.0,
-				(new Vector2(1.0, 1.0)).rotateSelf(splatter_angle).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
+				(new Vector2(1.0, 1.0)).multiplyComponentSelf(splatter_scale).unbiasSelf().biasUVSelf(uvs),
 				new Vector3(0, 0, 1))
 			]);
 		

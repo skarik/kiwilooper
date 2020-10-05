@@ -17,7 +17,7 @@ surface_set_target(buffer_scene3d);
 	// Create transformation
 	var mat_projection;
 	if (!orthographic)
-		mat_projection = matrix_build_projection_perspective_fov(fov_vertical, Screen.width / Screen.height, 1, 4000);
+		mat_projection = matrix_build_projection_perspective_fov(fov_vertical, Screen.width / Screen.height, 600, 4000);
 	else
 		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, 4000);
 	var mat_view = matrix_build_lookat(
@@ -47,13 +47,15 @@ surface_set_target(buffer_scene3d);
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
 
 	// enable depth testing
-	gpu_set_alphatestenable(true);
-	gpu_set_alphatestref(0.5);
 	gpu_set_ztestenable(true);
 	gpu_set_zfunc(cmpfunc_lessequal);
 	
 	// grab lighting arrays
 	var lightParams = lightGatherLights();
+	
+	// disable alpha blending
+	gpu_set_alphatestenable(true);
+	gpu_set_alphatestref(0.5);
 	
 	// draw all objects
 	with (ob_3DObject)
@@ -86,6 +88,10 @@ surface_set_target(buffer_scene3d);
 			}
 		}
 	}
+	
+	// enable alpha blending
+	gpu_set_alphatestenable(false);
+	
 	// draw translucents after
 	with (ob_3DObject)
 	{
@@ -115,6 +121,15 @@ surface_set_target(buffer_scene3d);
 	// disable depth testing
 	gpu_set_ztestenable(false);
 	gpu_set_zfunc(cmpfunc_always);
+	
+	// disable alpha testing
+	gpu_set_alphatestenable(false);
+	
+	// fix alpha channel
+	gpu_set_blendmode_ext_sepalpha(bm_zero, bm_one, bm_one, bm_one);
+	draw_set_color(c_black);
+	draw_rectangle(-10000, -10000, 10000, 10000, false);
+	gpu_set_blendmode(bm_normal);
 }
 surface_reset_target();
 

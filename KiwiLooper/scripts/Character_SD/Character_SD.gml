@@ -23,6 +23,8 @@ function Character_Create()
 	hp_max = 1;
 	isDead = false;
 	lastDamageType = kDamageTypeUnarmed;
+	footstepBloody = 0;
+	shadowInstance = inew(o_characterShadow);
 	
 	// Animation state
 	image_speed = 0;
@@ -173,9 +175,18 @@ function Character_Step()
 		}
 	}
 	
-	// Update on-ground shock death
+	// Update shadow
+	if (iexists(shadowInstance))
+	{
+		shadowInstance.x = x;
+		shadowInstance.y = y;
+		shadowInstance.z = z;
+	}
+	
+	// Check on-ground effects
 	if (onGround)
 	{
+		// Update on-ground shock death
 		if (iexists(o_livelyRoomState) && o_livelyRoomState.powered)
 		{
 			if (((z + 64) % 16 > 8) // Quick hack to let us start falling first
@@ -187,6 +198,21 @@ function Character_Step()
 					damageTarget(null, id, 1, kDamageTypeShock, x, y);
 				}
 			}
+		}
+		
+		// Check for bloody steps
+		var splatter = collision_circle(x, y, 3, o_playerSplatter, false, true);
+		if (iexists(splatter))
+		{
+			footstepBloody = choose(4, 5, 6);
+		}
+	}
+	else
+	{
+		// Update shadow z if not on ground
+		if (iexists(shadowInstance))
+		{
+			shadowInstance.z = collision4_get_lowest(x, y, z);
 		}
 	}
 }
@@ -253,7 +279,7 @@ function Character_AnimationStep()
 	}
 	
 	// Do footstep effects
-	if (bIsWalking)
+	if (bIsWalking && onGround)
 	{
 		var checkPrev = animationIndexPrevious % 4;
 		var check = animationIndex % 4;
@@ -264,6 +290,22 @@ function Character_AnimationStep()
 				sound.gain = 0.05 * random_range(0.9, 1.1);
 				sound.pitch = 1.2 * random_range(0.9, 1.1);
 				sound.parent = id;
+				
+			if (footstepBloody > 0)
+			{
+				var left = (check >= 1 && checkPrev < 1);
+				var blood = inew(o_playerFootstepSplatter);
+					blood.x = x + lengthdir_x(left ? 1.6 : -1.6, facingDirection - 90);
+					blood.y = y + lengthdir_y(left ? 1.6 : -1.6, facingDirection - 90);
+					blood.z = z;
+					blood.image_xscale = 1.0;
+					blood.image_yscale = choose(-1, 1);
+					blood.image_angle = facingDirection;
+					blood.image_index = floor(random(blood.image_number));
+					
+				// One less bloody footstep stored up
+				footstepBloody--;
+			}
 		}
 	}
 }
