@@ -3,7 +3,7 @@
 /// @notes loop, priority, falloff_start, falloff_end, falloff_factor, gain, pitch, parent
 function sound_play(sound_to_play)
 {
-	var sound = sound_play_at(0, 0, sound_to_play);
+	var sound = sound_play_at(0, 0, 0, sound_to_play);
 	sound.spatial = kAudioSpatial2D;
 	return sound;
 }
@@ -14,7 +14,7 @@ function sound_play(sound_to_play)
 /// @notes loop, priority, falloff_start, falloff_end, falloff_factor, gain, pitch, parent
 function sound_play_channel(sound_to_play, channel_to_play_on)
 {
-	var sound = sound_play_at(0, 0, sound_to_play);
+	var sound = sound_play_at(0, 0, 0, sound_to_play);
 	sound.spatial = kAudioSpatial2D;
 	sound.channel = channel_to_play_on;
 	return sound;

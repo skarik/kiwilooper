@@ -5,6 +5,10 @@ image_alpha = 0.0;
 // Need control input for this
 controlInit();
 
+// play sound on start
+fmusic_fade_all();
+sound_play_channel("music/title_guitar.ogg", kFAMixChannelMusic);
+
 // Are we fading in
 m_fadeIn = true;
 

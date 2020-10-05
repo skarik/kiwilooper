@@ -54,6 +54,11 @@ m_onBeginDeath = function()
 		
 		sound_play_at(x, y, z, "sound/element/shock_death.wav");
 	}
+	if (lastDamageType == kDamageTypeMagicVoid)
+	{
+		// No corpse if we fall down to our death
+		idelete(corpse);
+	}
 	
 	// Tally it up
 	Gameplay.m_tallyCount += 1;

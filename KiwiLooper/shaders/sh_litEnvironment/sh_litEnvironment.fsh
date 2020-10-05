@@ -41,7 +41,7 @@ void main()
 			total_response = ceil(total_response * 4.0) / 4.0;
 			
 			// Acculmulate this light's lighting
-			totalLighting += uLightColors[i].rgb * total_response;
+			totalLighting += uLightColors[i].rgb * total_response * uLightParams[i].x;
 		}
 	}
 	

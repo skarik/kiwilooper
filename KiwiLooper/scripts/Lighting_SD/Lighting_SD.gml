@@ -11,7 +11,17 @@ function lightInitialize()
 
 function lightPushUniforms(params)
 {
-	shader_set_uniform_f(global.m_uLightAmbientColor, 0.2, 0.3, 0.2);
+	if (iexists(o_ambientOverride))
+	{
+		shader_set_uniform_f(global.m_uLightAmbientColor,
+			color_get_red(o_ambientOverride.color) / 255.0,
+			color_get_green(o_ambientOverride.color) / 255.0,
+			color_get_blue(o_ambientOverride.color) / 255.0);
+	}
+	else
+	{
+		shader_set_uniform_f(global.m_uLightAmbientColor, 0.2, 0.3, 0.2);
+	}
 	shader_set_uniform_f_array(global.m_uLightPositions, params[0]);
 	shader_set_uniform_f_array(global.m_uLightParams, params[1]);
 	shader_set_uniform_f_array(global.m_uLightColors, params[2]);

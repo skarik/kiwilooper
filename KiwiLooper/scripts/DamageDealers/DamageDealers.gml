@@ -30,6 +30,10 @@ function damageCanHit(source, target)
 	{
 		return false;
 	}
+	else if (abs(target.z - source.z) > 20)
+	{
+		return false;
+	}
 	return true;
 }
 

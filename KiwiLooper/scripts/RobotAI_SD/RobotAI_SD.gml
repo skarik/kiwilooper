@@ -12,7 +12,9 @@ function AiRobo(n_owner) constructor
 	
 	static updateTargetVisibility = function()
 	{
-		if (iexists(target) && !collision4_line(owner.x, owner.y, owner.z + 8, target.x, target.y, target.z + 8))
+		if (iexists(target) 
+			&& abs(owner.z - target.z) < 20 // Ensure we're on the roughly same elevation before aggro
+			&& !collision4_line(owner.x, owner.y, owner.z + 8, target.x, target.y, target.z + 8))
 		{
 			targetVisible = true;
 			targetPosition.x = target.x;
