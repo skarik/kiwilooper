@@ -1,10 +1,10 @@
-/// @description Effect_ScreenShake(magnitude,length,fade)
+/// @description Effect_Abberate(magnitude,length,fade)
 /// @param magnitude
 /// @param length
 /// @param fade
-function effectScreenShake(argument0, argument1, argument2)
+function effectAbberate(argument0, argument1, argument2)
 {
-	var screenshake = inew(o_screenShake);
+	var screenshake = inew(o_screenAbberation);
 	screenshake.magnitude	= argument0;
 	screenshake.life		= argument1;
 	screenshake.maxlife		= argument1;

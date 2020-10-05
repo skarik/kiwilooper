@@ -18,6 +18,7 @@ if ((m_effectTimer > 0.83 && effectTimerPrevious <= 0.83)
 	)
 {
 	m_drawmode = 0;
+	effectAbberate(0.02, 0.05, false);
 }
 if ((m_effectTimer > 0.8 && effectTimerPrevious <= 0.8)
 	|| (m_effectTimer > 0.9 && effectTimerPrevious <= 0.9)
@@ -26,6 +27,7 @@ if ((m_effectTimer > 0.8 && effectTimerPrevious <= 0.8)
 	)
 {
 	m_drawmode = 1;
+	effectAbberate(0.01, 0.05, true);
 }
 
 // Go to next state

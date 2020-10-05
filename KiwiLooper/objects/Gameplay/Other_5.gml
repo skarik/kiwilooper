@@ -2,6 +2,17 @@
 
 if (m_isGameplay)
 {
+	// save the camera
+	if (iexists(o_Camera3D))
+	{
+		m_camera_x = o_Camera3D.x;
+		m_camera_y = o_Camera3D.y;
+		m_camera_z = o_Camera3D.z;
+		m_camera_rotation_x = o_Camera3D.xrotation;
+		m_camera_rotation_y = o_Camera3D.yrotation;
+		m_camera_rotation_z = o_Camera3D.zrotation;
+	}
+	
 	// track all needed objects for this room
 	var tracker_listing = array_create(0);
 

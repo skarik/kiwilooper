@@ -45,6 +45,9 @@ m_onBeginDeath = function()
 		corpse.image_angle = facingDirection;
 		corpse.m_updateMesh();
 		
+	// Abberate screen
+	effectAbberate(0.01, 0.2, true);
+		
 	// Update sprite based on damage
 	if (lastDamageType == kDamageTypeShock)
 	{
@@ -54,10 +57,15 @@ m_onBeginDeath = function()
 		
 		sound_play_at(x, y, z, "sound/element/shock_death.wav");
 	}
-	if (lastDamageType == kDamageTypeMagicVoid)
+	else if (lastDamageType == kDamageTypeMagicVoid)
 	{
 		// No corpse if we fall down to our death
 		idelete(corpse);
+	}
+	else
+	{
+		// Shake screen for death
+		effectScreenShake(1.5, 0.4, true);
 	}
 	
 	// Tally it up

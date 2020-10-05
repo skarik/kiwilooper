@@ -30,6 +30,12 @@ m_onBeginDeath = function()
 		explosion.killOnEnd = true;
 		explosion.m_updateMesh();
 	
+	// Shake the screen!
+	effectScreenShake(5.0, 2.0, true);
+	// Abberate screen
+	effectAbberate(2 / GameCamera.width, 1.1, false);
+	effectAbberate(0.01, 0.6, true);
+	
 	// Create sound
 	sound_play_at(x, y, z, "sound/element/shock_death_short.wav");
 }

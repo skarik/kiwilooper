@@ -5,6 +5,10 @@ image_alpha = 0.0;
 // Need control input for this
 controlInit();
 
+// abberate on start
+effectAbberate(0.02, 0.05, false);
+effectAbberate(0.02, 0.3, true);
+
 // play sound on start
 fmusic_fade_all();
 sound_play_channel("music/title_guitar.ogg", kFAMixChannelMusic);

@@ -44,6 +44,13 @@ function damageTarget(source, target, damage, damageType, source_x, source_y)
 		target.hp -= damage;
 		target.lastDamageType = damageType;
 		
+		if ((iexists(target) && target.isPlayer)
+			|| (iexists(source) && source.isPlayer))
+		{
+			effectScreenShake(3.0, 0.3, true);
+			effectAbberate(2.0 / GameCamera.width, 0.1, true);
+		}
+		
 		if (damageType == kDamageTypeBlunt)
 		{
 			sound_play_at(x, y, z, "sound/phys/hit_metal2.wav");

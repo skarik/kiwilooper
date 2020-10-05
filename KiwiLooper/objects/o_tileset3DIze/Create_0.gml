@@ -205,14 +205,16 @@ m_mesh = meshb_Begin();
 							
 						for (var iz = heightn + 1; iz < height0; ++iz)
 						{
+							var fractional = min(1, height0 - iz);
+							
 							meshb_AddQuad(m_mesh, [
 								new MBVertex(
-									new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			iz * 16 + 16),
+									new Vector3(ix * 16 + x_push,			iy * 16 + y_push,			iz * 16 + 16 * fractional),
 									wall_color, 1.0,
 									(new Vector2(-1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0)),
 								new MBVertex(
-									new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	iz * 16 + 16),
+									new Vector3(ix * 16 + x_push + x_off,	iy * 16 + y_push + y_off,	iz * 16 + 16 * fractional),
 									wall_color, 1.0,
 									(new Vector2(+1, -1)).multiplyComponentSelf(tile_scale).unbiasSelf().biasUVSelf(new_uvsTop),
 									new Vector3(offsets[iw].x, offsets[iw].y, 0)),

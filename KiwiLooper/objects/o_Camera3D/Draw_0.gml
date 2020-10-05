@@ -6,6 +6,9 @@ surface_set_target(buffer_scene3d);
 {
 	draw_clear_alpha(clear_color, 1.0);
 	
+	// Draw starry background
+	draw_sprite_tiled(sui_starbackground, 0, zrotation * GameCamera.width / 90, -yrotation * GameCamera.height / 90);
+	
 	// Save old matrix stack
 	var mat_world_previous = matrix_get(matrix_world);
 	var mat_view_previous = matrix_get(matrix_view);

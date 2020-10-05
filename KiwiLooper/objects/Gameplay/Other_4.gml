@@ -11,6 +11,9 @@ if (!m_isGameplay)
 {
 	// TODO: Disable stuff we don't need
 	m_tallyCount = 5;
+	
+	// Clear off the camera
+	m_camera_x = 0;
 }
 else
 {
@@ -21,12 +24,34 @@ else
 	}
 
 	o_Camera3D.clear_color = c_black;
+	
+	// Update camera position
+	if (m_camera_x != 0)
+	{
+		o_Camera3D.x = m_camera_x;
+		o_Camera3D.y = m_camera_y;
+		o_Camera3D.z = m_camera_z;
+		o_Camera3D.xrotation = m_camera_rotation_x;
+		o_Camera3D.yrotation = m_camera_rotation_y;
+		o_Camera3D.zrotation = m_camera_rotation_z;
+		if (iexists(o_playerKiwi))
+		{
+			o_playerKiwi.cameraRotZ = m_camera_rotation_z;
+			o_playerKiwi.cameraRotY = m_camera_rotation_y;
+		}
+	}
 
 	// Set the checkpoint if player exists
 	if (iexists(o_playerKiwi))
 	{
 		m_checkpoint_room = room;
 	}
+
+	// Abberate on start
+	effectAbberate(-0.02, 0.05, false);
+	effectAbberate(0.01, 0.08, false);
+	effectAbberate(-0.02, 0.4, false);
+	effectAbberate(0.05, 0.5, true);
 
 	//o_playerSplatter
 	var object_listing = m_persistent_objects[?room];

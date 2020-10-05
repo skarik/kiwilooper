@@ -44,6 +44,7 @@ m_outputCamera = camera_create_view(0, 0, Screen.width, Screen.height);
 // Create screen shader effects
 //inew_unique(o_replatte);
 //inew_unique(o_darkness);
+inew_unique(o_styledAbberation);
 
 // Variables for keeping track of auto-screenshots
 screenshot_auto_enabled = false;

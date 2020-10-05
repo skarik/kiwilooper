@@ -1,13 +1,13 @@
 function settingsLoad() {
 
 	settingsControlDefaults();
-	settingsControlLoad();
+	//settingsControlLoad();
 	settingsStartupDefaults();
-	settingsStartupLoad();
+	//settingsStartupLoad();
 	settingsAudioDefaults();
-	settingsAudioLoad();
+	//settingsAudioLoad();
 	settingsGameplayDefaults();
-	settingsGameplayLoad();
+	//settingsGameplayLoad();
 
 
 }

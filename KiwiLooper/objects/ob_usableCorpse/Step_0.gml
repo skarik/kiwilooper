@@ -44,6 +44,8 @@ function mvtcZMotionCorpseSpecial()
 
 if (!m_pickedUp)
 {
+	var wasOnGround = onGround;
+	
 	// Do common z motion
 	mvtcZMotionCorpseSpecial();
 	
@@ -69,6 +71,12 @@ if (!m_pickedUp)
 		{
 			damageTarget(m_pickedUpBy, collided_enemy, 1, kDamageTypeBlunt, x, y);
 		}
+	}
+	
+	// Shake when landing on ground & moving
+	if (!wasOnGround && onGround && (sqr(xspeed) + sqr(yspeed) > sqr(10)))
+	{
+		effectScreenShake(1.7, 0.3, true);
 	}
 }
 else

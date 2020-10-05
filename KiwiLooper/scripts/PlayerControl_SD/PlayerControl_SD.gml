@@ -8,6 +8,8 @@ function PlayerControl_Create()
 	cameraRotZ = 45;
 	cameraRotY = 60;
 	cameraZoom = 1.0;
+	
+	zstart = z;
 }
 
 function PlayerControl_Step()
@@ -69,9 +71,9 @@ function PlayerControl_UpdateCamera()
 	// Was used for centering in the map
 	//o_Camera3D.x += (m_minPosition.x + m_maxPosition.x) * 0.5;
 	//o_Camera3D.y += (m_minPosition.y + m_maxPosition.y) * 0.5;
-	o_Camera3D.x += x;
-	o_Camera3D.y += y;
-	o_Camera3D.z += z;
+	o_Camera3D.x += lerp(x, xstart, saturate(smoothstep(deathTimer)));
+	o_Camera3D.y += lerp(y, ystart, saturate(smoothstep(deathTimer)));
+	o_Camera3D.z += lerp(z, zstart, saturate(smoothstep(deathTimer)));
 
 	o_Camera3D.orthographic = false;
 	o_Camera3D.fov_vertical = 10;

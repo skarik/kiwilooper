@@ -13,7 +13,8 @@ if (explosionDelay > 0.0)
 			explosion.killOnEnd = true;
 			explosion.m_updateMesh();
 			
-		// TODO: Shake screen
+		// Shake screen
+		effectScreenShake(4, 1.6, true);
 		
 		// TODO: Play 3D explosion sound here
 		
