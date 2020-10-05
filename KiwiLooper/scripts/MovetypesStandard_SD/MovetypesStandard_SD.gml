@@ -60,8 +60,8 @@ function mvtAttack()
 		var hitboxCenterY = y + lengthdir_y(9, facingDirection);
 		//effectOnGroundHit(hitboxCenterX, hitboxCenterY);
 		damageHitbox(id,
-					 hitboxCenterX - 14, hitboxCenterY - 14,
-					 hitboxCenterX + 14, hitboxCenterY + 14,
+					 hitboxCenterX - 11, hitboxCenterY - 11,
+					 hitboxCenterX + 11, hitboxCenterY + 11,
 					 1,
 					 kDamageTypeBlunt);
 	}

@@ -29,7 +29,7 @@ if ((m_effectTimer > 0.8 && effectTimerPrevious <= 0.8)
 }
 
 // Go to next state
-if (controlAnyKey() || (m_effectTimer > 2.0 && effectTimerPrevious <= 2.0))
+if ((m_effectTimer > 0.7 && controlAnyKey()) || (m_effectTimer > 2.0 && effectTimerPrevious <= 2.0))
 {
 	m_effectTimer = max(2.0, m_effectTimer);
 }

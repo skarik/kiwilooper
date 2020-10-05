@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "ssy_power",
-    "path": "sprites/ssy_power/ssy_power.yy",
+    "name": "ssy_aiSafe",
+    "path": "sprites/ssy_aiSafe/ssy_aiSafe.yy",
   },
   "solid": false,
   "visible": false,
@@ -21,7 +21,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_livelyRoomState","path":"objects/o_livelyRoomState/o_livelyRoomState.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_livelyEndingArea","path":"objects/o_livelyEndingArea/o_livelyEndingArea.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -30,7 +30,7 @@
     "path": "folders/Objects/Game/Lively.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_livelyRoomState",
+  "name": "o_livelyEndingArea",
   "tags": [],
   "resourceType": "GMObject",
 }

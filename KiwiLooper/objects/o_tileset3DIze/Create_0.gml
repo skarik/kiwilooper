@@ -12,19 +12,21 @@ m_heightMap = {
 	width: 0,
 	height: 0,
 	
+	m_defaultHeight: ((room == rm_Ship5) ? -4 : -1),
+	
 	expandTo: function(w, h) {
 		width = max(width, w);	
 		height = max(width, h);
 		
 		if (array_length(array) < width * height)
 		{
-			array = array_create(width * height, (room == rm_Ship5) ? -4 : -1);
+			array = array_create(width * height, m_defaultHeight);
 			array_extras = array_create(width * height, kTileExtras_None);
 		}
 	},
 	get: function(x, y) {
 		if (x < 0 || y < 0 || x >= width || y >= height)
-			return -1;
+			return m_defaultHeight;
 		return array[x + y * width];
 	},
 	set: function(x, y, value) {
@@ -33,7 +35,7 @@ m_heightMap = {
 	
 	getExtras: function(x, y) {
 		if (x < 0 || y < 0 || x >= width || y >= height)
-			return -1;
+			return m_defaultHeight;
 		return array_extras[x + y * width];
 	},
 	setExtras: function(x, y, value) {
@@ -128,7 +130,7 @@ m_mesh = meshb_Begin();
 					continue;
 					
 				// Get actual base tile index
-				var tile_top_index = tile_index % 32;
+				var tile_top_index = tile_index % 32 + (64 * floor(tile_index / 64));
 				var tile_bot_index = tile_top_index + 32;
 				
 				// Get tile scale
