@@ -118,7 +118,7 @@ function mvtRoboAttack()
 	attackTimer += Time.deltaTime / 0.4;
 	
 	// Check for damage point
-	if (attackTimer > 0.90 && attackTimerPrevious <= 0.90)
+	if (attackTimer > 0.70 && attackTimerPrevious <= 0.70)
 	{
 		// Do the hitbox on the enemies
 		var hitboxCenterX = x + lengthdir_x(9, facingDirection);

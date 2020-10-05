@@ -29,6 +29,7 @@ function Character_Create()
 	animationSpeed = 0;
 	animationIndex = 0;
 	animationRenderIndex = 0;
+	animationLooped = false;
 
 	// Control state
 	hasControl = false;
@@ -191,32 +192,71 @@ function Character_AnimationStep()
 		animationOffset = round(angle_difference(facingDirection, o_Camera3D.zrotation) / 90 + 5);
 	}
 	
+	var bIsWalking = false;
+	
 	// Update sprite index
 	if (currentMovetype == mvtNormal)
 	{
-		// TODO
-		sprite_index = kAnimStand;
+		var movespeed_sqr = sqr(xspeed) + sqr(yspeed);
+		if (movespeed_sqr > sqr(5))
+		{
+			sprite_index = kAnimWalk;
+			animationSpeed = 7.0;
+			animationLooped = true;
+			bIsWalking = true;
+		}
+		else
+		{
+			sprite_index = kAnimStand;
+			animationSpeed = 2.0;
+			animationLooped = true;
+		}
 	}
 	else if (currentMovetype == attackState)
 	{
 		sprite_index = kAnimAttack;
+		animationLooped = false;
 	}
 	else if (currentMovetype == mvtDeath)
 	{
 		sprite_index = kAnimDeath;
+		animationLooped = false;
 	}
 	
 	// Do animation
+	var animationIndexPrevious = animationIndex;
 	animationIndex += animationSpeed * Time.deltaTime;
 	
 	// Update final index to actually display
 	if ((image_number % 4) == 0)
 	{
 		var subanimation_length = floor(image_number / 4);
-		animationRenderIndex = clamp(animationIndex, 0, subanimation_length * 0.99) + (subanimation_length * animationOffset);
+		if (animationLooped)
+		{
+			animationRenderIndex = floor(animationIndex % subanimation_length) + (subanimation_length * animationOffset);
+		}
+		else
+		{
+			animationRenderIndex = clamp(animationIndex, 0, subanimation_length * 0.99) + (subanimation_length * animationOffset);
+		}
 	}
 	else
 	{
 		animationRenderIndex = animationIndex;
+	}
+	
+	// Do footstep effects
+	if (bIsWalking)
+	{
+		var checkPrev = animationIndexPrevious % 4;
+		var check = animationIndex % 4;
+		if ((check >= 1 && checkPrev < 1)
+			|| (check >= 3 && checkPrev < 3))
+		{
+			var sound = sound_play_at(x, y, z, choose("sound/phys/step_metal1.wav", "sound/phys/step_metal2.wav", "sound/phys/step_metal3.wav"));
+				sound.gain = 0.05 * random_range(0.9, 1.1);
+				sound.pitch = 1.2 * random_range(0.9, 1.1);
+				sound.parent = id;
+		}
 	}
 }

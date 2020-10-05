@@ -12,6 +12,7 @@ kMoveSpeed = 70; // Robo should be faster than player
 // Set up animation
 kAnimStand = spr_roboStand;
 kAnimAttack = spr_roboAttackEmpty;
+kAnimWalk = spr_roboWalk;
 
 // Set up helpers
 m_weapon = inew(o_fxKiwiWrench);

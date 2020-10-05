@@ -8,6 +8,7 @@ PlayerControl_Create();
 // Set up animation
 kAnimStand = spr_kiwiStand;
 kAnimAttack = spr_kiwiAttackEmpty;
+kAnimWalk = spr_kiwiWalk;
 
 // Set up helpers
 m_wrench = inew(o_fxKiwiWrench);

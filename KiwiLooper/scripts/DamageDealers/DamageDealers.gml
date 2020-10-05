@@ -26,6 +26,10 @@ function damageCanHit(source, target)
 	{
 		return false;
 	}
+	else if (target.isDead)
+	{
+		return false;
+	}
 	return true;
 }
 

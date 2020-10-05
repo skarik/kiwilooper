@@ -176,7 +176,7 @@ m_mesh = meshb_Begin();
 						var y_push = max(offsets[iw].y, 0) * 16;
 						var x_off = (offsets[iw].y == 0) ? 0 : 16;
 						var y_off = (offsets[iw].x == 0) ? 0 : 16;
-						var wall_color = (heightn == -1) ? c_dkgray : c_white;
+						var wall_color = (heightn <= -1) ? c_dkgray : c_white;
 						
 						meshb_AddQuad(m_mesh, [
 							new MBVertex(
