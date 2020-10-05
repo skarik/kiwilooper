@@ -201,7 +201,7 @@ function Character_Step()
 		}
 		
 		// Check for bloody steps
-		var splatter = collision_circle(x, y, 3, o_playerSplatter, false, true);
+		var splatter = collision_circle(x, y, 3, o_bloodSplatter, false, true);
 		if (iexists(splatter))
 		{
 			footstepBloody = choose(4, 5, 6);

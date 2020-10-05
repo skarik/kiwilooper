@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "o_bloodSplatter",
-    "path": "objects/o_bloodSplatter/o_bloodSplatter.yy",
+    "name": "ob_splatter",
+    "path": "objects/ob_splatter/ob_splatter.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,

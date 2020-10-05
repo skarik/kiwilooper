@@ -1,6 +1,6 @@
 {
   "option_windows_display_name": "Tally Marks",
-  "option_windows_executable_name": "${project_name}.exe",
+  "option_windows_executable_name": "TALLYMARKS++++.exe",
   "option_windows_version": "0.0.4.7",
   "option_windows_company_info": "EHS INC",
   "option_windows_product_info": "Tally Marks",

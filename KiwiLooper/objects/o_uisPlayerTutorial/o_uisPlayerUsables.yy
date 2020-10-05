@@ -1,15 +1,12 @@
 {
-  "spriteId": {
-    "name": "sfx_splatterBlood0",
-    "path": "sprites/sfx_splatterBlood0/sfx_splatterBlood0.yy",
-  },
+  "spriteId": null,
   "solid": false,
   "visible": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "o_bloodSplatter",
-    "path": "objects/o_bloodSplatter/o_bloodSplatter.yy",
+    "name": "ob_userInterfaceElement",
+    "path": "objects/ob_userInterfaceElement/ob_userInterfaceElement.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -23,15 +20,17 @@
   "physicsStartAwake": true,
   "physicsKinematic": false,
   "physicsShapePoints": [],
-  "eventList": [],
+  "eventList": [
+    {"isDnD":false,"eventNum":10,"eventType":7,"collisionObjectId":null,"parent":{"name":"o_uisPlayerUsables","path":"objects/o_uisPlayerUsables/o_uisPlayerUsables.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+  ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Doodads",
-    "path": "folders/Objects/Game/Doodads.yy",
+    "name": "UI Screen",
+    "path": "folders/Objects/Game/UI Screen.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_playerSplatter",
+  "name": "o_uisPlayerUsables",
   "tags": [],
   "resourceType": "GMObject",
 }

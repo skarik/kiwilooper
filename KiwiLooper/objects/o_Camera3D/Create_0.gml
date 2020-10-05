@@ -21,8 +21,8 @@ m_viewprojection = matrix_build_identity();
 positionToView = function(n_x, n_y, n_z)
 {
 	var test_point = matrix_transform_vertex(m_viewprojection, n_x, n_y, n_z);
-	test_point[0] = ((test_point[0] / test_point[2]) * 0.5 + 0.5) * GameCamera.width;
-	test_point[1] = ((-test_point[1] / test_point[2]) * 0.5 + 0.5) * GameCamera.height;
+	test_point[0] = ((test_point[0] / test_point[2]) * 0.35 + 0.5) * GameCamera.width;
+	test_point[1] = ((-test_point[1] / test_point[2]) * 0.35 + 0.5) * GameCamera.height;
 	return [test_point[0], test_point[1]];
 }
 

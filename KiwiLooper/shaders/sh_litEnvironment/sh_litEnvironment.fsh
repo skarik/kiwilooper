@@ -14,6 +14,7 @@ uniform vec4 uLightColors [8];
 void main()
 {
 	vec4 baseAlbedo = texture2D( gm_BaseTexture, v_vTexcoord );
+	vec4 bloodLightSkip = vec4(0.996, 0.388, 0.572, 1.0);
 	
 	// Early alphatest
 	if (baseAlbedo.a < 0.5)
@@ -43,6 +44,12 @@ void main()
 			// Acculmulate this light's lighting
 			totalLighting += uLightColors[i].rgb * total_response * uLightParams[i].x;
 		}
+	}
+	
+	// Now do blood skipping
+	if (length(bloodLightSkip.rgb - baseAlbedo.rgb) < 0.02)
+	{
+		totalLighting = vec3(1.0, 1.0, 1.0);
 	}
 	
 	//gl_FragColor = (v_vColour + total_brightness) * texture2D( gm_BaseTexture, v_vTexcoord );

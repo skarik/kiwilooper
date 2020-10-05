@@ -5,6 +5,7 @@ m_checkpoint_room = rm_Ship1;
 m_isGameplay = true;
 
 m_tallyCount = 5;
+m_roomRepeatCount = 0;
 
 m_camera_x = 0;
 m_camera_y = 0;

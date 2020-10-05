@@ -9,11 +9,35 @@ if (room == rm_Menu || room == rm_Credits)
 
 if (!m_isGameplay)
 {
-	// TODO: Disable stuff we don't need
 	m_tallyCount = 5;
 	
 	// Clear off the camera
 	m_camera_x = 0;
+	
+	// Clear off the saved states - except for bloody footsteps
+	var size = ds_map_size(m_persistent_objects);
+	var key = ds_map_find_first(m_persistent_objects);
+	for (var k = 0; k < size; ++k)
+	{
+		var old_savestate = m_persistent_objects[?key];
+		
+		// Generate new, lean savestate:
+		var new_savestate = array_create(0);
+		for (var i = 0; i < array_length(old_savestate); ++i)
+		{
+			var object = old_savestate[i];
+			// Only save footstep states. The rest is discarded
+			if (object.index == o_playerFootstepSplatter)
+			{
+				new_savestate[array_length(new_savestate)] = object;
+			}
+		}
+		// Save back new state
+		m_persistent_objects[?key] = new_savestate;
+		
+		// Go to next room savestate
+		key = ds_map_find_next(m_persistent_objects, key);
+	}
 }
 else
 {
@@ -44,8 +68,14 @@ else
 	// Set the checkpoint if player exists
 	if (iexists(o_playerKiwi))
 	{
+		if (room != m_checkpoint_room)
+		{
+			m_roomRepeatCount = 0;
+		}
 		m_checkpoint_room = room;
 	}
+	
+	m_roomRepeatCount++;
 
 	// Abberate on start
 	effectAbberate(-0.02, 0.05, false);
@@ -84,5 +114,28 @@ else
 		// clear all the tracked objects for this room
 		object_listing = array_create(0);
 		m_persistent_objects[?room] = object_listing;
+	}
+	
+	// Do tutorials
+	if (room == rm_Ship1)
+	{
+		if (m_tallyCount == 5)
+		{
+			var tutorial = inew(o_uisPlayerTutorial);
+				tutorial.text = "Movement\n[W][A][S][D]";
+		}
+		else if (m_tallyCount == 6)
+		{
+			var tutorial = inew(o_uisPlayerTutorial);
+				tutorial.text = "Swing Wrench\n[Ctrl]";
+		}
+	}
+	else if (room == rm_Ship2)
+	{
+		if (m_roomRepeatCount == 1)
+		{
+			var tutorial = inew(o_uisPlayerTutorial);
+				tutorial.text = "Camera\n[Arrow Keys]";
+		}
 	}
 }

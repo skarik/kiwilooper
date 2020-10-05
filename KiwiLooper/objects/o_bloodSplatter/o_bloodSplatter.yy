@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "o_bloodSplatter",
-    "path": "objects/o_bloodSplatter/o_bloodSplatter.yy",
+    "name": "ob_splatter",
+    "path": "objects/ob_splatter/ob_splatter.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -31,7 +31,7 @@
     "path": "folders/Objects/Game/Doodads.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_playerSplatter",
+  "name": "o_bloodSplatter",
   "tags": [],
   "resourceType": "GMObject",
 }

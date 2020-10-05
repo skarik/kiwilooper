@@ -36,6 +36,8 @@ m_mesh = meshb_Begin();
 		{
 		case spr_metalBoard:
 		case spr_metalScreen0:
+		case spr_metalBottleStanding0:
+		case spr_metalBody1:
 			{
 				var uvs = sprite_get_uvs(element_sprite, element_index);
 				var scale = new Vector3(0.5 * layer_sprite_get_xscale(element), 0.5 * layer_sprite_get_yscale(element), 1.0);
@@ -79,6 +81,7 @@ m_mesh = meshb_Begin();
 			break;
 			
 		case spr_metalTable0:
+		case spr_metalTable1:
 		case spr_metalLocker0:
 		case spr_metalCrate0:
 			{
@@ -90,6 +93,7 @@ m_mesh = meshb_Begin();
 				switch (element_sprite)
 				{
 				case spr_metalTable0:
+				case spr_metalTable1:
 					zheight = 6;
 					break;
 				case spr_metalLocker0:
@@ -214,6 +218,9 @@ m_mesh = meshb_Begin();
 				{
 				case spr_metalBed0:
 					zoffset = 0.4;
+					break;
+				case spr_metalBottleGround0:
+					zoffset = 1.0;
 					break;
 				}
 				
