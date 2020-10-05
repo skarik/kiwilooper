@@ -112,6 +112,7 @@
     {"id":{"name":"sfx_circleShadow10","path":"sprites/sfx_circleShadow10/sfx_circleShadow10.yy",},"order":1,},
     {"id":{"name":"circInOut","path":"scripts/circInOut/circInOut.yy",},"order":3,},
     {"id":{"name":"o_debugUiButton_KillPlayer","path":"objects/o_debugUiButton_KillPlayer/o_debugUiButton_KillPlayer.yy",},"order":11,},
+    {"id":{"name":"o_effectPowerOverlay","path":"objects/o_effectPowerOverlay/o_effectPowerOverlay.yy",},"order":5,},
     {"id":{"name":"ssy_nodeAiPush","path":"sprites/ssy_nodeAiPush/ssy_nodeAiPush.yy",},"order":26,},
     {"id":{"name":"spr_metalCrate0","path":"sprites/spr_metalCrate0/spr_metalCrate0.yy",},"order":2,},
     {"id":{"name":"ssy_background","path":"sprites/ssy_background/ssy_background.yy",},"order":8,},
@@ -246,6 +247,7 @@
     {"id":{"name":"mt19937_init","path":"scripts/mt19937_init/mt19937_init.yy",},"order":1,},
     {"id":{"name":"array_resize","path":"scripts/array_resize/array_resize.yy",},"order":4,},
     {"id":{"name":"VisualEffects_SD","path":"scripts/VisualEffects_SD/VisualEffects_SD.yy",},"order":0,},
+    {"id":{"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"order":11,},
     {"id":{"name":"dcmdParseHeal","path":"scripts/dcmdParseHeal/dcmdParseHeal.yy",},"order":4,},
     {"id":{"name":"MovetypesCommon","path":"scripts/MovetypesCommon/MovetypesCommon.yy",},"order":3,},
     {"id":{"name":"settingsAudioLoad","path":"scripts/settingsAudioLoad/settingsAudioLoad.yy",},"order":6,},
@@ -537,6 +539,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch1.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch3.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch4.wav","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button1.wav","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
     "IDEVersion": "2.3.0.529",

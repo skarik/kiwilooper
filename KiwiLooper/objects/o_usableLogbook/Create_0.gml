@@ -7,11 +7,14 @@ m_useText = "READ";
 
 m_onActivation = function(activatedBy)
 {
-	if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi)
+	if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi
+		&& !iexists(o_uisLogBox))
 	{
 		var log = inew(o_uisLogBox);
 			log.m_messageString = logString;
 			log.m_messageStringQueued = logStringQueued;
+			
+		sound_play_at(x, y, z, "sound/door/button1.wav");
 	}
 }
 

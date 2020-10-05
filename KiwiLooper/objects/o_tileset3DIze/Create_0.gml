@@ -84,6 +84,11 @@ m_mesh = meshb_Begin();
 					zoffset = -4;
 					m_heightMap.set(ix, iy, m_heightMap.get(ix, iy) - 0.25);
 					m_heightMap.setExtras(ix, iy, kTileExtras_Shock);
+					
+					var overlay = inew(o_effectPowerOverlay);
+						overlay.x = ix * 16 + 8;
+						overlay.y = iy * 16 + 8;
+						overlay.z = height * 16 + zoffset;
 				}
 			
 				// Calculate new UVs for this
