@@ -1,7 +1,7 @@
 /// @description Constants & render init
 
 #macro kScreenCorner_DrawDevelopmentInfo true
-#macro kScreenCorner_String "LD 47 - STUCK IN A LOOP"
+#macro kScreenCorner_String "KIWILOOPER IN-DEV"
 
 m_initialized = false;
 

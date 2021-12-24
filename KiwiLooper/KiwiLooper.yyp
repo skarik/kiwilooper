@@ -185,6 +185,7 @@
     {"id":{"name":"instance_nearest_notme","path":"scripts/instance_nearest_notme/instance_nearest_notme.yy",},"order":5,},
     {"id":{"name":"avec2_dot","path":"scripts/avec2_dot/avec2_dot.yy",},"order":2,},
     {"id":{"name":"controlAnyKey","path":"scripts/controlAnyKey/controlAnyKey.yy",},"order":3,},
+    {"id":{"name":"rm_EditorTest","path":"rooms/rm_EditorTest/rm_EditorTest.yy",},"order":9,},
     {"id":{"name":"RobotAI_SD","path":"scripts/RobotAI_SD/RobotAI_SD.yy",},"order":0,},
     {"id":{"name":"System","path":"objects/System/System.yy",},"order":12,},
     {"id":{"name":"o_livelyEndingArea","path":"objects/o_livelyEndingArea/o_livelyEndingArea.yy",},"order":8,},
@@ -334,6 +335,7 @@
     {"id":{"name":"room_register_name","path":"scripts/room_register_name/room_register_name.yy",},"order":1,},
     {"id":{"name":"surface_create_from_surface_params","path":"scripts/surface_create_from_surface_params/surface_create_from_surface_params.yy",},"order":8,},
     {"id":{"name":"Collision4_Checks","path":"scripts/Collision4_Checks/Collision4_Checks.yy",},"order":0,},
+    {"id":{"name":"ot_EditorTest","path":"objects/ot_EditorTest/ot_EditorTest.yy",},"order":0,},
     {"id":{"name":"instance_get_left","path":"scripts/instance_get_left/instance_get_left.yy",},"order":2,},
     {"id":{"name":"is_space","path":"scripts/is_space/is_space.yy",},"order":2,},
     {"id":{"name":"sui_handy","path":"sprites/sui_handy/sui_handy.yy",},"order":2,},
@@ -389,6 +391,7 @@
     {"roomId":{"name":"rm_Ship4","path":"rooms/rm_Ship4/rm_Ship4.yy",},},
     {"roomId":{"name":"rm_Ship5","path":"rooms/rm_Ship5/rm_Ship5.yy",},},
     {"roomId":{"name":"rm_Ship1_Child_FirstLoop","path":"rooms/rm_Ship1_Child_FirstLoop/rm_Ship1_Child_FirstLoop.yy",},},
+    {"roomId":{"name":"rm_EditorTest","path":"rooms/rm_EditorTest/rm_EditorTest.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
@@ -478,6 +481,8 @@
     {"folderPath":"folders/Scripts/Game/Lighting.yy","order":10,"resourceVersion":"1.0","name":"Lighting","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Sprites/effects/basic.yy","order":3,"resourceVersion":"1.0","name":"basic","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Game/Effects.yy","order":11,"resourceVersion":"1.0","name":"Effects","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Objects/Editor.yy","order":5,"resourceVersion":"1.0","name":"Editor","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Objects/Editor/Tests.yy","order":1,"resourceVersion":"1.0","name":"Tests","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
@@ -550,7 +555,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button1.wav","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2.3.7.603",
+    "IDEVersion": "2.3.7.606",
   },
   "resourceVersion": "1.4",
   "name": "KiwiLooper",

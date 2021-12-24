@@ -29,7 +29,7 @@ function _paletteLoad(argument0, argument1) {
 	surface_reset_target();
 
 	var palette_buffer = buffer_create(palette_width * 4, buffer_fixed, 4); 
-	buffer_get_surface(palette_buffer, palette_surface, buffer_surface_copy, 0, 0);
+	buffer_get_surface(palette_buffer, palette_surface, 0);
 
 	// Pull out the palette colors
 	var palette_color;
