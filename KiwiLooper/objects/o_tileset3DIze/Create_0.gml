@@ -248,7 +248,26 @@ m_mesh = meshb_Begin();
 	
 		var tilemap = layer_tilemap_get_id(current_layer);
 		if (!layer_tilemap_exists(current_layer, tilemap))
-			continue;
+		{
+			tilemap = null;
+			
+			var all_elements = layer_get_all_elements(current_layer);
+			for (var iElement = 0; iElement < array_length(all_elements); ++iElement)
+			{
+				var possible_tilemap = all_elements[iElement];
+				if (layer_get_element_type(possible_tilemap) == layerelementtype_tilemap)
+				{
+					tilemap = possible_tilemap;
+					break;
+				}
+			}
+			
+			if (tilemap == null)
+			{
+				continue;
+			}
+		}
+		//	continue;
 		
 		var layer_name = layer_get_name(current_layer);
 		var layer_name_search_position = string_pos("floor", layer_name);
@@ -271,7 +290,26 @@ m_mesh = meshb_Begin();
 	
 		var tilemap = layer_tilemap_get_id(current_layer);
 		if (!layer_tilemap_exists(current_layer, tilemap))
-			continue;
+		{
+			tilemap = null;
+			
+			var all_elements = layer_get_all_elements(current_layer);
+			for (var iElement = 0; iElement < array_length(all_elements); ++iElement)
+			{
+				var possible_tilemap = all_elements[iElement];
+				if (layer_get_element_type(possible_tilemap) == layerelementtype_tilemap)
+				{
+					tilemap = possible_tilemap;
+					break;
+				}
+			}
+			
+			if (tilemap == null)
+			{
+				continue;
+			}
+		}
+		//	continue;
 		
 		var layer_name = layer_get_name(current_layer);
 		var layer_name_search_position = string_pos("walls", layer_name);

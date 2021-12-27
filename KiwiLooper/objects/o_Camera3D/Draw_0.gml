@@ -45,6 +45,8 @@ surface_set_target(buffer_scene3d);
 		show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + "}");
 	}*/
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
+	m_viewprojectionInverse = amatrix_clone(m_viewprojection);
+	amatrix_inverse(m_viewprojectionInverse);
 
 	// enable depth testing
 	gpu_set_ztestenable(true);
