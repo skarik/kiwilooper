@@ -44,6 +44,7 @@ surface_set_target(buffer_scene3d);
 		test_point[1] = ((-test_point[1] / test_point[2]) * 0.5 + 0.5) * GameCamera.height;
 		show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + "}");
 	}*/
+	
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
 	m_viewprojectionInverse = amatrix_clone(m_viewprojection);
 	amatrix_inverse(m_viewprojectionInverse);

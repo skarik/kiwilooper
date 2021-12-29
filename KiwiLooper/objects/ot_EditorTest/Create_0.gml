@@ -27,6 +27,10 @@ toolTileY = 0;
 
 CameraSetup = function()
 {
+	cameraX = 0;
+	cameraY = 0;
+	cameraZ = 0;
+	
 	cameraRotZSpeed = 0.0;
 	cameraRotYSpeed = 0.0;
 	
@@ -42,9 +46,9 @@ CameraUpdate = function()
 	o_Camera3D.yrotation = cameraRotY;
 
 	var kCameraDistance = 1200 * cameraZoom;
-	o_Camera3D.x = lengthdir_x(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
-	o_Camera3D.y = lengthdir_y(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
-	o_Camera3D.z = lengthdir_y(-kCameraDistance, o_Camera3D.yrotation);
+	o_Camera3D.x = cameraX + lengthdir_x(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
+	o_Camera3D.y = cameraY + lengthdir_y(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
+	o_Camera3D.z = cameraZ + lengthdir_y(-kCameraDistance, o_Camera3D.yrotation);
 
 	o_Camera3D.orthographic = false;
 	o_Camera3D.fov_vertical = 10;
@@ -57,7 +61,8 @@ GizmoSetup = function()
 	m_gizmoObject.m_renderEvent = function()
 	{
 		// Draw 3D tools.
-
+		depth = 0;
+		
 		draw_set_color(c_white);
 		draw_rectangle(16, 16, 32, 32, true);
 		draw_rectangle(-16, 16, -32, 32, true);
@@ -85,7 +90,7 @@ GizmoUpdate = function()
 	var pixelY = vPosition - GameCamera.view_y;
 	
 	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
-	var viewRayDir = o_Camera3D.viewToPosition(pixelX, pixelY);
+	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
 	
 	var distT = abs(viewRayPos[2] / viewRayDir[2]);
 	
@@ -113,17 +118,22 @@ mapTiles = [];
 // List of all used heights.
 mapUsedHeights = [];
 
-MapHasPosition = function(x, y)
+MapGetPosition = function(x, y)
 {
 	for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
 	{
 		var tileInfo = mapTiles[tileIndex];
 		if (tileInfo.x == x && tileInfo.y == y)
 		{
-			return true;
+			return tileInfo;
 		}
 	}
-	return false;
+	return null;
+}
+
+MapHasPosition = function(x, y)
+{
+	return is_struct(MapGetPosition(x, y));
 }
 
 MapAddHeight = function(height)

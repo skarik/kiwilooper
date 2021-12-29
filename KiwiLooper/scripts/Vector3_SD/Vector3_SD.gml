@@ -26,6 +26,14 @@ function Vector3(n_x, n_y, n_z) constructor
 		return self;
 	}
 	
+	static subtractSelf = function(right)
+	{
+		x -= right.x;
+		y -= right.y;
+		z -= right.z;
+		return self;
+	}
+	
 	static multiplySelf = function(right)
 	{
 		x *= right;
@@ -40,6 +48,23 @@ function Vector3(n_x, n_y, n_z) constructor
 		y *= right.y;
 		z *= right.z;
 		return self;
+	}
+	
+	static add = function(right)
+	{
+		return new Vector3(x + right.x, y + right.y, z + right.z);
+	}
+	static subtract = function(right)
+	{
+		return new Vector3(x - right.x, y - right.y, z - right.z);
+	}
+	static multiply = function(right)
+	{
+		return new Vector3(x * right, y * right, z * right);
+	}
+	static divide = function(right)
+	{
+		return new Vector3(x / right, y / right, z / right);
 	}
 	
 	static rotateZ = function(angle)
@@ -63,6 +88,37 @@ function Vector3(n_x, n_y, n_z) constructor
 		y = result.y;
 		z = result.z;
 		delete result;
+		return self;
+	}
+	
+	static sqrMagnitude = function()
+	{
+		return (x * x) + (y * y) + (z * z);
+	}
+	
+	static magnitude = function()
+	{
+		return sqrt(sqrMagnitude());
+	}
+	
+	static normal = function()
+	{
+		var invMagnitude = magnitude();
+		if (abs(invMagnitude) <= KINDA_SMALL_NUMBER)
+		{
+			return new Vector3(0, 0, 0);
+		}
+		invMagnitude = 1.0 / invMagnitude;
+		return self.multiply(invMagnitude);
+	}
+	
+	static normalize = function()
+	{
+		var normal_result = self.normal();
+		x = normal_result.x;
+		y = normal_result.y;
+		z = normal_result.z;
+		delete normal_result;
 		return self;
 	}
 }

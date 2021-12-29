@@ -4,6 +4,7 @@
     {"id":{"name":"o_splatterRenderer","path":"objects/o_splatterRenderer/o_splatterRenderer.yy",},"order":2,},
     {"id":{"name":"string_rpos","path":"scripts/string_rpos/string_rpos.yy",},"order":5,},
     {"id":{"name":"settingsControlDefaults","path":"scripts/settingsControlDefaults/settingsControlDefaults.yy",},"order":8,},
+    {"id":{"name":"Vector4_SD","path":"scripts/Vector4_SD/Vector4_SD.yy",},"order":12,},
     {"id":{"name":"rm_Ship1_Child_FirstLoop","path":"rooms/rm_Ship1_Child_FirstLoop/rm_Ship1_Child_FirstLoop.yy",},"order":7,},
     {"id":{"name":"fioSearchDirectories","path":"scripts/fioSearchDirectories/fioSearchDirectories.yy",},"order":0,},
     {"id":{"name":"ssy_cutsceneCg","path":"sprites/ssy_cutsceneCg/ssy_cutsceneCg.yy",},"order":11,},

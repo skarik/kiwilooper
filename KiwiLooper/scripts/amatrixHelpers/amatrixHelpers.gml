@@ -73,3 +73,41 @@ function amatrix_inverse(_m)
 	_m[@ 14] = _s * ((_m2 *  _m5 * _m12) - (_m1 *  _m6 * _m12) - (_m2 * _m4 * _m13) + (_m0 *  _m6 * _m13) + (_m1 * _m4 * _m14) - (_m0 *  _m5 * _m14));
 	_m[@ 15] = _s * ((_m1 *  _m6 *  _m8) - (_m2 *  _m5 *  _m8) + (_m2 * _m4 *  _m9) - (_m0 *  _m6 *  _m9) - (_m1 * _m4 * _m10) + (_m0 *  _m5 * _m10));
 }
+
+function ce_array_swap(_array, _i, _j)
+{
+	gml_pragma("forceinline");
+	var _temp = _array[_i];
+	_array[@ _i] = _array[_j];
+	_array[@ _j] = _temp;
+}
+
+/// @func amatrix_transpose(_m)
+/// @desc Transposes the matrix.
+/// @param {real[16]} _m The matrix to be transposed.
+function amatrix_transpose(_m)
+{
+	gml_pragma("forceinline");
+	ce_array_swap(_m, 1, 4);
+	ce_array_swap(_m, 2, 8);
+	ce_array_swap(_m, 3, 12);
+	ce_array_swap(_m, 6, 9);
+	ce_array_swap(_m, 7, 13);
+	ce_array_swap(_m, 11, 14);
+}
+
+function amatrix_build_projection_perspective_fov(fov_y, aspect, znear, zfar)
+{
+	var projection = array_create(16, 0);
+	var f = 1.0 / tan(degtorad(fov_y) / 2);
+	
+	projection[0] = f / aspect;
+	projection[5] = f;
+	//projection[10] = (zfar + znear) / (znear - zfar);
+	projection[10] = zfar / (zfar - znear);
+	projection[11] = 1.0;
+	//projection[14] = (2 * zfar * znear) / (znear - zfar);
+	projection[14] = (-znear * zfar) / (zfar - znear);
+	
+	return projection;
+}

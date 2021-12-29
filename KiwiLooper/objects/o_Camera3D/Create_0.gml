@@ -12,7 +12,7 @@ depth = -10;
 
 // current state
 m_viewprojection = matrix_build_identity();
-m_viewprojectionInverse = amatrix_clone(m_viewprojection)
+m_viewprojectionInverse = amatrix_clone(m_viewprojection);
 
 /// @function camera.positionToView(x, y, z)
 /// @desc Transforms 3D position into 2D position
@@ -21,22 +21,44 @@ m_viewprojectionInverse = amatrix_clone(m_viewprojection)
 /// @param z {Real}
 positionToView = function(n_x, n_y, n_z)
 {
-	var test_point = matrix_transform_vertex(m_viewprojection, n_x, n_y, n_z);
-	test_point[0] = ((test_point[0] / test_point[2]) * 0.35 + 0.5) * GameCamera.width;
-	test_point[1] = ((-test_point[1] / test_point[2]) * 0.35 + 0.5) * GameCamera.height;
-	return [test_point[0], test_point[1]];
+	// w-coordinate divide is not handled in matrix_transform_vertex
+	
+	var input_point = new Vector4(n_x, n_y, n_z, 1.0);
+	input_point.transformAMatrixSelf(m_viewprojection);
+	
+	var test_point = input_point.getXYZ();
+	test_point.multiplySelf(1.0 / input_point.w);
+	
+	return [
+		( test_point.x * 0.5 + 0.5) * GameCamera.width,
+		(-test_point.y * 0.5 + 0.5) * GameCamera.height
+		];
 }
 
-/// @function camera.viewToPosition(x, y)
+/// @function camera.viewToRay(x, y)
 /// @desc Transforms 2D position into a 3D ray for the camera
 /// @param x {Real}
 /// @param y {Real}
-viewToPosition = function(n_x, n_y)
+viewToRay = function(n_x, n_y)
 {
-	var view_x = ((n_x / GameCamera.width) - 0.5) * 2 * 0.70;
-	var view_y = -((n_y / GameCamera.height) - 0.5) * 2 * 0.70;
-	var test_point = matrix_transform_vertex(m_viewprojectionInverse, view_x, view_y, 1.0);
-	return [test_point[0], test_point[1], test_point[2]];
+	// w-coordinate divide is not handled in matrix_transform_vertex
+	
+	var view_x = ((n_x / GameCamera.width) - 0.5) * 2;
+	var view_y = -((n_y / GameCamera.height) - 0.5) * 2;
+	
+	var input_point = new Vector4(view_x, view_y, 1.0, 1.0);
+	input_point.transformAMatrixSelf(m_viewprojectionInverse);
+	
+	var test_point = input_point.getXYZ();
+	test_point.multiplySelf(1.0 / input_point.w);
+	test_point.subtractSelf(new Vector3(x, y, z));
+	test_point.normalize();
+	
+	return [
+		test_point.x,
+		test_point.y,
+		test_point.z 
+		];
 }
 
 // update game camera
