@@ -106,7 +106,7 @@ GizmoUpdate = function()
 AMapTile = function() constructor
 {
 	floorType = 1;
-	wallType = 1;
+	wallType = 37;
 	height = 0;
 	
 	x = 0;
