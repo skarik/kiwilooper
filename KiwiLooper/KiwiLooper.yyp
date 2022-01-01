@@ -283,6 +283,7 @@
     {"id":{"name":"o_usableLogbook","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"order":6,},
     {"id":{"name":"paletteInit","path":"scripts/paletteInit/paletteInit.yy",},"order":4,},
     {"id":{"name":"controlUpdate","path":"scripts/controlUpdate/controlUpdate.yy",},"order":7,},
+    {"id":{"name":"sh_editorLineEdge","path":"shaders/sh_editorLineEdge/sh_editorLineEdge.yy",},"order":0,},
     {"id":{"name":"settingsSave","path":"scripts/settingsSave/settingsSave.yy",},"order":15,},
     {"id":{"name":"singleton_this","path":"scripts/singleton_this/singleton_this.yy",},"order":0,},
     {"id":{"name":"controlGetName","path":"scripts/controlGetName/controlGetName.yy",},"order":0,},
@@ -308,6 +309,7 @@
     {"id":{"name":"EditorCamera","path":"scripts/EditorCamera/EditorCamera.yy",},"order":0,},
     {"id":{"name":"ot_3DPlane","path":"objects/ot_3DPlane/ot_3DPlane.yy",},"order":0,},
     {"id":{"name":"ssy_usable","path":"sprites/ssy_usable/ssy_usable.yy",},"order":31,},
+    {"id":{"name":"ShaderLayer","path":"scripts/ShaderLayer/ShaderLayer.yy",},"order":11,},
     {"id":{"name":"expoInOut","path":"scripts/expoInOut/expoInOut.yy",},"order":5,},
     {"id":{"name":"string_width_spaced","path":"scripts/string_width_spaced/string_width_spaced.yy",},"order":7,},
     {"id":{"name":"ssy_light24","path":"sprites/ssy_light24/ssy_light24.yy",},"order":17,},
@@ -501,6 +503,7 @@
     {"folderPath":"folders/Sprites/ui/editor.yy","order":11,"resourceVersion":"1.0","name":"editor","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Core Extended/Matrix Math.yy","order":17,"resourceVersion":"1.0","name":"Matrix Math","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Game/Editor.yy","order":13,"resourceVersion":"1.0","name":"Editor","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Shaders/Editor.yy","order":2,"resourceVersion":"1.0","name":"Editor","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},

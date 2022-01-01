@@ -40,7 +40,7 @@ function EditorToolsSetup()
 	
 	// Set up all tool states that hold the various tools
 	toolStates = [
-		new AEditorToolState(),				// kEditorToolSelect
+		new AEditorToolStateSelect(),		// kEditorToolSelect
 		new AEditorToolState(),				// kEditorToolZoom
 		new AEditorToolStateCamera(),		// kEditorToolCamera
 		new AEditorToolStateTileEditor(),	// kEditorToolTileEditor

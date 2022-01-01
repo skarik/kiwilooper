@@ -61,7 +61,7 @@ surface_set_target(buffer_scene3d);
 	gpu_set_alphatestref(0.5);
 	
 	// draw all objects
-	shader_set(sh_litEnvironment);
+	drawShaderSet(sh_litEnvironment);
 	lightPushUniforms(lightParams);
 	with (ob_3DObject)
 	{
@@ -82,7 +82,7 @@ surface_set_target(buffer_scene3d);
 			m_renderEvent();
 		}
 	}
-	shader_reset();
+	drawShaderReset();
 	// draw unlit
 	with (ob_3DObject)
 	{

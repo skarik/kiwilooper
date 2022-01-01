@@ -7,9 +7,9 @@
 function Vector3(n_x, n_y, n_z) constructor
 {
 	// Default values
-	x = n_x;
-	y = n_y;
-	z = n_z;
+	x = is_real(n_x) ? n_x : 0.0;
+	y = is_real(n_y) ? n_y : 0.0;
+	z = is_real(n_z) ? n_z : 0.0;
 	
 	// Functions
 	
@@ -120,5 +120,13 @@ function Vector3(n_x, n_y, n_z) constructor
 		z = normal_result.z;
 		delete normal_result;
 		return self;
+	}
+	
+	static cross = function(right)
+	{
+		return new Vector3(
+			y * right.z - z * right.y, 
+			z * right.x - x * right.z,
+			x * right.y - y * right.x);
 	}
 }

@@ -11,82 +11,6 @@ z = 0;
 
 EditorToolsSetup();
 
-CameraSetup = function()
-{
-	cameraX = 0;
-	cameraY = 0;
-	cameraZ = 0;
-	
-	cameraRotZSpeed = 0.0;
-	cameraRotYSpeed = 0.0;
-	
-	cameraRotZ = 45;
-	cameraRotY = 60;
-	cameraZoom = 1.0;
-	
-	zstart = z;
-}
-CameraUpdate = function()
-{
-	o_Camera3D.zrotation = cameraRotZ;
-	o_Camera3D.yrotation = cameraRotY;
-
-	var kCameraDistance = 1200 * cameraZoom;
-	o_Camera3D.x = cameraX + lengthdir_x(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
-	o_Camera3D.y = cameraY + lengthdir_y(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
-	o_Camera3D.z = cameraZ + lengthdir_y(-kCameraDistance, o_Camera3D.yrotation);
-
-	o_Camera3D.orthographic = false;
-	o_Camera3D.fov_vertical = 10;
-}
-
-GizmoSetup = function()
-{
-	m_gizmoObject = inew(ob_3DObject);
-	
-	m_gizmoObject.m_renderEvent = function()
-	{
-		// Draw 3D tools.
-		depth = 0;
-		
-		draw_set_color(c_white);
-		draw_rectangle(16, 16, 32, 32, true);
-		draw_rectangle(-16, 16, -32, 32, true);
-		draw_rectangle(16, -16, 32, -32, true);
-		draw_rectangle(-16, -16, -32, -32, true);
-		
-		draw_set_halign(fa_left);
-		draw_set_valign(fa_top);
-		draw_set_font(f_Oxygen7);
-		draw_text(32+4, 16, "+x");
-		draw_text(16, 32+4, "+y");
-		
-		draw_set_halign(fa_right);
-		draw_set_valign(fa_bottom);
-		draw_text(-32-4, -16, "-x");
-		draw_text(-16, -32-4, "-y");
-		
-		draw_circle(toolFlatX, toolFlatY, 4, true);
-		draw_rectangle(toolTileX * 16, toolTileY * 16, toolTileX * 16 + 16, toolTileY * 16 + 16, true);
-	}
-}
-GizmoUpdate = function()
-{
-	/*var pixelX = uPosition - GameCamera.view_x;
-	var pixelY = vPosition - GameCamera.view_y;
-	
-	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
-	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
-	
-	var distT = abs(viewRayPos[2] / viewRayDir[2]);
-	
-	toolFlatX = viewRayPos[0] + viewRayDir[0] * distT;
-	toolFlatY = viewRayPos[1] + viewRayDir[1] * distT;
-	
-	toolTileX = max(0, floor(toolFlatX / 16));
-	toolTileY = max(0, floor(toolFlatY / 16));*/
-}
-
 // An unordered array of all map tiles.
 mapTiles = [];
 // List of all used heights.
@@ -222,5 +146,5 @@ MapRebuildGraphics = function()
 	m_toolbar.AddElement(AToolbarElementAsToolButtonInfo(suie_toolsetTexture, 1, "Splats", kEditorToolSplats));
 }
 
-CameraSetup();
-GizmoSetup();
+EditorCameraSetup();
+EditorGizmoSetup();
