@@ -181,11 +181,11 @@ function AToolbarElementAsToolButtonInfo(sprite, spriteIndex, tooltip, editorSta
 		m_local_editorState = editorState;
 		m_onClick = function()
 		{
-			m_editor.toolCurrent = m_local_editorState;
+			m_editor.toolCurrentRequested = m_local_editorState;
 		};
 		m_onCheckDown = function()
 		{
-			return m_editor.toolCurrent == m_local_editorState;
+			return m_editor.toolCurrentRequested == m_local_editorState;
 		};
 	}
 	return button;

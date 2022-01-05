@@ -31,7 +31,8 @@ positionToView = function(n_x, n_y, n_z)
 	
 	return [
 		( test_point.x * 0.5 + 0.5) * GameCamera.width,
-		(-test_point.y * 0.5 + 0.5) * GameCamera.height
+		(-test_point.y * 0.5 + 0.5) * GameCamera.height,
+		test_point.z
 		];
 }
 

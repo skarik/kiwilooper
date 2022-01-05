@@ -19,6 +19,9 @@ function EditorDefaultOnStep()
 function EditorDefaultOnClickWorld(button, buttonState, screenPosition, worldPosition)
 { exit; }
 
+function EditorDefaultOnEnd(trueEnd)
+{ exit; }
+
 /// @function AEditorToolState() constructor
 /// @desc Default empty state for a tool definition.
 function AEditorToolState() constructor
@@ -28,11 +31,21 @@ function AEditorToolState() constructor
 	
 	onStep = EditorDefaultOnStep;
 	onClickWorld = EditorDefaultOnClickWorld;
+	onBegin = EditorDefaultOnStep;
+	onEnd = EditorDefaultOnEnd;
 }
 
 function EditorToolsSetup()
 {
+	viewrayPixelPrevious	= [0, 0, 0];
+	viewrayPixel			= [0, 0, 0];
+	viewrayTopLeft			= [0, 0, 0];
+	viewrayBottomRight		= [0, 0, 0];
+	viewrayForward			= [0, 0, 0];
+	
 	toolCurrent = kEditorToolSelect;
+	toolCurrentRequested = kEditorToolSelect;
+	toolCurrentActive = null;
 	toolFlatX = 0;
 	toolFlatY = 0;
 	toolTileX = 0;
@@ -46,7 +59,7 @@ function EditorToolsSetup()
 		new AEditorToolStateTileEditor(),	// kEditorToolTileEditor
 		new AEditorToolStateTileHeight(),	// kEditorToolTileHeight
 		new AEditorToolState(),
-		new AEditorToolState(),
+		new AEditorToolStateMakeEntity(),	// kEditorToolMakeEntity
 		new AEditorToolState(),
 		new AEditorToolState()
 		];
@@ -70,16 +83,50 @@ function EditorToolsUpdate()
 	toolTileX = max(0, floor(toolFlatX / 16));
 	toolTileY = max(0, floor(toolFlatY / 16));
 	
+	viewrayPixelPrevious= viewrayPixel;
+	viewrayPixel		= viewRayDir;
+	viewrayTopLeft		= o_Camera3D.viewToRay(0, 0);
+	viewrayBottomRight	= o_Camera3D.viewToRay(GameCamera.width, GameCamera.height);
+	viewrayForward		= [
+		(viewrayTopLeft[0] + viewrayBottomRight[0]) * 0.5,
+		(viewrayTopLeft[1] + viewrayBottomRight[1]) * 0.5,
+		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
+	
+	// Special state override:
+	if (keyboard_check(vk_space)
+		&& (mouse_check_button(mb_left) || mouse_check_button(mb_right) || mouse_check_button(mb_middle)
+			|| mouse_check_button_released(mb_left) || mouse_check_button_released(mb_right) || mouse_check_button_released(mb_middle)))
+	{
+		toolCurrent = kEditorToolCamera;
+	}
+	else
+	{
+		toolCurrent = toolCurrentRequested;
+	}
+	
 	// Update the states now:
 	{
 		var currentToolState = toolStates[toolCurrent];
-		currentToolState.m_editor = this;
+		
+		// Update begin and end states
+		if (toolCurrentActive != toolCurrent)
+		{
+			if (toolCurrentActive >= 0 && toolCurrentActive < array_length(toolStates))
+			{
+				toolStates[toolCurrentActive].m_editor = this;
+				toolStates[toolCurrentActive].onEnd(toolCurrent == toolCurrentRequested);
+			}
+			toolCurrentActive = toolCurrent;
+			currentToolState.m_editor = this;
+			currentToolState.onBegin();
+		}
 		
 		// Perform per-frame update
+		currentToolState.m_editor = this;
 		currentToolState.onStep();
 	
 		// Check all mouse buttons and forward them to the state as well.
-		if (!m_toolbar.ContainsMouse())
+		if (!m_toolbar.ContainsMouse()) // TODO: also check for gizmo states
 		{
 			var kPixelPosition = new Vector2(pixelX, pixelY);
 			var kWorldPosition = new Vector3(toolFlatX, toolFlatY, 0);

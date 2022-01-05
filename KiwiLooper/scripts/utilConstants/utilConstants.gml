@@ -11,6 +11,8 @@
 #macro c_crystalblue make_color_rgb(60, 159, 156)
 #macro c_crystallime make_color_rgb(140, 192,  64)
 #macro c_diamondlime make_color_rgb(192, 255, 102)
+#macro c_midgreen make_color_rgb(0, 192, 0)
+#macro c_midblue make_color_rgb(50, 60, 255)
 
 #macro c_uigold merge_color(c_gold, c_red, 0.3)
 

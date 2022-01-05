@@ -111,3 +111,15 @@ function amatrix_build_projection_perspective_fov(fov_y, aspect, znear, zfar)
 	
 	return projection;
 }
+
+function amatrix_empty_w(_m)
+{
+	_m[3] = 0;
+	_m[7] = 0;
+	_m[11] = 0;
+	_m[12] = 0;
+	_m[13] = 0;
+	_m[14] = 0;
+	_m[15] = 0;
+	
+}

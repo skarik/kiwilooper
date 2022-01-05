@@ -40,6 +40,33 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 			}
 		}
 	};
+	
+	m_gizmo = null;
+	onBegin = function()
+	{
+		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
+		m_gizmo.m_visible = true;
+		m_gizmo.m_enabled = true;
+		m_gizmo.m_color = c_gold;
+		m_gizmo.m_alpha = 0.75;
+	};
+	onEnd = function(trueEnd)
+	{
+		if (trueEnd)
+		{
+			m_gizmo.m_visible = false;
+			m_gizmo.m_enabled = false;
+		}
+	};
+	onStep = function()
+	{
+		m_gizmo.m_min.x = m_editor.toolTileX * 16 - 2;
+		m_gizmo.m_min.y = m_editor.toolTileY * 16 - 2;
+		m_gizmo.m_min.z = -1;
+		m_gizmo.m_max.x = m_editor.toolTileX * 16 + 16 + 2;
+		m_gizmo.m_max.y = m_editor.toolTileY * 16 + 16 + 2;
+		m_gizmo.m_max.z = -1;
+	};
 }
 
 /// @function AEditorToolStateTileHeight() constructor
@@ -79,5 +106,32 @@ function AEditorToolStateTileHeight() : AEditorToolState() constructor
 				}
 			}
 		}
+	};
+	
+	m_gizmo = null;
+	onBegin = function()
+	{
+		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoSelectBox3D);
+		m_gizmo.m_visible = true;
+		m_gizmo.m_enabled = true;
+		m_gizmo.m_color = merge_color(c_gray, c_blue, 0.25);
+		m_gizmo.m_alpha = 0.5;
+	};
+	onEnd = function(trueEnd)
+	{
+		if (trueEnd)
+		{
+			m_gizmo.m_visible = false;
+			m_gizmo.m_enabled = false;
+		}
+	};
+	onStep = function()
+	{
+		m_gizmo.m_min.x = m_editor.toolTileX * 16 + 1;
+		m_gizmo.m_min.y = m_editor.toolTileY * 16 + 1;
+		m_gizmo.m_min.z = -2;
+		m_gizmo.m_max.x = m_editor.toolTileX * 16 + 16 - 1;
+		m_gizmo.m_max.y = m_editor.toolTileY * 16 + 16 - 1;
+		m_gizmo.m_max.z = 16 + 2;
 	};
 }

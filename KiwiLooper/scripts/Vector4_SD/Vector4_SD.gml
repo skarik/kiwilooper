@@ -65,6 +65,8 @@ function Vector4(n_x, n_y, n_z, n_w) constructor
 		y = matrix[ 1]*x0 + matrix[ 5]*y0 + matrix[ 9]*z0 + matrix[13]*w0;
 		z = matrix[ 2]*x0 + matrix[ 6]*y0 + matrix[10]*z0 + matrix[14]*w0;
 		w = matrix[ 3]*x0 + matrix[ 7]*y0 + matrix[11]*z0 + matrix[15]*w0;
+		
+		return self;
 	}
 	
 	static transformAMatrixTransposeSelf = function(matrix)
@@ -80,5 +82,7 @@ function Vector4(n_x, n_y, n_z, n_w) constructor
 		y = matrix[ 4]*x0 + matrix[ 5]*y0 + matrix[ 6]*z0 + matrix[ 7]*w0;
 		z = matrix[ 8]*x0 + matrix[ 9]*y0 + matrix[10]*z0 + matrix[11]*w0;
 		w = matrix[12]*x0 + matrix[13]*y0 + matrix[14]*z0 + matrix[15]*w0;
+		
+		return self;
 	}
 }
