@@ -13,6 +13,17 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 	m_mouseOverY = false;
 	m_mouseOverZ = false;
 	
+	m_dragX = false;
+	m_dragY = false;
+	m_dragZ = false;
+	
+	m_active = false;
+	
+	GetConsumingMouse = function()
+	{
+		return m_dragX || m_dragY || m_dragZ;
+	}
+	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
 	Cleanup = function()
@@ -71,17 +82,70 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			}
 		}
 		
+		// Update active state based on editor using camera
+		if (m_editor.toolCurrent == kEditorToolCamera)
+		{
+			m_active = false;
+		}
+		else
+		{
+			m_active = true;
+		}
+		
+		// Update click states
+		if (mouse_check_button_pressed(mb_left))
+		{
+			if (m_mouseOverX)
+				m_dragX = true;
+			else if (m_mouseOverY)
+				m_dragY = true;
+			else if (m_mouseOverZ)
+				m_dragZ = true;
+		}
+		
+		if (m_dragX || m_dragY || m_dragZ)
+		{
+			if (m_dragX)
+			{
+				x += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+			}
+			if (m_dragY)
+			{
+				y += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+			}
+			if (m_dragZ)
+			{
+				z += (m_editor.viewrayPixel[2] - m_editor.viewrayPixelPrevious[2]) * 1200 * kScreensizeFactor;
+			}
+		}
+		
+		if (mouse_check_button_released(mb_left) || !m_active)
+		{
+			m_dragX = false;
+			m_dragY = false;
+			m_dragZ = false;
+		}
+		
 		// Update the visuals
 		meshb_BeginEdit(m_mesh);
-			var xcolor = m_mouseOverX ? c_white : c_red;
-			MeshbAddLine(m_mesh, xcolor, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
-			MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
-			var ycolor = m_mouseOverY ? c_white : c_midgreen;
-			MeshbAddLine(m_mesh, ycolor, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
-			MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
-			var zcolor = m_mouseOverZ ? c_white : c_midblue;
-			MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
-			MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
+			if (m_active)
+			{
+				var xcolor = m_mouseOverX ? c_white : c_red;
+				MeshbAddLine(m_mesh, xcolor, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
+				MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
+				var ycolor = m_mouseOverY ? c_white : c_midgreen;
+				MeshbAddLine(m_mesh, ycolor, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
+				MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
+				var zcolor = m_mouseOverZ ? c_white : c_midblue;
+				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
+				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
+			}
+			else
+			{
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
+			}
 		meshb_End(m_mesh);
 	};
 	
@@ -131,7 +195,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 	
 	GetConsumingMouse = function()
 	{
-		return !m_dragX && !m_dragY && !m_dragZ;
+		return m_dragX || m_dragY || m_dragZ;
 	}
 	
 	/// @function Cleanup()

@@ -5,6 +5,16 @@ function EditorGizmoSetup()
 	
 	global.m_editorFlatShaded_uFlatColor = shader_get_uniform(sh_editorFlatShaded, "uFlatColor");
 	
+	m_entList = [
+		// type, sprite, index, hullsize
+		[ob_3DLight, suie_gizmoEnts, 0, 8],
+		[o_ambientOverride, suie_gizmoEnts, 1, 8],
+		[o_livelyDoor, suie_gizmoEnts, 5, 8],
+		];
+	
+	m_selection = [];
+	m_selectionSingle = true;
+	
 	m_gizmoObject = inew(ob_3DObject);
 	m_gizmoObject.translucent = false;
 	m_gizmoObject.lit = false;
@@ -37,7 +47,7 @@ function EditorGizmoSetup()
 	{
 		//m_axes = new AEditorGizmoAxes();
 		m_axes = other.EditorGizmoGet(AEditorGizmoAxes);
-		m_select = new AEditorGizmoSelectBox();
+		//m_select = new AEditorGizmoSelectBox();
 		// need a move gizmo (x, y, z)
 		//m_mover = new AEditorGizmoPointMove();
 		//m_movertest = new AEditorGizmoAxesMove();
@@ -71,7 +81,7 @@ function EditorGizmoSetup()
 		draw_rectangle(toolTileX * 16, toolTileY * 16, toolTileX * 16 + 16, toolTileY * 16 + 16, true);*/
 		
 		//m_gizmoObject.m_axes.Draw();
-		m_gizmoObject.m_select.Draw();
+		//m_gizmoObject.m_select.Draw();
 		//m_gizmoObject.m_mover.Draw();
 		//m_gizmoObject.m_movertest.Draw();
 		for (var instanceIndex = 0; instanceIndex < array_length(m_gizmoInstances); ++instanceIndex)
@@ -103,7 +113,7 @@ function EditorGizmoUpdate()
 	
 	with (m_gizmoObject)
 	{
-		m_select.Step();
+		//m_select.Step();
 		//m_mover.Step();
 		//m_movertest.Step();
 	}

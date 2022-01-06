@@ -9,10 +9,6 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 	m_mesh = meshb_Begin();
 	meshb_End(m_mesh);
 	
-	m_entList = [
-		[ob_3DLight, ssy_light8, 0]
-		];
-	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
 	Cleanup = function()
@@ -26,16 +22,16 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 		
 		meshb_BeginEdit(m_mesh);
 
-		for (var entTypeIndex = 0; entTypeIndex < array_length(m_entList); ++entTypeIndex)
+		for (var entTypeIndex = 0; entTypeIndex < array_length(m_editor.m_entList); ++entTypeIndex)
 		{
-			var entTypeInfo = m_entList[entTypeIndex];
+			var entTypeInfo = m_editor.m_entList[entTypeIndex];
 			var entType = entTypeInfo[0];
 			var entSprite = entTypeInfo[1];
 			var entImageIndex = entTypeInfo[2];
 			
 			// Get sprite info for this type
-			var entSpriteWidth = sprite_get_width(entSprite);// * kScreensizeFactor * 0.5;
-			var entSpriteHeight = sprite_get_height(entSprite);// * kScreensizeFactor * 0.5;
+			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;// * kScreensizeFactor * 0.5;
+			var entSpriteHeight = sprite_get_height(entSprite) * 0.6;// * kScreensizeFactor * 0.5;
 			var entUvs = sprite_get_uvs(entSprite, entImageIndex);
 			
 			// Count through the ents

@@ -113,6 +113,177 @@ function AEditorGizmoFlatGridCursorBox() : AEditorGizmoSelectBox() constructor
 /// @desc Editor gizmo for the selection box.
 function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 {
+	AddCube = function(kBorderExpand)
+	{
+		gml_pragma("forceinline");
+		
+		var kUVBumpX = kBorderExpand / (m_max.x - m_min.x);
+		var kUVBumpY = kBorderExpand / (m_max.y - m_min.y);
+		var kUVBumpZ = kBorderExpand / (m_max.z - m_min.z);
+		
+		// Z faces:
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			)
+			]);
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_max.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_max.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_max.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_max.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			)
+			]);
+				
+		// X faces:
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_min.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_min.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_min.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			)
+			]);
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_max.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
+				new Vector3(1, 0, 0)
+			)
+			]);
+				
+		// Y faces:
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_min.y, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_min.y, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_min.y, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_min.y, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			)
+			]);
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_max.y, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_max.y, m_min.z - kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_max.y, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_max.y, m_max.z + kBorderExpand),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
+				new Vector3(0, 1, 0)
+			)
+			]);
+	}
+	
 	/// @function Step()
 	/// @desc Builds the mesh for the rendering.
 	Step = function()
@@ -120,174 +291,9 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		if (m_visible)
 		{
 			var kBorderExpand = 2 / max(0.0001, abs(lengthdir_y(1, o_Camera3D.yrotation)));
-			var kUVBumpX = kBorderExpand / (m_max.x - m_min.x);
-			var kUVBumpY = kBorderExpand / (m_max.y - m_min.y);
-			var kUVBumpZ = kBorderExpand / (m_max.z - m_min.z);
 			
 			meshb_BeginEdit(m_mesh);
-		
-			// Z faces:
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				)
-				]);
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_max.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_max.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_max.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_max.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				)
-				]);
-				
-			// X faces:
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_min.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_min.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_min.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				)
-				]);
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_max.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
-					new Vector3(1, 0, 0)
-				)
-				]);
-				
-			// Y faces:
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_min.y, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_min.y, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_min.y, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_min.y, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				)
-				]);
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_max.y, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_max.y, m_min.z - kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_max.y, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_max.y, m_max.z + kBorderExpand),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
-					new Vector3(0, 1, 0)
-				)
-				]);
-		
+				AddCube(kBorderExpand);
 			meshb_End(m_mesh);
 			
 			was_visible = true;
@@ -299,4 +305,39 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 			meshb_End(m_mesh);
 		}
 	};
+}
+
+/// @function AEditorGizmoMultiSelectBox3D() constructor
+/// @desc Editor gizmo for the selection box.
+function AEditorGizmoMultiSelectBox3D() : AEditorGizmoSelectBox3D() constructor
+{
+	m_mins = [];
+	m_maxes = [];
+	
+	/// @function Step()
+	/// @desc Builds the mesh for the rendering.
+	Step = function()
+	{
+		if (m_visible)
+		{
+			assert(array_length(m_mins) == array_length(m_maxes));
+		
+			var kBorderExpand = 2 / max(0.0001, abs(lengthdir_y(1, o_Camera3D.yrotation)));
+		
+			meshb_BeginEdit(m_mesh);
+				for (var i = 0; i < array_length(m_mins); ++i)
+				{
+					m_min = m_mins[i];
+					m_max = m_maxes[i];
+					AddCube(kBorderExpand);
+				}
+			meshb_End(m_mesh);
+		}
+		else if (was_visible)
+		{
+			was_visible = false;
+			meshb_BeginEdit(m_mesh);
+			meshb_End(m_mesh);
+		}
+	}
 }

@@ -7,7 +7,8 @@
 #macro kEditorToolMakeEntity	6
 #macro kEditorToolTexture		7
 #macro kEditorToolSplats		8
-#macro kEditorTool_MAX			9
+#macro kEditorToolTranslate		9
+#macro kEditorTool_MAX			10
 
 #macro kEditorToolButtonStateMake	0
 #macro kEditorToolButtonStateHeld	1
@@ -61,7 +62,8 @@ function EditorToolsSetup()
 		new AEditorToolState(),
 		new AEditorToolStateMakeEntity(),	// kEditorToolMakeEntity
 		new AEditorToolState(),
-		new AEditorToolState()
+		new AEditorToolState(),
+		new AEditorToolStateTranslate(),	// kEditorToolTranslate
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
 }
