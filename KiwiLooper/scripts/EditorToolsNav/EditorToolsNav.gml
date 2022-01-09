@@ -23,6 +23,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	
 	onStep = function()
 	{
+		// Set up the grad box:
 		if (m_leftClickDrag)
 		{
 			m_leftClickDragArea = abs(m_leftClickEnd.x - m_leftClickStart.x) * abs(m_leftClickEnd.y - m_leftClickStart.y);
@@ -40,16 +41,23 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			m_gizmo.m_visible = false;
 		}
 		
+		// Update picker visuals:
 		PickerUpdateVisuals();
 	};
 	
+	/// @function PickerUpdateVisuals()
+	/// @desc Updates the picker's selection box visuals. This is done via gizmo.
 	PickerUpdateVisuals = function()
 	{
 		m_showSelectGizmo = m_editor.EditorGizmoGet(AEditorGizmoMultiSelectBox3D);
+		// Draw the box around the picker
 		if (array_length(m_editor.m_selection) > 0)
 		{
 			m_showSelectGizmo.m_enabled = true;
 			m_showSelectGizmo.m_visible = true;
+			
+			// TODO: Loop through all the ents in the selection and put a box around each one.
+			// TODO: Selection may not be an object, and may be a struct instead. Also check for that.
 			
 			m_showSelectGizmo.m_mins[0] = new Vector3(m_editor.m_selection[0].x - 4, m_editor.m_selection[0].y - 4, m_editor.m_selection[0].z - 4);
 			m_showSelectGizmo.m_maxes[0] = new Vector3(m_editor.m_selection[0].x + 4, m_editor.m_selection[0].y + 4, m_editor.m_selection[0].z + 4);
@@ -98,6 +106,8 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 	};
 	
+	/// @function PickerRun()
+	/// @desc Runs the picker.
 	PickerRun = function()
 	{
 		m_editor.m_selection = [];

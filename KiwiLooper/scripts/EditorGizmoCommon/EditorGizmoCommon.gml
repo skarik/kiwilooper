@@ -10,6 +10,9 @@ function AEditorGizmoBase() constructor
 	Cleanup = function() {};
 	Step = function() {};
 	Draw = function() {};
+	OnEnable = function() {}; // TODO: Call these
+	OnDisable = function() {};
+	
 	GetConsumingMouse = function() { return false; }
 	
 	MeshbAddLine = function(mesh, color, width, length, normal, position)

@@ -42,13 +42,24 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	};
 	
 	m_gizmo = null;
+	
 	onBegin = function()
 	{
-		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
+		//m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
+		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatEditBox);
 		m_gizmo.m_visible = true;
 		m_gizmo.m_enabled = true;
 		m_gizmo.m_color = c_gold;
 		m_gizmo.m_alpha = 0.75;
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click-drag to create tiles. Enter to commit changes.";
+		
+		m_gizmo.m_min.x = m_editor.toolTileX * 16 - 16 - 2;
+		m_gizmo.m_min.y = m_editor.toolTileY * 16 - 16 - 2;
+		m_gizmo.m_min.z = -1;
+		m_gizmo.m_max.x = m_editor.toolTileX * 16 + 16 + 16 + 2;
+		m_gizmo.m_max.y = m_editor.toolTileY * 16 + 16 + 16 + 2;
+		m_gizmo.m_max.z = -1;
 	};
 	onEnd = function(trueEnd)
 	{
@@ -60,12 +71,12 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	};
 	onStep = function()
 	{
-		m_gizmo.m_min.x = m_editor.toolTileX * 16 - 2;
+		/*m_gizmo.m_min.x = m_editor.toolTileX * 16 - 2;
 		m_gizmo.m_min.y = m_editor.toolTileY * 16 - 2;
 		m_gizmo.m_min.z = -1;
 		m_gizmo.m_max.x = m_editor.toolTileX * 16 + 16 + 2;
 		m_gizmo.m_max.y = m_editor.toolTileY * 16 + 16 + 2;
-		m_gizmo.m_max.z = -1;
+		m_gizmo.m_max.z = -1;*/
 	};
 }
 

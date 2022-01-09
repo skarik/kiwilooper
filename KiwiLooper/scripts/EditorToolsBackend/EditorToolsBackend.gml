@@ -10,9 +10,13 @@
 #macro kEditorToolTranslate		9
 #macro kEditorTool_MAX			10
 
-#macro kEditorToolButtonStateMake	0
-#macro kEditorToolButtonStateHeld	1
-#macro kEditorToolButtonStateBreak	2
+#macro kEditorToolButtonStateNone	0
+#macro kEditorToolButtonStateMake	1
+#macro kEditorToolButtonStateHeld	2
+#macro kEditorToolButtonStateBreak	3
+
+#macro kEditorObjectTypeNone	0
+#macro kEditorObjectTypeTile	1
 
 function EditorDefaultOnStep()
 { exit; }
@@ -94,6 +98,13 @@ function EditorToolsUpdate()
 		(viewrayTopLeft[1] + viewrayBottomRight[1]) * 0.5,
 		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
 	
+	// Hard-coded command override:
+	if (keyboard_check_pressed(vk_delete)
+		&& toolCurrent != kEditorToolCamera)
+	{
+		EditorGlobalDeleteSelection();
+	}
+	
 	// Special state override:
 	if (keyboard_check(vk_space)
 		&& (mouse_check_button(mb_left) || mouse_check_button(mb_right) || mouse_check_button(mb_middle)
@@ -113,6 +124,8 @@ function EditorToolsUpdate()
 		// Update begin and end states
 		if (toolCurrentActive != toolCurrent)
 		{
+			m_statusbar.m_toolHelpText = "";
+			
 			if (toolCurrentActive >= 0 && toolCurrentActive < array_length(toolStates))
 			{
 				toolStates[toolCurrentActive].m_editor = this;

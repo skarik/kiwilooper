@@ -19,7 +19,7 @@ draw_set_font(f_04b03);
 draw_set_halign(fa_left);
 draw_set_valign(fa_bottom);
 */
-m_toolbar.Draw();
+EditorUIBitsDraw();
 
 // Draw an arrow for the mouse cursor.
 draw_set_color(c_white);

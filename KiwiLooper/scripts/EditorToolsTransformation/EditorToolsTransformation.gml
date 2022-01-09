@@ -33,6 +33,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	{
 		if (array_length(m_editor.m_selection) > 0)
 		{
+			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
 			if (!m_transformGizmo.m_enabled)
 			{
 				m_transformGizmo.m_visible = true;
@@ -42,6 +43,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				m_transformGizmo.y = m_editor.m_selection[0].y;
 				m_transformGizmo.z = m_editor.m_selection[0].z;
 			}
+			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
 			{
 				m_editor.m_selection[0].x = m_transformGizmo.x;
@@ -58,10 +60,12 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		m_transformGizmoWasConsumingMouse = m_transformGizmoConsumingMouse;
 		m_transformGizmoConsumingMouse = m_transformGizmo.GetConsumingMouse();
 		
+		// Update like normal click if not using the transform gizmo
 		if (!m_transformGizmo.m_enabled || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
 		{
 			Parent_onStep();
 		}
+		// Otherwise, minimally update the picker visuals.
 		else
 		{
 			PickerUpdateVisuals();
@@ -70,6 +74,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
+		// Update like normal click if not using the transform gizmo
 		if (!m_transformGizmo.m_enabled || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
 		{
 			Parent_onClickWorld(button, buttonState, screenPosition, worldPosition);
