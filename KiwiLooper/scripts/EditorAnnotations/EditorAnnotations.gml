@@ -79,7 +79,7 @@ function EditorAnnotationsUpdate(mouseX, mouseY)
 		{
 			if (annotation.m_canClick && annotation.mouse_inside)
 			{
-				click_state = kEditorToolButtonStateMake;
+				annotation.click_state = kEditorToolButtonStateMake;
 			}
 		}
 	}
@@ -96,7 +96,7 @@ function EditorAnnotationsDraw()
 		var annotation = m_annotations[i];
 		
 		// Alpha for making solid if can click. Transparent otherwise
-		draw_set_alpha((annotation.mouse_inside && annotation.m_canClick) ? 1.00 : 0.75);
+		draw_set_alpha((!annotation.m_canClick || annotation.mouse_inside) ? 1.00 : 0.75);
 		
 		// Draw icon
 		if (annotation.m_icon != null)

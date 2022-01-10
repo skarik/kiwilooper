@@ -13,6 +13,41 @@ function AEditorGizmoSelectBox() : AEditorGizmoBase() constructor
 	
 	was_visible = false;
 	
+	AddSquare = function(kBorderExpand)
+	{
+		gml_pragma("forceinline");
+		
+		var kUVBumpX = kBorderExpand / (m_max.x - m_min.x);
+		var kUVBumpY = kBorderExpand / (m_max.y - m_min.y);
+			
+		meshb_AddQuad(m_mesh, [
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			),
+			new MBVertex(
+				new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z),
+				c_white, 1.0,
+				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
+				new Vector3(0, 0, 1)
+			)
+			]);
+	}
+	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
 	Cleanup = function()
@@ -31,34 +66,7 @@ function AEditorGizmoSelectBox() : AEditorGizmoBase() constructor
 			var kUVBumpY = kBorderExpand / (m_max.y - m_min.y);
 			
 			meshb_BeginEdit(m_mesh);
-		
-			meshb_AddQuad(m_mesh, [
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				),
-				new MBVertex(
-					new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-					c_white, 1.0,
-					(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
-					new Vector3(0, 0, 1)
-				)
-				]);
-		
+				AddSquare(kBorderExpand);
 			meshb_End(m_mesh);
 			
 			was_visible = true;
@@ -293,7 +301,14 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 			var kBorderExpand = 2 / max(0.0001, abs(lengthdir_y(1, o_Camera3D.yrotation)));
 			
 			meshb_BeginEdit(m_mesh);
-				AddCube(kBorderExpand);
+				if (abs(m_min.z - m_max.z) > 1)
+				{
+					AddCube(kBorderExpand);
+				}
+				else
+				{
+					AddSquare(kBorderExpand);
+				}
 			meshb_End(m_mesh);
 			
 			was_visible = true;

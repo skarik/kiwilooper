@@ -1,7 +1,11 @@
 function AEditorGizmoBase() constructor
 {
 	m_editor = instance_find(ot_EditorTest, 0); // TODO: pass this in?
-	
+
+	x = 0;
+	y = 0;
+	z = 0;
+
 	// Is this gizmo's render called?
 	m_visible = true;
 	// Is this gizmo's step called?
