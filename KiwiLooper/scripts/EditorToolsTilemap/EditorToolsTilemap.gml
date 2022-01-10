@@ -102,8 +102,8 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	{
 		//m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatEditBox);
-		m_gizmo.m_visible = true;
-		m_gizmo.m_enabled = true;
+		m_gizmo.SetVisible();
+		m_gizmo.SetEnabled();
 		m_gizmo.m_color = c_gold;
 		m_gizmo.m_alpha = 0.75;
 		
@@ -120,8 +120,8 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	{
 		if (trueEnd)
 		{
-			m_gizmo.m_visible = false;
-			m_gizmo.m_enabled = false;
+			m_gizmo.SetInvisible();
+			m_gizmo.SetDisabled();
 		}
 	};
 	onStep = function()
@@ -138,15 +138,15 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 		if (!m_hasShapeReady)
 		{
 			// Hide the gizmo.
-			m_gizmo.m_enabled = false;
-			m_gizmo.m_visible = false;
+			m_gizmo.SetInvisible();
+			m_gizmo.SetDisabled();
 		}
 		// Dragging state:
 		else if (m_isDraggingShape)
 		{
 			// Update the gizmo.
-			m_gizmo.m_enabled = true;
-			m_gizmo.m_visible = true;
+			m_gizmo.SetVisible();
+			m_gizmo.SetEnabled();
 			
 			m_dragPositionEnd.x = m_editor.toolFlatX;
 			m_dragPositionEnd.y = m_editor.toolFlatY;
@@ -194,7 +194,44 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 				m_isDraggingShape = false;
 				m_hasShapeReady = false;
 				m_skipFrame = true; // Skip the next click event. TODO: make this a common call.
+				
 				// TODO.
+				
+				with (m_editor)
+				{
+					var kInputHeight = other.m_tileMax.z;
+					
+					for (var ix = other.m_tileMin.x; ix <= other.m_tileMax.x; ++ix)
+					{
+						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
+						{
+							var existingTile = MapGetPosition(ix, iy);
+							// create a new block at position if it doesn't exist yet
+							if (!is_struct(existingTile))
+							{
+								var maptile = new AMapTile();
+								maptile.x = ix;
+								maptile.y = iy;
+								maptile.height = kInputHeight;
+								
+								array_push(mapTiles, maptile);
+							}
+							// otherwise, heighten the block if it's lower than the gizmo height
+							else
+							{
+								if (existingTile.height < kInputHeight)
+								{
+									MapRemoveHeightSlow(existingTile.height); // TODO: defer this.
+									existingTile.height = kInputHeight;
+								}
+							}
+						}
+					}
+					
+					MapAddHeight(kInputHeight);
+					MapRebuildGraphics();
+				}
+				
 			}
 		}
 		

@@ -16,16 +16,16 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		Parent_onBegin();
 		
 		m_transformGizmo = m_editor.EditorGizmoGet(AEditorGizmoPointMove);
-		m_transformGizmo.m_visible = false;
-		m_transformGizmo.m_enabled = false;
+		m_transformGizmo.SetInvisible();
+		m_transformGizmo.SetDisabled();
 	};
 	onEnd = function(trueEnd)
 	{
 		Parent_onEnd(trueEnd);
 		if (trueEnd)
 		{
-			m_transformGizmo.m_visible = false;
-			m_transformGizmo.m_enabled = false;
+			m_transformGizmo.SetInvisible();
+			m_transformGizmo.SetDisabled();
 		}
 	};
 	
@@ -36,9 +36,9 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
 			if (!m_transformGizmo.m_enabled)
 			{
-				m_transformGizmo.m_visible = true;
-				m_transformGizmo.m_enabled = true;
-				
+				m_transformGizmo.SetVisible();
+				m_transformGizmo.SetEnabled();
+		
 				m_transformGizmo.x = m_editor.m_selection[0].x;
 				m_transformGizmo.y = m_editor.m_selection[0].y;
 				m_transformGizmo.z = m_editor.m_selection[0].z;
@@ -53,15 +53,15 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		}
 		else
 		{
-			m_transformGizmo.m_visible = false;
-			m_transformGizmo.m_enabled = false;
+			m_transformGizmo.SetInvisible();
+			m_transformGizmo.SetDisabled();
 		}
 		
 		m_transformGizmoWasConsumingMouse = m_transformGizmoConsumingMouse;
 		m_transformGizmoConsumingMouse = m_transformGizmo.GetConsumingMouse();
 		
 		// Update like normal click if not using the transform gizmo
-		if (!m_transformGizmo.m_enabled || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
+		if (!m_transformGizmo.GetEnabled() || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
 		{
 			Parent_onStep();
 		}
@@ -75,7 +75,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
 		// Update like normal click if not using the transform gizmo
-		if (!m_transformGizmo.m_enabled || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
+		if (!m_transformGizmo.GetEnabled() || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
 		{
 			Parent_onClickWorld(button, buttonState, screenPosition, worldPosition);
 		}

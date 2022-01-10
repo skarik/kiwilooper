@@ -13,6 +13,60 @@ function AEditorGizmoFlatEditBox() : AEditorGizmoSelectBox3D() constructor // AE
 	m_editMinStart = new Vector3();
 	m_editMaxStart = new Vector3();
 	
+	
+	OnEnable = function()
+	{
+		if (!m_hasAnnotations)
+		{
+			m_hasAnnotations = true;
+				
+			// Set up all initial annotaitons
+			for (var i = 0; i < 10; ++i)
+			{
+				m_editAnnotations[i] = m_editor.AnnotationCreate();
+				m_editAnnotations[i].m_icon = suie_annoteEdit;
+				m_editAnnotations[i].m_iconIndex = 0;
+				m_editAnnotations[i].m_canClick = true;
+				m_editAnnotations[i].m_is3D = true;
+			}
+				
+			// Set up the up and down annotations:
+				
+			m_editAnnotations[7].m_iconIndex = 4;
+			m_editAnnotations[8].m_iconIndex = 5;
+				
+			// Set up size annotations:
+	
+			m_editAnnotations[4].m_icon = null;
+			m_editAnnotations[4].m_canClick = false;
+			m_editAnnotations[4].m_color = c_yellow;
+			m_editAnnotations[5].m_icon = null;
+			m_editAnnotations[5].m_canClick = false;
+			m_editAnnotations[5].m_color = c_yellow;
+			m_editAnnotations[6].m_icon = null;
+			m_editAnnotations[6].m_canClick = false;
+			m_editAnnotations[6].m_color = c_yellow;
+				
+			// Set up the commit annotation:
+				
+			m_editAnnotations[9].m_iconIndex = 3;
+			m_editAnnotations[9].m_text = "Create"
+		}
+	}
+	OnDisable = function()
+	{
+		if (m_hasAnnotations)
+		{
+			m_hasAnnotations = false;
+				
+			for (var i = 0; i < array_length(m_editAnnotations); ++i)
+			{
+				m_editor.AnnotationDestroy(m_editAnnotations[i]);
+			}
+			m_editAnnotations = [];
+		}
+	}
+	
 	parent_Step = Step;
 	/// @function Step()
 	/// @desc Builds the mesh for the rendering.
@@ -20,55 +74,11 @@ function AEditorGizmoFlatEditBox() : AEditorGizmoSelectBox3D() constructor // AE
 	{
 		if (m_visible)
 		{
-			if (!m_hasAnnotations)
-			{
-				m_hasAnnotations = true;
-				
-				// Set up all initial annotaitons
-				for (var i = 0; i < 10; ++i)
-				{
-					m_editAnnotations[i] = m_editor.AnnotationCreate();
-					m_editAnnotations[i].m_icon = suie_annoteEdit;
-					m_editAnnotations[i].m_iconIndex = 0;
-					m_editAnnotations[i].m_canClick = true;
-					m_editAnnotations[i].m_is3D = true;
-				}
-				
-				// Set up the up and down annotations:
-				
-				m_editAnnotations[7].m_iconIndex = 4;
-				m_editAnnotations[8].m_iconIndex = 5;
-				
-				// Set up size annotations:
-	
-				m_editAnnotations[4].m_icon = null;
-				m_editAnnotations[4].m_canClick = false;
-				m_editAnnotations[4].m_color = c_yellow;
-				m_editAnnotations[5].m_icon = null;
-				m_editAnnotations[5].m_canClick = false;
-				m_editAnnotations[5].m_color = c_yellow;
-				m_editAnnotations[6].m_icon = null;
-				m_editAnnotations[6].m_canClick = false;
-				m_editAnnotations[6].m_color = c_yellow;
-				
-				// Set up the commit annotation:
-				
-				m_editAnnotations[9].m_iconIndex = 3;
-				m_editAnnotations[9].m_text = "Create"
-			}
+			
 		}
 		else
 		{
-			if (m_hasAnnotations)
-			{
-				m_hasAnnotations = false;
-				
-				for (var i = 0; i < array_length(m_editAnnotations); ++i)
-				{
-					m_editor.AnnotationDestroy(m_editAnnotations[i]);
-				}
-				m_editAnnotations = [];
-			}
+			
 		}
 		
 		if (m_hasAnnotations)

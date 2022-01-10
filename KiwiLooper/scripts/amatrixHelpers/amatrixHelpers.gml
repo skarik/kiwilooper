@@ -121,5 +121,16 @@ function amatrix_empty_w(_m)
 	_m[13] = 0;
 	_m[14] = 0;
 	_m[15] = 0;
-	
+}
+
+/// @func ce_array_clone(_array)
+/// @desc Creates a shallow copy of the array.
+/// @param {array} _array The array to copy.
+/// @return {array} The created array.
+function ce_array_clone(_array)
+{
+	var _size = array_length(_array);
+	var _clone = array_create(_size, 0);
+	array_copy(_clone, 0, _array, 0, _size);
+	return _clone;
 }

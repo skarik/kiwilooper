@@ -12,13 +12,13 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	onBegin = function()
 	{
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoSelectBox);
-		m_gizmo.m_visible = true;
-		m_gizmo.m_enabled = true;
+		m_gizmo.SetVisible();
+		m_gizmo.SetEnabled();
 	};
 	onEnd = function(trueEnd)
 	{
-		m_gizmo.m_visible = false;
-		m_gizmo.m_enabled = false;
+		m_gizmo.SetInvisible();
+		m_gizmo.SetDisabled();
 	};
 	
 	onStep = function()
@@ -29,7 +29,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			m_leftClickDragArea = abs(m_leftClickEnd.x - m_leftClickStart.x) * abs(m_leftClickEnd.y - m_leftClickStart.y);
 			if (m_leftClickDragArea >= kDragAreaThreshold)
 			{
-				m_gizmo.m_visible = true;
+				m_gizmo.SetVisible();
 				m_gizmo.m_min.x = min(m_leftClickStart.x, m_leftClickEnd.x);
 				m_gizmo.m_max.x = max(m_leftClickStart.x, m_leftClickEnd.x);
 				m_gizmo.m_min.y = min(m_leftClickStart.y, m_leftClickEnd.y);
@@ -38,7 +38,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 		else
 		{
-			m_gizmo.m_visible = false;
+			m_gizmo.SetInvisible();
 		}
 		
 		// Update picker visuals:
@@ -53,8 +53,8 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Draw the box around the picker
 		if (array_length(m_editor.m_selection) > 0)
 		{
-			m_showSelectGizmo.m_enabled = true;
-			m_showSelectGizmo.m_visible = true;
+			m_showSelectGizmo.SetVisible();
+			m_showSelectGizmo.SetEnabled();
 			
 			// TODO: Loop through all the ents in the selection and put a box around each one.
 			// TODO: Selection may not be an object, and may be a struct instead. Also check for that.
@@ -64,8 +64,8 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 		else
 		{
-			m_showSelectGizmo.m_enabled = false;
-			m_showSelectGizmo.m_visible = false;
+			m_showSelectGizmo.SetInvisible();
+			m_showSelectGizmo.SetDisabled();
 		}
 	}
 	
@@ -123,11 +123,11 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Run through the ent table
 		var closestEnt = null;
 		var closestDist = 10000 * 10000.0;
-		for (var entTypeIndex = 0; entTypeIndex < array_length(m_editor.m_entList); ++entTypeIndex)
+		for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo = m_editor.m_entList[entTypeIndex];
-			var entType = entTypeInfo[0];
-			var entHhsz = entTypeInfo[3];
+			var entTypeInfo = entlistIterationGet(entTypeIndex);
+			var entType		= entTypeInfo.objectIndex;
+			var entHhsz		= entTypeInfo.hullsize;
 			
 			// Count through the ents
 			var entCount = instance_number(entType);

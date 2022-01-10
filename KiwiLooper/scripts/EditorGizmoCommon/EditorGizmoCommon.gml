@@ -6,16 +6,59 @@ function AEditorGizmoBase() constructor
 	y = 0;
 	z = 0;
 
-	// Is this gizmo's render called?
+	// Is this gizmo's render called? Toggle with SetVisible/SetInvisible.
 	m_visible = true;
-	// Is this gizmo's step called?
+	// Is this gizmo's step called? Toggle with SetEnabled/SetDisabled.
 	m_enabled = true;
 	
-	Cleanup = function() {};
-	Step = function() {};
-	Draw = function() {};
-	OnEnable = function() {}; // TODO: Call these
-	OnDisable = function() {};
+	// Does this gizmo want release? If unused for a period of time, it will be freed from memory.
+	wants_release = false;
+	
+	static SetVisible = function()
+	{
+		gml_pragma("forceinline");
+		m_visible = true;
+	};
+	static SetInvisible = function()
+	{
+		gml_pragma("forceinline");
+		m_visible = false;
+	};
+	static GetVisible = function()
+	{
+		gml_pragma("forceinline");
+		return m_visible;
+	};
+	
+	static SetEnabled = function()
+	{
+		gml_pragma("forceinline");
+		if (!m_enabled)
+		{
+			m_enabled = true;
+			OnEnable();
+		}
+	};
+	static SetDisabled = function()
+	{
+		gml_pragma("forceinline");
+		if (m_enabled)
+		{
+			m_enabled = false;
+			OnDisable();
+		}
+	};
+	static GetEnabled = function()
+	{
+		gml_pragma("forceinline");
+		return m_enabled;
+	};
+	
+	static Cleanup = function() {};
+	static Step = function() {};
+	static Draw = function() {};
+	static OnEnable = function() {}; // TODO: Call these
+	static OnDisable = function() {};
 	
 	GetConsumingMouse = function() { return false; }
 	

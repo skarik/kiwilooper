@@ -50,6 +50,7 @@
     {"id":{"name":"o_musicMain","path":"objects/o_musicMain/o_musicMain.yy",},"order":2,},
     {"id":{"name":"string_rtrim_comment","path":"scripts/string_rtrim_comment/string_rtrim_comment.yy",},"order":7,},
     {"id":{"name":"DamageDealers","path":"scripts/DamageDealers/DamageDealers.yy",},"order":0,},
+    {"id":{"name":"EntityListing","path":"scripts/EntityListing/EntityListing.yy",},"order":12,},
     {"id":{"name":"ssy_ambientLight","path":"sprites/ssy_ambientLight/ssy_ambientLight.yy",},"order":4,},
     {"id":{"name":"audio_get_index","path":"scripts/audio_get_index/audio_get_index.yy",},"order":0,},
     {"id":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"order":0,},

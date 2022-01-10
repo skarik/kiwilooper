@@ -22,12 +22,12 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 		
 		meshb_BeginEdit(m_mesh);
 
-		for (var entTypeIndex = 0; entTypeIndex < array_length(m_editor.m_entList); ++entTypeIndex)
+		for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo = m_editor.m_entList[entTypeIndex];
-			var entType = entTypeInfo[0];
-			var entSprite = entTypeInfo[1];
-			var entImageIndex = entTypeInfo[2];
+			var entTypeInfo = entlistIterationGet(entTypeIndex);
+			var entType			= entTypeInfo.objectIndex;
+			var entSprite		= entTypeInfo.gizmoSprite;
+			var entImageIndex	= entTypeInfo.gizmoIndex;
 			
 			// Get sprite info for this type
 			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;// * kScreensizeFactor * 0.5;

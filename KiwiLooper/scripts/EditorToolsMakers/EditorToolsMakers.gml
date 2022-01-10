@@ -10,15 +10,23 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 	onBegin = function()
 	{
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoAxesMove);
-		m_gizmo.m_enabled = m_hasEntityToMake;
-		m_gizmo.m_visible = m_hasEntityToMake;
+		if (m_hasEntityToMake)
+		{
+			m_gizmo.SetEnabled();
+			m_gizmo.SetVisible();
+		}
+		else
+		{
+			m_gizmo.SetDisabled();
+			m_gizmo.SetInvisible();
+		}
 	}
 	onEnd = function(trueEnd)
 	{
 		if (trueEnd)
 		{
-			m_gizmo.m_enabled = false;
-			m_gizmo.m_visible = false;
+			m_gizmo.SetDisabled();
+			m_gizmo.SetInvisible();
 		}
 	}
 	
@@ -26,8 +34,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 	{
 		if (m_hasEntityToMake)
 		{
-			m_gizmo.m_enabled = true;
-			m_gizmo.m_visible = true;
+			m_gizmo.SetEnabled();
+			m_gizmo.SetVisible();
 			
 			if (keyboard_check_pressed(vk_enter))
 			{
@@ -48,8 +56,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 		}
 		else
 		{
-			m_gizmo.m_enabled = false;
-			m_gizmo.m_visible = false;
+			m_gizmo.SetDisabled();
+			m_gizmo.SetInvisible();
 		}
 	};
 	
