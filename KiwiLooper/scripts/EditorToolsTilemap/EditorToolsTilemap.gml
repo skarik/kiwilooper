@@ -101,7 +101,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	onBegin = function()
 	{
 		//m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
-		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatEditBox);
+		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmo3DEditBox);
 		m_gizmo.SetVisible();
 		m_gizmo.SetEnabled();
 		m_gizmo.m_color = c_gold;
@@ -123,6 +123,9 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 			m_gizmo.SetInvisible();
 			m_gizmo.SetDisabled();
 		}
+		
+		// Disable the gizmo temporarily.
+		m_gizmo.SetDisabled();
 	};
 	onStep = function()
 	{
@@ -140,6 +143,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 			// Hide the gizmo.
 			m_gizmo.SetInvisible();
 			m_gizmo.SetDisabled();
+			m_gizmo.m_handlesActive = false;
 		}
 		// Dragging state:
 		else if (m_isDraggingShape)
@@ -147,6 +151,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 			// Update the gizmo.
 			m_gizmo.SetVisible();
 			m_gizmo.SetEnabled();
+			m_gizmo.m_handlesActive = false;
 			
 			m_dragPositionEnd.x = m_editor.toolFlatX;
 			m_dragPositionEnd.y = m_editor.toolFlatY;
@@ -166,6 +171,8 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 		// Shaping state:
 		else
 		{
+			m_gizmo.m_handlesActive = true;
+			
 			// Pull the min/max values from the gizmo.
 			{
 				m_tileMin.x = round(min(m_gizmo.m_min.x, m_gizmo.m_max.x - 16) / 16.0);
@@ -188,7 +195,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 			}
 			
 			// Check for building the map up
-			if (keyboard_check_pressed(vk_enter)
+			if ((keyboard_check_pressed(vk_enter) && !keyboard_check(vk_alt))
 				|| m_gizmo.m_editWantsCommit)
 			{
 				m_isDraggingShape = false;
@@ -229,6 +236,56 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 					}
 					
 					MapAddHeight(kInputHeight);
+					MapRebuildGraphics();
+				}
+				
+			}
+			
+			// Check for building the map up
+			if ((keyboard_check_pressed(vk_enter) && keyboard_check(vk_alt))
+				|| m_gizmo.m_editWantsCutout)
+			{
+				m_isDraggingShape = false;
+				m_hasShapeReady = false;
+				m_skipFrame = true; // Skip the next click event. TODO: make this a common call.
+				
+				// TODO.
+				
+				with (m_editor)
+				{
+					var kInputHeight = other.m_tileMin.z;
+					
+					for (var ix = other.m_tileMin.x; ix <= other.m_tileMax.x; ++ix)
+					{
+						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
+						{
+							var existingTileIndex = MapGetPositionIndex(ix, iy);
+							
+							if (existingTileIndex >= 0)
+							{
+								var existingTile = mapTiles[existingTileIndex];
+								
+								// lower the height of the tile if the input height is high enough
+								if (kInputHeight >= 0)
+								{
+									if (existingTile.height > kInputHeight)
+									{
+										MapRemoveHeightSlow(existingTile.height); // TODO: defer this.
+										existingTile.height = kInputHeight;
+									}
+								}
+								// otherwise, we delete the tile
+								else
+								{
+									MapRemoveHeightSlow(existingTile.height);
+									array_delete(mapTiles, existingTileIndex, 1); // TODO: defer this.
+								}
+							}
+						}
+					}
+					
+					if (kInputHeight >= 0)
+						MapAddHeight(kInputHeight);
 					MapRebuildGraphics();
 				}
 				

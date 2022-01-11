@@ -1,5 +1,11 @@
 function EditorUIBitsSetup()
 {
+	#macro kEditorUICursorNormal 0
+	#macro kEditorUICursorMove 1
+	#macro kEditorUICursorHSize 2
+	uiCursor = kEditorUICursorNormal;
+	uiNextCursor = kEditorUICursorNormal;
+	
 	// Create toolbar
 	{
 		m_toolbar = new AToolbar();
@@ -38,6 +44,10 @@ function EditorUIBitsUpdate()
 	
 	// Update annotations
 	EditorAnnotationsUpdate(l_mouseX, l_mouseY);
+	
+	// Update cursor
+	uiCursor = uiNextCursor;
+	uiNextCursor = kEditorUICursorNormal;
 }
 
 function EditorUIBitsDraw()
@@ -49,4 +59,22 @@ function EditorUIBitsDraw()
 	
 	// Statusbar over everything
 	m_statusbar.Draw();
+	
+	// Draw an arrow for the mouse cursor.
+	draw_set_color(c_white);
+	if (uiCursor == kEditorUICursorNormal)
+	{
+		/*draw_arrow(10 + uPosition - GameCamera.view_x, 10 + vPosition - GameCamera.view_y,
+				        uPosition - GameCamera.view_x,      vPosition - GameCamera.view_y,
+				   10);*/
+		draw_sprite_ext(suie_cursors, 0, uPosition - GameCamera.view_x, vPosition - GameCamera.view_y, 1.0, 1.0, 0.0, c_white, 1.0);
+	}
+	else if (uiCursor == kEditorUICursorMove)
+	{
+		draw_sprite_ext(suie_cursors, 1, uPosition - GameCamera.view_x, vPosition - GameCamera.view_y, 1.0, 1.0, 0.0, c_white, 1.0);
+	}
+	else if (uiCursor == kEditorUICursorHSize)
+	{
+		draw_sprite_ext(suie_cursors, 2, uPosition - GameCamera.view_x, vPosition - GameCamera.view_y, 1.0, 1.0, 0.0, c_white, 1.0);
+	}
 }

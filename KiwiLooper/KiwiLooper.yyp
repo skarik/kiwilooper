@@ -250,6 +250,7 @@
     {"id":{"name":"dcmdParse","path":"scripts/dcmdParse/dcmdParse.yy",},"order":0,},
     {"id":{"name":"Audio","path":"objects/Audio/Audio.yy",},"order":0,},
     {"id":{"name":"f_Oxygen7","path":"fonts/f_Oxygen7/f_Oxygen7.yy",},"order":5,},
+    {"id":{"name":"suie_cursors","path":"sprites/suie_cursors/suie_cursors.yy",},"order":6,},
     {"id":{"name":"settingsControlLoad","path":"scripts/settingsControlLoad/settingsControlLoad.yy",},"order":9,},
     {"id":{"name":"oneAudio","path":"extensions/oneAudio/oneAudio.yy",},"order":0,},
     {"id":{"name":"fmusic_create","path":"scripts/fmusic_create/fmusic_create.yy",},"order":1,},

@@ -20,12 +20,6 @@ draw_set_halign(fa_left);
 draw_set_valign(fa_bottom);
 */
 EditorUIBitsDraw();
-
-// Draw an arrow for the mouse cursor.
-draw_set_color(c_white);
-draw_arrow(10 + uPosition - GameCamera.view_x, 10 + vPosition - GameCamera.view_y,
-		        uPosition - GameCamera.view_x,      vPosition - GameCamera.view_y,
-		   10);
 /*
 var kToolbarTop = 20;
 var kToolbarButtonSize = 10;
