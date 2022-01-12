@@ -338,8 +338,8 @@ function AEditorToolStateTileHeight() : AEditorToolState() constructor
 	onBegin = function()
 	{
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoSelectBox3D);
-		m_gizmo.m_visible = true;
-		m_gizmo.m_enabled = true;
+		m_gizmo.SetVisible();
+		m_gizmo.SetEnabled();
 		m_gizmo.m_color = merge_color(c_gray, c_blue, 0.25);
 		m_gizmo.m_alpha = 0.5;
 	};
@@ -347,8 +347,8 @@ function AEditorToolStateTileHeight() : AEditorToolState() constructor
 	{
 		if (trueEnd)
 		{
-			m_gizmo.m_visible = false;
-			m_gizmo.m_enabled = false;
+			m_gizmo.SetInvisible();
+			m_gizmo.SetDisabled();
 		}
 	};
 	onStep = function()

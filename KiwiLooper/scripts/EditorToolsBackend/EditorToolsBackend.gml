@@ -55,6 +55,10 @@ function EditorToolsSetup()
 	toolFlatY = 0;
 	toolTileX = 0;
 	toolTileY = 0;
+	toolWorldX = 0;
+	toolWorldY = 0;
+	toolWorldZ = 0;
+	toolWorldValid = false;
 	
 	// Set up all tool states that hold the various tools
 	toolStates = [
@@ -81,10 +85,15 @@ function EditorToolsUpdate()
 	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
 	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
 	
-	var distT = abs(viewRayPos[2] / viewRayDir[2]);
-	
-	toolFlatX = viewRayPos[0] + viewRayDir[0] * distT;
-	toolFlatY = viewRayPos[1] + viewRayDir[1] * distT;
+	//var distT = abs(viewRayPos[2] / viewRayDir[2]);
+	//toolFlatX = viewRayPos[0] + viewRayDir[0] * distT;
+	//toolFlatY = viewRayPos[1] + viewRayDir[1] * distT;
+	// Collide with the flat XYZ
+	if (raycast4_axisplane(kAxisZ, 0.0, Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
+	{
+		toolFlatX = viewRayPos[0] + viewRayDir[0] * raycast4_get_hit_distance();
+		toolFlatY = viewRayPos[1] + viewRayDir[1] * raycast4_get_hit_distance();
+	}
 	
 	toolTileX = max(0, floor(toolFlatX / 16));
 	toolTileY = max(0, floor(toolFlatY / 16));
@@ -97,6 +106,19 @@ function EditorToolsUpdate()
 		(viewrayTopLeft[0] + viewrayBottomRight[0]) * 0.5,
 		(viewrayTopLeft[1] + viewrayBottomRight[1]) * 0.5,
 		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
+		
+	// Do picker collision with the map
+	if (raycast4_tilemap(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
+	{
+		toolWorldX = viewRayPos[0] + viewrayPixel[0] * raycast4_get_hit_distance();
+		toolWorldY = viewRayPos[1] + viewrayPixel[1] * raycast4_get_hit_distance();
+		toolWorldZ = viewRayPos[2] + viewrayPixel[2] * raycast4_get_hit_distance();
+		toolWorldValid = true;
+	}
+	else
+	{
+		toolWorldValid = false;
+	}
 	
 	// Hard-coded command override:
 	if (keyboard_check_pressed(vk_delete)
@@ -144,7 +166,9 @@ function EditorToolsUpdate()
 		if (!m_toolbar.ContainsMouse()) // TODO: also check for gizmo states
 		{
 			var kPixelPosition = new Vector2(pixelX, pixelY);
-			var kWorldPosition = new Vector3(toolFlatX, toolFlatY, 0);
+			var kWorldPosition = toolWorldValid
+				? new Vector3(toolWorldX, toolWorldY, toolWorldZ)
+				: new Vector3(toolFlatX, toolFlatY, 0);
 			
 			var mouse_buttons = [mb_left, mb_right, mb_middle];
 			for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)

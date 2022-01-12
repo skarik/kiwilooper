@@ -56,6 +56,8 @@ function EditorGizmoSetup()
 		//m_movertest = new AEditorGizmoAxesMove();
 		
 		m_entRenderers = other.EditorGizmoGet(AEditorGizmoEntityBillboards);
+		
+		m_testMouse = other.EditorGizmoGet(AEditorGizmoSelectBox3D);
 	}
 	
 	m_gizmoObject.m_renderEvent = function()
@@ -79,6 +81,13 @@ function EditorGizmoUpdate()
 	with (m_gizmoObject)
 	{
 		// Nothing right now.
+		
+		m_testMouse.SetVisible();
+		m_testMouse.SetEnabled();
+		m_testMouse.m_color = merge_color(c_gray, c_blue, 0.25);
+		m_testMouse.m_alpha = 0.5;
+		m_testMouse.m_min.set(other.toolWorldX - 4, other.toolWorldY - 4, other.toolWorldZ - 4);
+		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4);
 	}
 	
 	for (var instanceIndex = 0; instanceIndex < array_length(m_gizmoInstances); ++instanceIndex)
@@ -88,5 +97,32 @@ function EditorGizmoUpdate()
 		{
 			gizmoInstance.Step();
 		}
+	}
+	
+	// show window if we have a selection
+	if (array_length(m_selection) > 0)
+	{
+		var currentSelection = m_selection;
+		if (is_struct(currentSelection))
+		{
+		}
+		else if (iexists(currentSelection))
+		{
+			// find in the ent table
+			var entityInfo = entlistFindWithObjectIndex(currentSelection.object_index);
+			// todo: set up the window with the given ent info
+			
+			// window = EditorWindowGet()
+			// if (window.GetCurrentEntity() != currentSelection)
+			//		window.InitWithEntityInfo(entityInfo)
+		}
+		else
+		{
+			//EditorWindowFree(window)
+		}
+	}
+	else
+	{
+		//EditorWindowFree(window)
 	}
 }

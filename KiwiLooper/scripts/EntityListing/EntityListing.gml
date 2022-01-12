@@ -203,6 +203,22 @@ function entlistFindWithName(name)
 	return null;
 }
 
+/// @function entlistFindWithObjectIndex(objectIndex)
+/// @desc Find the entry in the entlist with the matching objectIndex.
+function entlistFindWithObjectIndex(objectIndex)
+{
+	var kEntCount = array_length(global.entityList);
+	for (var entIndex = 0; entIndex < kEntCount; ++entIndex)
+	{
+		var currentEntry = global.entityList[entIndex];
+		if (currentEntry.objectIndex == objectIndex)
+		{
+			return currentEntry;
+		}
+	}
+	return null;
+}
+
 /// @function entPropertyExists(ent, name, type)
 /// @desc Looks for the given property with matching name and type in the given ent.
 function entPropertyExists(ent, name, type)

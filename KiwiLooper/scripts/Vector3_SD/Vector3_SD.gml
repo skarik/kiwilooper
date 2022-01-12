@@ -13,6 +13,22 @@ function Vector3(n_x, n_y, n_z) constructor
 	
 	// Functions
 	
+	static set = function(n_x, n_y, n_z)
+	{
+		x = n_x;
+		y = n_y;
+		z = n_z;
+	}
+	
+	static getElement = function(index)
+	{
+		gml_pragma("forceinline");
+		if (index == 0) return x;
+		else if (index == 1) return y;
+		else if (index == 2) return z;
+		return undefined;
+	}
+	
 	static copy = function()
 	{
 		return new Vector3(x, y, z);
