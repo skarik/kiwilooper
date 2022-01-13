@@ -163,7 +163,7 @@ function EditorToolsUpdate()
 		currentToolState.onStep();
 	
 		// Check all mouse buttons and forward them to the state as well.
-		if (!m_toolbar.ContainsMouse()) // TODO: also check for gizmo states
+		if (!m_toolbar.ContainsMouse() && !WindowingContainsMouse()) // TODO: also check for gizmo states
 		{
 			var kPixelPosition = new Vector2(pixelX, pixelY);
 			var kWorldPosition = toolWorldValid

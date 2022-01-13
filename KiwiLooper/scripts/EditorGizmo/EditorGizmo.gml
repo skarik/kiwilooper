@@ -100,9 +100,10 @@ function EditorGizmoUpdate()
 	}
 	
 	// show window if we have a selection
+	static window = null;
 	if (array_length(m_selection) > 0)
 	{
-		var currentSelection = m_selection;
+		var currentSelection = m_selection[0];
 		if (is_struct(currentSelection))
 		{
 		}
@@ -112,17 +113,23 @@ function EditorGizmoUpdate()
 			var entityInfo = entlistFindWithObjectIndex(currentSelection.object_index);
 			// todo: set up the window with the given ent info
 			
-			// window = EditorWindowGet()
-			// if (window.GetCurrentEntity() != currentSelection)
-			//		window.InitWithEntityInfo(entityInfo)
+			if (!is_struct(window) || window == null)
+			{
+				window = EditorWindowAlloc(AEditorWindowProperties);
+				EditorWindowSetFocus(window);
+			}
+			if (window.GetCurrentEntity() != currentSelection)
+				window.InitWithEntityInfo(currentSelection, entityInfo);
 		}
 		else
 		{
-			//EditorWindowFree(window)
+			EditorWindowFree(window);
+			window = null;
 		}
 	}
 	else
 	{
-		//EditorWindowFree(window)
+		EditorWindowFree(window);
+		window = null;
 	}
 }

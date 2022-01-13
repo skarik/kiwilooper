@@ -29,12 +29,15 @@ function EditorUIBitsSetup()
 	
 	// Create annotations
 	EditorAnnotationsSetup();
+	
+	// Set up the windowing
+	EditorWindowingSetup();
 }
 
 function EditorUIBitsUpdate()
 {
 	var l_mouseX = uPosition - GameCamera.view_x;
-	var l_mouseY = vPosition - GameCamera.view_y
+	var l_mouseY = vPosition - GameCamera.view_y;
 	
 	m_toolbar.x = 10;
 	m_toolbar.y = 20;
@@ -45,6 +48,9 @@ function EditorUIBitsUpdate()
 	// Update annotations
 	EditorAnnotationsUpdate(l_mouseX, l_mouseY);
 	
+	// Update windows
+	EditorWindowingUpdate(l_mouseX, l_mouseY);
+	
 	// Update cursor
 	uiCursor = uiNextCursor;
 	uiNextCursor = kEditorUICursorNormal;
@@ -54,6 +60,9 @@ function EditorUIBitsDraw()
 {
 	// Draw annotations under other UI
 	EditorAnnotationsDraw();
+	
+	// Draw windows over annotations but under special bars
+	EditorWindowingDraw();
 	
 	m_toolbar.Draw();
 	

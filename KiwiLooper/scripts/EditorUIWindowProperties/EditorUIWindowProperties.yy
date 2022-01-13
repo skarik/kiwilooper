@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Game/Editor/UI Bits.yy",
   },
   "resourceVersion": "1.0",
-  "name": "EditorAnnotations",
+  "name": "EditorUIWindowProperties",
   "tags": [],
   "resourceType": "GMScript",
 }
