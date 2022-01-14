@@ -58,6 +58,7 @@ function EditorToolsSetup()
 	toolWorldX = 0;
 	toolWorldY = 0;
 	toolWorldZ = 0;
+	toolWorldNormal = new Vector3();
 	toolWorldValid = false;
 	
 	// Set up all tool states that hold the various tools
@@ -113,6 +114,7 @@ function EditorToolsUpdate()
 		toolWorldX = viewRayPos[0] + viewrayPixel[0] * raycast4_get_hit_distance();
 		toolWorldY = viewRayPos[1] + viewrayPixel[1] * raycast4_get_hit_distance();
 		toolWorldZ = viewRayPos[2] + viewrayPixel[2] * raycast4_get_hit_distance();
+		toolWorldNormal.copyFrom(raycast4_get_hit_normal());
 		toolWorldValid = true;
 	}
 	else

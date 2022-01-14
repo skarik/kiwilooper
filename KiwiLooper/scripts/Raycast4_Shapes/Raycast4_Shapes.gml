@@ -89,7 +89,7 @@ function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
 	
 	// Get distance
 	global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
-	global._raycast4_hitnormal		= l_sign.copy();
+	global._raycast4_hitnormal.copyFrom(l_sign);
 
 	// Return if hit.
 	return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
@@ -174,7 +174,7 @@ function raycast4_tilemap(rayOrigin, rayDir)
 					if (raycast4_get_hit_distance() < l_minimumDistance)
 					{
 						l_minimumDistance = raycast4_get_hit_distance();
-						l_minimumDistanceSqr = raycast4_get_hit_normal();
+						l_minimumNormal.copyFrom(raycast4_get_hit_normal());
 						l_hasHit = true;
 					}
 				}
@@ -184,7 +184,7 @@ function raycast4_tilemap(rayOrigin, rayDir)
 		if (l_hasHit)
 		{
 			global._raycast4_hitdistance = l_minimumDistance;
-			global._raycast4_hitnormal = l_minimumNormal;
+			global._raycast4_hitnormal.copyFrom(l_minimumNormal);
 		}
 		return l_hasHit;
 	}
