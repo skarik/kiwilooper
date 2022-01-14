@@ -7,12 +7,18 @@ function _EntityInfoInit()
 	#macro kValueTypeColor 4
 	#macro kValueTypeBoolean 5
 	
+	#macro kGizmoDrawmodeBillboard 0
+	#macro kGizmoDrawmodeHidden 1
+	
 	global.entityList = [
 		// Base classes:
 		{
 			hidden: true,
 			name: "lively_base",
 			objectIndex: ob_lively,
+			
+			hullsize: 8,
+			
 			properties:
 			[
 				["", kValueTypePosition],
@@ -74,10 +80,77 @@ function _EntityInfoInit()
 			properties:
 			[
 				["", kValueTypePosition],
-				["intensity", kValueTypeFloat],
-				["range", kValueTypeFloat],
-				["color", kValueTypeColor],
 			],
+		},
+		{
+			parent: "lively_base",
+			name: "lively_exploding_wires",
+			desc: "",
+			objectIndex: o_livelyExplodingWires,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 0,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		{
+			parent: "lively_base",
+			name: "lively_level_goal",
+			desc: "",
+			objectIndex: o_livelyGoalArea,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 0,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		
+		// Usables:
+		{
+			parent: "lively_base",
+			name: "usable_pc",
+			objectIndex: o_usablePC,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+		},
+		{
+			parent: "lively_base",
+			name: "usable_logbook",
+			objectIndex: o_usableLogbook,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+		},
+		{
+			parent: "lively_base",
+			name: "usable_corpse_robo",
+			objectIndex: o_usableCorpseRobo,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+		},
+		{
+			parent: "lively_base",
+			name: "usable_corpse_kiwi",
+			objectIndex: o_usableCorpseKiwi,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
 		},
 	];
 	global.entityList_Count = array_length(global.entityList);
@@ -233,4 +306,28 @@ function entPropertyExists(ent, name, type)
 		}
 	}
 	return false;
+}
+
+/// @function entpropToString(instance, property)
+/// @desc Returns a string of the given property.
+function entpropToString(instance, property)
+{
+	var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
+	var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
+	var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
+			
+	if (l_bSpecialPosition)
+	{
+		var string_format_pos = function(value) { return string_ltrim(string_format(round(value * 10) / 10, 10, 1)); }
+		return string_format_pos(instance.x) + " " + string_format_pos(instance.y) + " " + string_format_pos(instance.z);
+	}
+	else if (property[1] == kValueTypeColor)
+	{
+		var color = variable_instance_get(entity_instance, property[0]);
+		return string(color_get_red(color)) + " " + string(color_get_green(color)) + " " + string(color_get_blue(color));
+	}
+	else
+	{
+		return string(variable_instance_get(instance, property[0]));
+	}
 }

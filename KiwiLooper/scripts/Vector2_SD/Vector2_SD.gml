@@ -16,6 +16,12 @@ function Vector2(n_x, n_y) constructor
 		return new Vector2(x, y);
 	}
 	
+	static copyFrom = function(right)
+	{
+		x = right.x;
+		y = right.y;
+	}
+	
 	static addSelf = function(right)
 	{
 		x += right.x;

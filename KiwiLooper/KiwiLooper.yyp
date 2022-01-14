@@ -118,6 +118,7 @@
     {"id":{"name":"ssy_cutsceneOrganic","path":"sprites/ssy_cutsceneOrganic/ssy_cutsceneOrganic.yy",},"order":12,},
     {"id":{"name":"o_livelyGoalArea","path":"objects/o_livelyGoalArea/o_livelyGoalArea.yy",},"order":4,},
     {"id":{"name":"ob_userInterfaceElement","path":"objects/ob_userInterfaceElement/ob_userInterfaceElement.yy",},"order":0,},
+    {"id":{"name":"EditorUIWindowEntSpawn","path":"scripts/EditorUIWindowEntSpawn/EditorUIWindowEntSpawn.yy",},"order":5,},
     {"id":{"name":"effectControllerShake","path":"scripts/effectControllerShake/effectControllerShake.yy",},"order":1,},
     {"id":{"name":"controlSettingSet","path":"scripts/controlSettingSet/controlSettingSet.yy",},"order":2,},
     {"id":{"name":"sui_starhorizon","path":"sprites/sui_starhorizon/sui_starhorizon.yy",},"order":4,},

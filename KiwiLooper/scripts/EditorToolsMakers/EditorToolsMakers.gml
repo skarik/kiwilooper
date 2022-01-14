@@ -6,6 +6,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 	m_hasEntityToMake = false;
 	m_entityToMake = ob_3DLight;
 	m_gizmo = null;
+	m_window = null;
 	
 	onBegin = function()
 	{
@@ -20,6 +21,12 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			m_gizmo.SetDisabled();
 			m_gizmo.SetInvisible();
 		}
+		
+		if (m_window == null)
+		{
+			m_window = m_editor.EditorWindowAlloc(AEditorWindowEntSpawn);
+		}
+		m_editor.EditorWindowSetFocus(m_window);
 	}
 	onEnd = function(trueEnd)
 	{
@@ -27,6 +34,9 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 		{
 			m_gizmo.SetDisabled();
 			m_gizmo.SetInvisible();
+			
+			m_editor.EditorWindowFree(m_window);
+			m_window = null;
 		}
 	}
 	

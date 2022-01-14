@@ -6,6 +6,10 @@ function AEditorWindow() constructor
 	static kTitleMargin = 2;
 	static kAccentColor = make_color_rgb(200, 40, 200);
 	
+	#macro kWindowMousePositionNone 0
+	#macro kWindowMousePositionTitle 1
+	#macro kWindowMousePositionContent 2
+	
 	m_title = "Window";
 	m_modal = false; // Is this an interrupting dialog?
 	m_canClose = false;
@@ -18,6 +22,9 @@ function AEditorWindow() constructor
 	disabled = false;
 	focused = false;
 	contains_mouse = false;
+	mouse_position = kWindowMousePositionNone;
+	dragging = false;
+	has_stored_position = false;
 	
 	static Step = function() {}
 	static Draw = function()
@@ -27,7 +34,7 @@ function AEditorWindow() constructor
 	
 	static drawWindow = function()
 	{
-		var rect = [m_position.x, m_position.y - kTitleHeight, m_position.x + m_size.x, m_position.y + m_size.y];
+		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
 		
 		// Draw the background for the window
 		draw_set_color(focused ? c_black : c_dkgray);
@@ -67,8 +74,17 @@ function EditorWindowingSetup()
 	windowCurrent = null;
 	windows = [];
 	
+	windowDragging = false;
+	windowSavedPositions = [];
+	
 	WindowingContainsMouse = function()
 	{
+		// Assume we're always taking the mouse if dragging
+		if (windowDragging)
+		{
+			return true;
+		}
+		// Check all windows after
 		for (var i = 0; i < array_length(windows); ++i)
 		{
 			if (windows[i].ContainsMouse())
@@ -78,6 +94,9 @@ function EditorWindowingSetup()
 		}
 		return false;
 	}
+	this.EditorWindowAlloc = EditorWindowAlloc;
+	this.EditorWindowFree = EditorWindowFree;
+	this.EditorWindowSetFocus = EditorWindowSetFocus;
 }
 
 /// @function EditorWindowAlloc(type)
@@ -85,6 +104,21 @@ function EditorWindowingSetup()
 function EditorWindowAlloc(type)
 {
 	var window = new type();
+	
+	// Store class type for future ref
+	window.classType = type;
+	
+	// Pull saved position by class
+	for (var i = 0; i < array_length(windowSavedPositions); ++i)
+	{
+		if (windowSavedPositions[i][0] == window.classType)
+		{
+			window.m_position.copyFrom(windowSavedPositions[i][1]);
+			window.has_stored_position = true;
+			break;
+		}
+	}
+	
 	array_push(windows, window);
 	return window;
 }
@@ -94,6 +128,22 @@ function EditorWindowFree(window)
 {
 	if (is_struct(window))
 	{
+		// Add unique entry for the window position
+		var saveWindowPosition = function(window)
+		{
+			for (var i = 0; i < array_length(windowSavedPositions); ++i)
+			{
+				if (windowSavedPositions[i][0] == window.classType)
+				{
+					windowSavedPositions[i][1].copyFrom(window.m_position);
+					return;
+				}
+			}
+			array_push(windowSavedPositions, [window.classType, window.m_position.copy()]);
+		};
+		saveWindowPosition(window);
+		
+		// Disable window & request free
 		window.request_free = true;
 		window.disabled = true;
 	}
@@ -112,6 +162,12 @@ function EditorWindowSetFocus(window)
 	{
 		windowCurrent = window;
 		windowCurrent.focused = true;
+		
+		// Ensure the window is at the end of the windowing list so it draws on top.
+		if (windowCurrent != windows[array_length(windows) - 1])
+		{
+			ce_array_swap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
+		}
 	}
 }
 
@@ -138,15 +194,18 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	{
 		var check_window = windows[iWindow];
 		if (point_in_rectangle(mouseX, mouseY,
-				check_window.m_position.x, check_window.m_position.y,
+				check_window.m_position.x, check_window.m_position.y - check_window.kTitleHeight,
 				check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y))
 		{
 			check_window.contains_mouse = true;
 			hovered_window = check_window;
+			
+			check_window.mouse_position = (mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent;
 		}
 		else
 		{
 			check_window.contains_mouse = false;
+			check_window.mouse_position = kWindowMousePositionNone;
 		}
 	}
 	
@@ -154,6 +213,39 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	if (mouse_check_button_pressed(mb_left) || mouse_check_button_pressed(mb_right) || mouse_check_button_pressed(mb_middle))
 	{
 		EditorWindowSetFocus(hovered_window);
+	}
+	
+	// Update dragging
+	if (!windowDragging)
+	{
+		if (is_struct(windowCurrent) && windowCurrent.mouse_position == kWindowMousePositionTitle)
+		{
+			if (mouse_check_button_pressed(mb_left))
+			{
+				windowDragging = true;
+				windowCurrent.dragging = true;
+			}
+		}
+	}
+	else
+	{
+		if (is_struct(windowCurrent))
+		{
+			// Move window around
+			windowCurrent.m_position.x += uPosition - uPositionPrevious;
+			windowCurrent.m_position.y += vPosition - vPositionPrevious;
+			
+			// Check for dragging stop
+			if (mouse_check_button_released(mb_left))
+			{
+				windowDragging = false;
+				windowCurrent.dragging = false;
+			}
+		}
+		else
+		{
+			windowDragging = false;
+		}
 	}
 	
 	// Step all windows now
