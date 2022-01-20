@@ -12,19 +12,110 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	
 	item_focused = 0;
 	item_mouseover = null;
+	item_drag = false;
+	
+	drag_mouseover = false;
+	drag_now = false;
+	drag_y = 0;
+	
+	static ContainsMouse = function()
+	{
+		return contains_mouse || drag_now;
+	}
+	
+	static sh_uScissorRect = shader_get_uniform(sh_editorDefaultScissor, "uScissorRect");
+	static kLineHeight = 12;
+	static kLineMargin = 2;
+	static kDragWidth = 10;
+	
+	static onMouseMove = function(mouseX, mouseY)
+	{
+		if (mouseX < m_position.x + m_size.x - kDragWidth)
+		{
+			drag_mouseover = false;
+			item_mouseover = clamp(
+				floor((mouseY - m_position.y - 1 + drag_y) / kLineHeight),
+				0,
+				entlistIterationLength() - 1);
+		}
+		else
+		{
+			item_mouseover = null;
+			drag_mouseover = true;
+		}
+	}
+	static onMouseLeave = function(mouseX, mouseY)
+	{
+		item_mouseover = null;
+		drag_mouseover = false;
+	}
+	static onMouseEvent = function(mouseX, mouseY, button, event)
+	{
+		if (event == kEditorToolButtonStateMake)
+		{
+			// If click the list, then we just change highlight
+			if (item_mouseover != null)
+			{
+				item_focused = item_mouseover;
+				item_drag = true;
+			}
+			// Otherwise begin dragging the vertical
+			else if (drag_mouseover)
+			{
+				drag_now = true;
+			}
+		}
+		else if (event == kEditorToolButtonStateBreak)
+		{
+			// Stop all drags
+			drag_now = false;
+			item_drag = false;
+		}
+	}
+	
+	static Step = function()
+	{
+		if (drag_now)
+		{
+			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
+			
+			// Move the bar based on the position
+			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
+			drag_y = clamp(drag_y, 0.0, kDragMaxY);
+		}
+	}
 	
 	static Draw = function()
 	{
 		drawWindow();
 		
-		static kLineHeight = 12;
-		static kLineMargin = 2;
+		// Draw the scroll bar:
+		draw_set_color(focused ? c_dkgray : c_gray);
+		DrawSpriteRectangle(m_position.x + m_size.x - kDragWidth, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y, true);
+		{
+			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
+			var kDragSpeed = kDragMaxY / m_size.y;
+			var l_barH = 10;
+			var l_barY = (m_size.y - 4 - l_barH) * (drag_y / kDragMaxY);
+			
+			DrawSpriteRectangle(
+				m_position.x + m_size.x - kDragWidth + 2,
+				m_position.y + 2 + l_barY,
+				m_position.x + m_size.x - 2,
+				m_position.y + 2 + l_barY + l_barH,
+				drag_mouseover ? false : true);
+		}
+		
+		// Draw the selectable items:
+		
+		drawShaderSet(sh_editorDefaultScissor);
+		shader_set_uniform_f(sh_uScissorRect, m_position.x, m_position.y + 1, m_position.x + m_size.x - kDragWidth, m_position.y + m_size.y);
 		
 		for (var entIndex = 0; entIndex < entlistIterationLength(); ++entIndex)
 		{
 			var entinfo = entlistIterationGet(entIndex);
 			
-			var l_lineY = entIndex * kLineHeight + 1;
+			var l_lineY = entIndex * kLineHeight + 1 - drag_y;
 			var l_bgColor = focused ? ((entIndex % 2 == 0) ? c_black : c_dkgray) : c_dkgray;
 			
 			// Highlight the selected item.
@@ -32,10 +123,14 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 			{
 				l_bgColor = kAccentColor;
 			}
+			if (item_mouseover == entIndex)
+			{
+				l_bgColor = merge_color(l_bgColor, kAccentColor, 0.25);
+			}
 			
 			// draw property background
 			draw_set_color(l_bgColor);
-			DrawSpriteRectangle(m_position.x, m_position.y + l_lineY, m_position.x + m_size.x, m_position.y + l_lineY + kLineHeight, false);
+			DrawSpriteRectangle(m_position.x, m_position.y + l_lineY, m_position.x + m_size.x - kDragWidth, m_position.y + l_lineY + kLineHeight, false);
 			
 			// draw property name
 			draw_set_color(focused ? c_white : c_ltgray);
@@ -44,5 +139,7 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 			draw_set_font(f_04b03);
 			draw_text(m_position.x + kLineMargin, m_position.y + l_lineY + kLineHeight - kLineMargin, entinfo.name);
 		}
+		
+		drawShaderUnset(sh_editorDefaultScissor);
 	}
 }

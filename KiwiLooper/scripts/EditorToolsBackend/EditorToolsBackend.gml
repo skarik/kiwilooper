@@ -122,9 +122,20 @@ function EditorToolsUpdate()
 		toolWorldValid = false;
 	}
 	
+	// Hard-coded shortcuts:
+	if (keyboard_check_pressed(ord("Q")))
+	{
+		toolCurrentRequested = kEditorToolSelect;
+	}
+	if (keyboard_check_pressed(ord("W")))
+	{
+		toolCurrentRequested = kEditorToolTranslate;
+	}
+	
 	// Hard-coded command override:
 	if (keyboard_check_pressed(vk_delete)
-		&& toolCurrent != kEditorToolCamera)
+		&& toolCurrent != kEditorToolCamera
+		&& !WindowingHasFocus())
 	{
 		EditorGlobalDeleteSelection();
 	}

@@ -73,6 +73,7 @@
     {"id":{"name":"o_playerFootstepSplatter","path":"objects/o_playerFootstepSplatter/o_playerFootstepSplatter.yy",},"order":5,},
     {"id":{"name":"fmusic_add_track","path":"scripts/fmusic_add_track/fmusic_add_track.yy",},"order":0,},
     {"id":{"name":"bouncestep","path":"scripts/bouncestep/bouncestep.yy",},"order":2,},
+    {"id":{"name":"inputTyping","path":"scripts/inputTyping/inputTyping.yy",},"order":12,},
     {"id":{"name":"spr_metalPC","path":"sprites/spr_metalPC/spr_metalPC.yy",},"order":1,},
     {"id":{"name":"PlayerControl_SD","path":"scripts/PlayerControl_SD/PlayerControl_SD.yy",},"order":1,},
     {"id":{"name":"ssy_debug","path":"sprites/ssy_debug/ssy_debug.yy",},"order":13,},
@@ -351,6 +352,7 @@
     {"id":{"name":"avec2_divide","path":"scripts/avec2_divide/avec2_divide.yy",},"order":1,},
     {"id":{"name":"idelete_delay","path":"scripts/idelete_delay/idelete_delay.yy",},"order":0,},
     {"id":{"name":"spr_metalBoard","path":"sprites/spr_metalBoard/spr_metalBoard.yy",},"order":6,},
+    {"id":{"name":"sh_editorDefaultScissor","path":"shaders/sh_editorDefaultScissor/sh_editorDefaultScissor.yy",},"order":2,},
     {"id":{"name":"o_doodadPowercellDeadbit","path":"objects/o_doodadPowercellDeadbit/o_doodadPowercellDeadbit.yy",},"order":4,},
     {"id":{"name":"o_audioAmbientPowerstateDuck","path":"objects/o_audioAmbientPowerstateDuck/o_audioAmbientPowerstateDuck.yy",},"order":1,},
     {"id":{"name":"ssy_music","path":"sprites/ssy_music/ssy_music.yy",},"order":20,},
@@ -371,6 +373,7 @@
     {"id":{"name":"Collision4_Checks","path":"scripts/Collision4_Checks/Collision4_Checks.yy",},"order":0,},
     {"id":{"name":"EditorGizmo","path":"scripts/EditorGizmo/EditorGizmo.yy",},"order":1,},
     {"id":{"name":"ot_EditorTest","path":"objects/ot_EditorTest/ot_EditorTest.yy",},"order":0,},
+    {"id":{"name":"suie_textures16","path":"sprites/suie_textures16/suie_textures16.yy",},"order":7,},
     {"id":{"name":"DrawShapesAlternate","path":"scripts/DrawShapesAlternate/DrawShapesAlternate.yy",},"order":10,},
     {"id":{"name":"instance_get_left","path":"scripts/instance_get_left/instance_get_left.yy",},"order":2,},
     {"id":{"name":"DebugAssertHelpers","path":"scripts/DebugAssertHelpers/DebugAssertHelpers.yy",},"order":18,},
@@ -533,6 +536,7 @@
   ],
   "TextureGroups": [
     {"isScaled":true,"autocrop":false,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"autocrop":false,"border":8,"mipsToGenerate":-1,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"tiled_texgroup","resourceType":"GMTextureGroup",},
   ],
   "IncludedFiles": [
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"shock_loop.wav","resourceType":"GMIncludedFile",},

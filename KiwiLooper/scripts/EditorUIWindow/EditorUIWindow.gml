@@ -14,6 +14,7 @@ function AEditorWindow() constructor
 	m_modal = false; // Is this an interrupting dialog?
 	m_canClose = false;
 	
+	m_editor = null;
 	m_position = new Vector2(0, kTitleHeight);
 	m_size = new Vector2(100, 100);
 	
@@ -26,6 +27,9 @@ function AEditorWindow() constructor
 	dragging = false;
 	has_stored_position = false;
 	
+	static onMouseMove = function(mouseX, mouseY) {}
+	static onMouseEvent = function(mouseX, mouseY, button, event) {}
+	static onMouseLeave = function(mouseX, mouseY) {}
 	static Step = function() {}
 	static Draw = function()
 	{
@@ -44,7 +48,7 @@ function AEditorWindow() constructor
 		{
 			draw_set_color(focused ? kAccentColor : c_white);
 			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight, false);
-		
+			
 			// Draw the title on the far left
 			draw_set_color(focused ? c_white : c_gray);
 			draw_set_halign(fa_left);
@@ -94,6 +98,19 @@ function EditorWindowingSetup()
 		}
 		return false;
 	}
+	WindowingHasFocus = function()
+	{
+		// Check all windows
+		for (var i = 0; i < array_length(windows); ++i)
+		{
+			if (windows[i].focused)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	this.EditorWindowAlloc = EditorWindowAlloc;
 	this.EditorWindowFree = EditorWindowFree;
 	this.EditorWindowSetFocus = EditorWindowSetFocus;
@@ -107,6 +124,8 @@ function EditorWindowAlloc(type)
 	
 	// Store class type for future ref
 	window.classType = type;
+	// Store calling editor
+	window.m_editor = id;
 	
 	// Pull saved position by class
 	for (var i = 0; i < array_length(windowSavedPositions); ++i)
@@ -204,6 +223,10 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		}
 		else
 		{
+			if (check_window.contains_mouse)
+			{
+				check_window.onMouseLeave(mouseX, mouseY);
+			}
 			check_window.contains_mouse = false;
 			check_window.mouse_position = kWindowMousePositionNone;
 		}
@@ -248,12 +271,51 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		}
 	}
 	
+	// Poll and forward mouse states:
+	var mouse_buttons = [mb_left, mb_right, mb_middle];
+	for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)
+	{
+		// TODO: only call on the active window?
+		var currentButton = mouse_buttons[iButton];
+		if (mouse_check_button_pressed(currentButton))
+		{
+			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+			{
+				var check_window = windows[iWindow];
+				if (!check_window.disabled)
+					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateMake);
+			}
+		}
+		if (mouse_check_button_released(currentButton))
+		{
+			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+			{
+				var check_window = windows[iWindow];
+				if (!check_window.disabled)
+					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateBreak);
+			}
+		}
+		if (mouse_check_button(currentButton))
+		{
+			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+			{
+				var check_window = windows[iWindow];
+				if (!check_window.disabled)
+					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
+			}
+		}
+	}
+	
 	// Step all windows now
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
 		var check_window = windows[iWindow];
 		if (!check_window.disabled)
 		{
+			if (check_window.contains_mouse)
+			{
+				check_window.onMouseMove(mouseX, mouseY);
+			}
 			check_window.Step();
 		}
 		// If disabled, we want to kill certain states

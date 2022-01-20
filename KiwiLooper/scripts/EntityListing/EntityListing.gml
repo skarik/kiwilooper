@@ -331,3 +331,139 @@ function entpropToString(instance, property)
 		return string(variable_instance_get(instance, property[0]));
 	}
 }
+
+/// @function entpropSetFromString(instance, property, stringValue)
+/// @desc Converts the given value to the proper type and assigns it.
+/// @returns True on success, False on failure to properly convert.
+function entpropSetFromString(instance, property, stringValue)
+{
+	static GetFloatTuple = function(inputString)
+	{
+		var tokens = string_split(inputString, " ,;", true);
+		var tokenCount = array_length(tokens);
+		
+		var results = array_create(tokenCount, 0.0);
+		for (var i = 0; i < tokenCount; ++i)
+		{
+			try
+			{
+				results[i] = real(tokens[i]);
+			}
+			catch (_exception)
+			{
+				return undefined;
+			}
+		}
+		return results;
+	}
+	
+	var convertedValue = undefined;
+	
+	// First, convert the value:
+	switch (property[1])
+	{
+	case kValueTypeFloat:
+		try
+		{
+			convertedValue = real(stringValue);
+		}
+		catch (_exception)
+		{
+			convertedValue = undefined;
+		}
+		break;
+		
+	case kValueTypeBoolean:
+		{
+			var l_lowerString = string_lower(stringValue);
+			var l_value = undefined;
+			try
+			{
+				l_value = real(stringValue);
+			}
+			catch (_exception)
+			{
+				l_value = undefined;
+			}
+			
+			if (!is_undefined(l_value))
+			{
+				convertedValue = bool(l_value);
+			}
+			else
+			{
+				if (l_lowerString == "t" || l_lowerString == "true" || l_lowerString == "y" || l_lowerString == "yes")
+				{
+					convertedValue = true;
+				}
+				else if (l_lowerString == "f" || l_lowerString == "false" || l_lowerString == "n" || l_lowerString == "no")
+				{
+					convertedValue = false;
+				}
+			}
+		}
+		break;
+		
+	case kValueTypeColor:
+		{
+			var tuple = GetFloatTuple(stringValue);
+			if (!is_undefined(tuple) && array_length(tuple) >= 3)
+			{
+				static IsInRange = function(value) { return !is_undefined(value) && value >= 0.0 && value <= 255.0; }
+				if (IsInRange(tuple[0]) && IsInRange(tuple[1]) && IsInRange(tuple[2]))
+				{
+					convertedValue = make_color_rgb(tuple[0], tuple[1], tuple[2]);
+				}
+			}
+		}
+		break;
+		
+	case kValueTypePosition:
+	case kValueTypeRotation:
+	case kValueTypeScale:
+		{
+			var tuple = GetFloatTuple(stringValue);
+			if (!is_undefined(tuple) && array_length(tuple) >= 3)
+			{
+				convertedValue = Vector3FromArray(tuple);
+			}
+		}
+		break;
+	}
+	
+	// Check for invalid conversion now
+	if (is_undefined(convertedValue))
+	{
+		return false;
+	}
+	
+	// Now assign the values back
+	var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
+	var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
+	var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
+	
+	if (l_bSpecialPosition)
+	{
+		instance.x = convertedValue.x;
+		instance.y = convertedValue.y;
+		instance.z = convertedValue.z;
+	}
+	else if (l_bSpecialRotation)
+	{
+		instance.xrotation = convertedValue.x;
+		instance.yrotation = convertedValue.y;
+		instance.zrotation = convertedValue.z;
+	}
+	else if (l_bSpecialScale)
+	{
+		instance.xscale = convertedValue.x;
+		instance.yscale = convertedValue.y;
+		instance.zscale = convertedValue.z;
+	}
+	else
+	{
+		variable_instance_set(instance, property[0], convertedValue);
+	}
+	
+	return true;
+}
