@@ -15,6 +15,9 @@
 #macro kEditorToolButtonStateHeld	2
 #macro kEditorToolButtonStateBreak	3
 
+#macro kEditorButtonWheelUp		0x1001
+#macro kEditorButtonWheelDown	0x1002
+
 #macro kEditorObjectTypeNone	0
 #macro kEditorObjectTypeTile	1
 
@@ -132,12 +135,21 @@ function EditorToolsUpdate()
 		toolCurrentRequested = kEditorToolTranslate;
 	}
 	
-	// Hard-coded command override:
+	// Hard-coded command overrides:
+	
+	// Delete selected objects
 	if (keyboard_check_pressed(vk_delete)
 		&& toolCurrent != kEditorToolCamera
 		&& !WindowingHasFocus())
 	{
 		EditorGlobalDeleteSelection();
+	}
+	// Clear selection
+	if (keyboard_check_pressed(vk_escape)
+		&& toolCurrent != kEditorToolCamera
+		&& !WindowingHasFocus())
+	{
+		EditorGlobalClearSelection();
 	}
 	
 	// Special state override:

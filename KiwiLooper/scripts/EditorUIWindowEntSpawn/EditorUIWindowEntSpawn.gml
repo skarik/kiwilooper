@@ -8,7 +8,7 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	m_position.y = 64;
 	
 	m_size.x = 100;
-	m_size.y = 120;
+	m_size.y = 80;
 	
 	item_focused = 0;
 	item_mouseover = null;
@@ -17,6 +17,7 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	drag_mouseover = false;
 	drag_now = false;
 	drag_y = 0;
+	drag_y_target = 0;
 	
 	static ContainsMouse = function()
 	{
@@ -53,8 +54,15 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	{
 		if (event == kEditorToolButtonStateMake)
 		{
+			// If mouse wheel, attempt scroll
+			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
+			{
+				var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
+				drag_y_target += (button == kEditorButtonWheelUp) ? -kLineHeight : kLineHeight;
+				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
+			}
 			// If click the list, then we just change highlight
-			if (item_mouseover != null)
+			else if (item_mouseover != null)
 			{
 				item_focused = item_mouseover;
 				item_drag = true;
@@ -82,6 +90,12 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 			// Move the bar based on the position
 			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
 			drag_y = clamp(drag_y, 0.0, kDragMaxY);
+			drag_y_target = drag_y;
+		}
+		else if (drag_y_target != drag_y)
+		{
+			var delta = drag_y_target - drag_y;
+			drag_y += sign(delta) * min(abs(delta), Time.deltaTime * 200.0);
 		}
 	}
 	

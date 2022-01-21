@@ -46,9 +46,19 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
 			{
+				var bSignalChange = 
+					m_editor.m_selection[0].x != m_transformGizmo.x
+					|| m_editor.m_selection[0].y != m_transformGizmo.y
+					|| m_editor.m_selection[0].z != m_transformGizmo.z;
+				
 				m_editor.m_selection[0].x = m_transformGizmo.x;
 				m_editor.m_selection[0].y = m_transformGizmo.y;
 				m_editor.m_selection[0].z = m_transformGizmo.z;
+				
+				if (bSignalChange)
+				{
+					EditorGlobalSignalTransformChange(m_editor.m_selection[0]);
+				}
 			}
 		}
 		else

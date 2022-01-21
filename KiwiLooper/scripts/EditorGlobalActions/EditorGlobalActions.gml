@@ -24,3 +24,35 @@ function EditorGlobalDeleteSelection()
 	
 	m_selection = [];
 }
+
+function EditorGlobalClearSelection()
+{
+	m_selection = [];
+	m_selectionSingle = false;
+}
+
+function EditorGlobalSignalTransformChange(entity)
+{
+	with (ot_EditorTest)
+	{
+		// Update all gizmos
+		var gizmo;
+		gizmo = EditorGizmoFind(AEditorGizmoPointMove);
+		if (is_struct(gizmo))
+		{
+			gizmo.x = entity.x;
+			gizmo.y = entity.y;
+			gizmo.z = entity.z;
+		}
+		
+		// TODO: fill with the other gizmos
+		
+		// Find the properties panel and update the transform
+		var panel;
+		panel = EditorWindowFind(AEditorWindowProperties);
+		if (is_struct(panel))
+		{
+			panel.InitUpdateEntityInfoTransform();
+		}
+	}
+}

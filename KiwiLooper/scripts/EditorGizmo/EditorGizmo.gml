@@ -39,6 +39,21 @@ function EditorGizmoSetup()
 		return gizmoInstance;
 	};
 	
+	/// @function EditorGizmoFind(factory)
+	/// @desc Grabs existing given gizmo object.
+	EditorGizmoFind = function(factory)
+	{
+		for (var instanceIndex = 0; instanceIndex < array_length(m_gizmoInstances); ++instanceIndex)
+		{
+			if (m_gizmoInstances[instanceIndex][0] == factory)
+			{
+				return m_gizmoInstances[instanceIndex][1];
+			}
+		}
+		
+		return null;
+	};
+	
 	/// @function EditorGizmoRelease(instance)
 	/// @desc Marks the given gizmo as unused and ready to release.
 	EditorGizmoRelease = function(instance)

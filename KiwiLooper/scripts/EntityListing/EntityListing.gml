@@ -467,3 +467,14 @@ function entpropSetFromString(instance, property, stringValue)
 	
 	return true;
 }
+
+/// @function entpropIsSpecialTransform(property)
+/// @desc Checks if the given property is a special transform that needs to be perculated through the editor
+function entpropIsSpecialTransform(property)
+{
+	var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
+	var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
+	var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
+	
+	return l_bSpecialPosition || l_bSpecialRotation || l_bSpecialScale;
+}

@@ -189,6 +189,21 @@ function EditorWindowSetFocus(window)
 		}
 	}
 }
+/// @function EditorWindowFind(type)
+/// @desc Return found window with the given type, or null if not created.
+function EditorWindowFind(type)
+{
+	//InitUpdateEntityInfoTransform
+	// Pull saved position by class
+	for (var i = 0; i < array_length(windows); ++i)
+	{
+		if (windows[i].classType == type)
+		{
+			return windows[i];
+		}
+	}
+	return null;
+}
 
 function EditorWindowingUpdate(mouseX, mouseY)
 {
@@ -272,7 +287,7 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	}
 	
 	// Poll and forward mouse states:
-	var mouse_buttons = [mb_left, mb_right, mb_middle];
+	var mouse_buttons = [mb_left, mb_right, mb_middle, /*mouse wheels included*/];
 	for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)
 	{
 		// TODO: only call on the active window?
@@ -303,6 +318,24 @@ function EditorWindowingUpdate(mouseX, mouseY)
 				if (!check_window.disabled)
 					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
 			}
+		}
+	}
+	if (mouse_wheel_up())
+	{
+		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+		{
+			var check_window = windows[iWindow];
+			if (!check_window.disabled)
+				check_window.onMouseEvent(mouseX, mouseY, kEditorButtonWheelUp, kEditorToolButtonStateMake);
+		}
+	}
+	if (mouse_wheel_down())
+	{
+		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+		{
+			var check_window = windows[iWindow];
+			if (!check_window.disabled)
+				check_window.onMouseEvent(mouseX, mouseY, kEditorButtonWheelDown, kEditorToolButtonStateMake);
 		}
 	}
 	

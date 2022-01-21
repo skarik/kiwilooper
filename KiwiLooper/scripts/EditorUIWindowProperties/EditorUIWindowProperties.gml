@@ -19,6 +19,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	drag_mouseover = false;
 	drag_now = false;
 	drag_y = 0;
+	drag_y_target = 0;
 	
 	m_size.x = 150;
 	m_size.y = 180;
@@ -92,6 +93,19 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		}
 	} // End InitWithEntityInfo()
 	
+	static InitUpdateEntityInfoTransform = function()
+	{
+		// Update the key-values for the special props
+		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
+		{
+			var property = entity_info.properties[iProperty];
+			if (entpropIsSpecialTransform(property))
+			{
+				property_values[iProperty] = entpropToString(entity_instance, property);
+			}
+		}
+	}
+	
 	static onMouseMove = function(mouseX, mouseY)
 	{
 		if (mouseX < m_position.x + m_size.x - kDragWidth)
@@ -117,8 +131,15 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		if (event == kEditorToolButtonStateMake)
 		{
+			// If mouse wheel, attempt scroll
+			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
+			{
+				var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight - m_size.y);
+				drag_y_target += (button == kEditorButtonWheelUp) ? -kLineHeight : kLineHeight;
+				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
+			}
 			// If click the list, then we just change highlight
-			if (property_mouseover != null)
+			else if (property_mouseover != null)
 			{
 				// Commit change selection if we're busy
 				if (property_editing && property_focused != property_mouseover)
@@ -135,6 +156,27 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					if (!property_editing)
 					{
 						PropertyChangeBegin();
+					}
+					
+					if (property_editing && property_focused != null)
+					{
+						// Start with cursor at the end
+						property_edit_cursor =  string_length(property_values[property_focused]);
+						
+						// Update the mouse click position
+						draw_set_font(f_04b03);
+						var deltaX = mouseX - (m_position.x + kPropertyColumn + kPropertyMargin - string_width("W") * 0.5);
+						for (var iLength = 1; iLength <= string_length(property_values[property_focused]); ++iLength)
+						{
+							if (string_width(string_copy(property_values[property_focused], 1, iLength)) > deltaX)
+							{
+								property_edit_cursor = iLength - 1;
+								break;
+							}
+						}
+						
+						// Clamp to length
+						property_edit_cursor = clamp(property_edit_cursor, 0, string_length(property_values[property_focused]));
 					}
 				}
 				else
@@ -168,6 +210,12 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			// Move the bar based on the position
 			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
 			drag_y = clamp(drag_y, 0.0, kDragMaxY);
+			drag_y_target = drag_y;
+		}
+		else if (drag_y_target != drag_y)
+		{
+			var delta = drag_y_target - drag_y;
+			drag_y += sign(delta) * min(abs(delta), Time.deltaTime * 200.0);
 		}
 		
 		// Tab through all the editable values
@@ -229,6 +277,12 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				// Check the result of typing:
 				property_values[property_focused] = value;
 				property_change_ok = entpropSetFromString(entity_instance, property, property_values[property_focused]);
+				
+				// Update the transform for other objects.
+				if (entpropIsSpecialTransform(property))
+				{
+					EditorGlobalSignalTransformChange(entity_instance);
+				}
 			}
 		}
 	}
