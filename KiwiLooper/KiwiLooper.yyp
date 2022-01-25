@@ -331,6 +331,7 @@
     {"id":{"name":"ot_3DPlane","path":"objects/ot_3DPlane/ot_3DPlane.yy",},"order":0,},
     {"id":{"name":"Raycast4_Shapes","path":"scripts/Raycast4_Shapes/Raycast4_Shapes.yy",},"order":3,},
     {"id":{"name":"ssy_usable","path":"sprites/ssy_usable/ssy_usable.yy",},"order":31,},
+    {"id":{"name":"EditorUIWindowPropSpawn","path":"scripts/EditorUIWindowPropSpawn/EditorUIWindowPropSpawn.yy",},"order":6,},
     {"id":{"name":"ShaderLayer","path":"scripts/ShaderLayer/ShaderLayer.yy",},"order":11,},
     {"id":{"name":"expoInOut","path":"scripts/expoInOut/expoInOut.yy",},"order":5,},
     {"id":{"name":"EditorToolsTransformation","path":"scripts/EditorToolsTransformation/EditorToolsTransformation.yy",},"order":3,},
@@ -499,7 +500,9 @@
     {"folderPath":"folders/Sprites/masks.yy","order":4,"resourceVersion":"1.0","name":"masks","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Game/Character.yy","order":6,"resourceVersion":"1.0","name":"Character","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Game/Collision.yy","order":7,"resourceVersion":"1.0","name":"Collision","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Sprites/objects.yy","order":5,"resourceVersion":"1.0","name":"objects","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Sprites/objects.yy","order":5,"resourceVersion":"1.0","name":"objects","tags":[
+        "objects",
+      ],"resourceType":"GMFolder",},
     {"folderPath":"folders/Objects/Game/Lively.yy","order":6,"resourceVersion":"1.0","name":"Lively","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Objects/Game/Lively Usables.yy","order":7,"resourceVersion":"1.0","name":"Lively Usables","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Objects/Game/Lively/Backend.yy","order":2,"resourceVersion":"1.0","name":"Backend","tags":[],"resourceType":"GMFolder",},

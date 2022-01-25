@@ -73,7 +73,7 @@ function EditorToolsSetup()
 		new AEditorToolStateCamera(),		// kEditorToolCamera
 		new AEditorToolStateTileEditor(),	// kEditorToolTileEditor
 		new AEditorToolStateTileHeight(),	// kEditorToolTileHeight
-		new AEditorToolState(),
+		new AEditorToolStateMakeProp(),		// kEditorToolMakeProp
 		new AEditorToolStateMakeEntity(),	// kEditorToolMakeEntity
 		new AEditorToolState(),
 		new AEditorToolState(),
