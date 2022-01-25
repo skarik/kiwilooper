@@ -81,6 +81,11 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 		}
 	}
 	
+	static GetCurrentEntity = function()
+	{
+		return entlistIterationGet(item_focused);
+	}
+	
 	static Step = function()
 	{
 		if (drag_now)

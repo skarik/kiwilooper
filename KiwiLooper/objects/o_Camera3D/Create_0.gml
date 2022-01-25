@@ -12,7 +12,7 @@ depth = -10;
 
 // current state
 m_viewprojection = matrix_build_identity();
-m_viewprojectionInverse = amatrix_clone(m_viewprojection);
+m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
 
 /// @function camera.positionToView(x, y, z)
 /// @desc Transforms 3D position into 2D position

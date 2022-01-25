@@ -34,6 +34,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		return contains_mouse || drag_now;
 	}
+	static ConsumesFocus = function()
+	{
+		return focused && property_editing;
+	}
 	
 	static GetCurrentEntity = function()
 	{
@@ -42,8 +46,8 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static InitWithEntityInfo = function(entityInstance, entityInfo)
 	{
-		entity_instance = entityInstance;
-		entity_info = entityInfo;
+		entity_instance	= entityInstance;
+		entity_info		= entityInfo;
 		
 		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
 		var ent_screenpos = o_Camera3D.positionToView(entity_instance.x, entity_instance.y, entity_instance.z);
@@ -135,7 +139,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
 			{
 				var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight - m_size.y);
-				drag_y_target += (button == kEditorButtonWheelUp) ? -kLineHeight : kLineHeight;
+				drag_y_target += (button == kEditorButtonWheelUp) ? -kPropertyHeight : kPropertyHeight;
 				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
 			}
 			// If click the list, then we just change highlight

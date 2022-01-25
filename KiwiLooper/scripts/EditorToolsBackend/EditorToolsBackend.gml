@@ -64,6 +64,8 @@ function EditorToolsSetup()
 	toolWorldNormal = new Vector3();
 	toolWorldValid = false;
 	
+	EditorProxyObject_Init();
+	
 	// Set up all tool states that hold the various tools
 	toolStates = [
 		new AEditorToolStateSelect(),		// kEditorToolSelect
@@ -140,7 +142,7 @@ function EditorToolsUpdate()
 	// Delete selected objects
 	if (keyboard_check_pressed(vk_delete)
 		&& toolCurrent != kEditorToolCamera
-		&& !WindowingHasFocus())
+		&& !WindowingHasConsumingFocus())
 	{
 		EditorGlobalDeleteSelection();
 	}

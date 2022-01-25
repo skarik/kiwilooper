@@ -10,14 +10,17 @@ function _EntityInfoInit()
 	#macro kGizmoDrawmodeBillboard 0
 	#macro kGizmoDrawmodeHidden 1
 	
+	#macro kProxyTypeNone 0		// No proxy: the actual object is created.
+	#macro kProxyTypeProp 1		// Specific kind of proxy usually reserved for props. Treats the given object as a special prop.
+	#macro kProxyTypeDefault 2	// Creates a proxy object that represents the actual object but does not have active logic.
+	
 	global.entityList = [
 		// Base classes:
 		{
 			hidden: true,
 			name: "lively_base",
 			objectIndex: ob_lively,
-			
-			hullsize: 8,
+			proxy: kProxyTypeDefault,
 			
 			properties:
 			[
@@ -34,6 +37,7 @@ function _EntityInfoInit()
 			name: "light",
 			desc: "Normal dynamic 3D light",
 			objectIndex: ob_3DLight,
+			proxy: kProxyTypeNone,
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 0,
@@ -52,6 +56,7 @@ function _EntityInfoInit()
 			name: "light_ambient",
 			desc: "Ambient light override helper",
 			objectIndex: o_ambientOverride,
+			proxy: kProxyTypeNone,
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 1,
@@ -157,6 +162,8 @@ function _EntityInfoInit()
 	
 	// Fill the structures with all the data theyre missing via inheritance.
 	_EntityInfoInit_FillInheritance();
+	// Fill in the missing data
+	_EntityInfoInit_FillMissingDefaults();
 	// Pregenerate list of entities with visible ents.
 	_EntityInfoInit_GenerateVisible();
 }
@@ -202,7 +209,7 @@ function _EntityInfoInit_FillInheritance()
 						var parentProp = parentEntry.properties[parentPropIndex];
 						if (!entPropertyExists(currentEntry, parentProp[0], parentProp[1]))
 						{
-							array_insert(currentEntry.properties, insertCount, ce_array_clone(parentProp));
+							array_insert(currentEntry.properties, insertCount, CE_ArrayClone(parentProp));
 							++insertCount;
 						}
 					} // end for-loop for parent properties
@@ -211,7 +218,44 @@ function _EntityInfoInit_FillInheritance()
 		} // end for-loop for all entities
 	}
 }
-
+// @desc Fills the ent list values with missing mandatory values with safe defaults
+function _EntityInfoInit_FillMissingDefaults()
+{
+	var kEntCount = array_length(global.entityList);
+	for (var entIndex = 0; entIndex < kEntCount; ++entIndex)
+	{
+		var currentEntry = global.entityList[entIndex];
+		
+		// Default to full proxy
+		if (!variable_struct_exists(currentEntry, "proxy"))
+		{
+			currentEntry.proxy = kProxyTypeDefault;
+		}
+		// Default to shown in the list
+		if (!variable_struct_exists(currentEntry, "hidden"))
+		{
+			currentEntry.hidden = false;
+		}
+		// Default half-tile hullsize
+		if (!variable_struct_exists(currentEntry, "hullsize"))
+		{
+			currentEntry.hullsize = 8;
+		}
+		// Default hidden billboard gizmo
+		if (!variable_struct_exists(currentEntry, "gizmoSprite"))
+		{
+			currentEntry.gizmoSprite = suie_gizmoEnts;
+		}
+		if (!variable_struct_exists(currentEntry, "gizmoIndex"))
+		{
+			currentEntry.gizmoIndex = 0;
+		}
+		if (!variable_struct_exists(currentEntry, "gizmoDrawmode"))
+		{
+			currentEntry.gizmoDrawmode = kGizmoDrawmodeHidden;
+		}
+	}
+}
 // @desc Generate listing of all visible entities.
 function _EntityInfoInit_GenerateVisible()
 {

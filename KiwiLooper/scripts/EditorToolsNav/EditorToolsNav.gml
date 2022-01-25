@@ -59,8 +59,23 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			// TODO: Loop through all the ents in the selection and put a box around each one.
 			// TODO: Selection may not be an object, and may be a struct instead. Also check for that.
 			
-			m_showSelectGizmo.m_mins[0] = new Vector3(m_editor.m_selection[0].x - 4, m_editor.m_selection[0].y - 4, m_editor.m_selection[0].z - 4);
-			m_showSelectGizmo.m_maxes[0] = new Vector3(m_editor.m_selection[0].x + 4, m_editor.m_selection[0].y + 4, m_editor.m_selection[0].z + 4);
+			var iSelection = 0;
+			var selection = m_editor.m_selection[iSelection];
+			
+			// TODO: If the selection is an object, then we want to work on that
+			if (is_struct(selection))
+			{
+				// is not an object
+			}
+			else if (iexists(selection))
+			{
+				// Get the entity info:
+				var entity = selection.entity;
+				var halfhull = entity.hullsize * 0.5;
+				
+				m_showSelectGizmo.m_mins[0] = new Vector3(selection.x - halfhull, selection.y - halfhull, selection.z - halfhull);
+				m_showSelectGizmo.m_maxes[0] = new Vector3(selection.x + halfhull, selection.y + halfhull, selection.z + halfhull);
+			}
 		}
 		else
 		{
@@ -123,17 +138,32 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Run through the ent table
 		var closestEnt = null;
 		var closestDist = 10000 * 10000.0;
-		for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
+		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo = entlistIterationGet(entTypeIndex);
-			var entType		= entTypeInfo.objectIndex;
-			var entHhsz		= entTypeInfo.hullsize;
+			var entTypeInfo, entType, entHhsz;
+			if (entTypeIndex != entlistIterationLength())
+			{
+				entTypeInfo = entlistIterationGet(entTypeIndex);
+				entType		= entTypeInfo.objectIndex;
+				entHhsz		= entTypeInfo.hullsize * 0.5;
+			}
+			// Check for proxies:
+			else
+			{
+				entType		= m_editor.OProxyClass;
+			}
 			
 			// Count through the ents
 			var entCount = instance_number(entType);
 			for (var entIndex = 0; entIndex < entCount; ++entIndex)
 			{
 				var ent = instance_find(entType, entIndex);
+				// Check for proxies:
+				if (entTypeIndex == entlistIterationLength())
+				{
+					entTypeInfo	= ent.entity;
+					entHhsz		= entTypeInfo.hullsize * 0.5;
+				}
 				
 				if (raycast4_box(new Vector3(ent.x - entHhsz, ent.y - entHhsz, ent.z - entHhsz), new Vector3(ent.x + entHhsz, ent.y + entHhsz, ent.z + entHhsz), rayStart, rayDir))
 				{

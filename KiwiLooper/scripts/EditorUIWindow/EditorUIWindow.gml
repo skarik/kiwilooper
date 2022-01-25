@@ -71,6 +71,10 @@ function AEditorWindow() constructor
 	{
 		return contains_mouse;
 	}
+	static ConsumesFocus = function()
+	{
+		return false;
+	}
 }
 
 function EditorWindowingSetup()
@@ -104,6 +108,18 @@ function EditorWindowingSetup()
 		for (var i = 0; i < array_length(windows); ++i)
 		{
 			if (windows[i].focused)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	WindowingHasConsumingFocus = function()
+	{
+		// Check all windows
+		for (var i = 0; i < array_length(windows); ++i)
+		{
+			if (windows[i].ConsumesFocus())
 			{
 				return true;
 			}
@@ -185,7 +201,7 @@ function EditorWindowSetFocus(window)
 		// Ensure the window is at the end of the windowing list so it draws on top.
 		if (windowCurrent != windows[array_length(windows) - 1])
 		{
-			ce_array_swap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
+			CE_ArraySwap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
 		}
 	}
 }

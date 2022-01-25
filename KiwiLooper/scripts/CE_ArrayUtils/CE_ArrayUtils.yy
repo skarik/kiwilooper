@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Matrix Math",
-    "path": "folders/Scripts/Core Extended/Matrix Math.yy",
+    "name": "Core Extensions",
+    "path": "folders/Scripts/3rd Party/Core Extensions.yy",
   },
   "resourceVersion": "1.0",
-  "name": "amatrixHelpers",
+  "name": "CE_ArrayUtils",
   "tags": [],
   "resourceType": "GMScript",
 }

@@ -5,6 +5,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 	
 	m_hasEntityToMake = false;
 	m_entityToMake = ob_3DLight;
+	m_entityToMakeIsProxy = false;
 	m_gizmo = null;
 	m_window = null;
 	
@@ -51,11 +52,32 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			{
 				m_hasEntityToMake = false;
 				
-				// MAKE the item at the gizmo position
-				var ent = inew(m_entityToMake);
-				ent.x = m_gizmo.x;
-				ent.y = m_gizmo.y;
-				ent.z = m_gizmo.z;
+				UpdateEntityToMake();
+				
+				if (!m_entityToMakeIsProxy)
+				{
+					// MAKE the item at the gizmo position
+					var ent = inew(m_entityToMake);
+					ent.x = m_gizmo.x;
+					ent.y = m_gizmo.y;
+					ent.z = m_gizmo.z;
+					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
+				}
+				else
+				{
+					// MAKE the item at the gizmo position
+					var ent = inew(m_editor.OProxyClass);
+					ent.x = m_gizmo.x;
+					ent.y = m_gizmo.y;
+					ent.z = m_gizmo.z;
+					ent.xscale = 1.0;
+					ent.yscale = 1.0;
+					ent.zscale = 1.0;
+					ent.xrotation = 0.0;
+					ent.yrotation = 0.0;
+					ent.zrotation = 0.0;
+					ent.entity = m_entityToMake;
+				}
 			}
 			else if (keyboard_check_pressed(vk_backspace)
 				|| keyboard_check_pressed(vk_delete)
@@ -81,6 +103,25 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			m_gizmo.x = worldPosition.x;
 			m_gizmo.y = worldPosition.y;
 			m_gizmo.z = worldPosition.z;
+		}
+	};
+	
+	static UpdateEntityToMake = function()
+	{
+		var entity = m_window.GetCurrentEntity();
+		
+		// Is this a proxy object?
+		m_entityToMakeIsProxy = (entity.proxy != kProxyTypeNone);
+		
+		// If it's not a proxy, just make the object
+		if (!m_entityToMakeIsProxy)
+		{
+			m_entityToMake = entity.objectIndex;
+		}
+		// If it is a proxy, we just save the ent info for now.
+		else
+		{
+			m_entityToMake = entity;
 		}
 	};
 }

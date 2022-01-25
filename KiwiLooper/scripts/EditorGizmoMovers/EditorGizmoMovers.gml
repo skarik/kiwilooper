@@ -57,9 +57,9 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
 		
 		var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
-		if (check_depthOrder[0][1] > check_depthOrder[2][1]) ce_array_swap(check_depthOrder, 0, 2);
-		if (check_depthOrder[0][1] > check_depthOrder[1][1]) ce_array_swap(check_depthOrder, 0, 1);
-		if (check_depthOrder[1][1] > check_depthOrder[2][1]) ce_array_swap(check_depthOrder, 1, 2);
+		if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
 		
 		// Check collision with each axis.
 		for (var check_index = 0; check_index < 3; ++check_index)
@@ -232,9 +232,9 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
 		
 		var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
-		if (check_depthOrder[0][1] > check_depthOrder[2][1]) ce_array_swap(check_depthOrder, 0, 2);
-		if (check_depthOrder[0][1] > check_depthOrder[1][1]) ce_array_swap(check_depthOrder, 0, 1);
-		if (check_depthOrder[1][1] > check_depthOrder[2][1]) ce_array_swap(check_depthOrder, 1, 2);
+		if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
 		
 		// Check collision with each axis.
 		for (var check_index = 0; check_index < 3; ++check_index)

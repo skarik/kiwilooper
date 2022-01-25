@@ -125,7 +125,15 @@ function EditorGizmoUpdate()
 		else if (iexists(currentSelection))
 		{
 			// find in the ent table
-			var entityInfo = entlistFindWithObjectIndex(currentSelection.object_index);
+			var entityInfo;
+			if (currentSelection.object_index != OProxyClass)
+			{
+				entityInfo = entlistFindWithObjectIndex(currentSelection.object_index);
+			}
+			else
+			{
+				entityInfo = currentSelection.entity;
+			}
 			// todo: set up the window with the given ent info
 			
 			if (!is_struct(window) || window == null)

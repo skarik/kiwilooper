@@ -46,8 +46,8 @@ surface_set_target(buffer_scene3d);
 	}*/
 	
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
-	m_viewprojectionInverse = amatrix_clone(m_viewprojection);
-	amatrix_inverse(m_viewprojectionInverse);
+	m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
+	CE_MatrixInverse(m_viewprojectionInverse);
 
 	// enable depth testing
 	gpu_set_ztestenable(true);
