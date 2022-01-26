@@ -47,6 +47,11 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 		}
 	}
 	
+	static GetCurrentProp = function()
+	{
+		return prop_items[item_focused].sprite;
+	}
+	
 	static onMouseMove = function(mouseX, mouseY)
 	{
 		if (mouseX < m_position.x + m_size.x - kDragWidth)

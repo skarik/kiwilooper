@@ -94,6 +94,7 @@ MapRebuildGraphics = function()
 		for (var layerIndex = 0; layerIndex < array_length(mapUsedHeights); ++layerIndex)
 		{
 			var layerHeight = mapUsedHeights[layerIndex];
+			assert(is_real(layerHeight) || is_int32(layerHeight) || is_int64(layerHeight));
 		
 			var newTileLayer = layer_create(100 - layerHeight, "floor" + string(layerHeight));
 			array_push(intermediateLayers, newTileLayer);
@@ -125,10 +126,38 @@ MapRebuildGraphics = function()
 		}
 	}
 	
+	// Set up the props
+	m_propmap.RebuildPropLayer(intermediateLayers);
+	
 	// Create the 3d-ify chain
 	inew(o_tileset3DIze);
+}
+MapRebuilPropsOnly = function()
+{
+	// Delete existing renderers
+	idelete(o_props3DIze);
+	
+	// Delete the matching intermediate layer
+	for (var layerIndex = 0; layerIndex < array_length(intermediateLayers); ++layerIndex)
+	{
+		var layer_name = layer_get_name(intermediateLayers[layerIndex]);
+		var layer_name_search_position = string_pos("props", layer_name);
+		if (layer_name_search_position != 0)
+		{
+			layer_destroy(intermediateLayers[layerIndex]);
+			array_delete(intermediateLayers, layerIndex, 1);
+			break;
+		}
+	}
+	
+	// Set up the props
+	m_propmap.RebuildPropLayer(intermediateLayers);
+	
+	// Create the missing part of the 3d-ify chain
+	inew(o_props3DIze);
 }
 
 EditorUIBitsSetup();
 EditorCameraSetup();
 EditorGizmoSetup();
+EditorPropMapSetup();

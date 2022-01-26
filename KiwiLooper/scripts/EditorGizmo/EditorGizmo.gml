@@ -1,3 +1,13 @@
+#macro kEditorSelection_None 0
+#macro kEditorSelection_Prop 1
+#macro kEditorSelection_Tile 2
+
+function AEditorSelection() constructor
+{
+	type	= kEditorSelection_Prop;
+	object	= null;
+}
+
 function EditorGizmoSetup()
 {
 	global.m_editorLineEdge_uLineColor = shader_get_uniform(sh_editorLineEdge, "uLineColor");

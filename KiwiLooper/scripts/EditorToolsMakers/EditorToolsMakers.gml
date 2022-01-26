@@ -209,6 +209,20 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 					ent.zrotation = 0.0;
 					ent.entity = m_entityToMake;
 				}*/
+				
+				//
+				prop_base = m_window.GetCurrentProp();
+				
+				var prop = new APropEntry();
+					prop.sprite = prop_base;
+					prop.x = m_gizmo.x;
+					prop.y = m_gizmo.y;
+					prop.z = m_gizmo.z;
+					
+				m_editor.m_propmap.AddProp(prop);
+				
+				m_editor.MapRebuilPropsOnly();
+				
 			}
 			else if (keyboard_check_pressed(vk_backspace)
 				|| keyboard_check_pressed(vk_delete)

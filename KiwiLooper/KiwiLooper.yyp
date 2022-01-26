@@ -38,6 +38,7 @@
     {"id":{"name":"array_any_not","path":"scripts/array_any_not/array_any_not.yy",},"order":0,},
     {"id":{"name":"stl_lab0","path":"sprites/stl_lab0/stl_lab0.yy",},"order":0,},
     {"id":{"name":"instance_get_bottom","path":"scripts/instance_get_bottom/instance_get_bottom.yy",},"order":1,},
+    {"id":{"name":"EditorProxyMap","path":"scripts/EditorProxyMap/EditorProxyMap.yy",},"order":14,},
     {"id":{"name":"settingsStartupSave","path":"scripts/settingsStartupSave/settingsStartupSave.yy",},"order":18,},
     {"id":{"name":"controlSettingGet","path":"scripts/controlSettingGet/controlSettingGet.yy",},"order":1,},
     {"id":{"name":"spr_roboWalk","path":"sprites/spr_roboWalk/spr_roboWalk.yy",},"order":4,},
