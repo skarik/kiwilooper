@@ -62,10 +62,27 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			var iSelection = 0;
 			var selection = m_editor.m_selection[iSelection];
 			
-			// TODO: If the selection is an object, then we want to work on that
 			if (is_struct(selection))
 			{
-				// is not an object
+				if (selection.type == kEditorSelection_Prop)
+				{
+					var prop = selection.object;
+					
+					// get the bbox
+					var propBBox = PropGetBBox(prop.sprite);
+					var propTranslation = matrix_build_translation(prop);
+					var propRotation = matrix_build_rotation(prop);
+			
+					var propBBoxMinPushed = propBBox.getMin().transformAMatrix(propTranslation);
+					var propBBoxMaxPushed = propBBox.getMax().transformAMatrix(propTranslation);
+					
+					m_showSelectGizmo.m_mins[0] = propBBoxMinPushed;
+					m_showSelectGizmo.m_maxes[0] = propBBoxMaxPushed;
+				}
+				// todo: tiles
+				else
+				{
+				}
 			}
 			else if (iexists(selection))
 			{
@@ -172,6 +189,31 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 						closestDist = raycast4_get_hit_distance();
 						closestEnt = ent;
 					}
+				}
+			}
+		}
+		
+		// Run through all props
+		for (var propIndex = 0; propIndex < m_editor.m_propmap.GetPropCount(); ++propIndex)
+		{
+			var prop = m_editor.m_propmap.GetProp(propIndex);
+			
+			// Get the prop BBox & transform it into the world
+			var propBBox = PropGetBBox(prop.sprite);
+			var propTranslation = matrix_build_translation(prop);
+			var propRotation = matrix_build_rotation(prop);
+			
+			var propBBoxMinPushed = propBBox.getMin().transformAMatrix(propTranslation);
+			var propBBoxMaxPushed = propBBox.getMax().transformAMatrix(propTranslation);
+			
+			// TODO: rotation. rotation needs to be passed into raycast4_box_ext, to rotate the ray in the world
+			
+			if (raycast4_box(propBBoxMinPushed, propBBoxMaxPushed, rayStart, rayDir))
+			{
+				if (raycast4_get_hit_distance() < closestDist)
+				{
+					closestDist = raycast4_get_hit_distance();
+					closestEnt = EditorSelectionWrapProp(prop);
 				}
 			}
 		}

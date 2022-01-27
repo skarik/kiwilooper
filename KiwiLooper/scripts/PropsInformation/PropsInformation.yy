@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Editor",
-    "path": "folders/Scripts/Game/Editor.yy",
+    "name": "Game",
+    "path": "folders/Scripts/Game.yy",
   },
   "resourceVersion": "1.0",
-  "name": "EditorProxyMap",
+  "name": "PropsInformation",
   "tags": [],
   "resourceType": "GMScript",
 }

@@ -17,6 +17,8 @@ function raycast4_get_hit_normal()
 	return global._raycast4_hitnormal;
 }
 
+// TODO: Make a BBox3 version of these functions. This will cut down on extra multiply at the start.
+
 /// @function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 /// @desc Performs a raycast against the given AABB.
 function raycast4_box(minAB, maxAB, rayOrigin, rayDir)

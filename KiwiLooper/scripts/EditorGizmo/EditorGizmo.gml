@@ -7,6 +7,20 @@ function AEditorSelection() constructor
 	type	= kEditorSelection_Prop;
 	object	= null;
 }
+function EditorSelectionWrapProp( prop )
+{
+	var selection = new AEditorSelection();
+	selection.type = kEditorSelection_Prop;
+	selection.object = prop;
+	return selection;
+}
+function EditorSelectionWrapTile( tile )
+{
+	var selection = new AEditorSelection();
+	selection.type = kEditorSelection_Tile;
+	selection.object = tile;
+	return selection;
+}
 
 function EditorGizmoSetup()
 {
@@ -131,6 +145,21 @@ function EditorGizmoUpdate()
 		var currentSelection = m_selection[0];
 		if (is_struct(currentSelection))
 		{
+			if (currentSelection.type == kEditorSelection_Prop)
+			{
+				if (!is_struct(window) || window == null)
+				{
+					window = EditorWindowAlloc(AEditorWindowProperties);
+					EditorWindowSetFocus(window);
+				}
+				if (window.GetCurrentEntity() != currentSelection.object.Id())
+					window.InitWithProp(currentSelection.object);
+			}
+			else
+			{
+				EditorWindowFree(window);
+				window = null;
+			}
 		}
 		else if (iexists(currentSelection))
 		{

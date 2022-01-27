@@ -54,5 +54,11 @@ function EditorGlobalSignalTransformChange(entity)
 		{
 			panel.InitUpdateEntityInfoTransform();
 		}
+		
+		// If the incoming ent is a prop, we gotta rebuild prop meshes
+		if (is_struct(entity)) // assume struct inputs are props
+		{
+			MapRebuilPropsOnly();
+		}
 	}
 }

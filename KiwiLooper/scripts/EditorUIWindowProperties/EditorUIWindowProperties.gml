@@ -7,6 +7,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	entity_instance = null;
 	entity_info = null;
 	
+	prop_instance = null;
+	
+	editing_target = kEditorSelection_None;
+	
 	property_values = [];
 	property_focused = null;
 	property_mouseover = null;
@@ -48,6 +52,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		entity_instance	= entityInstance;
 		entity_info		= entityInfo;
+		editing_target	= kEditorSelection_None;
 		
 		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
 		var ent_screenpos = o_Camera3D.positionToView(entity_instance.x, entity_instance.y, entity_instance.z);
@@ -99,15 +104,37 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static InitUpdateEntityInfoTransform = function()
 	{
+		var instance = entity_instance;
+		if (editing_target == kEditorSelection_Prop)
+			instance = prop_instance;
+		
 		// Update the key-values for the special props
 		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
 		{
 			var property = entity_info.properties[iProperty];
 			if (entpropIsSpecialTransform(property))
 			{
-				property_values[iProperty] = entpropToString(entity_instance, property);
+				property_values[iProperty] = entpropToString(instance, property);
 			}
 		}
+	}
+	
+	static InitWithProp = function(prop)
+	{
+		entity_instance	= prop.Id();
+		entity_info		= null;
+		prop_instance	= prop;
+		editing_target	= kEditorSelection_Prop;
+		
+		entity_info		= {
+			properties: [
+				["", kValueTypePosition],
+				["", kValueTypeRotation],
+				["", kValueTypeScale],
+			],
+		};
+		
+		InitUpdateEntityInfoTransform();
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)
@@ -256,6 +283,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			}
 			else
 			{
+				var instance = entity_instance;
+				if (editing_target == kEditorSelection_Prop)
+					instance = prop_instance;
+				
 				var property = entity_info.properties[property_focused];
 				var value = property_values[property_focused];
 				
@@ -280,12 +311,12 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				
 				// Check the result of typing:
 				property_values[property_focused] = value;
-				property_change_ok = entpropSetFromString(entity_instance, property, property_values[property_focused]);
+				property_change_ok = entpropSetFromString(instance, property, property_values[property_focused]);
 				
 				// Update the transform for other objects.
 				if (entpropIsSpecialTransform(property))
 				{
-					EditorGlobalSignalTransformChange(entity_instance);
+					EditorGlobalSignalTransformChange(instance);
 				}
 			}
 		}
@@ -304,19 +335,23 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		if (property_focused != null)
 		{
+			var instance = entity_instance;
+			if (editing_target == kEditorSelection_Prop)
+				instance = prop_instance;
+			
 			// Attempt to set input
 			var property = entity_info.properties[property_focused];
-			var valid = entpropSetFromString(entity_instance, property, property_values[property_focused]);
+			var valid = entpropSetFromString(instance, property, property_values[property_focused]);
 			
 			// Reset if invalid input
 			if (!valid)
 			{
-				entpropSetFromString(entity_instance, property, property_old_value);
+				entpropSetFromString(instance, property, property_old_value);
 				property_values[property_focused] = property_old_value;
 			}
 			else
 			{
-				property_values[property_focused] = entpropToString(entity_instance, property);
+				property_values[property_focused] = entpropToString(instance, property);
 			}
 		}
 		property_editing = false;
@@ -326,9 +361,13 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		if (property_focused != null)
 		{
+			var instance = entity_instance;
+			if (editing_target == kEditorSelection_Prop)
+				instance = prop_instance;
+			
 			// Set the old property value
 			var property = entity_info.properties[property_focused];
-			entpropSetFromString(entity_instance, property, property_old_value);
+			entpropSetFromString(instance, property, property_old_value);
 			property_values[property_focused] = property_old_value;
 		}
 		property_editing = false;
@@ -338,7 +377,17 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		drawWindow();
 		
-		if (!iexists(entity_instance))
+		if (editing_target == kEditorSelection_Prop)
+		{
+			draw_set_color(focused ? c_white : c_ltgray);
+			draw_set_halign(fa_left);
+			draw_set_valign(fa_top);
+			draw_set_font(f_04b03);
+			
+			draw_text(m_position.x + 2, m_position.y + 2, "Prop Keyvalues not yet set.");
+			//return;
+		}
+		else if (!iexists(entity_instance))
 		{
 			draw_set_color(focused ? c_white : c_ltgray);
 			draw_set_halign(fa_left);

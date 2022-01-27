@@ -177,6 +177,22 @@ function Vector3(n_x, n_y, n_z) constructor
 			x * right.y - y * right.x);
 	}
 	
+	static transformAMatrix = function(matrix)
+	{
+		gml_pragma("forceinline");
+		
+		var x0 = x;
+		var y0 = y;
+		var z0 = z;
+		var w0 = 1.0;
+		
+		return new Vector3(
+			matrix[ 0]*x0 + matrix[ 4]*y0 + matrix[ 8]*z0 + matrix[12]*w0,
+			matrix[ 1]*x0 + matrix[ 5]*y0 + matrix[ 9]*z0 + matrix[13]*w0,
+			matrix[ 2]*x0 + matrix[ 6]*y0 + matrix[10]*z0 + matrix[14]*w0
+			);
+	}
+	
 	static transformAMatrixSelf = function(matrix)
 	{
 		gml_pragma("forceinline");

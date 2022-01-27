@@ -289,7 +289,7 @@
   },
   "parent": {
     "name": "Tile Sets",
-    "path": "folders/Tile Sets.yy",
+    "path": "folders/Fonts/Tile Sets.yy",
   },
   "resourceVersion": "1.0",
   "name": "tileset_lab0",

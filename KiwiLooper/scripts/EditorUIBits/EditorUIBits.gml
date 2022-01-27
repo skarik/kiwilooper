@@ -39,7 +39,7 @@ function EditorUIBitsUpdate()
 	var l_mouseX = uPosition - GameCamera.view_x;
 	var l_mouseY = vPosition - GameCamera.view_y;
 	
-	m_toolbar.x = 10;
+	m_toolbar.x = 0;
 	m_toolbar.y = 20;
 	m_toolbar.Step(l_mouseX, l_mouseY);
 	

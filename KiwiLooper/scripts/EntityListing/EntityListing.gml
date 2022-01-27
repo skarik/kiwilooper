@@ -365,14 +365,24 @@ function entpropToString(instance, property)
 		var string_format_pos = function(value) { return string_ltrim(string_format(round(value * 10) / 10, 10, 1)); }
 		return string_format_pos(instance.x) + " " + string_format_pos(instance.y) + " " + string_format_pos(instance.z);
 	}
+	else if (l_bSpecialRotation)
+	{
+		var string_format_pos = function(value) { return string_ltrim(string_format(round(value * 10) / 10, 10, 1)); }
+		return string_format_pos(instance.xrotation) + " " + string_format_pos(instance.yrotation) + " " + string_format_pos(instance.zrotation);
+	}
+	else if (l_bSpecialScale)
+	{
+		var string_format_pos = function(value) { return string_ltrim(string_format(round(value * 100) / 100, 10, 2)); }
+		return string_format_pos(instance.xscale) + " " + string_format_pos(instance.yscale) + " " + string_format_pos(instance.zscale);
+	}
 	else if (property[1] == kValueTypeColor)
 	{
-		var color = variable_instance_get(entity_instance, property[0]);
+		var color = is_struct(instance) ? variable_struct_get(instance, property[0]) : variable_instance_get(instance, property[0]);
 		return string(color_get_red(color)) + " " + string(color_get_green(color)) + " " + string(color_get_blue(color));
 	}
 	else
 	{
-		return string(variable_instance_get(instance, property[0]));
+		return string(is_struct(instance) ? variable_struct_get(instance, property[0]) : variable_instance_get(instance, property[0]));
 	}
 }
 
@@ -506,7 +516,14 @@ function entpropSetFromString(instance, property, stringValue)
 	}
 	else
 	{
-		variable_instance_set(instance, property[0], convertedValue);
+		if (is_struct(instance))
+		{
+			variable_struct_set(instance, property[0], convertedValue);
+		}
+		else
+		{
+			variable_instance_set(instance, property[0], convertedValue);
+		}
 	}
 	
 	return true;

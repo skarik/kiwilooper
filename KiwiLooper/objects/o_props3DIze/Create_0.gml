@@ -87,20 +87,7 @@ m_mesh = meshb_Begin();
 			{
 				var width = element_width;
 				var height = element_height;
-				var zheight = element_height;
-				
-				// Just going to hard-code the heights of props to avoid fiddling with the UV tools
-				switch (element_sprite)
-				{
-				case spr_metalTable0:
-				case spr_metalTable1:
-					zheight = 6;
-					break;
-				case spr_metalLocker0:
-					height = 12;
-					break;
-				case spr_metalCrate0: break; // Nothing needed to change here!
-				}
+				var zheight = PropGetZHeight(element_sprite);
 				
 				var scale = new Vector3(width * 0.5 * layer_sprite_get_xscale(element), height * 0.5 * layer_sprite_get_yscale(element), zheight);
 				var position = new Vector3(element_x, element_y, element_z);

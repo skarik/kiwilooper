@@ -4,6 +4,10 @@ function APropEntry() constructor
 {
 	// Indexer
 	_id = null;
+	static Id = function()
+	{
+		return _id;
+	}
 	
 	// Transformation
 	x = 0;

@@ -33,31 +33,41 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	{
 		if (array_length(m_editor.m_selection) > 0)
 		{
+			// Gather transform target first
+			var target = m_editor.m_selection[0];
+			if (is_struct(m_editor.m_selection[0]))
+			{
+				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
+				{
+					target = m_editor.m_selection[0].object;
+				}
+			}
+			
 			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
 			if (!m_transformGizmo.m_enabled)
 			{
 				m_transformGizmo.SetVisible();
 				m_transformGizmo.SetEnabled();
 		
-				m_transformGizmo.x = m_editor.m_selection[0].x;
-				m_transformGizmo.y = m_editor.m_selection[0].y;
-				m_transformGizmo.z = m_editor.m_selection[0].z;
+				m_transformGizmo.x = target.x;
+				m_transformGizmo.y = target.y;
+				m_transformGizmo.z = target.z;
 			}
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
 			{
 				var bSignalChange = 
-					m_editor.m_selection[0].x != m_transformGizmo.x
-					|| m_editor.m_selection[0].y != m_transformGizmo.y
-					|| m_editor.m_selection[0].z != m_transformGizmo.z;
+					target.x != m_transformGizmo.x
+					|| target.y != m_transformGizmo.y
+					|| target.z != m_transformGizmo.z;
 				
-				m_editor.m_selection[0].x = m_transformGizmo.x;
-				m_editor.m_selection[0].y = m_transformGizmo.y;
-				m_editor.m_selection[0].z = m_transformGizmo.z;
+				target.x = m_transformGizmo.x;
+				target.y = m_transformGizmo.y;
+				target.z = m_transformGizmo.z;
 				
 				if (bSignalChange)
 				{
-					EditorGlobalSignalTransformChange(m_editor.m_selection[0]);
+					EditorGlobalSignalTransformChange(target);
 				}
 			}
 		}
