@@ -19,23 +19,18 @@ function raycast4_get_hit_normal()
 
 // TODO: Make a BBox3 version of these functions. This will cut down on extra multiply at the start.
 
-/// @function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
-/// @desc Performs a raycast against the given AABB.
-function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
+function _raycast4_box_inner(center, extents, rayOrigin, rayDir, raySign)
 {
 	// Implementation borrowed from http://www.jcgt.org/published/0007/03/04/paper-lowres.pdf
 	
-	var l_boxCenter = minAB.add(maxAB).multiply(0.5);
-	var l_boxExtents = maxAB.subtract(minAB).multiply(0.5);
-	l_boxExtents.x = abs(l_boxExtents.x);
-	l_boxExtents.y = abs(l_boxExtents.y);
-	l_boxExtents.z = abs(l_boxExtents.z);
+	var l_boxCenter = center;
+	var l_boxExtents = extents;
 	
 	var l_rayPos = rayOrigin.subtract(l_boxCenter);
 	var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
 	
 	// Distance to plane
-	var l_d = l_sign.multiplyComponent(l_boxExtents).subtract(l_rayPos);
+	var l_d = l_sign.multiplyComponent(l_boxExtents).multiply(raySign).subtract(l_rayPos);
 	l_d.divideComponentSelf(rayDir);
 	
 	// Test all axes at once
@@ -58,11 +53,11 @@ function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 	return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
 }
 
-/// @function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
+/// @function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 /// @desc Performs a raycast against the given AABB.
-function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
+function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 {
-	// Some logic borrowed from https://tavianator.com/2011/ray_box.html to get the -1.0
+	gml_pragma("forceinline");
 	
 	var l_boxCenter = minAB.add(maxAB).multiply(0.5);
 	var l_boxExtents = maxAB.subtract(minAB).multiply(0.5);
@@ -70,31 +65,44 @@ function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
 	l_boxExtents.y = abs(l_boxExtents.y);
 	l_boxExtents.z = abs(l_boxExtents.z);
 	
-	var l_rayPos = rayOrigin.subtract(l_boxCenter);
-	var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
-	
-	// Distance to plane
-	var l_d = l_sign.multiplyComponent(l_boxExtents).multiply(-1.0).subtract(l_rayPos);
-	l_d.divideComponentSelf(rayDir);
-	
-	// Test all axes at once
-	var l_test = [
-		(l_d.x > 0.0) && (abs(l_rayPos.y + rayDir.y * l_d.x) < l_boxExtents.y) && (abs(l_rayPos.z + rayDir.z * l_d.x) < l_boxExtents.z),
-		(l_d.y > 0.0) && (abs(l_rayPos.z + rayDir.z * l_d.y) < l_boxExtents.z) && (abs(l_rayPos.x + rayDir.x * l_d.y) < l_boxExtents.x),
-		(l_d.z > 0.0) && (abs(l_rayPos.x + rayDir.x * l_d.z) < l_boxExtents.x) && (abs(l_rayPos.y + rayDir.y * l_d.z) < l_boxExtents.y)
-	];
-	
-	l_sign = l_test[0] ? new Vector3(l_sign.x, 0, 0) : (
-			l_test[1] ? new Vector3(0, l_sign.y, 0) : (
-			l_test[2] ? new Vector3(0, 0, l_sign.z) : new Vector3(0, 0, 0))
-		);
-	
-	// Get distance
-	global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
-	global._raycast4_hitnormal.copyFrom(l_sign);
+	return _raycast4_box_inner(l_boxCenter, l_boxExtents, rayOrigin, rayDir, 1.0);
+}
 
-	// Return if hit.
-	return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
+/// @function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
+/// @desc Performs a raycast against the given AABB.
+function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
+{
+	// Some logic borrowed from https://tavianator.com/2011/ray_box.html to get the -1.0
+	
+	gml_pragma("forceinline");
+	
+	var l_boxCenter = minAB.add(maxAB).multiply(0.5);
+	var l_boxExtents = maxAB.subtract(minAB).multiply(0.5);
+	l_boxExtents.x = abs(l_boxExtents.x);
+	l_boxExtents.y = abs(l_boxExtents.y);
+	l_boxExtents.z = abs(l_boxExtents.z);
+	
+	return _raycast4_box_inner(l_boxCenter, l_boxExtents, rayOrigin, rayDir, -1.0);
+}
+
+/// @function raycast4_box_rotated(boxCenter, boxExtents, preRotation, frontfaces, rayOrigin, rayDir)
+/// @desc Performs a raycast against the given rotated AABB. AABB is rotated in place, then moved to its center.
+/// @param {Vector3} Center
+/// @param {Vector3} Half-Extents
+/// @param {AMatrix} Rotation array matrix
+/// @param {Boolean} Cast Frontface
+/// @param {Vector3} Ray Origin
+/// @param {Vector3} Ray Dir
+function raycast4_box_rotated(boxCenter, boxExtents, preRotation, frontfaces, rayOrigin, rayDir)
+{
+	gml_pragma("forceinline");
+	
+	var l_rayOrigin	= rayOrigin.transformAMatrix(preRotation);
+	var l_rayDir	= rayDir.transformAMatrix(preRotation);
+	
+	var l_result = _raycast4_box_inner(boxCenter, boxExtents, rayOrigin, rayDir, frontfaces ? 1.0 : -1.0);
+	
+	return l_result;
 }
 
 /// @function raycast4_tilemap(rayOrigin, rayDir)

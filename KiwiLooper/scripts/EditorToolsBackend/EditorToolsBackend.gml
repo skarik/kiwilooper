@@ -8,7 +8,9 @@
 #macro kEditorToolTexture		7
 #macro kEditorToolSplats		8
 #macro kEditorToolTranslate		9
-#macro kEditorTool_MAX			10
+#macro kEditorToolRotate		10
+#macro kEditorToolScale			11
+#macro kEditorTool_MAX			12
 
 #macro kEditorToolButtonStateNone	0
 #macro kEditorToolButtonStateMake	1
@@ -78,6 +80,8 @@ function EditorToolsSetup()
 		new AEditorToolState(),
 		new AEditorToolState(),
 		new AEditorToolStateTranslate(),	// kEditorToolTranslate
+		new AEditorToolStateRotate(),		// kEditorToolRotate
+		new AEditorToolState(),
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
 }

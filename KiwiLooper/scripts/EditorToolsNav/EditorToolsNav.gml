@@ -73,11 +73,11 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 					var propTranslation = matrix_build_translation(prop);
 					var propRotation = matrix_build_rotation(prop);
 			
-					var propBBoxMinPushed = propBBox.getMin().transformAMatrix(propTranslation);
-					var propBBoxMaxPushed = propBBox.getMax().transformAMatrix(propTranslation);
+					propBBox.extents.multiplyComponentSelf(Vector3FromScale(prop));
 					
-					m_showSelectGizmo.m_mins[0] = propBBoxMinPushed;
-					m_showSelectGizmo.m_maxes[0] = propBBoxMaxPushed;
+					m_showSelectGizmo.m_mins[0] = propBBox.getMin();
+					m_showSelectGizmo.m_maxes[0] = propBBox.getMax();
+					m_showSelectGizmo.m_trses[0] = matrix_multiply(propRotation, propTranslation);
 				}
 				// todo: tiles
 				else
@@ -92,6 +92,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				
 				m_showSelectGizmo.m_mins[0] = new Vector3(selection.x - halfhull, selection.y - halfhull, selection.z - halfhull);
 				m_showSelectGizmo.m_maxes[0] = new Vector3(selection.x + halfhull, selection.y + halfhull, selection.z + halfhull);
+				m_showSelectGizmo.m_trses[0] = matrix_build_identity();
 			}
 		}
 		else
@@ -208,7 +209,13 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			
 			// TODO: rotation. rotation needs to be passed into raycast4_box_ext, to rotate the ray in the world
 			
-			if (raycast4_box(propBBoxMinPushed, propBBoxMaxPushed, rayStart, rayDir))
+			//if (raycast4_box(propBBoxMinPushed, propBBoxMaxPushed, rayStart, rayDir))
+			if (raycast4_box_rotated(
+				propBBox.center.add(Vector3FromTranslation(prop)),
+				propBBox.extents.multiplyComponent(Vector3FromScale(prop)),
+				propRotation,
+				true,
+				rayStart, rayDir))
 			{
 				if (raycast4_get_hit_distance() < closestDist)
 				{

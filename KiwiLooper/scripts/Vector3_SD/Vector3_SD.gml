@@ -216,3 +216,16 @@ function Vector3FromArray(array)
 {
 	return new Vector3(array[0], array[1], array[2]);
 }
+
+/// @function Vector3FromTranslation(structure)
+/// @desc Creates a Vector3 from an input structure.
+function Vector3FromTranslation(structure)
+{
+	return new Vector3(structure.x, structure.y, structure.z);
+}
+/// @function Vector3FromScale(structure)
+/// @desc Creates a Vector3 from an input structure.
+function Vector3FromScale(structure)
+{
+	return new Vector3(structure.xscale, structure.yscale, structure.zscale);
+}

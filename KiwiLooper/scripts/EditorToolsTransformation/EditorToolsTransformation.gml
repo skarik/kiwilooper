@@ -101,3 +101,16 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		}
 	};
 }
+
+/// @function AEditorToolStateRotate() constructor
+function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
+{
+	onBegin = function()
+	{
+		Parent_onBegin();
+		
+		m_transformGizmo = m_editor.EditorGizmoGet(AEditorGizmoPointRotate);
+		m_transformGizmo.SetInvisible();
+		m_transformGizmo.SetDisabled();
+	};
+}
