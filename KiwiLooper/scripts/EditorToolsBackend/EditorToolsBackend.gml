@@ -140,6 +140,10 @@ function EditorToolsUpdate()
 	{
 		toolCurrentRequested = kEditorToolTranslate;
 	}
+	if (keyboard_check_pressed(ord("E")))
+	{
+		toolCurrentRequested = kEditorToolRotate;
+	}
 	
 	// Hard-coded command overrides:
 	

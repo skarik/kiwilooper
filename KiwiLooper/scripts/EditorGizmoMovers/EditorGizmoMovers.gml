@@ -380,6 +380,10 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 /// @desc Editor gizmo for rotating objects around.
 function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 {
+	xrotation = 0;
+	yrotation = 0;
+	zrotation = 0;
+	
 	Step = function()
 	{
 		// Calculate the sizing based on the distance to the gizmo:
@@ -387,6 +391,8 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		var kBorderExpand = 1 * kScreensizeFactor;
 		var kAxisLength = 32 * kScreensizeFactor;
 		var kArrowHalfsize = 5 * kScreensizeFactor;
+		var kInnerWidth = 8 * kScreensizeFactor;
+		var kInnerLength = kAxisLength - kInnerWidth;
 		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
 		var pixelY = m_editor.vPosition - GameCamera.view_y;
@@ -410,24 +416,41 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
 		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
 		
-		// Check collision with each axis.
+		// Check collision with each axis, finding closest one
+		var min_hit_distance = null;
 		for (var check_index = 0; check_index < 3; ++check_index)
 		{
+			var hasHit = false;
+			
 			var check_orderLookup = check_depthOrder[check_index][0];
 			if (check_orderLookup == 0)
 			{
-				m_mouseOverX = raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverX) break;
+				hasHit = raycast4_box(new Vector3(x - 2, y - kAxisLength, z - kAxisLength), new Vector3(x + 2, y + kAxisLength, z + kAxisLength), rayStart, rayDir);
 			}
 			if (check_orderLookup == 1)
 			{
-				m_mouseOverY = raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverY) break;
+				hasHit = raycast4_box(new Vector3(x - kAxisLength, y - 2, z - kAxisLength), new Vector3(x + kAxisLength, y + 2, z + kAxisLength), rayStart, rayDir);
 			}
 			if (check_orderLookup == 2)
 			{
-				m_mouseOverZ = raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir);
-				if (m_mouseOverZ) break;
+				hasHit = raycast4_box(new Vector3(x - kAxisLength, y - kAxisLength, z - 2), new Vector3(x + kAxisLength, y + kAxisLength, z + 2), rayStart, rayDir);
+			}
+			
+			if (hasHit)
+			{
+				if (min_hit_distance == null || raycast4_get_hit_distance() < min_hit_distance)
+				{
+					min_hit_distance = raycast4_get_hit_distance();
+					m_mouseOverX = false;
+					m_mouseOverY = false;
+					m_mouseOverZ = false;
+					if (check_orderLookup == 0)
+						m_mouseOverX = true;
+					else if (check_orderLookup == 1)
+						m_mouseOverY = true;
+					else if (check_orderLookup == 2)
+						m_mouseOverZ = true;
+				}
 			}
 		}
 		
@@ -456,15 +479,15 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		{
 			if (m_dragX)
 			{
-				x += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				xrotation += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
 			}
 			if (m_dragY)
 			{
-				y += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				yrotation += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
 			}
 			if (m_dragZ)
 			{
-				z += (m_editor.viewrayPixel[2] - m_editor.viewrayPixelPrevious[2]) * 1200 * kScreensizeFactor;
+				zrotation += (m_editor.viewrayPixel[2] - m_editor.viewrayPixelPrevious[2]) * 1200 * kScreensizeFactor;
 			}
 		}
 		
@@ -473,6 +496,26 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 			m_dragX = false;
 			m_dragY = false;
 			m_dragZ = false;
+		}
+		
+		// If dragging, override the hover states for rendering
+		if (m_dragX)
+		{
+			m_mouseOverX = true;
+			m_mouseOverY = false;
+			m_mouseOverZ = false;
+		}
+		else if (m_dragY)
+		{
+			m_mouseOverX = false;
+			m_mouseOverY = true;
+			m_mouseOverZ = false;
+		}
+		else if (m_dragZ)
+		{
+			m_mouseOverX = false;
+			m_mouseOverY = false;
+			m_mouseOverZ = true;
 		}
 		
 		// Update the visuals
@@ -488,15 +531,85 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 				var zcolor = m_mouseOverZ ? c_white : c_midblue;
 				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
 				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));*/
-				var kAngleDiv = 180 / 12;
-				for (var i = 0; i < 180; i += kAngleDiv)
+				
+				
+				var kAngleDiv = 180 / 10;
+				
+				var kAngleMinZ = (m_editor.viewrayForward[1] > 0) ? 0 : 180;
+				var kAngleMaxZ = kAngleMinZ + 180;
+				var zcolor = m_mouseOverZ ? c_white : c_midblue;
+				
+				// Draw the Z rotation axes
+				for (var i = kAngleMinZ; i < kAngleMaxZ; i += kAngleDiv)
 				{
+					if (m_mouseOverZ)
+					{
+						MeshbAddLine(
+							m_mesh, c_midblue,
+							kBorderExpand * 0.5,
+							kInnerLength * 2 * pi * (kAngleDiv / 360),
+							new Vector3(lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0),
+							new Vector3(x + lengthdir_x(kInnerLength, i), y + lengthdir_y(kInnerLength, i), z)
+							);
+					}
 					MeshbAddLine(
-						m_mesh, c_midblue,
+						m_mesh, zcolor,
 						kBorderExpand * 0.5,
 						kAxisLength * 2 * pi * (kAngleDiv / 360),
 						new Vector3(lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0),
 						new Vector3(x + lengthdir_x(kAxisLength, i), y + lengthdir_y(kAxisLength, i), z)
+						);
+				}
+				
+				var kAngleMinX = (m_editor.viewrayForward[2] > 0) ? 0 : 180;
+				var kAngleMaxX = kAngleMinX + 180;
+				var xcolor = m_mouseOverX ? c_white : c_red;
+				
+				// Draw the X rotation axes
+				for (var i = kAngleMinX; i < kAngleMaxX; i += kAngleDiv)
+				{
+					if (m_mouseOverX)
+					{
+						MeshbAddLine(
+							m_mesh, c_red,
+							kBorderExpand * 0.5,
+							kInnerLength * 2 * pi * (kAngleDiv / 360),
+							new Vector3(0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5)),
+							new Vector3(x, y + lengthdir_x(kInnerLength, i), z + lengthdir_y(kInnerLength, i))
+							);
+					}
+					MeshbAddLine(
+						m_mesh, xcolor,
+						kBorderExpand * 0.5,
+						kAxisLength * 2 * pi * (kAngleDiv / 360),
+						new Vector3(0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5)),
+						new Vector3(x, y + lengthdir_x(kAxisLength, i), z + lengthdir_y(kAxisLength, i))
+						);
+				}
+				
+				var kAngleMinY = (m_editor.viewrayForward[0] > 0) ? 0 : 180;
+				var kAngleMaxY = kAngleMinY + 180;
+				var ycolor = m_mouseOverY ? c_white : c_midgreen;
+				
+				// Draw the Z rotation axes
+				for (var i = kAngleMinY; i < kAngleMaxY; i += kAngleDiv)
+				{
+					if (m_mouseOverY)
+					{
+						MeshbAddLine(
+							m_mesh, c_midgreen,
+							kBorderExpand * 0.5,
+							kInnerLength * 2 * pi * (kAngleDiv / 360),
+							new Vector3(lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5)),
+							new Vector3(x + lengthdir_y(kInnerLength, i), y, z + lengthdir_x(kInnerLength, i))
+							);
+					}
+					MeshbAddLine(
+						m_mesh, ycolor,
+						kBorderExpand * 0.5,
+						kAxisLength * 2 * pi * (kAngleDiv / 360),
+						new Vector3(lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5)),
+						new Vector3(x + lengthdir_y(kAxisLength, i), y, z + lengthdir_x(kAxisLength, i))
 						);
 				}
 			}
