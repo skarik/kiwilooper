@@ -28,6 +28,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			m_window = m_editor.EditorWindowAlloc(AEditorWindowEntSpawn);
 		}
 		m_editor.EditorWindowSetFocus(m_window);
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place position for new selected entity, or drag from entity list. ESC to reset.";
 	}
 	onEnd = function(trueEnd)
 	{
@@ -159,6 +161,8 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 		m_window.InitPropListing();
 		
 		m_editor.EditorWindowSetFocus(m_window);
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place position for new selected prop, or drag from prop list. ESC to reset.";
 	}
 	onEnd = function(trueEnd)
 	{

@@ -72,7 +72,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 		m_gizmo.m_color = c_gold;
 		m_gizmo.m_alpha = 0.75;
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click-drag to create tiles. Enter to commit changes.";
+		m_editor.m_statusbar.m_toolHelpText = "Click-drag to create a ghost. Enter to change ghost to tiles. Alt-Enter to use ghost to subtract.";
 	};
 	onEnd = function(trueEnd)
 	{

@@ -50,6 +50,16 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static InitWithEntityInfo = function(entityInstance, entityInfo)
 	{
+		// Stop editing:
+		if (GetCurrentEntity() != entityInstance || editing_target != kEditorSelection_None)
+		{
+			if (property_editing)
+			{
+				PropertyChangeEnd();
+			}
+			// TODO: Reset the focused/mouseover if the keyvalue doesnt match
+		}
+		
 		entity_instance	= entityInstance;
 		entity_info		= entityInfo;
 		editing_target	= kEditorSelection_None;
@@ -112,6 +122,11 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
 		{
 			var property = entity_info.properties[iProperty];
+			
+			// Skip properties currently being edited
+			if (iProperty == property_focused && property_editing && focused)
+				continue;
+			
 			if (entpropIsSpecialTransform(property))
 			{
 				property_values[iProperty] = entpropToString(instance, property);
@@ -121,6 +136,16 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static InitWithProp = function(prop)
 	{
+		// Stop editing:
+		if (GetCurrentEntity() != prop.Id() || editing_target != kEditorSelection_Prop)
+		{
+			if (property_editing)
+			{
+				PropertyChangeEnd();
+			}
+			// TODO: Reset the focused/mouseover if the keyvalue doesnt match
+		}
+		
 		entity_instance	= prop.Id();
 		entity_info		= null;
 		prop_instance	= prop;
@@ -255,7 +280,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			if (property_focused == null)
 			{
 				property_focused = 0;
-				PropertyChangeBegin()
+				PropertyChangeBegin();
 			}
 			else
 			{

@@ -12,10 +12,12 @@
 #macro kEditorToolScale			11
 #macro kEditorTool_MAX			12
 
-#macro kEditorToolButtonStateNone	0
-#macro kEditorToolButtonStateMake	1
-#macro kEditorToolButtonStateHeld	2
-#macro kEditorToolButtonStateBreak	3
+#macro kEditorToolButtonStateNone	0x01
+#macro kEditorToolButtonStateMake	0x02
+#macro kEditorToolButtonStateHeld	0x04
+#macro kEditorToolButtonStateBreak	0x08
+#macro kEditorToolButtonFlagInside	0x00
+#macro kEditorToolButtonFlagOutside	0x10
 
 #macro kEditorButtonWheelUp		0x1001
 #macro kEditorButtonWheelDown	0x1002

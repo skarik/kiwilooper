@@ -18,6 +18,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		m_transformGizmo = m_editor.EditorGizmoGet(AEditorGizmoPointMove);
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to move along an axis. Hold Alt to toggle snapping.";
 	};
 	onEnd = function(trueEnd)
 	{
@@ -112,6 +114,8 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 		m_transformGizmo = m_editor.EditorGizmoGet(AEditorGizmoPointRotate);
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to rotate around an axis. Hold Alt to toggle snapping.";
 	};
 	
 	onStep = function()

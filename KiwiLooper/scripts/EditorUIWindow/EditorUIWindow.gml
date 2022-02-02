@@ -302,6 +302,16 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		}
 	}
 	
+	static RunMouseEvent = function(check_window, mouseX, mouseY, currentButton, event)
+	{
+		var bMouseInsideClientArea = check_window.contains_mouse && point_in_rectangle(mouseX, mouseY,
+			check_window.m_position.x, check_window.m_position.y,
+			check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y);
+				
+		if (!check_window.disabled)
+			check_window.onMouseEvent(mouseX, mouseY, currentButton, event | (bMouseInsideClientArea ? kEditorToolButtonFlagInside : kEditorToolButtonFlagOutside));
+	}
+	
 	// Poll and forward mouse states:
 	var mouse_buttons = [mb_left, mb_right, mb_middle, /*mouse wheels included*/];
 	for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)
@@ -312,27 +322,21 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		{
 			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 			{
-				var check_window = windows[iWindow];
-				if (!check_window.disabled)
-					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateMake);
+				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateMake);
 			}
 		}
 		if (mouse_check_button_released(currentButton))
 		{
 			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 			{
-				var check_window = windows[iWindow];
-				if (!check_window.disabled)
-					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateBreak);
+				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateBreak);
 			}
 		}
 		if (mouse_check_button(currentButton))
 		{
 			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 			{
-				var check_window = windows[iWindow];
-				if (!check_window.disabled)
-					check_window.onMouseEvent(mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
+				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
 			}
 		}
 	}
@@ -340,18 +344,14 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	{
 		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 		{
-			var check_window = windows[iWindow];
-			if (!check_window.disabled)
-				check_window.onMouseEvent(mouseX, mouseY, kEditorButtonWheelUp, kEditorToolButtonStateMake);
+			RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelUp, kEditorToolButtonStateMake);
 		}
 	}
 	if (mouse_wheel_down())
 	{
 		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 		{
-			var check_window = windows[iWindow];
-			if (!check_window.disabled)
-				check_window.onMouseEvent(mouseX, mouseY, kEditorButtonWheelDown, kEditorToolButtonStateMake);
+			RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelDown, kEditorToolButtonStateMake);
 		}
 	}
 	

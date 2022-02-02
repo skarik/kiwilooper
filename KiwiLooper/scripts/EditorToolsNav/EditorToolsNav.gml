@@ -14,6 +14,8 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoSelectBox);
 		m_gizmo.SetVisible();
 		m_gizmo.SetEnabled();
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects.";
 	};
 	onEnd = function(trueEnd)
 	{
