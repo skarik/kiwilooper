@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Core Extended/File IO.yy",
   },
   "resourceVersion": "1.0",
-  "name": "fioTextOpenRead",
+  "name": "fio",
   "tags": [],
   "resourceType": "GMScript",
 }

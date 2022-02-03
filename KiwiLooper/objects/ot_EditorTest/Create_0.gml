@@ -11,70 +11,9 @@ z = 0;
 
 EditorToolsSetup();
 
-// An unordered array of all map tiles.
-mapTiles = [];
-// List of all used heights.
-mapUsedHeights = [];
-
-MapGetPosition = function(x, y)
-{
-	for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
-	{
-		var tileInfo = mapTiles[tileIndex];
-		if (tileInfo.x == x && tileInfo.y == y)
-		{
-			return tileInfo;
-		}
-	}
-	return null;
-}
-MapGetPositionIndex = function(x, y)
-{
-	for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
-	{
-		var tileInfo = mapTiles[tileIndex];
-		if (tileInfo.x == x && tileInfo.y == y)
-		{
-			return tileIndex;
-		}
-	}
-	return -1;
-}
-
-MapHasPosition = function(x, y)
-{
-	return is_struct(MapGetPosition(x, y));
-}
-
-MapAddHeight = function(height)
-{
-	if (!array_contains(mapUsedHeights, height))
-	{
-		array_push(mapUsedHeights, height);
-	}
-}
-MapRemoveHeightSlow = function(height)
-{
-	for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
-	{
-		var tileInfo = mapTiles[tileIndex];
-		if (tileInfo.height == height)
-		{
-			return;
-		}
-	}
-	for (var heightIndex = 0; heightIndex < array_length(mapUsedHeights); ++heightIndex)
-	{
-		if (mapUsedHeights[heightIndex] == height)
-		{
-			array_delete(mapUsedHeights, heightIndex, 1);
-		}
-	}
-}
-
 // List of all layers currently used for the tiles and props.
 intermediateLayers = [];
-
+// Rebuilds all the graphics for the map: props & tilemap
 MapRebuildGraphics = function()
 {
 	// Delete existing renderers
@@ -91,19 +30,19 @@ MapRebuildGraphics = function()
 	// Set up the layers
 	{
 		// Start with the floors
-		for (var layerIndex = 0; layerIndex < array_length(mapUsedHeights); ++layerIndex)
+		for (var layerIndex = 0; layerIndex < array_length(m_tilemap.usedHeights); ++layerIndex)
 		{
-			var layerHeight = mapUsedHeights[layerIndex];
+			var layerHeight = m_tilemap.usedHeights[layerIndex];
 			assert(is_real(layerHeight) || is_int32(layerHeight) || is_int64(layerHeight));
 		
 			var newTileLayer = layer_create(100 - layerHeight, "floor" + string(layerHeight));
 			array_push(intermediateLayers, newTileLayer);
 			
 			var tilemap = layer_tilemap_create(newTileLayer, 0, 0, tileset_lab0, 256, 256);
-			for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
+			for (var tileIndex = 0; tileIndex < array_length(m_tilemap.tiles); ++tileIndex)
 			{
 				// If tile matches the height, then we add it to the rendering
-				var tileInfo = mapTiles[tileIndex];
+				var tileInfo = m_tilemap.tiles[tileIndex];
 				if (tileInfo.height == layerHeight)
 				{
 					tilemap_set(tilemap, tile_set_index(0, tileInfo.floorType), tileInfo.x, tileInfo.y);
@@ -118,9 +57,9 @@ MapRebuildGraphics = function()
 			
 			// TODO: only add walls to tiles with a lower height.
 			var tilemap = layer_tilemap_create(newTileLayer, 0, 0, tileset_lab0, 256, 256);
-			for (var tileIndex = 0; tileIndex < array_length(mapTiles); ++tileIndex)
+			for (var tileIndex = 0; tileIndex < array_length(m_tilemap.tiles); ++tileIndex)
 			{
-				var tileInfo = mapTiles[tileIndex];
+				var tileInfo = m_tilemap.tiles[tileIndex];
 				tilemap_set(tilemap, tile_set_index(0, tileInfo.wallType), tileInfo.x, tileInfo.y);
 			}
 		}
@@ -160,4 +99,6 @@ MapRebuilPropsOnly = function()
 EditorUIBitsSetup();
 EditorCameraSetup();
 EditorGizmoSetup();
+
+EditorTileMapSetup();
 EditorPropMapSetup();

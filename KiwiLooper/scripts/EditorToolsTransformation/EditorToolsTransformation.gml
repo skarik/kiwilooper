@@ -10,6 +10,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	
 	m_transformGizmoConsumingMouse = false;
 	m_transformGizmoWasConsumingMouse = false;
+	m_previousTarget = null;
 	
 	onBegin = function()
 	{
@@ -46,7 +47,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			}
 			
 			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
-			if (!m_transformGizmo.m_enabled)
+			if (!m_transformGizmo.m_enabled || m_previousTarget != target)
 			{
 				m_transformGizmo.SetVisible();
 				m_transformGizmo.SetEnabled();
@@ -54,6 +55,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				m_transformGizmo.x = target.x;
 				m_transformGizmo.y = target.y;
 				m_transformGizmo.z = target.z;
+				
+				m_previousTarget = target;
 			}
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
@@ -139,7 +142,7 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 			m_transformGizmo.z = target.z;
 			
 			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
-			if (!m_transformGizmo.m_enabled)
+			if (!m_transformGizmo.m_enabled || m_previousTarget != target)
 			{
 				m_transformGizmo.SetVisible();
 				m_transformGizmo.SetEnabled();
@@ -150,6 +153,8 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 					m_transformGizmo.yrotation = target.yrotation;
 					m_transformGizmo.zrotation = target.zrotation;
 				}
+				
+				m_previousTarget = target;
 			}
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else

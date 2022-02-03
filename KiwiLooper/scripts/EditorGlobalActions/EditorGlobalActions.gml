@@ -62,3 +62,16 @@ function EditorGlobalSignalTransformChange(entity)
 		}
 	}
 }
+
+function EditorGlobalSaveMap()
+{
+}
+
+function EditorGlobalLoadMap()
+{
+}
+
+// have a layer for the map info
+
+// MapLoadTilemap(filedata, tilemap)
+// MapSaveTilemap(filedata, tilemap)

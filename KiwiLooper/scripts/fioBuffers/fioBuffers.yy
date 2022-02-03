@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Core Extended/File IO.yy",
   },
   "resourceVersion": "1.0",
-  "name": "fioSearchDirectories",
+  "name": "fioBuffers",
   "tags": [],
   "resourceType": "GMScript",
 }

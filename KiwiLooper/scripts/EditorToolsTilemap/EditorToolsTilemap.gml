@@ -169,7 +169,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 					{
 						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
 						{
-							var existingTile = MapGetPosition(ix, iy);
+							var existingTile = m_tilemap.GetPosition(ix, iy);
 							// create a new block at position if it doesn't exist yet
 							if (!is_struct(existingTile))
 							{
@@ -178,21 +178,21 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 								maptile.y = iy;
 								maptile.height = kInputHeight;
 								
-								array_push(mapTiles, maptile);
+								m_tilemap.AddTile(maptile);
 							}
 							// otherwise, heighten the block if it's lower than the gizmo height
 							else
 							{
 								if (existingTile.height < kInputHeight)
 								{
-									MapRemoveHeightSlow(existingTile.height); // TODO: defer this.
+									m_tilemap.RemoveHeightSlow(existingTile.height); // TODO: defer this.
 									existingTile.height = kInputHeight;
 								}
 							}
 						}
 					}
 					
-					MapAddHeight(kInputHeight);
+					m_tilemap.AddHeight(kInputHeight);
 					MapRebuildGraphics();
 				}
 				
@@ -216,33 +216,33 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 					{
 						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
 						{
-							var existingTileIndex = MapGetPositionIndex(ix, iy);
+							var existingTileIndex = m_tilemap.GetPositionIndex(ix, iy);
 							
 							if (existingTileIndex >= 0)
 							{
-								var existingTile = mapTiles[existingTileIndex];
+								var existingTile = m_tilemap.tiles[existingTileIndex];
 								
 								// lower the height of the tile if the input height is high enough
 								if (kInputHeight >= 0)
 								{
 									if (existingTile.height > kInputHeight)
 									{
-										MapRemoveHeightSlow(existingTile.height); // TODO: defer this.
+										m_tilemap.RemoveHeightSlow(existingTile.height); // TODO: defer this.
 										existingTile.height = kInputHeight;
 									}
 								}
 								// otherwise, we delete the tile
 								else
 								{
-									MapRemoveHeightSlow(existingTile.height);
-									array_delete(mapTiles, existingTileIndex, 1); // TODO: defer this.
+									m_tilemap.RemoveHeightSlow(existingTile.height);
+									m_tilemap.DeleteTileIndex(existingTileIndex); // TODO: defer this.
 								}
 							}
 						}
 					}
 					
 					if (kInputHeight >= 0)
-						MapAddHeight(kInputHeight);
+						m_tilemap.AddHeight(kInputHeight);
 					MapRebuildGraphics();
 				}
 				
@@ -263,12 +263,12 @@ function AEditorToolStateTileHeight() : AEditorToolState() constructor
 		{
 			with (m_editor)
 			{
-				var maptile = MapGetPosition(toolTileX, toolTileY);
+				var maptile = m_tilemap.GetPosition(toolTileX, toolTileY);
 				if (is_struct(maptile))
 				{
-					MapRemoveHeightSlow(maptile.height);
+					m_tilemap.RemoveHeightSlow(maptile.height);
 					maptile.height += 1;
-					MapAddHeight(maptile.height);
+					m_tilemap.AddHeight(maptile.height);
 				
 					MapRebuildGraphics();
 				}
@@ -278,12 +278,12 @@ function AEditorToolStateTileHeight() : AEditorToolState() constructor
 		{
 			with (m_editor)
 			{
-				var maptile = MapGetPosition(toolTileX, toolTileY);
+				var maptile = m_tilemap.GetPosition(toolTileX, toolTileY);
 				if (is_struct(maptile))
 				{
-					MapRemoveHeightSlow(maptile.height);
+					m_tilemap.RemoveHeightSlow(maptile.height);
 					maptile.height = max(0, maptile.height - 1);
-					MapAddHeight(maptile.height);
+					m_tilemap.AddHeight(maptile.height);
 				
 					MapRebuildGraphics();
 				}
