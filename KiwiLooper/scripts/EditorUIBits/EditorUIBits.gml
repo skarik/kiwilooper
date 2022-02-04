@@ -25,6 +25,27 @@ function EditorUIBitsSetup()
 		m_toolbar.AddElement(AToolbarElementAsToolButtonInfo(suie_toolsetTexture, 1, "Splats", kEditorToolSplats));
 	}
 	
+	// Create top bar
+	{
+		m_actionbar = new AToolbarTop();
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 0, "New", null, null, EditorGlobalNewMap));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 1, "\"New\"ke", null, null, EditorGlobalNukeMap));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 3, "Load", null, null, EditorGlobalLoadMap));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 2, "Save", null, null, EditorGlobalSaveMap));
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 6, "Redo (No Effect)", null, null, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 5, "Undo (No Effect)", null, null, null));
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", null, null));
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid", null, null, function(){ return true; }));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 8, "Larger Grid", null, null, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 9, "Smaller Grid", null, null, null));
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 11, "Rebuild static lighting", "Toast Lights", null, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 12, "Rebuild navigation information", "Cook AI", null, null));
+	}
+	
 	// Create status bar
 	m_statusbar = new AEditorStatusbar(this);
 	
@@ -41,8 +62,12 @@ function EditorUIBitsUpdate()
 	var l_mouseY = vPosition - GameCamera.view_y;
 	
 	m_toolbar.x = 0;
-	m_toolbar.y = 20;
+	m_toolbar.y = 18;
 	m_toolbar.Step(l_mouseX, l_mouseY);
+	
+	m_actionbar.x = 0;
+	m_actionbar.y = 0;
+	m_actionbar.Step(l_mouseX, l_mouseY);
 	
 	m_statusbar.Step();
 	
@@ -66,6 +91,7 @@ function EditorUIBitsDraw()
 	EditorWindowingDraw();
 	
 	m_toolbar.Draw();
+	m_actionbar.Draw();
 	
 	// Statusbar over everything
 	m_statusbar.Draw();

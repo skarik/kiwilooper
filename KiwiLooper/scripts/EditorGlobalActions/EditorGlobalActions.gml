@@ -71,6 +71,14 @@ function EditorGlobalLoadMap()
 {
 }
 
+function EditorGlobalNewMap()
+{
+}
+
+function EditorGlobalNukeMap()
+{
+}
+
 // have a layer for the map info
 
 // MapLoadTilemap(filedata, tilemap)

@@ -2,9 +2,9 @@
 /// @notes A toolbar for rendering a vertical selection menu.
 function AToolbar() constructor
 {
-	kButtonSize		= 22;
-	kSpacerSize		= 3;
-	kTooltipShowTime= 0.5;
+	static kButtonSize		= 22;
+	static kSpacerSize		= 3;
+	static kTooltipShowTime	= 0.5;
 	
 	m_elements		= [];
 	m_elementsCount	= 0;
@@ -143,6 +143,7 @@ function AToolbarElement() constructor
 	m_sprite		= sui_handy;
 	m_spriteIndex	= 0;
 	m_tooltip		= "Handy";
+	m_text			= null;
 	
 	m_state_isHovered	= false;
 	m_state_hoveredTime	= 0.0;
@@ -189,4 +190,9 @@ function AToolbarElementAsToolButtonInfo(sprite, spriteIndex, tooltip, editorSta
 		};
 	}
 	return button;
+}
+/// @function AToolbarElementAsSpacer()
+function AToolbarElementAsSpacer()
+{
+	return new AToolbarElement();
 }
