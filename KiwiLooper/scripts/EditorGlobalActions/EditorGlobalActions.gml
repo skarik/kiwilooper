@@ -65,6 +65,12 @@ function EditorGlobalSignalTransformChange(entity)
 
 function EditorGlobalSaveMap()
 {
+	var filedata = new AMapFiledata();
+	
+	MapSaveTilemap(filedata, ot_EditorTest.m_tilemap);
+	MapSaveFiledata("test.map", filedata);
+	
+	delete filedata;
 }
 
 function EditorGlobalLoadMap()

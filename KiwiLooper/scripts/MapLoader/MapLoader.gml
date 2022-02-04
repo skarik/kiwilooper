@@ -117,20 +117,21 @@ function MapSaveFiledata(filepath, filedata)
 	// Save the blobs to the temp buffer
 	if (filedata.blob_tilemap != null)
 	{
-		WriteBlob(outbuffer, blob, kMapHeaderWord_Tilemap);
+		WriteBlob(outbuffer, filedata.blob_tilemap, kMapHeaderWord_Tilemap);
 	}
 	if (filedata.blob_props != null)
 	{
-		WriteBlob(outbuffer, blob, kMapHeaderWord_Props);
+		WriteBlob(outbuffer, filedata.blob_props, kMapHeaderWord_Props);
 	}
 	if (filedata.blob_entities != null)
 	{
-		WriteBlob(outbuffer, blob, kMapHeaderWord_Entities);
+		WriteBlob(outbuffer, filedata.blob_entities, kMapHeaderWord_Entities);
 	}
 	
 	// Save the information
-	var absolutePath = fioLocalFileFindAbsoluteFilepath(filepath);
-	buffer_save(outbuffer, absolutePath);
+	//var absolutePath = fioLocalFileFindAbsoluteFilepath(filepath);
+	//buffer_save(outbuffer, absolutePath);
+	buffer_save(outbuffer, filepath);
 	
 	// Done with the data
 	buffer_delete(outbuffer);

@@ -28,10 +28,10 @@ function EditorUIBitsSetup()
 	// Create top bar
 	{
 		m_actionbar = new AToolbarTop();
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 0, "New", null, null, EditorGlobalNewMap));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 1, "\"New\"ke", null, null, EditorGlobalNukeMap));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 3, "Load", null, null, EditorGlobalLoadMap));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 2, "Save", null, null, EditorGlobalSaveMap));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 0, "New", null, EditorGlobalNewMap, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 1, "\"New\"ke", null, EditorGlobalNukeMap, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 3, "Load", null, EditorGlobalLoadMap, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 2, "Save", null, EditorGlobalSaveMap, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 6, "Redo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 5, "Undo (No Effect)", null, null, null));
