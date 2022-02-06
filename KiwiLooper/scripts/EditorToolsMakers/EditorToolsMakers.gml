@@ -64,6 +64,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.y = m_gizmo.y;
 					ent.z = m_gizmo.z;
 					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
+					
+					m_editor.m_entityInstList.Add(ent);
 				}
 				else
 				{
@@ -79,6 +81,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.yrotation = 0.0;
 					ent.zrotation = 0.0;
 					ent.entity = m_entityToMake;
+					
+					m_editor.m_entityInstList.Add(ent);
 				}
 			}
 			else if (keyboard_check_pressed(vk_backspace)

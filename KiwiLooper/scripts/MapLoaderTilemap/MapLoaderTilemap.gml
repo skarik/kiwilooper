@@ -5,6 +5,7 @@
 function MapLoadTilemap(filedata, tilemap)
 {
 	var buffer = filedata.blob_tilemap;
+	if (buffer == null) return;
 	buffer_seek(buffer, buffer_seek_start, 0);
 	
 	// Tilemap formats:

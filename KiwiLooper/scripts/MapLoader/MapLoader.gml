@@ -96,6 +96,18 @@ function MapSaveFiledata(filepath, filedata)
 	//	u64		size
 	//	u8[]	blob
 	
+	static GetSize = function(blob)
+	{
+		if (blob != null)
+		{
+			return buffer_get_size(blob)
+				+ 4		// type
+				+ 4		// crc32 checksum
+				+ 8;	// size
+		}
+		return 0;
+	}
+	
 	static WriteBlob = function(outbuffer, blob, type)
 	{
 		var size = buffer_get_size(blob);
@@ -106,13 +118,16 @@ function MapSaveFiledata(filepath, filedata)
 		buffer_write(outbuffer, buffer_u64, size);
 		
 		var cursor = buffer_tell(outbuffer);
-		buffer_resize(outbuffer, buffer_get_size(outbuffer) + size);
 		buffer_copy(blob, 0, size, outbuffer, cursor);
-		buffer_seek(outbuffer, cursor + size, buffer_seek_start);
+		buffer_seek(outbuffer, buffer_seek_start, cursor + size);
 	}
 	
+	var total_size = GetSize(filedata.blob_tilemap)
+		+ GetSize(filedata.blob_props)
+		+ GetSize(filedata.blob_entities);
+	
 	// Create a slow temp buffer for writing
-	var outbuffer = buffer_create(0, buffer_grow, 1);
+	var outbuffer = buffer_create(total_size, buffer_fixed, 1);
 	
 	// Save the blobs to the temp buffer
 	if (filedata.blob_tilemap != null)

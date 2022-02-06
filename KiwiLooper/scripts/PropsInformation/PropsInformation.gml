@@ -74,3 +74,18 @@ function PropGetBBox( prop_sprite )
 	
 	return new BBox3(null, null); // Should crash here.
 }
+
+function PropFindAssetByName(name)
+{
+	var props = tag_get_asset_ids("objects", asset_sprite);
+	for (var i = 0; i < array_length(props); ++i)
+	{
+		var propSprite = props[i];
+		
+		if (string_pos(name, sprite_get_name(propSprite)) != 0)
+		{
+			return propSprite;
+		}
+	}
+	return null;
+}

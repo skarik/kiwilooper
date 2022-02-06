@@ -102,3 +102,4 @@ EditorGizmoSetup();
 
 EditorTileMapSetup();
 EditorPropMapSetup();
+m_entityInstList = new AEntityList();

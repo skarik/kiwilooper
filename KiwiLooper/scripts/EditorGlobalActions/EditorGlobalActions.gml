@@ -10,14 +10,20 @@ function EditorGlobalDeleteSelection()
 		{
 			switch (currentSelection.type)
 			{
-			case kEditorObjectTypeTile:
+			case kEditorSelection_Tile:
 				// TODO: Remove the given tile mentioned in XYZ.
+				break;
+				
+			case kEditorSelection_Prop:
+				m_propmap.RemoveProp(currentSelection.object);
+				delete currentSelection.object;
 				break;
 			}
 		}
 		// Is it an object selection?
 		else if (iexists(currentSelection))
 		{
+			m_entityInstList.Remove(currentSelection); // Remove it from the entlist.
 			idelete(currentSelection);
 		}
 	}
@@ -63,18 +69,46 @@ function EditorGlobalSignalTransformChange(entity)
 	}
 }
 
+//=============================================================================
+
 function EditorGlobalSaveMap()
+{
+	EditorGlobalSaveMap_Work("test.map");
+}
+function EditorGlobalSaveMap_Work(filepath)
 {
 	var filedata = new AMapFiledata();
 	
 	MapSaveTilemap(filedata, ot_EditorTest.m_tilemap);
-	MapSaveFiledata("test.map", filedata);
+	MapSaveProps(filedata, ot_EditorTest.m_propmap);
+	MapSaveEntities(filedata, ot_EditorTest.m_entityInstList);
+	
+	MapSaveFiledata(filepath, filedata);
+	MapFreeFiledata(filedata);
 	
 	delete filedata;
 }
 
 function EditorGlobalLoadMap()
 {
+	EditorGlobalNukeMap();
+	EditorGlobalLoadMap_Work("test.map");
+	
+	with (ot_EditorTest)
+	{
+		MapRebuildGraphics();
+	}
+}
+function EditorGlobalLoadMap_Work(filepath)
+{
+	var filedata = MapLoadFiledata(filepath);
+	
+	MapLoadTilemap(filedata, ot_EditorTest.m_tilemap);
+	MapLoadProps(filedata, ot_EditorTest.m_propmap);
+	MapLoadEntities(filedata, ot_EditorTest.m_entityInstList);
+	
+	MapFreeFiledata(filedata);
+	delete filedata;
 }
 
 function EditorGlobalNewMap()
