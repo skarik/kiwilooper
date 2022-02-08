@@ -20,6 +20,12 @@ function ATilemap() constructor
 	// List of all used heights.
 	usedHeights = [];
 	
+	static Clear = function()
+	{
+		tiles = [];
+		usedHeights = [];
+	}
+	
 	static AddTile = function(tile)
 	{
 		array_push(tiles, tile);

@@ -3,6 +3,15 @@ function AEntityList() constructor
 {
 	entities = [];
 	
+	static Clear = function()
+	{
+		for (var i = 0; i < GetEntityCount(); ++i)
+		{
+			idelete(entities[i]);
+		}
+		entities = [];
+	}
+	
 	static GetEntities = function()
 	{
 		gml_pragma("forceinline");

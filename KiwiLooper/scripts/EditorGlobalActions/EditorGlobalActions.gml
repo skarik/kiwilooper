@@ -78,7 +78,13 @@ function EditorGlobalSignalTransformChange(entity)
 
 function EditorGlobalSaveMap()
 {
-	EditorGlobalSaveMap_Work("test.map");
+	var default_name = "untitled.kmf";
+	var map_filename = get_save_filename_ext("Tallymarks Map (.kmf)|*.kmf", default_name, fioLocalPathFindAbsoluteFilepath("maps"), "Save Map As");
+	
+	if (map_filename != "")
+	{
+		EditorGlobalSaveMap_Work(map_filename);
+	}
 }
 function EditorGlobalSaveMap_Work(filepath)
 {
@@ -96,12 +102,17 @@ function EditorGlobalSaveMap_Work(filepath)
 
 function EditorGlobalLoadMap()
 {
-	EditorGlobalNukeMap();
-	EditorGlobalLoadMap_Work("test.map");
+	var map_filename = get_open_filename_ext("Tallymarks File (.kmf)|*.kmf", "", fioLocalPathFindAbsoluteFilepath("maps"), "Open Map");
 	
-	with (EditorGet())
+	if (map_filename != "")
 	{
-		MapRebuildGraphics();
+		EditorGlobalNukeMap_Work();
+		EditorGlobalLoadMap_Work(map_filename);
+	
+		with (EditorGet())
+		{
+			MapRebuildGraphics();
+		}
 	}
 }
 function EditorGlobalLoadMap_Work(filepath)
@@ -118,13 +129,31 @@ function EditorGlobalLoadMap_Work(filepath)
 
 function EditorGlobalNewMap()
 {
+	// TODO: wait to ask
+	EditorGlobalNukeMap();
 }
 
 function EditorGlobalNukeMap()
 {
+	// TODO: wait to ask
+	EditorGlobalNukeMap_Work();
+	with (EditorGet())
+	{
+		MapRebuildGraphics();
+	}
 }
 
-// have a layer for the map info
+function EditorGlobalNukeMap_Work()
+{
+	with (EditorGet())
+	{
+		// Go through the tiles
+		m_tilemap.Clear();
+		
+		// Go through the props
+		m_propmap.Clear();
 
-// MapLoadTilemap(filedata, tilemap)
-// MapSaveTilemap(filedata, tilemap)
+		// Go through the ents
+		m_entityInstList.Clear(); // this clears the list
+	}
+}

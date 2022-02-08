@@ -32,6 +32,15 @@ function APropMap() constructor
 	props = [];
 	lastId = 0;
 	
+	static Clear = function()
+	{
+		for (var i = 0; i < GetPropCount(); ++i)
+		{
+			delete props[i];
+		}
+		props = [];
+	}
+	
 	static GetProps = function()
 	{
 		gml_pragma("forceinline");
