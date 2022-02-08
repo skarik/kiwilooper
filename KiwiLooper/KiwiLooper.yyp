@@ -623,7 +623,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button1.wav","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2022.1.0.609",
+    "IDEVersion": "2022.1.1.610",
   },
   "resourceVersion": "1.4",
   "name": "KiwiLooper",

@@ -150,7 +150,7 @@ function AToolbarElement() constructor
 	m_state_showTooltip	= false;
 	m_state_isDown		= false;
 	
-	m_editor		= instance_find(ot_EditorTest, 0);
+	m_editor		= EditorGet();
 }
 /// @function AToolbarElementAsButtonInfo(sprite, spriteIndex, tooltip, onClick, onCheckDown)
 /// @param {Sprite} UI Icon

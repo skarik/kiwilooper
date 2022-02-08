@@ -1,6 +1,6 @@
 function AEditorGizmoBase() constructor
 {
-	m_editor = instance_find(ot_EditorTest, 0); // TODO: pass this in?
+	m_editor = EditorGet(); // TODO: pass this in?
 
 	x = 0;
 	y = 0;

@@ -1,3 +1,8 @@
+function EditorGet()
+{
+	return instance_find(ot_EditorTest, 0);
+}
+
 function EditorGlobalDeleteSelection()
 {
 	// TODO:
@@ -39,7 +44,7 @@ function EditorGlobalClearSelection()
 
 function EditorGlobalSignalTransformChange(entity)
 {
-	with (ot_EditorTest)
+	with (EditorGet())
 	{
 		// Update all gizmos
 		var gizmo;
@@ -79,9 +84,9 @@ function EditorGlobalSaveMap_Work(filepath)
 {
 	var filedata = new AMapFiledata();
 	
-	MapSaveTilemap(filedata, ot_EditorTest.m_tilemap);
-	MapSaveProps(filedata, ot_EditorTest.m_propmap);
-	MapSaveEntities(filedata, ot_EditorTest.m_entityInstList);
+	MapSaveTilemap(filedata, EditorGet().m_tilemap);
+	MapSaveProps(filedata, EditorGet().m_propmap);
+	MapSaveEntities(filedata, EditorGet().m_entityInstList);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -94,7 +99,7 @@ function EditorGlobalLoadMap()
 	EditorGlobalNukeMap();
 	EditorGlobalLoadMap_Work("test.map");
 	
-	with (ot_EditorTest)
+	with (EditorGet())
 	{
 		MapRebuildGraphics();
 	}
@@ -103,9 +108,9 @@ function EditorGlobalLoadMap_Work(filepath)
 {
 	var filedata = MapLoadFiledata(filepath);
 	
-	MapLoadTilemap(filedata, ot_EditorTest.m_tilemap);
-	MapLoadProps(filedata, ot_EditorTest.m_propmap);
-	MapLoadEntities(filedata, ot_EditorTest.m_entityInstList);
+	MapLoadTilemap(filedata, EditorGet().m_tilemap);
+	MapLoadProps(filedata, EditorGet().m_propmap);
+	MapLoadEntities(filedata, EditorGet().m_entityInstList);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
