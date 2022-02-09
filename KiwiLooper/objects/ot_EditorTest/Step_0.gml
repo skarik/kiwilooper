@@ -6,5 +6,6 @@ EditorUIBitsUpdate();
 
 EditorCameraUpdate();
 EditorGizmoUpdate(); // must always be before ToolsUpdate due to overriding some tool items
+EditorSelectionUpdate();
 
 EditorToolsUpdate();

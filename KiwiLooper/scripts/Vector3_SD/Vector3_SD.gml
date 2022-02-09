@@ -177,6 +177,11 @@ function Vector3(n_x, n_y, n_z) constructor
 			x * right.y - y * right.x);
 	}
 	
+	static dot = function(right)
+	{
+		return x * right.x + y * right.y + z * right.z;
+	}
+	
 	static transformAMatrix = function(matrix)
 	{
 		gml_pragma("forceinline");

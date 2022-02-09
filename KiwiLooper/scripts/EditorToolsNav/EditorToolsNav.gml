@@ -143,7 +143,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	
 	/// @function PickerRun()
 	/// @desc Runs the picker.
-	PickerRun = function()
+	static PickerRun = function()
 	{
 		m_editor.m_selection = [];
 		m_editor.m_selectionSingle = true;

@@ -99,6 +99,7 @@ MapRebuilPropsOnly = function()
 EditorUIBitsSetup();
 EditorCameraSetup();
 EditorGizmoSetup();
+EditorSelectionSetup();
 
 EditorTileMapSetup();
 EditorPropMapSetup();

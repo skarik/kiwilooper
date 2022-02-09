@@ -79,7 +79,7 @@ function EditorToolsSetup()
 		new AEditorToolStateTileHeight(),	// kEditorToolTileHeight
 		new AEditorToolStateMakeProp(),		// kEditorToolMakeProp
 		new AEditorToolStateMakeEntity(),	// kEditorToolMakeEntity
-		new AEditorToolState(),
+		new AEditorToolStateTexturing(),	// kEditorToolTexture
 		new AEditorToolState(),
 		new AEditorToolStateTranslate(),	// kEditorToolTranslate
 		new AEditorToolStateRotate(),		// kEditorToolRotate
