@@ -4,6 +4,10 @@ function AMapTile() constructor
 {
 	// Default floor tile. No special rules.
 	floorType = 1;
+	// Rotation and flipping of the floor tile.
+	floorRotate90 = false;
+	floorFlipX = false;
+	floorFlipY = false;
 	// Default wall tile. Walls use themselves for the bottom, then themselves-32 for their top.
 	wallType = 37;
 	// 16 block height. Default is 0, room outer floor default is -1.

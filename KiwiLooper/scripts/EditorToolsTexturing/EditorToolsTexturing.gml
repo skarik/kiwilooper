@@ -2,6 +2,9 @@
 function AEditorToolStateTexturing() : AEditorToolState() constructor
 {
 	state = kEditorToolTexture;
+	m_gizmo = null;
+	//m_window = null;
+	m_windowBrowser = null;
 	
 	onBegin = function()
 	{
@@ -12,18 +15,31 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		m_gizmo.m_color = c_gold;
 		m_gizmo.m_alpha = 0.75;*/
 		
+		/*if (m_window == null)
+		{
+			m_window = m_editor.EditorWindowAlloc(AEditorWindowTextureApplier); // TODO: No window. use the tiny menu!
+		}*/
+		if (m_windowBrowser == null)
+		{
+			m_windowBrowser = m_editor.EditorWindowAlloc(AEditorWindowTileBrowser);
+		}
+		m_windowBrowser.InitTileListing();
+		m_editor.EditorWindowSetFocus(m_windowBrowser);
+		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture.";
 	};
 	onEnd = function(trueEnd)
 	{
-		/*if (trueEnd)
+		if (trueEnd)
 		{
-			m_gizmo.SetInvisible();
-			m_gizmo.SetDisabled();
+			//m_gizmo.SetDisabled();
+			//m_gizmo.SetInvisible();
+			
+			//m_editor.EditorWindowFree(m_window);
+			//m_window = null;
+			m_editor.EditorWindowFree(m_windowBrowser);
+			m_windowBrowser = null;
 		}
-		
-		// Disable the gizmo temporarily.
-		m_gizmo.SetDisabled();*/
 	};
 	
 	onStep = function()
@@ -72,6 +88,19 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			if (button == mb_left)
 			{
 				PickerRun(false);
+
+				// On selection, update the browser to select the correct texture
+				if (array_length(m_editor.m_selection) > 0)
+				{
+					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
+					{
+						m_windowBrowser.SetCurrentTile(
+							(abs(recent_object.object.normal.z) > 0.707)
+							? recent_object.object.tile.floorType
+							: recent_object.object.tile.wallType);
+					}
+				}
 			}
 		}
 	};

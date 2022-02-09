@@ -1,6 +1,7 @@
 // Interface to save/load from blobs to the ATilemap structure.
 
-#macro kMapTilemapFeature_XYHeight	0x0001
+#macro kMapTilemapFeature_XYHeight			0x0001
+#macro kMapTilemapFeature_TextureRotation	0x0002
 
 function MapLoadTilemap(filedata, tilemap)
 {
