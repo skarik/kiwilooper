@@ -1,4 +1,4 @@
-function _TileIndexIsWall(tx, ty)
+function _TileIndexIsWallTop(tx, ty)
 {
 	gml_pragma("forceinline");
 	return false
@@ -8,6 +8,11 @@ function _TileIndexIsWall(tx, ty)
 		// Walls B4:
 		|| (ty == 4 && tx >= 12 && tx < 14)
 		;
+}
+function _TileIndexIsWallBottom(tx, ty)
+{
+	gml_pragma("forceinline");
+	return _TileIndexIsWallTop(tx, ty - 2);
 }
 
 function _TileIndexIsFloor(tx, ty)
@@ -65,12 +70,49 @@ function TileGetName(tile)
 	{
 		return "f_" + string(tile);
 	}
-	else if (_TileIndexIsWall(tx, ty))
+	else if (_TileIndexIsWallTop(tx, ty) || _TileIndexIsWallBottom(tx, ty))
 	{
 		return "w_" + string(tile);
 	}
 	
 	return "type" + string(tile);
+}
+
+/// @function TileGetGroupName(tile)
+function TileGetGroupName(tile)
+{
+	var tx = tile % 16;
+	var ty = int64(tile / 16);
+	
+	var bx = int64(tx / 4);
+	var by = int64(ty / 4);
+	
+	if (bx == 1 && by == 0)
+	{
+		return "wall_metal";
+	}
+	else if (bx == 3 && by == 1)
+	{
+		return "wall_reactor";
+	}
+	else if (bx == 0 && by == 2)
+	{
+		return "floor_electric";
+	}
+	else if (bx == 1 && by == 1)
+	{
+		return "special";
+	}
+	else if (_TileIndexIsFloor(tx, ty))
+	{
+		return "floor";
+	}
+	else if (_TileIndexIsWallTop(tx, ty) || _TileIndexIsWallBottom(tx, ty))
+	{
+		return "wall";
+	}
+	
+	return "generic" + string(bx + by * 4);
 }
 
 /// @function TileGetMaterial(tileIndex)
@@ -93,15 +135,42 @@ function TileHasWall(tile)
 	return false;
 }
 
-/// @function TileIsValidToPlace(tile)
-function TileIsValidToPlace(tile)
+/// @function TileIsValidToPlaceFloor(tile)
+function TileIsValidToPlaceFloor(tile)
 {
 	var tx = tile % 16;
 	var ty = int64(tile / 16);
 	
 	if (_TileIndexIsFloor(tx, ty)
-		|| _TileIndexIsWall(tx, ty)
+		|| _TileIndexIsWallTop(tx, ty)
+		|| _TileIndexIsWallBottom(tx, ty)
 		)
+	{
+		return true;
+	}
+	return false;
+}
+
+/// @function TileIsValidToPlaceWall(tile)
+function TileIsValidToPlaceWall(tile)
+{
+	var tx = tile % 16;
+	var ty = int64(tile / 16);
+	
+	if (_TileIndexIsWallBottom(tx, ty))
+	{
+		return true;
+	}
+	return false;
+}
+
+/// @function TileIsTopWall(tile)
+function TileIsTopWall(tile)
+{
+	var tx = tile % 16;
+	var ty = int64(tile / 16);
+	
+	if (_TileIndexIsWallTop(tx, ty))
 	{
 		return true;
 	}

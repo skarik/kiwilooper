@@ -7,7 +7,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	m_position.x = 20;
 	m_position.y = 36;
 	
-	m_size.x = 180;
+	m_size.x = 200;
 	m_size.y = 90;
 	
 	item_focused = 0;
@@ -29,24 +29,48 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	
 	static sh_uScissorRect = shader_get_uniform(sh_editorDefaultScissor, "uScissorRect");
 	static kItemMarginsX = 3;
-	static kItemMarginsY = 4 + 8;
-	static kItemPaddingX = 7;
+	static kItemMarginsY = 3 + 8;
 	static kDragWidth = 10;
 	
 	static InitTileListing = function()
 	{
 		tile_items = [];
-		for (var i = 1; i < 16 * 16; ++i)
+		tile_item_group_counts = array_create(4 * 4, 0);
+		tile_item_group_name = array_create(4 * 4, "");
+		tile_item_group_layoutPos = array_create(4 * 4, null);
+		for (var i = 0; i < 16; ++i)
 		{
-			if (TileIsValidToPlace(i))
+			tile_item_group_layoutPos[i] = {x: 0, y: 0};
+		}
+		
+		// add them in quadrants at a time
+		for (var iy = 0; iy < 4; ++iy)
+		{
+			for (var ix = 0; ix < 4; ++ix)
 			{
-				array_push(tile_items,
+				for (var it = 0; it < 16; ++it)
 				{
-					tile: i,
-					name: TileGetName(i),
-					layoutX: 0,
-					layoutY: 0,
-				});
+					var it_x = it % 4;
+					var it_y = int64(it / 4);
+					var i = (ix * 4 + it_x) + (it_y + iy * 4) * 16;
+					if (i == 0) continue;
+			
+					if (TileIsValidToPlaceFloor(i) || TileIsValidToPlaceWall(i))
+					{
+						array_push(tile_items,
+						{
+							tile: i,
+							name: TileGetName(i),
+							isLowerWall: TileIsValidToPlaceWall(i),
+							isUpperWall: TileIsTopWall(i),
+							layoutX: 0,
+							layoutY: 0,
+						});
+						
+						tile_item_group_counts[ix + iy * 4] += 1;
+						tile_item_group_name[ix + iy * 4] = TileGetGroupName(i);
+					}
+				}
 			}
 		}
 		
@@ -55,21 +79,90 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	static InitTileLayout = function()
 	{
 		var pen = {x: kItemMarginsX, y: kItemMarginsX};
-		for (var i = 0; i < array_length(tile_items); ++i)
+		
+		static GetGroupResetWidth = function(groupIndex)
 		{
-			tile_items[i].layoutX = pen.x;
-			tile_items[i].layoutY = pen.y;
-			
-			// Advance the pen
-			pen.x += 16 + kItemPaddingX;
-			if (pen.x > m_size.x - (16 + kItemMarginsX))
+			if (tile_item_group_counts[groupIndex] <= 4)
 			{
-				pen.x = kItemMarginsX;
-				pen.y += 16 + kItemMarginsY;
+				return 2;
+			}
+			else if (tile_item_group_counts[groupIndex] <= 6)
+			{
+				return 3;
+			}
+			else
+			{
+				return 4;
 			}
 		}
 		
-		drag_max_y = pen.y + 16 + kItemMarginsY - m_size.y;
+		// Assume that each item is in a quadrant
+		var subpen = {x : 0, y: 0};
+		var max_x = 0;
+		var max_y = 0;
+		var current_group = 0;
+		var current_group_is_wall = false;
+		var current_group_count = 0;
+		var group_reset_width = GetGroupResetWidth(0);
+		for (var i = 0; i < array_length(tile_items); ++i)
+		{
+			var tileinfo = tile_items[i];
+			var tx = tileinfo.tile % 16;
+			var ty = int64(tileinfo.tile / 16);
+			var t_group = int64(tx / 4) + int64(ty / 4) * 4;
+			
+			if (t_group != current_group)
+			{
+				current_group_count = 0;
+				
+				// set up for drawing
+				subpen.x = 0;
+				subpen.y = 0;
+			
+				// advance the pen & reset max's
+				pen.x += max_x + 16;
+				if (pen.x >= m_size.x - kItemMarginsX * 2.0 - kDragWidth - max_x - 16)
+				{
+					pen.x = kItemMarginsX;
+					pen.y += max_y + kItemMarginsY + 16;
+					max_y = 0;
+				}
+				max_x = 0;
+				
+				// update group and drawing
+				current_group = t_group;
+				current_group_is_wall = tileinfo.isLowerWall || tileinfo.isUpperWall;
+				
+				// check max widths
+				group_reset_width = GetGroupResetWidth(t_group);
+			}
+			
+			// Add the block to the current position
+			tileinfo.layoutX = pen.x + subpen.x;
+			tileinfo.layoutY = pen.y + subpen.y;
+			// save max-drawn positions
+			max_x = max(max_x, subpen.x);
+			max_y = max(max_y, subpen.y);
+			// count number of drawings
+			current_group_count++;
+			
+			// Advance the subpen
+			subpen.x += 16;
+			// Newline at end of group
+			if (subpen.x >= 16 * group_reset_width
+				// Newline if halfway through a wall group
+				|| (current_group_is_wall && current_group_count == floor(tile_item_group_counts[t_group] / 2)))
+			{
+				subpen.x = 0;
+				subpen.y += 16;
+			}
+			
+			// Update the max position of the group for text
+			tile_item_group_layoutPos[t_group].x = pen.x;
+			tile_item_group_layoutPos[t_group].y = pen.y + max_y + 16;
+		}
+		
+		drag_max_y = pen.y + max_y + 16 + kItemMarginsY - m_size.y;
 	}
 	
 	static GetCurrentTile = function()
@@ -100,7 +193,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 			{
 				if (point_in_rectangle(localMouseX, localMouseY,
 						tile_items[i].layoutX, tile_items[i].layoutY,
-						tile_items[i].layoutX + 16, tile_items[i].layoutY + 16 + 8))
+						tile_items[i].layoutX + 16, tile_items[i].layoutY + 16))
 				{
 					item_mouseover = i;
 					break;
@@ -164,6 +257,9 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 		}
 	}
 	
+	static kFocusedBGColor = merge_color(kAccentColor, c_black, 0.75);
+	static kUnfocusedBGColor = c_dkgray;
+	
 	static Draw = function()
 	{
 		drawWindow();
@@ -207,23 +303,57 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 				l_bgColor = merge_color(l_bgColor, kAccentColor, 0.25);
 			}
 			
-			// draw property background
-			draw_set_color(l_bgColor);
-			DrawSpriteRectangle(l_dx - 1, l_dy - 1, l_dx + 16 + 1, l_dy + 16 + 8 + 1, false);
-			
 			// draw tile sprite
 			draw_sprite_part_ext(stl_lab0, 0,
 				(tileinfo.tile % 16) * 16, int64(tileinfo.tile / 16) * 16,
 				16, 16,
 				l_dx, l_dy,
 				1.0, 1.0, c_white, 1.0);
+		}
+		
+		// draw the tile group names
+		for (var i = 0; i < 16; ++i)
+		{
+			if (tile_item_group_name[i] != "")
+			{
+				var l_dx = m_position.x + tile_item_group_layoutPos[i].x;
+				var l_dy = m_position.y + tile_item_group_layoutPos[i].y - drag_y;
+			
+				draw_set_color(focused ? c_gray : c_black);
+				draw_set_halign(fa_left);
+				draw_set_valign(fa_top);
+				draw_set_font(f_04b03);
+				draw_text(l_dx, l_dy, tile_item_group_name[i]);
+			}
+		}
+		
+		// draw the selection rect
+		if (item_focused != noone)
+		{
+			var tileinfo = tile_items[item_focused];
+			var l_dx = m_position.x + tileinfo.layoutX;
+			var l_dy = m_position.y + tileinfo.layoutY - drag_y;
+			
+			draw_set_color(focused ? kAccentColor : c_white);
+			DrawSpriteRectangle(l_dx - 1, l_dy - 1, l_dx + 16 + 1, l_dy + 16 + 1, true);
+			
+			if (TileIsValidToPlaceWall(tileinfo.tile))
+			{
+				// Find the position of the accompanying wall
+				for (var i = 0; i < array_length(tile_items); ++i)
+				{
+					if (tile_items[i].tile == tileinfo.tile - 32)
+					{
+						tileinfo = tile_items[i];
+						break;
+					}
+				}
+				var l_dx = m_position.x + tileinfo.layoutX;
+				var l_dy = m_position.y + tileinfo.layoutY - drag_y;
 				
-			// draw tile name
-			draw_set_color(focused ? c_dkgray : c_dkgray);
-			draw_set_halign(fa_left);
-			draw_set_valign(fa_top);
-			draw_set_font(f_04b03);
-			draw_text(l_dx, l_dy + 16, tileinfo.name);
+				draw_set_color(focused ? c_ltgray : c_white);
+				DrawSpriteRectangle(l_dx - 1, l_dy - 1, l_dx + 16 + 1, l_dy + 16 + 1, true);
+			}
 		}
 		
 		drawShaderUnset(sh_editorDefaultScissor);

@@ -78,8 +78,6 @@
   },
   "resourceVersion": "1.0",
   "name": "sfx_metalPowerOverlay",
-  "tags": [
-    "objects",
-  ],
+  "tags": [],
   "resourceType": "GMSprite",
 }

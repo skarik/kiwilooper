@@ -36,12 +36,15 @@ function AEditorWindow() constructor
 		drawWindow();
 	}
 	
+	static kFocusedBGColor = c_black;
+	static kUnfocusedBGColor = c_dkgray;
+	
 	static drawWindow = function()
 	{
 		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
 		
 		// Draw the background for the window
-		draw_set_color(focused ? c_black : c_dkgray);
+		draw_set_color(focused ? kFocusedBGColor : kUnfocusedBGColor);
 		DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[3], false);
 		
 		// Draw the title bar
