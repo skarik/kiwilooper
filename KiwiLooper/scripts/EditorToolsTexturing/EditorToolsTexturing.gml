@@ -200,4 +200,49 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			}
 		}
 	};
+	
+	
+	static TextureApplyToSelection = function()
+	{
+		var bRequestRebuild = false;
+		
+		// Pull the selected texture from the browser and apply it (if valid)
+		var new_tile = m_windowBrowser.GetCurrentTile();
+		
+		// Get current tile:
+		for (var i = 0; i < array_length(m_editor.m_selection); ++i)
+		{
+			var selection = m_editor.m_selection[i];
+			if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
+			{
+				if (abs(selection.object.normal.z) > 0.707)
+				{
+					var old_tile = selection.object.tile.floorType;
+					if (old_tile != new_tile)
+					{
+						bRequestRebuild = true;
+						selection.object.tile.floorType = new_tile;
+					}
+				}
+				else
+				{
+					var old_tile = selection.object.tile.wallType;
+					if (old_tile != new_tile)
+					{
+						bRequestRebuild = true;
+						selection.object.tile.wallType = new_tile;
+					}
+				}
+			}
+		}
+		
+		// rebuild if changes have occurred
+		if (bRequestRebuild)
+		{
+			with (m_editor)
+			{
+				MapRebuildGraphics();
+			}
+		}
+	}
 }

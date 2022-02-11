@@ -10,6 +10,8 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	m_size.x = 200;
 	m_size.y = 90;
 	
+	last_click_time = 0.0;
+	
 	item_focused = 0;
 	item_mouseover = null;
 	item_drag = false;
@@ -31,6 +33,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	static kItemMarginsX = 3;
 	static kItemMarginsY = 3 + 8;
 	static kDragWidth = 10;
+	static kDoubleclickTime = 0.4;
 	
 	static InitTileListing = function()
 	{
@@ -215,6 +218,15 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	{
 		if (event == kEditorToolButtonStateMake)
 		{
+			if (button == mb_left)
+			{
+				if (Time.time - last_click_time < kDoubleclickTime)
+				{
+					onMouseDoubleclick();
+				}
+				last_click_time = Time.time;
+			}
+			
 			// If mouse wheel, attempt scroll
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
 			{
@@ -238,6 +250,18 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 			// Stop all drags
 			drag_now = false;
 			item_drag = false;
+		}
+	}
+	static onMouseDoubleclick = function()
+	{
+		// Apply the texture
+		if (EditorToolCurrent() == kEditorToolTexture)
+		{
+			var tool = EditorToolInstance();
+			if (is_struct(tool))
+			{
+				tool.TextureApplyToSelection();
+			}
 		}
 	}
 	

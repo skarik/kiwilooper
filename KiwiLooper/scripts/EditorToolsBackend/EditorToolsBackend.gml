@@ -230,3 +230,21 @@ function EditorToolsUpdate()
 		}
 	}
 }
+
+function EditorToolCurrent()
+{
+	with (EditorGet())
+	{
+		return toolCurrent;
+	}
+	return null;
+}
+
+function EditorToolInstance()
+{
+	with (EditorGet())
+	{
+		return toolStates[toolCurrent];
+	}
+	return null;
+}
