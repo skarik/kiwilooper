@@ -15,6 +15,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	item_focused = 0;
 	item_mouseover = null;
 	item_drag = false;
+	item_in_use = null;
 	
 	drag_mouseover = false;
 	drag_now = false;
@@ -182,6 +183,16 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 			}
 		}
 	}
+	static SetUsedTile = function(inputTile)
+	{
+		for (var i = 0; i < array_length(tile_items); ++i)
+		{
+			if (tile_items[i].tile == inputTile)
+			{
+				item_in_use = i;
+			}
+		}
+	}
 	
 	static onMouseMove = function(mouseX, mouseY)
 	{
@@ -263,6 +274,9 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 				tool.TextureApplyToSelection();
 			}
 		}
+		
+		// Update in-use texture
+		item_in_use = item_focused;
 	}
 	
 	static Step = function()
@@ -351,34 +365,50 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 			}
 		}
 		
-		// draw the selection rect
-		if (item_focused != noone)
+		static DrawFocusRectangle = function(item_index, main_color, sub_color, offset)
 		{
-			var tileinfo = tile_items[item_focused];
-			var l_dx = m_position.x + tileinfo.layoutX;
-			var l_dy = m_position.y + tileinfo.layoutY - drag_y;
-			
-			draw_set_color(focused ? kAccentColor : c_white);
-			DrawSpriteRectangle(l_dx - 1, l_dy - 1, l_dx + 16 + 1, l_dy + 16 + 1, true);
-			
-			if (TileIsValidToPlaceWall(tileinfo.tile))
+			if (item_index != noone)
 			{
-				// Find the position of the accompanying wall
-				for (var i = 0; i < array_length(tile_items); ++i)
-				{
-					if (tile_items[i].tile == tileinfo.tile - 32)
-					{
-						tileinfo = tile_items[i];
-						break;
-					}
-				}
+				var tileinfo = tile_items[item_index];
 				var l_dx = m_position.x + tileinfo.layoutX;
 				var l_dy = m_position.y + tileinfo.layoutY - drag_y;
+			
+				draw_set_color(main_color);
+				draw_set_alpha(1.0);
+				DrawSpriteRectangle(l_dx - offset, l_dy - offset, l_dx + 16 + offset, l_dy + 16 + offset, true);
+				if (offset >= 2)
+				{
+					draw_set_color(c_black);
+					DrawSpriteRectangle(l_dx - offset - 1, l_dy - offset - 1, l_dx + 16 + offset + 1, l_dy + 16 + offset + 1, true);
+				}
+			
+				// Draw the hover info of the wall
+				if (TileIsValidToPlaceWall(tileinfo.tile))
+				{
+					// Find the position of the accompanying wall
+					for (var i = 0; i < array_length(tile_items); ++i)
+					{
+						if (tile_items[i].tile == tileinfo.tile - 32)
+						{
+							tileinfo = tile_items[i];
+							break;
+						}
+					}
+					var l_dx = m_position.x + tileinfo.layoutX;
+					var l_dy = m_position.y + tileinfo.layoutY - drag_y;
 				
-				draw_set_color(focused ? c_ltgray : c_white);
-				DrawSpriteRectangle(l_dx - 1, l_dy - 1, l_dx + 16 + 1, l_dy + 16 + 1, true);
+					draw_set_color(sub_color);
+					draw_set_alpha(0.5);
+					DrawSpriteRectangle(l_dx - offset, l_dy - offset, l_dx + 16 + offset, l_dy + 16 + offset, true);
+				}
 			}
 		}
+		
+		// draw the selection rect
+		DrawFocusRectangle(item_in_use, merge_color(kAccentColor, c_gray, 0.5), c_gray, 1);
+		DrawFocusRectangle(item_focused, merge_color(kAccentColor, c_white, 1.0), kAccentColor, 2);
+		
+		draw_set_alpha(1.0);
 		
 		drawShaderUnset(sh_editorDefaultScissor);
 	}

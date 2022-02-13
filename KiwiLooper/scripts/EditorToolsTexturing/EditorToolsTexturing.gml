@@ -26,7 +26,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		m_windowBrowser.InitTileListing();
 		m_editor.EditorWindowSetFocus(m_windowBrowser);
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";
 	};
 	onEnd = function(trueEnd)
 	{
@@ -85,9 +85,10 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		}*/
 		if (buttonState == kEditorToolButtonStateMake)
 		{
+			// Left click select.
 			if (button == mb_left)
 			{
-				PickerRun(false);
+				PickerRun(keyboard_check(vk_control), false);
 
 				// On selection, update the browser to select the correct texture
 				if (array_length(m_editor.m_selection) > 0)
@@ -95,11 +96,31 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
 					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
 					{
-						m_windowBrowser.SetCurrentTile(
+						m_windowBrowser.SetUsedTile(
 							(abs(recent_object.object.normal.z) > 0.707)
 							? recent_object.object.tile.floorType
 							: recent_object.object.tile.wallType);
 					}
+				}
+			}
+			
+			// Right click apply texture.
+			if (button == mb_right)
+			{
+				if (!keyboard_check(vk_control))
+				{
+					var selection = PickerRun(false, true);
+					if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
+					{
+						if (TextureApplyToSelectObject(selection))
+						{
+							TextureUpdateMapVisuals();
+						}
+					}
+				}
+				else
+				{
+					TextureApplyToSelection();
 				}
 			}
 		}
@@ -116,6 +137,13 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			m_showSelectGizmo.SetVisible();
 			m_showSelectGizmo.SetEnabled();
 			
+			if (array_length(m_showSelectGizmo.m_mins) != array_length(m_editor.m_selection))
+			{
+				m_showSelectGizmo.m_mins = [];
+				m_showSelectGizmo.m_maxes = [];
+				m_showSelectGizmo.m_trses = [];
+			}
+			
 			var gizmoIndex = 0;
 			for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
 			{
@@ -123,8 +151,6 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			
 				if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
 				{
-					var prop = selection.object;
-					
 					// get the center of the tile
 					var tile = selection.object.tile;
 					var tileCenter = new Vector3(tile.x * 16 + 8, tile.y * 16 + 8, tile.height * 16 - 8);
@@ -160,11 +186,11 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		}
 	};
 	
-	/// @function PickerRun(additive)
+	/// @function PickerRun(additive, transitive_check)
 	/// @desc Runs the picker.
-	static PickerRun = function(bAdditive)
+	static PickerRun = function(bAdditive, bTransitiveCheck)
 	{
-		if (!bAdditive)
+		if (!bAdditive && !bTransitiveCheck)
 		{
 			m_editor.m_selection = [];
 			m_editor.m_selectionSingle = true;
@@ -194,55 +220,81 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			var tile_index = m_editor.m_tilemap.GetPositionIndex(blockX, blockY);
 			if (tile_index != -1)
 			{
-				// Update selection!
-				m_editor.m_selection[array_length(m_editor.m_selection)] = EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
-				m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
+				if (!bTransitiveCheck)
+				{
+					// Update selection!
+					m_editor.m_selection[array_length(m_editor.m_selection)] = EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
+					m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
+				}
+				else
+				{
+					return EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
+				}
 			}
 		}
+		
+		return null;
 	};
 	
+	/// @function TextureApplyToSelectObject(selection)
+	/// @desc Apply texture changes to the given selection.
+	/// @returns True when texture has changed. False otherwise.
+	static TextureApplyToSelectObject = function(selection)
+	{
+		// Pull the selected texture from the browser and apply it (if valid)
+		var new_tile = m_windowBrowser.GetCurrentTile();
+		
+		// Apply the texture now
+		if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
+		{
+			if (abs(selection.object.normal.z) > 0.707)
+			{
+				var old_tile = selection.object.tile.floorType;
+				if (old_tile != new_tile)
+				{
+					selection.object.tile.floorType = new_tile;
+					return true;
+				}
+			}
+			else
+			{
+				var old_tile = selection.object.tile.wallType;
+				if (old_tile != new_tile)
+				{
+					selection.object.tile.wallType = new_tile;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	static TextureApplyToSelection = function()
 	{
 		var bRequestRebuild = false;
 		
-		// Pull the selected texture from the browser and apply it (if valid)
-		var new_tile = m_windowBrowser.GetCurrentTile();
-		
 		// Get current tile:
 		for (var i = 0; i < array_length(m_editor.m_selection); ++i)
 		{
 			var selection = m_editor.m_selection[i];
-			if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
+			if (TextureApplyToSelectObject(selection))
 			{
-				if (abs(selection.object.normal.z) > 0.707)
-				{
-					var old_tile = selection.object.tile.floorType;
-					if (old_tile != new_tile)
-					{
-						bRequestRebuild = true;
-						selection.object.tile.floorType = new_tile;
-					}
-				}
-				else
-				{
-					var old_tile = selection.object.tile.wallType;
-					if (old_tile != new_tile)
-					{
-						bRequestRebuild = true;
-						selection.object.tile.wallType = new_tile;
-					}
-				}
+				bRequestRebuild = true;
 			}
 		}
 		
 		// rebuild if changes have occurred
 		if (bRequestRebuild)
 		{
-			with (m_editor)
-			{
-				MapRebuildGraphics();
-			}
+			TextureUpdateMapVisuals();
+		}
+	}
+	
+	static TextureUpdateMapVisuals = function()
+	{
+		with (m_editor)
+		{
+			MapRebuildGraphics();
 		}
 	}
 }
