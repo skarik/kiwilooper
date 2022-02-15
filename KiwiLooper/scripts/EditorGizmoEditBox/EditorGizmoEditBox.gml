@@ -186,7 +186,7 @@ function AEditorGizmo3DEditBox() : AEditorGizmoSelectBox3D() constructor // AEdi
 							m_editor.uiNextCursor = kEditorUICursorMove;
 						}
 						// Check for click on the volume.
-						if (mouse_check_button_pressed(mb_left))
+						if (MouseCheckButtonPressed(mb_left))
 						{
 							m_editDragIndex = kDragBoxIndex;
 							m_editDragStart.x = m_editor.viewrayPixel[0];
@@ -199,7 +199,7 @@ function AEditorGizmo3DEditBox() : AEditorGizmoSelectBox3D() constructor // AEdi
 				}
 			
 				// Stop dragging when mouse is released.
-				if (mouse_check_button_released(mb_left))
+				if (MouseCheckButtonReleased(mb_left))
 				{
 					m_editDragIndex = null;
 				}

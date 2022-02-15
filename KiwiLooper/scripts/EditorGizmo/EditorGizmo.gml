@@ -102,11 +102,39 @@ function EditorGizmoUpdate()
 		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4);
 	}
 	
+	// create mouse state to forward
+	var l_mouseState = array_create(5, false);
+	var l_mouseStateDown = array_create(5, false);
+	var l_mouseStateUp = array_create(5, false);
+	var l_mouseAvailable = false;
+	if (!m_toolbar.ContainsMouse() && !m_actionbar.ContainsMouse() && !WindowingContainsMouse())
+	{
+		var kMouseInputs = [mb_left, mb_right, mb_middle, kMouseWheelUp, kMouseWheelDown];
+		for (var i = 0; i < 3; ++i)
+		{
+			l_mouseState[i] = mouse_check_button(kMouseInputs[i]);
+			l_mouseStateDown[i] = mouse_check_button_pressed(kMouseInputs[i]);
+			l_mouseStateUp[i] = mouse_check_button_released(kMouseInputs[i]);
+		}
+		l_mouseState[3] = mouse_wheel_up();
+		l_mouseState[4] = mouse_wheel_down();
+		
+		l_mouseAvailable = true;
+	}
+	
+	// update all active gizmos
 	for (var instanceIndex = 0; instanceIndex < array_length(m_gizmoInstances); ++instanceIndex)
 	{
 		var gizmoInstance = m_gizmoInstances[instanceIndex][1];
 		if (gizmoInstance.GetEnabled())
 		{
+			// Forward mouse state
+			array_copy(gizmoInstance._mouse, 0, l_mouseState, 0, 5);
+			array_copy(gizmoInstance._mousePressed, 0, l_mouseStateDown, 0, 5);
+			array_copy(gizmoInstance._mouseReleased, 0, l_mouseStateUp, 0, 5);
+			gizmoInstance._mouseAvailable = l_mouseAvailable;
+			
+			// Update
 			gizmoInstance.Step();
 		}
 	}

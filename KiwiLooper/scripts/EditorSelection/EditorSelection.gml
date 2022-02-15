@@ -65,6 +65,7 @@ function EditorSelectionUpdate()
 				}
 				if (window.GetCurrentEntity() != currentSelection.object.Id())
 					window.InitWithProp(currentSelection.object);
+				window.Open();
 			}
 			else
 			{
@@ -93,6 +94,7 @@ function EditorSelectionUpdate()
 			}
 			if (window.GetCurrentEntity() != currentSelection)
 				window.InitWithEntityInfo(currentSelection, entityInfo);
+			window.Open();
 		}
 		else
 		{

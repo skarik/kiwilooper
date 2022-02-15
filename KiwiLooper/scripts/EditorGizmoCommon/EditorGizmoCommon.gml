@@ -62,6 +62,39 @@ function AEditorGizmoBase() constructor
 	
 	GetConsumingMouse = function() { return false; }
 	
+	static _mouse = array_create(5, false);
+	static _mousePressed = array_create(5, false);
+	static _mouseReleased = array_create(5, false);
+	static _mouseAvailable = true;
+	static _MouseGetButtonIndex = function(button)
+	{
+		switch (button)
+		{
+		case mb_left:	return 0;
+		case mb_right:	return 1;
+		case mb_middle:	return 2;
+		case kMouseWheelUp:	return 3;
+		case kMouseWheelDown:	return 4;
+		}
+		return -1;
+	}
+	static MouseAvailable = function()
+	{
+		return _mouseAvailable;
+	}
+	static MouseCheckButton = function(button)
+	{
+		return _mouse[_MouseGetButtonIndex(button)];
+	}
+	static MouseCheckButtonPressed = function(button)
+	{
+		return _mousePressed[_MouseGetButtonIndex(button)];
+	}
+	static MouseCheckButtonReleased = function(button)
+	{
+		return _mouseReleased[_MouseGetButtonIndex(button)];
+	}
+	
 	MeshbAddLine = function(mesh, color, width, length, normal, position)
 	{
 		// Get the X and Y alternates to the normal

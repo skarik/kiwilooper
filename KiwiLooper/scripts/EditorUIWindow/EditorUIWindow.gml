@@ -26,6 +26,14 @@ function AEditorWindow() constructor
 	mouse_position = kWindowMousePositionNone;
 	dragging = false;
 	has_stored_position = false;
+	minimized = false;
+	
+	#macro kWindowHoverButtonNone 0
+	#macro kWindowHoverButtonExit 1
+	#macro kWindowHoverButtonMinimize 2
+	#macro kWindowHoverButtonResize 3
+	
+	hovering_button_index = kWindowHoverButtonNone;
 	
 	static onMouseMove = function(mouseX, mouseY) {}
 	static onMouseEvent = function(mouseX, mouseY, button, event) {}
@@ -36,8 +44,60 @@ function AEditorWindow() constructor
 		drawWindow();
 	}
 	
+	static Open = function()
+	{
+		minimized = false;
+		disabled = false;
+	}
+	static Close = function()
+	{
+		disabled = true;
+	}
+	
 	static kFocusedBGColor = c_black;
 	static kUnfocusedBGColor = c_dkgray;
+	
+	static updateSystem = function(mouseX, mouseY)
+	{
+		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
+		static kResizeMargin = 3;
+		
+		// update mouse-over checks
+		if (point_in_rectangle(mouseX, mouseY,
+								rect[2] - kTitleHeight, rect[1],
+								rect[2], rect[1] + kTitleHeight))
+		{
+			hovering_button_index = kWindowHoverButtonExit;
+		}
+		else if (point_in_rectangle(mouseX, mouseY,
+								rect[2] - kTitleHeight * 2, rect[1],
+								rect[2] - kTitleHeight, rect[1] + kTitleHeight))
+		{
+			hovering_button_index = kWindowHoverButtonMinimize;
+		}
+		else if (!point_in_rectangle(mouseX, mouseY, rect[0], rect[1], rect[2], rect[3])
+			&& point_in_rectangle(mouseX, mouseY, rect[0] - kResizeMargin, rect[1] - kResizeMargin, rect[2] + kResizeMargin, rect[3] + kResizeMargin))
+		{
+			hovering_button_index = kWindowHoverButtonResize;
+		}
+		else
+		{
+			hovering_button_index = kWindowHoverButtonNone;
+		}
+		
+		// perform clicking actions
+		if (mouse_check_button_pressed(mb_left))
+		{
+			if (hovering_button_index == kWindowHoverButtonExit)
+			{
+				Close();
+			}
+			else if (hovering_button_index == kWindowHoverButtonMinimize)
+			{
+				minimized = !minimized;
+			}
+		}
+	}
 	
 	static drawWindow = function()
 	{
@@ -49,7 +109,9 @@ function AEditorWindow() constructor
 		
 		// Draw the title bar
 		{
-			draw_set_color(focused ? kAccentColor : c_white);
+			var l_titleBgColor = focused ? kAccentColor : c_white;
+			
+			draw_set_color(l_titleBgColor);
 			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight, false);
 			
 			// Draw the title on the far left
@@ -60,9 +122,20 @@ function AEditorWindow() constructor
 			draw_text(rect[0] + kTitleMargin, rect[1] + kTitleMargin, m_title);
 			
 			// Draw the exit button on the far right
+			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonExit ? 0.5 : 0.0));
+			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1], rect[2], rect[1] + kTitleHeight, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1], rect[2], rect[1] + kTitleHeight, true);
-			draw_text(rect[2] - kTitleHeight + kTitleMargin, rect[1] + kTitleMargin, "X");
+			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+							1.0, 1.0, 0.0,
+							draw_get_color(), draw_get_alpha());
+							
+			// Draw the minimize button a bit back
+			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonMinimize ? 0.5 : 0.0));
+			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1], rect[2] - kTitleHeight, rect[1] + kTitleHeight, false); // hover rect
+			draw_set_color(focused ? c_white : c_gray);
+			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+							1.0, 1.0, 0.0,
+							draw_get_color(), draw_get_alpha());
 		}
 		
 		// Draw the outline around the window.
@@ -362,6 +435,9 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
 		var check_window = windows[iWindow];
+		
+		check_window.updateSystem(mouseX, mouseY);
+		
 		if (!check_window.disabled)
 		{
 			if (check_window.contains_mouse)

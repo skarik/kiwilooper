@@ -129,6 +129,13 @@ function MapLoadEntities(filedata, entityInstanceList)
 						variable_instance_set(instance, property[0], value);
 					}
 					break;
+					
+				case kValueTypeInteger:
+					{
+						var value = buffer_read(buffer, buffer_s32);
+						variable_instance_set(instance, property[0], value);
+					}
+					break;
 				
 				case kValueTypeColor:
 					{
@@ -245,6 +252,13 @@ function MapSaveEntities(filedata, entityInstanceList)
 				{
 					var value = variable_instance_get(instance, property[0]);
 					buffer_write(buffer, buffer_f32, value);
+				}
+				break;
+			
+			case kValueTypeInteger:
+				{
+					var value = variable_instance_get(instance, property[0]);
+					buffer_write(buffer, buffer_s32, value);
 				}
 				break;
 				

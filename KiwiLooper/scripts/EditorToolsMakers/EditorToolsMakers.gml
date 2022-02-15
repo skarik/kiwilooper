@@ -27,6 +27,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 		{
 			m_window = m_editor.EditorWindowAlloc(AEditorWindowEntSpawn);
 		}
+		m_window.Open();
 		m_editor.EditorWindowSetFocus(m_window);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place position for new selected entity, or drag from entity list. ESC to reset.";
@@ -162,6 +163,7 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 		{
 			m_window = m_editor.EditorWindowAlloc(AEditorWindowPropSpawn);
 		}
+		m_window.Open();
 		m_window.InitPropListing();
 		
 		m_editor.EditorWindowSetFocus(m_window);

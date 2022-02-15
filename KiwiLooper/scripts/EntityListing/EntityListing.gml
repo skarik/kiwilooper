@@ -6,6 +6,7 @@ function _EntityInfoInit()
 	#macro kValueTypeFloat 3
 	#macro kValueTypeColor 4
 	#macro kValueTypeBoolean 5
+	#macro kValueTypeInteger 6
 	
 	#macro kGizmoDrawmodeBillboard 0
 	#macro kGizmoDrawmodeHidden 1
@@ -420,6 +421,17 @@ function entpropSetFromString(instance, property, stringValue)
 		try
 		{
 			convertedValue = real(stringValue);
+		}
+		catch (_exception)
+		{
+			convertedValue = undefined;
+		}
+		break;
+		
+	case kValueTypeInteger:
+		try
+		{
+			convertedValue = round(real(stringValue));
 		}
 		catch (_exception)
 		{

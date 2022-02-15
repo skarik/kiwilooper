@@ -51,34 +51,37 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		m_mouseOverY = false;
 		m_mouseOverZ = false;
 		
-		// Sort these checks by screen depth
-		var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
-		var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
-		var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
-		
-		var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
-		if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
-		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
-		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
-		
-		// Check collision with each axis.
-		for (var check_index = 0; check_index < 3; ++check_index)
+		if (MouseAvailable())
 		{
-			var check_orderLookup = check_depthOrder[check_index][0];
-			if (check_orderLookup == 0)
+			// Sort these checks by screen depth
+			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
+			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
+			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+		
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
+		
+			// Check collision with each axis.
+			for (var check_index = 0; check_index < 3; ++check_index)
 			{
-				m_mouseOverX = raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverX) break;
-			}
-			if (check_orderLookup == 1)
-			{
-				m_mouseOverY = raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverY) break;
-			}
-			if (check_orderLookup == 2)
-			{
-				m_mouseOverZ = raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir);
-				if (m_mouseOverZ) break;
+				var check_orderLookup = check_depthOrder[check_index][0];
+				if (check_orderLookup == 0)
+				{
+					m_mouseOverX = raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverX) break;
+				}
+				if (check_orderLookup == 1)
+				{
+					m_mouseOverY = raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverY) break;
+				}
+				if (check_orderLookup == 2)
+				{
+					m_mouseOverZ = raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir);
+					if (m_mouseOverZ) break;
+				}
 			}
 		}
 		
@@ -93,7 +96,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		}
 		
 		// Update click states
-		if (mouse_check_button_pressed(mb_left))
+		if (MouseCheckButtonPressed(mb_left))
 		{
 			if (m_mouseOverX)
 				m_dragX = true;
@@ -119,7 +122,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			}
 		}
 		
-		if (mouse_check_button_released(mb_left) || !m_active)
+		if (MouseCheckButtonReleased(mb_left) || !m_active)
 		{
 			m_dragX = false;
 			m_dragY = false;
@@ -226,40 +229,43 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		m_mouseOverY = false;
 		m_mouseOverZ = false;
 		
-		// Sort these checks by screen depth
-		var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
-		var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
-		var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
-		
-		var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
-		if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
-		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
-		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
-		
-		// Check collision with each axis.
-		for (var check_index = 0; check_index < 3; ++check_index)
+		if (MouseAvailable())
 		{
-			var check_orderLookup = check_depthOrder[check_index][0];
-			if (check_orderLookup == 0)
+			// Sort these checks by screen depth
+			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
+			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
+			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+		
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
+		
+			// Check collision with each axis.
+			for (var check_index = 0; check_index < 3; ++check_index)
 			{
-				m_mouseOverX = 
-					raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir)
-					|| raycast4_box(new Vector3(x - kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x - kAxisLength - kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverX) break;
-			}
-			if (check_orderLookup == 1)
-			{
-				m_mouseOverY =
-					raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir)
-					|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y - kAxisLength - kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
-				if (m_mouseOverY) break;
-			}
-			if (check_orderLookup == 2)
-			{
-				m_mouseOverZ =
-					raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir)
-					|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z - kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z - kAxisLength - kArrowHalfsize*2), rayStart, rayDir);
-				if (m_mouseOverZ) break;
+				var check_orderLookup = check_depthOrder[check_index][0];
+				if (check_orderLookup == 0)
+				{
+					m_mouseOverX = 
+						raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x - kAxisLength - kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverX) break;
+				}
+				if (check_orderLookup == 1)
+				{
+					m_mouseOverY =
+						raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y - kAxisLength - kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverY) break;
+				}
+				if (check_orderLookup == 2)
+				{
+					m_mouseOverZ =
+						raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z - kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z - kAxisLength - kArrowHalfsize*2), rayStart, rayDir);
+					if (m_mouseOverZ) break;
+				}
 			}
 		}
 		
@@ -274,7 +280,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		}
 		
 		// Update click states
-		if (mouse_check_button_pressed(mb_left))
+		if (MouseCheckButtonPressed(mb_left))
 		{
 			if (m_mouseOverX)
 				m_dragX = true;
@@ -300,7 +306,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 			}
 		}
 		
-		if (mouse_check_button_released(mb_left) || !m_active)
+		if (MouseCheckButtonReleased(mb_left) || !m_active)
 		{
 			m_dragX = false;
 			m_dragY = false;
@@ -406,50 +412,53 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		m_mouseOverY = false;
 		m_mouseOverZ = false;
 		
-		// Sort these checks by screen depth
-		var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
-		var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
-		var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
-		
-		var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
-		if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
-		if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
-		if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
-		
-		// Check collision with each axis, finding closest one
-		var min_hit_distance = null;
-		for (var check_index = 0; check_index < 3; ++check_index)
+		if (MouseAvailable())
 		{
-			var hasHit = false;
+			// Sort these checks by screen depth
+			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
+			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
+			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+		
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
+		
+			// Check collision with each axis, finding closest one
+			var min_hit_distance = null;
+			for (var check_index = 0; check_index < 3; ++check_index)
+			{
+				var hasHit = false;
 			
-			var check_orderLookup = check_depthOrder[check_index][0];
-			if (check_orderLookup == 0)
-			{
-				hasHit = raycast4_box(new Vector3(x - 2, y - kAxisLength, z - kAxisLength), new Vector3(x + 2, y + kAxisLength, z + kAxisLength), rayStart, rayDir);
-			}
-			if (check_orderLookup == 1)
-			{
-				hasHit = raycast4_box(new Vector3(x - kAxisLength, y - 2, z - kAxisLength), new Vector3(x + kAxisLength, y + 2, z + kAxisLength), rayStart, rayDir);
-			}
-			if (check_orderLookup == 2)
-			{
-				hasHit = raycast4_box(new Vector3(x - kAxisLength, y - kAxisLength, z - 2), new Vector3(x + kAxisLength, y + kAxisLength, z + 2), rayStart, rayDir);
-			}
-			
-			if (hasHit)
-			{
-				if (min_hit_distance == null || raycast4_get_hit_distance() < min_hit_distance)
+				var check_orderLookup = check_depthOrder[check_index][0];
+				if (check_orderLookup == 0)
 				{
-					min_hit_distance = raycast4_get_hit_distance();
-					m_mouseOverX = false;
-					m_mouseOverY = false;
-					m_mouseOverZ = false;
-					if (check_orderLookup == 0)
-						m_mouseOverX = true;
-					else if (check_orderLookup == 1)
-						m_mouseOverY = true;
-					else if (check_orderLookup == 2)
-						m_mouseOverZ = true;
+					hasHit = raycast4_box(new Vector3(x - 2, y - kAxisLength, z - kAxisLength), new Vector3(x + 2, y + kAxisLength, z + kAxisLength), rayStart, rayDir);
+				}
+				if (check_orderLookup == 1)
+				{
+					hasHit = raycast4_box(new Vector3(x - kAxisLength, y - 2, z - kAxisLength), new Vector3(x + kAxisLength, y + 2, z + kAxisLength), rayStart, rayDir);
+				}
+				if (check_orderLookup == 2)
+				{
+					hasHit = raycast4_box(new Vector3(x - kAxisLength, y - kAxisLength, z - 2), new Vector3(x + kAxisLength, y + kAxisLength, z + 2), rayStart, rayDir);
+				}
+			
+				if (hasHit)
+				{
+					if (min_hit_distance == null || raycast4_get_hit_distance() < min_hit_distance)
+					{
+						min_hit_distance = raycast4_get_hit_distance();
+						m_mouseOverX = false;
+						m_mouseOverY = false;
+						m_mouseOverZ = false;
+						if (check_orderLookup == 0)
+							m_mouseOverX = true;
+						else if (check_orderLookup == 1)
+							m_mouseOverY = true;
+						else if (check_orderLookup == 2)
+							m_mouseOverZ = true;
+					}
 				}
 			}
 		}
@@ -465,7 +474,7 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		}
 		
 		// Update click states
-		if (mouse_check_button_pressed(mb_left))
+		if (MouseCheckButtonPressed(mb_left))
 		{
 			if (m_mouseOverX)
 				m_dragX = true;
@@ -491,7 +500,7 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 			}
 		}
 		
-		if (mouse_check_button_released(mb_left) || !m_active)
+		if (MouseCheckButtonReleased(mb_left) || !m_active)
 		{
 			m_dragX = false;
 			m_dragY = false;

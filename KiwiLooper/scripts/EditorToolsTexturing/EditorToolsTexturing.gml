@@ -24,6 +24,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			m_windowBrowser = m_editor.EditorWindowAlloc(AEditorWindowTileBrowser);
 		}
 		m_windowBrowser.InitTileListing();
+		m_windowBrowser.Open();
 		m_editor.EditorWindowSetFocus(m_windowBrowser);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";

@@ -156,21 +156,22 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				["", kValueTypePosition],
 				["", kValueTypeRotation],
 				["", kValueTypeScale],
+				["index", kValueTypeInteger],
 			],
 		};
 		
 		InitUpdateEntityInfoTransform();
+		property_values[3] = entpropToString(prop, entity_info.properties[3]);
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)
 	{
-		if (mouseX < m_position.x + m_size.x - kDragWidth)
+		if (mouse_position == kWindowMousePositionContent && mouseX < m_position.x + m_size.x - kDragWidth)
 		{
 			drag_mouseover = false;
-			property_mouseover = clamp(
-				floor((mouseY - m_position.y - 1 + drag_y) / kPropertyHeight),
-				0,
-				array_length(entity_info.properties) - 1);
+			property_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / kPropertyHeight);
+			if (property_mouseover < 0 || property_mouseover >= array_length(entity_info.properties))
+				property_mouseover = null;
 		}
 		else
 		{

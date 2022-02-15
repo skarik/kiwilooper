@@ -31,13 +31,12 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	
 	static onMouseMove = function(mouseX, mouseY)
 	{
-		if (mouseX < m_position.x + m_size.x - kDragWidth)
+		if (mouse_position == kWindowMousePositionContent && mouseX < m_position.x + m_size.x - kDragWidth)
 		{
 			drag_mouseover = false;
-			item_mouseover = clamp(
-				floor((mouseY - m_position.y - 1 + drag_y) / kLineHeight),
-				0,
-				entlistIterationLength() - 1);
+			item_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / kLineHeight);
+			if (item_mouseover < 0 || item_mouseover >= entlistIterationLength())
+				item_mouseover = null;
 		}
 		else
 		{

@@ -2,8 +2,8 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Editor",
-    "path": "folders/Scripts/Game/Editor.yy",
+    "name": "Loader",
+    "path": "folders/Scripts/Game/Editor/Loader.yy",
   },
   "resourceVersion": "1.0",
   "name": "MapLoader",
