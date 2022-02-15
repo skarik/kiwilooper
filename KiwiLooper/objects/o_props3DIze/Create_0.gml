@@ -86,7 +86,7 @@ m_mesh = meshb_Begin();
 		case spr_metalCrate0:
 			{
 				var width = element_width;
-				var height = element_height;
+				var height = PropGetYHeight(element_sprite);
 				var zheight = PropGetZHeight(element_sprite);
 				
 				var scale = new Vector3(width * 0.5 * layer_sprite_get_xscale(element), height * 0.5 * layer_sprite_get_yscale(element), zheight);

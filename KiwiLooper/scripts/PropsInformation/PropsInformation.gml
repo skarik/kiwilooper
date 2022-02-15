@@ -34,6 +34,16 @@ function PropGetZHeight( prop_sprite )
 	case spr_metalTable1:
 		return 6;
 		break;
+	case spr_metalCrate0: break; // Nothing needed to change here!
+	}
+	return sprite_get_height(prop_sprite);
+}
+
+function PropGetYHeight( prop_sprite )
+{
+	// Just going to hard-code the heights of props to avoid fiddling with the UV tools
+	switch (prop_sprite)
+	{
 	case spr_metalLocker0:
 		return 12;
 		break;
