@@ -27,6 +27,8 @@ function AEditorWindow() constructor
 	dragging = false;
 	has_stored_position = false;
 	minimized = false;
+	minimized_index = null;
+	visible = false;
 	
 	#macro kWindowHoverButtonNone 0
 	#macro kWindowHoverButtonExit 1
@@ -48,19 +50,34 @@ function AEditorWindow() constructor
 	{
 		minimized = false;
 		disabled = false;
+		visible = true;
 	}
 	static Close = function()
 	{
 		disabled = true;
+		visible = false;
+		
+		// Remove from the minimize list:
+		if (array_contains(m_editor.windowMinimizedList, self))
+		{
+			array_delete(m_editor.windowMinimizedList, array_get_index(m_editor.windowMinimizedList, self), 1);
+			CE_ArrayForEach(m_editor.windowMinimizedList, function(window, index) { window.minimized_index = index; });
+		}
 	}
 	
 	static kFocusedBGColor = c_black;
 	static kUnfocusedBGColor = c_dkgray;
 	
-	static updateSystem = function(mouseX, mouseY)
+	static updateSystem = function(mouseX, mouseY, listIndex)
 	{
 		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
 		static kResizeMargin = 3;
+		
+		// Update the rect checks size for minimized state
+		if (minimized)
+		{
+			rect = getMinimizedRect();
+		}
 		
 		// update mouse-over checks
 		if (point_in_rectangle(mouseX, mouseY,
@@ -75,7 +92,8 @@ function AEditorWindow() constructor
 		{
 			hovering_button_index = kWindowHoverButtonMinimize;
 		}
-		else if (!point_in_rectangle(mouseX, mouseY, rect[0], rect[1], rect[2], rect[3])
+		else if (!minimized
+			&& !point_in_rectangle(mouseX, mouseY, rect[0], rect[1], rect[2], rect[3])
 			&& point_in_rectangle(mouseX, mouseY, rect[0] - kResizeMargin, rect[1] - kResizeMargin, rect[2] + kResizeMargin, rect[3] + kResizeMargin))
 		{
 			hovering_button_index = kWindowHoverButtonResize;
@@ -95,6 +113,21 @@ function AEditorWindow() constructor
 			else if (hovering_button_index == kWindowHoverButtonMinimize)
 			{
 				minimized = !minimized;
+				// This needs to be managed by the windowing system. In future, potentially have an event stack on the window that the system polls.
+				// For now, we edit the calling system directly.
+				if (minimized)
+				{
+					if (!array_contains(m_editor.windowMinimizedList, self))
+					{
+						array_push(m_editor.windowMinimizedList, self);
+					}
+				}
+				else
+				{
+					assert(array_contains(m_editor.windowMinimizedList, self));
+					array_delete(m_editor.windowMinimizedList, array_get_index(m_editor.windowMinimizedList, self), 1);
+				}
+				CE_ArrayForEach(m_editor.windowMinimizedList, function(window, index) { window.minimized_index = index; });
 			}
 		}
 	}
@@ -143,6 +176,59 @@ function AEditorWindow() constructor
 		DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[3], true);
 	}
 	
+	static DrawMinimized = function()
+	{
+		var rect = getMinimizedRect();
+		
+		{
+			// We *only* draw a title bar here.
+			var l_titleBgColor = focused ? kAccentColor : c_white;
+		
+			draw_set_color(l_titleBgColor);
+			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight, false);
+		
+			// Draw the title on the far left
+			draw_set_color(focused ? c_white : c_gray);
+			draw_set_halign(fa_left);
+			draw_set_valign(fa_top);
+			draw_set_font(f_04b03);
+			draw_text(rect[0] + kTitleMargin, rect[1] + kTitleMargin, m_title);
+			
+			// Draw the exit button on the far right
+			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonExit ? 0.5 : 0.0));
+			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1], rect[2], rect[1] + kTitleHeight, false); // hover rect
+			draw_set_color(focused ? c_white : c_gray);
+			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+							1.0, 1.0, 0.0,
+							draw_get_color(), draw_get_alpha());
+							
+			// Draw the minimize button a bit back
+			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonMinimize ? 0.5 : 0.0));
+			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1], rect[2] - kTitleHeight, rect[1] + kTitleHeight, false); // hover rect
+			draw_set_color(focused ? c_white : c_gray);
+			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+							1.0, 1.0, 0.0,
+							draw_get_color(), draw_get_alpha());
+		}
+		
+		// Draw the outline around the window.
+		draw_set_color(focused ? c_white : c_gray);
+		DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[3], true);
+	}
+	
+	static getMinimizedRect = function()
+	{
+		var kWidth = 80;
+		var kBottomMargin = 10;
+		return [minimized_index * kWidth, GameCamera.height - kTitleHeight - kBottomMargin, minimized_index * kWidth + kWidth, GameCamera.height - kBottomMargin];
+	}
+	
+	static MinimizedContains = function(x, y)
+	{
+		var rect = getMinimizedRect();
+		return point_in_rectangle(x, y, rect[0], rect[1], rect[2], rect[3]);
+	}
+	
 	static ContainsMouse = function()
 	{
 		return contains_mouse;
@@ -160,6 +246,8 @@ function EditorWindowingSetup()
 	
 	windowDragging = false;
 	windowSavedPositions = [];
+	
+	windowMinimizedList = [];
 	
 	WindowingContainsMouse = function()
 	{
@@ -319,14 +407,15 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
 		var check_window = windows[iWindow];
-		if (point_in_rectangle(mouseX, mouseY,
+		if ((!check_window.minimized && point_in_rectangle(mouseX, mouseY,
 				check_window.m_position.x, check_window.m_position.y - check_window.kTitleHeight,
 				check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y))
+			|| (check_window.minimized && check_window.MinimizedContains(mouseX, mouseY)))
 		{
 			check_window.contains_mouse = true;
 			hovered_window = check_window;
 			
-			check_window.mouse_position = (mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent;
+			check_window.mouse_position = (check_window.minimized || mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent;
 		}
 		else
 		{
@@ -384,7 +473,7 @@ function EditorWindowingUpdate(mouseX, mouseY)
 			check_window.m_position.x, check_window.m_position.y,
 			check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y);
 				
-		if (!check_window.disabled)
+		if (!check_window.disabled && check_window.visible)
 			check_window.onMouseEvent(mouseX, mouseY, currentButton, event | (bMouseInsideClientArea ? kEditorToolButtonFlagInside : kEditorToolButtonFlagOutside));
 	}
 	
@@ -438,7 +527,7 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		
 		check_window.updateSystem(mouseX, mouseY);
 		
-		if (!check_window.disabled)
+		if (!check_window.disabled && check_window.visible)
 		{
 			if (check_window.contains_mouse)
 			{
@@ -460,6 +549,15 @@ function EditorWindowingDraw()
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
 		var check_window = windows[iWindow];
-		check_window.Draw();
+		if (check_window.visible && !check_window.minimized)
+		{
+			check_window.Draw();
+		}
+	}
+	
+	for (var iWindow = 0; iWindow < array_length(windowMinimizedList); ++iWindow)
+	{
+		var check_window = windowMinimizedList[iWindow];
+		check_window.DrawMinimized(iWindow);
 	}
 }

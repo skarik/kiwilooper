@@ -54,6 +54,7 @@
     {"id":{"name":"room_get_index","path":"scripts/room_get_index/room_get_index.yy",},"order":0,},
     {"id":{"name":"sui_starclouds","path":"sprites/sui_starclouds/sui_starclouds.yy",},"order":3,},
     {"id":{"name":"ssettingGetValue","path":"scripts/ssettingGetValue/ssettingGetValue.yy",},"order":4,},
+    {"id":{"name":"rm_EmptyMap","path":"rooms/rm_EmptyMap/rm_EmptyMap.yy",},"order":10,},
     {"id":{"name":"o_musicMain","path":"objects/o_musicMain/o_musicMain.yy",},"order":2,},
     {"id":{"name":"string_rtrim_comment","path":"scripts/string_rtrim_comment/string_rtrim_comment.yy",},"order":7,},
     {"id":{"name":"MapEntityList","path":"scripts/MapEntityList/MapEntityList.yy",},"order":14,},
@@ -176,6 +177,7 @@
     {"id":{"name":"array_contains","path":"scripts/array_contains/array_contains.yy",},"order":2,},
     {"id":{"name":"o_playerKiwi","path":"objects/o_playerKiwi/o_playerKiwi.yy",},"order":1,},
     {"id":{"name":"array_concat","path":"scripts/array_concat/array_concat.yy",},"order":1,},
+    {"id":{"name":"GlobalGameCommands","path":"scripts/GlobalGameCommands/GlobalGameCommands.yy",},"order":17,},
     {"id":{"name":"paletteDebugDisplay","path":"scripts/paletteDebugDisplay/paletteDebugDisplay.yy",},"order":3,},
     {"id":{"name":"spr_metalLocker0","path":"sprites/spr_metalLocker0/spr_metalLocker0.yy",},"order":7,},
     {"id":{"name":"duiStepAlphaGlobal","path":"scripts/duiStepAlphaGlobal/duiStepAlphaGlobal.yy",},"order":2,},
@@ -453,6 +455,7 @@
     {"roomId":{"name":"rm_Ship5","path":"rooms/rm_Ship5/rm_Ship5.yy",},},
     {"roomId":{"name":"rm_Ship1_Child_FirstLoop","path":"rooms/rm_Ship1_Child_FirstLoop/rm_Ship1_Child_FirstLoop.yy",},},
     {"roomId":{"name":"rm_EditorTest","path":"rooms/rm_EditorTest/rm_EditorTest.yy",},},
+    {"roomId":{"name":"rm_EmptyMap","path":"rooms/rm_EmptyMap/rm_EmptyMap.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":62,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},

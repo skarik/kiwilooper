@@ -4,6 +4,11 @@ if (singleton_this()) exit;
 global._transition_source = null;
 global._cutscene_main = null;
 
+global.game_editorRun = false;
+
+global.game_loadingInfo = kGameLoadingFromGMS;
+global.game_loadingMap = "";
+
 // Load up cutscene backend
 //cutsceneBackendLoad();
 

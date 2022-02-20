@@ -41,6 +41,7 @@ function MapLoadFiledata(filepath)
 	//	u8[]	blob
 	
 	var rawbuffer = fioReadToBuffer(filepath);
+	assert(rawbuffer != null);
 	
 	// Now we read in until we're at the end of the file
 	var l_eof = false;
