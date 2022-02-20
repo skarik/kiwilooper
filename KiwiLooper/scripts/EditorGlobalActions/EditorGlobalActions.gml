@@ -84,6 +84,7 @@ function EditorGlobalSaveMap()
 	if (map_filename != "")
 	{
 		EditorGlobalSaveMap_Work(map_filename);
+		EditorGet().m_currentMapName = map_filename;
 	}
 }
 function EditorGlobalSaveMap_Work(filepath)
@@ -107,6 +108,7 @@ function EditorGlobalLoadMap()
 	if (map_filename != "")
 	{
 		EditorGlobalNukeMap_Work();
+		EditorGet().m_currentMapName = map_filename;
 		EditorGlobalLoadMap_Work(map_filename);
 	
 		with (EditorGet())
@@ -156,4 +158,24 @@ function EditorGlobalNukeMap_Work()
 		// Go through the ents
 		m_entityInstList.Clear(); // this clears the list
 	}
+}
+
+//=============================================================================
+
+function EditorGlobalTestMap()
+{
+	// First off, we need to save the map somewhere to use it
+	var temp_mapname = fioLocalPathFindAbsoluteFilepath("maps") + "/_temp_testing.kmf";
+	if (EditorGet().m_currentMapName != "")
+	{
+		temp_mapname = EditorGet().m_currentMapName;
+	}
+	
+	EditorGlobalSaveMap_Work(temp_mapname);
+	
+	// Make this current room persistent & save state
+	room_persistent = true;
+	
+	// Go to the new map
+	Game_LoadMap(temp_mapname, true);
 }

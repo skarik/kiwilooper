@@ -36,7 +36,7 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 6, "Redo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 5, "Undo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", null, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", EditorGlobalTestMap, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid", null, null, function(){ return true; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 8, "Larger Grid", null, null, null));

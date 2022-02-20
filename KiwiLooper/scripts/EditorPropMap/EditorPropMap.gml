@@ -95,7 +95,10 @@ function APropMap() constructor
 	static RebuildPropLayer = function(layerStorage)
 	{
 		var newPropsLayer = layer_create(49, "props");
-		array_push(layerStorage, newPropsLayer);
+		if (is_array(layerStorage))
+		{
+			array_push(layerStorage, newPropsLayer);
+		}
 		
 		for (var propIndex = 0; propIndex < array_length(props); ++propIndex)
 		{

@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Game/Editor.yy",
   },
   "resourceVersion": "1.0",
-  "name": "EditorMap",
+  "name": "EditorTileMap",
   "tags": [],
   "resourceType": "GMScript",
 }

@@ -39,7 +39,7 @@ function MapLoadEntities(filedata, entityInstanceList)
 			// Create an instance now, to read data into
 			var instance;
 			if (bMakeProxy)
-				instance = inew(EditorGet().OProxyClass);
+				instance = inew(ProxyClass());
 			else
 				instance = inew(ent.objectIndex);
 			// Set initial needed values
