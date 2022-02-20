@@ -31,6 +31,19 @@ function Game_Event_RoomStart()
 {
 	// Load up all the room info
 	_Game_LoadMapInternal();
+	
+	// Create editor info
+	if (global.game_editorRun)
+	{
+		if (!iexists(o_Editor_InGameplayInfo))
+			inew(o_Editor_InGameplayInfo);
+			
+		// Also, reset the cameras
+		with (o_Camera3D)
+		{
+			event_perform(ev_create, 0);
+		}
+	}
 
 	// Create gameplay
 	if (!iexists(Gameplay))
@@ -133,4 +146,28 @@ function _Game_LoadMapInternal()
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
+}
+
+//=============================================================================
+
+/// @function function Game_LoadEditor(fromTestSession)
+function Game_LoadEditor(fromTestSession)
+{
+	// Destroy all props first
+	idelete(o_tileset3DIze);
+	idelete(o_props3DIze);
+	
+	// Destroy all characters
+	idelete(ob_character);
+	
+	// Destroy gameplay now
+	idelete(Gameplay);
+	
+	// Mark we're no longer loading anything
+	global.game_editorRun = false;
+	global.game_loadingInfo = kGameLoadingInvalid;
+	global.game_loadingMap = "";
+	
+	// Return to the editor, the state of it should stay saved
+	room_goto(rm_EditorTest);
 }

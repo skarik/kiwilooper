@@ -71,6 +71,24 @@ function _EntityInfoInit()
 			],
 		},
 		
+		// Test Proxies:
+		{
+			name: "test_player_start",
+			desc: "Test player start, a proxy for player",
+			objectIndex: o_playerKiwi,
+			
+			gizmoSprite: object_get_sprite(o_playerKiwi),
+			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		
 		// Livelies:
 		{
 			parent: "lively_base",

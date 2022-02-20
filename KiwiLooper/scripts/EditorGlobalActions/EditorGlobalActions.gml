@@ -176,6 +176,9 @@ function EditorGlobalTestMap()
 	// Make this current room persistent & save state
 	room_persistent = true;
 	
+	// Remove all the prop & tile layers
+	EditorGet().MapFreeAllIntermediateLayers();
+	
 	// Go to the new map
 	Game_LoadMap(temp_mapname, true);
 }

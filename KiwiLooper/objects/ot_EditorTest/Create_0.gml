@@ -9,6 +9,9 @@ x = 0;
 y = 0;
 z = 0;
 
+// Kill the gameplay now
+idelete(Gameplay);
+
 EditorToolsSetup();
 
 m_currentMapName = "";
@@ -23,11 +26,7 @@ MapRebuildGraphics = function()
 	idelete(o_props3DIze);
 	
 	// Delete all current intermediate layers
-	for (var layerIndex = 0; layerIndex < array_length(intermediateLayers); ++layerIndex)
-	{
-		layer_destroy(intermediateLayers[layerIndex]);
-	}
-	intermediateLayers = [];
+	MapFreeAllIntermediateLayers();
 	
 	// Set up the tiles
 	m_tilemap.BuildLayers(intermediateLayers);
@@ -61,6 +60,15 @@ MapRebuilPropsOnly = function()
 	
 	// Create the missing part of the 3d-ify chain
 	inew(o_props3DIze);
+}
+MapFreeAllIntermediateLayers = function()
+{
+	// Delete all current intermediate layers
+	for (var layerIndex = 0; layerIndex < array_length(intermediateLayers); ++layerIndex)
+	{
+		layer_destroy(intermediateLayers[layerIndex]);
+	}
+	intermediateLayers = [];
 }
 
 EditorUIBitsSetup();

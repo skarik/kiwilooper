@@ -50,6 +50,7 @@
     {"id":{"name":"quintInOut","path":"scripts/quintInOut/quintInOut.yy",},"order":6,},
     {"id":{"name":"Settings","path":"objects/Settings/Settings.yy",},"order":11,},
     {"id":{"name":"ssy_nodeAi","path":"sprites/ssy_nodeAi/ssy_nodeAi.yy",},"order":22,},
+    {"id":{"name":"o_Editor_InGameplayInfo","path":"objects/o_Editor_InGameplayInfo/o_Editor_InGameplayInfo.yy",},"order":2,},
     {"id":{"name":"suie_gizmoEnts","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"order":4,},
     {"id":{"name":"room_get_index","path":"scripts/room_get_index/room_get_index.yy",},"order":0,},
     {"id":{"name":"sui_starclouds","path":"sprites/sui_starclouds/sui_starclouds.yy",},"order":3,},
@@ -631,6 +632,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"glitch4.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button1.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"_temp_testing.kmf","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"test.kmf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
     "IDEVersion": "2022.1.1.610",
