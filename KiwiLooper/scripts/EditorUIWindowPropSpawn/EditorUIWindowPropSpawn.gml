@@ -50,6 +50,11 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 			};
 		}
 		
+		// Sort props alphabetically and not chaotically
+		array_sort(prop_items, function(a, b) {
+				return CE_StringCompare(a.name, b.name);
+			});
+		
 		InitPropLayout();
 	}
 	static InitPropLayout = function()

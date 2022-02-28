@@ -165,6 +165,7 @@
     {"id":{"name":"dcmdParseTime","path":"scripts/dcmdParseTime/dcmdParseTime.yy",},"order":7,},
     {"id":{"name":"o_usablePC","path":"objects/o_usablePC/o_usablePC.yy",},"order":2,},
     {"id":{"name":"sfx_splatterBlood0","path":"sprites/sfx_splatterBlood0/sfx_splatterBlood0.yy",},"order":0,},
+    {"id":{"name":"CE_StringUtil","path":"scripts/CE_StringUtil/CE_StringUtil.yy",},"order":2,},
     {"id":{"name":"fmusic_is_during_intro","path":"scripts/fmusic_is_during_intro/fmusic_is_during_intro.yy",},"order":3,},
     {"id":{"name":"mt19937_seed","path":"scripts/mt19937_seed/mt19937_seed.yy",},"order":4,},
     {"id":{"name":"inputSet","path":"scripts/inputSet/inputSet.yy",},"order":11,},
