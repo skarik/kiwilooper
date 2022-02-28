@@ -13,3 +13,9 @@ m_camera_z = 0;
 m_camera_rotation_x = 0;
 m_camera_rotation_y = 0;
 m_camera_rotation_z = 0;
+
+// Update the screen mode
+if (!iexists(EditorGet()))
+{
+	Screen.scaleMode = kScreenscalemode_Match;
+}

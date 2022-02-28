@@ -158,10 +158,11 @@ camera_apply(m_outputCamera);
 surface_reset_target();
 
 // Copy to the backbuffer
-camera_apply(m_outputCamera);
+camera_apply(m_windowCamera);
 gpu_set_blendenable(false);
 gpu_set_blendmode_ext(bm_one, bm_zero);
 draw_set_color(c_white);
+draw_clear_alpha(c_blue, 1.0);
 if (!window_get_fullscreen())
 {
 	draw_surface_stretched(m_outputSurface, 0, 0, window_get_width(), window_get_height());

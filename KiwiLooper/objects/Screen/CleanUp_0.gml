@@ -11,4 +11,7 @@ if (m_initialized)
 	ds_list_destroy(m_renderQueue_UIObject);
 	ds_list_destroy(m_renderQueue_GameEffect);
 	ds_list_destroy(m_renderQueue_UIEffect);
+	
+	camera_destroy(m_outputCamera);
+	camera_destroy(m_windowCamera);
 }

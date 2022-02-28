@@ -12,6 +12,22 @@ width = 1280;
 height = 720;
 pixelScale = 2;
 
+#macro kScreenscalemode_Match 0		// Attempts to keep gamewidth & gameheight.
+#macro kScreenscalemode_Expand 1	// Disregards gamewidth & gameheight and instead uses window.
+// TODO: Mode that attempts to preserve either width or height, but boosts res up, for extra-wide support
+scaleMode = kScreenscalemode_Match;
+
+// Desired/target resolution for gameplay.
+gamewidth = 1280;
+gameheight = 720;
+
+// Saved size, for tracking changes
+savedwidth = width;
+savedheight = height;
+
+// Scale of the output
+windowScale = 1.0;
+
 offset_x = 0;
 offset_y = 0;
 
@@ -40,6 +56,7 @@ m_renderQueue_UIEffect = ds_list_create();
 
 // Set up output camera
 m_outputCamera = camera_create_view(0, 0, Screen.width, Screen.height);
+m_windowCamera = camera_create_view(0, 0, Screen.width, Screen.height);
 
 // Create screen shader effects
 //inew_unique(o_replatte);
@@ -63,12 +80,26 @@ m_initialized = true;
 ///@desc Fixes window sizes
 WindowOnResize = function()
 {
-	if (window_get_fullscreen())
+	if (window_get_fullscreen() || Screen.scaleMode == kScreenscalemode_Match)
 	{
-		// Nothing.
+		Screen.width = Screen.gamewidth;
+		Screen.height = Screen.gameheight;
 	}
 	else
 	{
-		window_set_size(Screen.width, Screen.height);
+		Screen.width = window_get_width();
+		Screen.height = window_get_height();
 	}
+	
+	// Save current window size for future updates
+	Screen.savedwidth = window_get_width();
+	Screen.savedheight = window_get_height();
+	
+	// Update the output view size
+	//camera_set_view_size(Screen.m_outputCamera, window_get_width(), window_get_height());
+	camera_set_view_size(Screen.m_outputCamera, Screen.width, Screen.height);
+	camera_set_view_size(Screen.m_windowCamera, window_get_width(), window_get_height());
+	
+	// Update saved scale
+	Screen.windowScale = sqrt(max(0, (Screen.gamewidth / Screen.width) * (Screen.gameheight / Screen.height)));
 };

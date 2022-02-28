@@ -12,6 +12,9 @@ z = 0;
 // Kill the gameplay now
 idelete(Gameplay);
 
+// Update the screen now
+Screen.scaleMode = kScreenscalemode_Expand;
+
 EditorToolsSetup();
 
 m_currentMapName = "";

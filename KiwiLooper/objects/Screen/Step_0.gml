@@ -36,9 +36,15 @@ if ((screenshot_requested || screenshot_auto_enabled) && surface_exists(t_captur
     }
 }
 
-// Fullscren toggle
+// Fullscreen toggle
 if (keyboard_check_direct(vk_lalt) && keyboard_check_pressed(vk_enter))
 {
 	window_set_fullscreen(!window_get_fullscreen());
+	WindowOnResize();
+}
+
+// Window resize call manually (event does not trigger properly)
+if (savedwidth != window_get_width() || savedheight != window_get_height())
+{
 	WindowOnResize();
 }

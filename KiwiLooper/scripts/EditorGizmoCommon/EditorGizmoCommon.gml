@@ -255,7 +255,7 @@ function AEditorGizmoBase() constructor
 			+ sqr(m_editor.viewrayTopLeft[1] - m_editor.viewrayBottomRight[1])
 			+ sqr(m_editor.viewrayTopLeft[2] - m_editor.viewrayBottomRight[2])));
 			
-		var size_factor = screendelta / 360;
+		var size_factor = screendelta / 360 * Screen.windowScale;
 		
 		return size_factor;
 	};
