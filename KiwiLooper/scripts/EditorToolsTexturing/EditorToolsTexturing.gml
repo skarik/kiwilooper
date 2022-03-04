@@ -28,6 +28,40 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		m_editor.EditorWindowSetFocus(m_windowBrowser);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";
+		
+		// set up minimenu
+		m_editor.m_minimenu.Initialize();
+		m_editor.m_minimenu.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 0, "Rotate", null, function(){
+				if (array_length(m_editor.m_selection) > 0)
+				{
+					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
+					{
+						recent_object.object.tile.floorRotate90 = !recent_object.object.tile.floorRotate90;
+						TextureUpdateMapVisuals();
+					}
+				}}, null));
+		m_editor.m_minimenu.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 2, "Flip X", null, function(){
+				if (array_length(m_editor.m_selection) > 0)
+				{
+					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
+					{
+						recent_object.object.tile.floorFlipX = !recent_object.object.tile.floorFlipX;
+						TextureUpdateMapVisuals();
+					}
+				}}, null));
+		m_editor.m_minimenu.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 1, "Flip Y", null, function(){
+				if (array_length(m_editor.m_selection) > 0)
+				{
+					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
+					{
+						recent_object.object.tile.floorFlipY = !recent_object.object.tile.floorFlipY;
+						TextureUpdateMapVisuals();
+					}
+				}}, null));
+		m_editor.m_minimenu.Show();
 	};
 	onEnd = function(trueEnd)
 	{
@@ -41,49 +75,39 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			m_editor.EditorWindowFree(m_windowBrowser);
 			m_windowBrowser = null;
 		}
+		m_editor.m_minimenu.Hide();
 	};
 	
 	onStep = function()
 	{
 		// Update picker visuals:
 		PickerUpdateVisuals();
+		
+		// On selection, update the button position
+		if (array_length(m_editor.m_selection) > 0)
+		{
+			var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+			if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
+			{
+				// Update the window position (TODO: save status elswhere & hide when nonselected)
+				m_editor.m_minimenu.SetCenterPosition3D(
+					recent_object.object.tile.x * 16 + 8 + 8 * recent_object.object.normal.x,
+					recent_object.object.tile.y * 16 + 8 + 8 * recent_object.object.normal.y,
+					recent_object.object.tile.height * 16 - 8 + 8 * recent_object.object.normal.z);
+			}
+			else
+			{
+				m_editor.m_minimenu.Hide();
+			}
+		}
+		else
+		{
+			m_editor.m_minimenu.Hide();
+		}
 	};
 	
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
-		/*if (buttonState == kEditorToolButtonStateMake)
-		{
-			if (button == mb_left)
-			{
-				m_leftClickDrag = true;
-				m_leftClickStart.x = m_editor.toolFlatX;
-				m_leftClickStart.y = m_editor.toolFlatY;
-			}
-		}
-		if (buttonState == kEditorToolButtonStateHeld)
-		{
-			if (button == mb_left)
-			{
-				m_leftClickEnd.x = m_editor.toolFlatX;
-				m_leftClickEnd.y = m_editor.toolFlatY;
-			}
-		}
-		if (buttonState == kEditorToolButtonStateBreak)
-		{
-			if (button == mb_left)
-			{
-				m_leftClickDrag = false;
-				
-				if (m_leftClickDragArea < kDragAreaThreshold)
-				{
-					PickerRun();
-				}
-				else
-				{
-					// todo
-				}
-			}
-		}*/
 		if (buttonState == kEditorToolButtonStateMake)
 		{
 			// Left click select.

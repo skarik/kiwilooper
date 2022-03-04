@@ -107,7 +107,7 @@ function EditorGizmoUpdate()
 	var l_mouseStateDown = array_create(5, false);
 	var l_mouseStateUp = array_create(5, false);
 	var l_mouseAvailable = false;
-	if (!m_toolbar.ContainsMouse() && !m_actionbar.ContainsMouse() && !WindowingContainsMouse())
+	if (!m_toolbar.ContainsMouse() && !m_actionbar.ContainsMouse() && !m_minimenu.ContainsMouse() && !WindowingContainsMouse())
 	{
 		var kMouseInputs = [mb_left, mb_right, mb_middle, kMouseWheelUp, kMouseWheelDown];
 		for (var i = 0; i < 3; ++i)

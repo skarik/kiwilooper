@@ -124,7 +124,9 @@ function ATilemap() constructor
 					var tileInfo = tiles[tileIndex];
 					if (tileInfo.height == layerHeight)
 					{
-						tilemap_set(tilemap, tile_set_index(0, tileInfo.floorType), tileInfo.x, tileInfo.y);
+						tilemap_set(tilemap, 
+							tile_set_flip(tile_set_mirror(tile_set_rotate(tile_set_index(0, tileInfo.floorType), tileInfo.floorRotate90), tileInfo.floorFlipX), tileInfo.floorFlipY),
+							tileInfo.x, tileInfo.y);
 					}
 				}
 			}

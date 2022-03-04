@@ -49,6 +49,9 @@ function EditorUIBitsSetup()
 	// Create status bar
 	m_statusbar = new AEditorStatusbar(this);
 	
+	// Create minimenu
+	m_minimenu = new AToolbarMini();
+	
 	// Create annotations
 	EditorAnnotationsSetup();
 	
@@ -68,6 +71,8 @@ function EditorUIBitsUpdate()
 	m_actionbar.x = 0;
 	m_actionbar.y = 0;
 	m_actionbar.Step(l_mouseX, l_mouseY);
+	
+	m_minimenu.Step(l_mouseX, l_mouseY);
 	
 	m_statusbar.Step();
 	
@@ -90,6 +95,7 @@ function EditorUIBitsDraw()
 	// Draw windows over annotations but under special bars
 	EditorWindowingDraw();
 	
+	m_minimenu.Draw();
 	m_toolbar.Draw();
 	m_actionbar.Draw();
 	

@@ -9,6 +9,7 @@ function AToolbar() constructor
 	m_elements		= [];
 	m_elementsCount	= 0;
 	m_elementsHeight= 0;
+	m_elementsWidth = 0;
 	
 	m_state_containsMouse	= false;
 	
