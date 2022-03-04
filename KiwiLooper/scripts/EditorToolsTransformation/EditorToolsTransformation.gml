@@ -34,7 +34,20 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	
 	onStep = function()
 	{
-		if (array_length(m_editor.m_selection) > 0)
+		var bValidSelection = array_length(m_editor.m_selection) > 0;
+		if (bValidSelection)
+		{
+			if (is_struct(m_editor.m_selection[0]))
+			{
+				if (m_editor.m_selection[0].type == kEditorSelection_Tile
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+				{
+					bValidSelection = false;
+				}
+			}
+		}
+		
+		if (bValidSelection)
 		{
 			// Gather transform target first
 			var target = m_editor.m_selection[0];
@@ -43,6 +56,10 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
 				{
 					target = m_editor.m_selection[0].object;
+				}
+				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
+				{
+					assert(false); // TODO
 				}
 			}
 			
@@ -123,7 +140,20 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 	
 	onStep = function()
 	{
-		if (array_length(m_editor.m_selection) > 0)
+		var bValidSelection = array_length(m_editor.m_selection) > 0;
+		if (bValidSelection)
+		{
+			if (is_struct(m_editor.m_selection[0]))
+			{
+				if (m_editor.m_selection[0].type == kEditorSelection_Tile
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+				{
+					bValidSelection = false;
+				}
+			}
+		}
+		
+		if (bValidSelection)
 		{
 			// Gather transform target first
 			var target = m_editor.m_selection[0];
