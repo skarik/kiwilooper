@@ -3,8 +3,8 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 {
 	state = kEditorToolTexture;
 	m_gizmo = null;
-	//m_window = null;
 	m_windowBrowser = null;
+	m_lastSelectedTile = null;
 	
 	onBegin = function()
 	{
@@ -76,6 +76,8 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			m_windowBrowser = null;
 		}
 		m_editor.m_minimenu.Hide();
+		
+		m_lastSelectedTile = null;
 	};
 	
 	onStep = function()
@@ -115,6 +117,9 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			{
 				PickerRun(keyboard_check(vk_control), false);
 
+				// Reset last selected tile
+				m_lastSelectedTile = null;
+
 				// On selection, update the browser to select the correct texture
 				if (array_length(m_editor.m_selection) > 0)
 				{
@@ -125,6 +130,9 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 							(abs(recent_object.object.normal.z) > 0.707)
 							? recent_object.object.tile.floorType
 							: recent_object.object.tile.wallType);
+							
+						// (Also save the selected tile)
+						m_lastSelectedTile = recent_object.object.tile;
 					}
 				}
 			}
@@ -266,12 +274,31 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 	/// @returns True when texture has changed. False otherwise.
 	static TextureApplyToSelectObject = function(selection)
 	{
+		var bHasAlignmentChange = false;
+		
 		// Pull the selected texture from the browser and apply it (if valid)
 		var new_tile = m_windowBrowser.GetCurrentTile();
 		
 		// Apply the texture now
 		if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
 		{
+			// Apply the turns
+			if (is_struct(m_lastSelectedTile))
+			{
+				if (m_lastSelectedTile.floorRotate90 != selection.object.tile.floorRotate90
+					|| m_lastSelectedTile.floorFlipX != selection.object.tile.floorFlipX
+					|| m_lastSelectedTile.floorFlipY != selection.object.tile.floorFlipY
+					)
+					{
+						selection.object.tile.floorRotate90 = m_lastSelectedTile.floorRotate90;
+						selection.object.tile.floorFlipX = m_lastSelectedTile.floorFlipX;
+						selection.object.tile.floorFlipY = m_lastSelectedTile.floorFlipY;
+						
+						bHasAlignmentChange = true;
+					}
+			}
+			
+			// Apply texture changes
 			if (abs(selection.object.normal.z) > 0.707)
 			{
 				var old_tile = selection.object.tile.floorType;
@@ -291,7 +318,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 				}
 			}
 		}
-		return false;
+		return bHasAlignmentChange;
 	}
 	
 	static TextureApplyToSelection = function()

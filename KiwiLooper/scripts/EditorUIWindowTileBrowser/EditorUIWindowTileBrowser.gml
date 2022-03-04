@@ -171,7 +171,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	
 	static GetCurrentTile = function()
 	{
-		return tile_items[item_focused].tile;
+		return (item_in_use != null) ? tile_items[item_in_use].tile : tile_items[item_focused].tile;
 	}
 	static SetCurrentTile = function(inputTile)
 	{
