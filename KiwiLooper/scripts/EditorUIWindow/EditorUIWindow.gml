@@ -4,11 +4,13 @@ function AEditorWindow() constructor
 {
 	static kTitleHeight = 12;
 	static kTitleMargin = 2;
+	static kBorderSize = 1;
 	static kAccentColor = make_color_rgb(200, 40, 200);
 	
 	#macro kWindowMousePositionNone 0
 	#macro kWindowMousePositionTitle 1
 	#macro kWindowMousePositionContent 2
+	#macro kWindowMousePositionBorder 3
 	
 	m_title = "Window";
 	m_modal = false; // Is this an interrupting dialog?
@@ -25,7 +27,9 @@ function AEditorWindow() constructor
 	contains_mouse = false;
 	mouse_position = kWindowMousePositionNone;
 	dragging = false;
+	resizing = false;
 	has_stored_position = false;
+	has_stored_size = false;
 	minimized = false;
 	minimized_index = null;
 	visible = false;
@@ -129,12 +133,17 @@ function AEditorWindow() constructor
 				}
 				CE_ArrayForEach(m_editor.windowMinimizedList, function(window, index) { window.minimized_index = index; });
 			}
+			/*else if (!minimized && visible && !disabled
+				&& hovering_button_index == kWindowHoverButtonResize)
+			{
+				resizing = true;
+			}*/
 		}
 	}
 	
 	static drawWindow = function()
 	{
-		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
+		var rect = [m_position.x - kBorderSize, m_position.y - kTitleHeight - kBorderSize, m_position.x + m_size.x + kBorderSize, m_position.y + m_size.y + kBorderSize];
 		
 		// Draw the background for the window
 		draw_set_color(focused ? kFocusedBGColor : kUnfocusedBGColor);
@@ -145,28 +154,28 @@ function AEditorWindow() constructor
 			var l_titleBgColor = focused ? kAccentColor : c_white;
 			
 			draw_set_color(l_titleBgColor);
-			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight, false);
+			DrawSpriteRectangle(rect[0], rect[1] + kBorderSize, rect[2], rect[1] + kBorderSize + kTitleHeight, false);
 			
 			// Draw the title on the far left
 			draw_set_color(focused ? c_white : c_gray);
 			draw_set_halign(fa_left);
 			draw_set_valign(fa_top);
 			draw_set_font(f_04b03);
-			draw_text(rect[0] + kTitleMargin, rect[1] + kTitleMargin, m_title);
+			draw_text(rect[0] + kTitleMargin, rect[1] + kBorderSize + kTitleMargin, m_title);
 			
 			// Draw the exit button on the far right
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonExit ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1], rect[2], rect[1] + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1] + kBorderSize, rect[2], rect[1] + kTitleHeight, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kBorderSize + kTitleHeight / 2,
 							1.0, 1.0, 0.0,
 							draw_get_color(), draw_get_alpha());
 							
 			// Draw the minimize button a bit back
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonMinimize ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1], rect[2] - kTitleHeight, rect[1] + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1] + kBorderSize, rect[2] - kTitleHeight, rect[1] + kBorderSize + kTitleHeight, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
+			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kBorderSize + kTitleHeight / 2,
 							1.0, 1.0, 0.0,
 							draw_get_color(), draw_get_alpha());
 		}
@@ -245,14 +254,20 @@ function EditorWindowingSetup()
 	windows = [];
 	
 	windowDragging = false;
+	windowResizing = false;
+	windowDraggingMouseStart = new Vector2(0, 0);
+	windowDraggingStart = new Vector2(0, 0);
+	windowResizingStart = new Vector2(0, 0);
+	
 	windowSavedPositions = [];
+	windowSavedSizes = [];
 	
 	windowMinimizedList = [];
 	
 	WindowingContainsMouse = function()
 	{
 		// Assume we're always taking the mouse if dragging
-		if (windowDragging)
+		if (windowDragging || windowResizing)
 		{
 			return true;
 		}
@@ -317,6 +332,16 @@ function EditorWindowAlloc(type)
 			break;
 		}
 	}
+	// Pull saved sizes by class
+	for (var i = 0; i < array_length(windowSavedPositions); ++i)
+	{
+		if (windowSavedSizes[i][0] == window.classType)
+		{
+			window.m_size.copyFrom(windowSavedSizes[i][1]);
+			window.has_stored_size = true;
+			break;
+		}
+	}
 	
 	array_push(windows, window);
 	return window;
@@ -341,6 +366,21 @@ function EditorWindowFree(window)
 			array_push(windowSavedPositions, [window.classType, window.m_position.copy()]);
 		};
 		saveWindowPosition(window);
+		
+		// Add unique entry for the window size
+		var saveWindowSize = function(window)
+		{
+			for (var i = 0; i < array_length(windowSavedSizes); ++i)
+			{
+				if (windowSavedSizes[i][0] == window.classType)
+				{
+					windowSavedSizes[i][1].copyFrom(window.m_size);
+					return;
+				}
+			}
+			array_push(windowSavedSizes, [window.classType, window.m_size.copy()]);
+		};
+		saveWindowSize(window);
 		
 		// Disable window & request free
 		window.request_free = true;
@@ -408,14 +448,19 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	{
 		var check_window = windows[iWindow];
 		if ((!check_window.minimized && point_in_rectangle(mouseX, mouseY,
-				check_window.m_position.x, check_window.m_position.y - check_window.kTitleHeight,
-				check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y))
+				check_window.m_position.x - check_window.kBorderSize, check_window.m_position.y - check_window.kBorderSize - check_window.kTitleHeight,
+				check_window.m_position.x + check_window.m_size.x + check_window.kBorderSize, check_window.m_position.y + check_window.m_size.y + check_window.kBorderSize))
 			|| (check_window.minimized && check_window.MinimizedContains(mouseX, mouseY)))
 		{
 			check_window.contains_mouse = true;
 			hovered_window = check_window;
 			
-			check_window.mouse_position = (check_window.minimized || mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent;
+			check_window.mouse_position = 
+				point_in_rectangle(mouseX, mouseY,
+					check_window.m_position.x, check_window.m_position.y - check_window.kTitleHeight,
+					check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y)
+				? ((check_window.minimized || mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent)
+				: kWindowMousePositionBorder;
 		}
 		else
 		{
@@ -435,35 +480,72 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	}
 	
 	// Update dragging
-	if (!windowDragging)
+	if (!windowDragging && !windowResizing)
 	{
-		if (is_struct(windowCurrent) && windowCurrent.mouse_position == kWindowMousePositionTitle)
+		if (is_struct(windowCurrent)
+			&& !windowCurrent.disabled && !windowCurrent.minimized && windowCurrent.visible)
 		{
 			if (mouse_check_button_pressed(mb_left))
 			{
-				windowDragging = true;
-				windowCurrent.dragging = true;
+				if (windowCurrent.mouse_position == kWindowMousePositionTitle)
+				{
+					windowDragging = true;
+					windowCurrent.dragging = true;
+					
+					windowDraggingStart.copyFrom(windowCurrent.m_position);
+					windowDraggingMouseStart.x = mouseX;
+					windowDraggingMouseStart.y = mouseY;
+				}
+				else if (windowCurrent.mouse_position == kWindowMousePositionBorder)
+				{
+					windowResizing = true;
+					windowCurrent.resizing = true;
+					
+					windowResizingStart.copyFrom(windowCurrent.m_size);
+					windowDraggingMouseStart.x = mouseX;
+					windowDraggingMouseStart.y = mouseY;
+				}
 			}
 		}
 	}
 	else
 	{
-		if (is_struct(windowCurrent))
+		if (is_struct(windowCurrent)
+			&& !windowCurrent.disabled && !windowCurrent.minimized && windowCurrent.visible
+			// xor check - don't do both at same time
+			&& !(windowDragging && windowResizing))
 		{
 			// Move window around
-			windowCurrent.m_position.x += uPosition - uPositionPrevious;
-			windowCurrent.m_position.y += vPosition - vPositionPrevious;
+			if (windowDragging)
+			{
+				windowCurrent.m_position.x = round(windowDraggingStart.x + (mouseX - windowDraggingMouseStart.x));
+				windowCurrent.m_position.y = round(windowDraggingStart.y + (mouseY - windowDraggingMouseStart.y));
+				
+				// clamp to the view
+				windowCurrent.m_position.x = clamp(windowCurrent.m_position.x, -windowCurrent.m_size.x + 40, GameCamera.width - 40);
+				windowCurrent.m_position.y = clamp(windowCurrent.m_position.y, round(windowCurrent.kTitleHeight * 0.5), GameCamera.height - 20);
+			}
+			// Resize window
+			if (windowResizing)
+			{
+				windowCurrent.m_size.x = round(max(16, windowResizingStart.x + (mouseX - windowDraggingMouseStart.x)));
+				windowCurrent.m_size.y = round(max(1, windowResizingStart.y + (mouseY - windowDraggingMouseStart.y)));
+			}
 			
 			// Check for dragging stop
 			if (mouse_check_button_released(mb_left))
 			{
 				windowDragging = false;
 				windowCurrent.dragging = false;
+				
+				windowResizing = false;
+				windowCurrent.resizing = false;
 			}
 		}
 		else
 		{
 			windowDragging = false;
+			windowResizing = false;
 		}
 	}
 	

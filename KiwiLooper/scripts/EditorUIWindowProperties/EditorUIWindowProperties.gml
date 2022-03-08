@@ -186,7 +186,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
-		if (event == kEditorToolButtonStateMake)
+		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
 		{
 			// If mouse wheel, attempt scroll
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)

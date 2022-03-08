@@ -227,7 +227,7 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
-		if (event == kEditorToolButtonStateMake)
+		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
 		{
 			if (button == mb_left)
 			{
