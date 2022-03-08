@@ -10,6 +10,10 @@ function _EntityInfoInit()
 	
 	#macro kGizmoDrawmodeBillboard 0
 	#macro kGizmoDrawmodeHidden 1
+	#macro kGizmoDrawmodeFlatsprite 2
+	
+	#macro kGizmoOriginCenter 0
+	#macro kGizmoOriginBottom 1
 	
 	#macro kProxyTypeNone 0		// No proxy: the actual object is created.
 	#macro kProxyTypeProp 1		// Specific kind of proxy usually reserved for props. Treats the given object as a special prop.
@@ -28,8 +32,8 @@ function _EntityInfoInit()
 				["", kValueTypePosition],
 				["", kValueTypeRotation],
 				["", kValueTypeScale],
-				["translucent", kValueTypeBoolean],
-				["lit", kValueTypeBoolean],
+				["translucent", kValueTypeBoolean, false],
+				["lit", kValueTypeBoolean, true],
 			],
 		},
 	
@@ -42,6 +46,7 @@ function _EntityInfoInit()
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			
 			hullsize: 8,
 			
@@ -61,6 +66,7 @@ function _EntityInfoInit()
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 1,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			
 			hullsize: 8,
 			
@@ -80,6 +86,7 @@ function _EntityInfoInit()
 			gizmoSprite: object_get_sprite(o_playerKiwi),
 			gizmoIndex: 0,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottom,
 			
 			hullsize: 16,
 			
@@ -98,6 +105,7 @@ function _EntityInfoInit()
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			
 			hullsize: 8,
 			
@@ -128,10 +136,11 @@ function _EntityInfoInit()
 			desc: "",
 			objectIndex: o_livelyGoalArea,
 			
-			gizmoSprite: suie_gizmoEnts,
+			gizmoSprite: ssy_aiSafe,
 			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeFlatsprite,
 			
-			hullsize: 8,
+			hullsize: 32,
 			
 			properties:
 			[
@@ -272,6 +281,10 @@ function _EntityInfoInit_FillMissingDefaults()
 		if (!variable_struct_exists(currentEntry, "gizmoDrawmode"))
 		{
 			currentEntry.gizmoDrawmode = kGizmoDrawmodeHidden;
+		}
+		if (!variable_struct_exists(currentEntry, "gizmoOrigin"))
+		{
+			currentEntry.gizmoOrigin = kGizmoOriginCenter;
 		}
 	}
 }
@@ -568,4 +581,15 @@ function entpropIsSpecialTransform(property)
 	var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
 	
 	return l_bSpecialPosition || l_bSpecialRotation || l_bSpecialScale;
+}
+
+/// @function entpropHasDefaultValue(property)
+/// @desc Checks if the given property has a default value
+function entpropHasDefaultValue(property)
+{
+	if (array_length(property) >= 3)
+	{
+		return true;
+	}
+	return false;
 }

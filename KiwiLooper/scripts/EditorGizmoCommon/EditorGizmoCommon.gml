@@ -245,6 +245,35 @@ function AEditorGizmoBase() constructor
 			]);
 	};
 	
+	MeshbAddQuadUVs = function(mesh, color, alpha, xsize, ysize, uvs, position)
+	{
+		var normal = xsize.cross(ysize);
+		normal.normalize();
+		
+		meshb_AddQuad(mesh, [
+			new MBVertex(
+				position,
+				color, alpha,
+				(new Vector2(0.0, 0.0)).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				position.add(xsize),
+				color, alpha,
+				(new Vector2(1.0, 0.0)).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				position.add(ysize),
+				color, alpha,
+				(new Vector2(0.0, 1.0)).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				position.add(xsize).add(ysize),
+				color, alpha,
+				(new Vector2(1.0, 1.0)).biasUVSelf(uvs),
+				normal),
+			]);
+	};
+	
 	/// @function CalculateScreensizeFactor()
 	/// @desc Calculates the screen scaling factor so that the item can remain roughly constant size at 360p
 	CalculateScreensizeFactor = function()

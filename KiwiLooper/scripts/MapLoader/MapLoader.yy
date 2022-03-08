@@ -3,7 +3,7 @@
   "isCompatibility": false,
   "parent": {
     "name": "Loader",
-    "path": "folders/Scripts/Game/Editor/Loader.yy",
+    "path": "folders/Scripts/Game/Entities And External Maps/Loader.yy",
   },
   "resourceVersion": "1.0",
   "name": "MapLoader",

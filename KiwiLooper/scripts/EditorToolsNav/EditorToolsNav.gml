@@ -88,12 +88,20 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			}
 			else if (iexists(selection))
 			{
-				// Get the entity info:
-				var entity = selection.entity;
-				var halfhull = entity.hullsize * 0.5;
+				var entTypeInfo, entHhsz, entGizmoType, entOrient;
 				
-				m_showSelectGizmo.m_mins[0] = new Vector3(selection.x - halfhull, selection.y - halfhull, selection.z - halfhull);
-				m_showSelectGizmo.m_maxes[0] = new Vector3(selection.x + halfhull, selection.y + halfhull, selection.z + halfhull);
+				// Get the entity info:
+				entTypeInfo		= selection.entity;
+				entHhsz			= entTypeInfo.hullsize * 0.5;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entOrient		= entTypeInfo.gizmoOrigin;
+				
+				// Get offset center
+				var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
+				var entCenter = new Vector3(selection.x, selection.y, selection.z + (entOrient == kGizmoOriginBottom ? entHSize.z : 0));
+				
+				m_showSelectGizmo.m_mins[0] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
+				m_showSelectGizmo.m_maxes[0] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
 				m_showSelectGizmo.m_trses[0] = matrix_build_identity();
 			}
 		}
@@ -160,12 +168,14 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		var closestDist = 10000 * 10000.0;
 		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo, entType, entHhsz;
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
 			if (entTypeIndex != entlistIterationLength())
 			{
-				entTypeInfo = entlistIterationGet(entTypeIndex);
-				entType		= entTypeInfo.objectIndex;
-				entHhsz		= entTypeInfo.hullsize * 0.5;
+				entTypeInfo		= entlistIterationGet(entTypeIndex);
+				entType			= entTypeInfo.objectIndex;
+				entHhsz			= entTypeInfo.hullsize * 0.5;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entOrient		= entTypeInfo.gizmoOrigin;
 			}
 			// Check for proxies:
 			else
@@ -181,11 +191,19 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				// Check for proxies:
 				if (entTypeIndex == entlistIterationLength())
 				{
-					entTypeInfo	= ent.entity;
-					entHhsz		= entTypeInfo.hullsize * 0.5;
+					entTypeInfo		= ent.entity;
+					entHhsz			= entTypeInfo.hullsize * 0.5;
+					entGizmoType	= entTypeInfo.gizmoDrawmode;
+					entOrient		= entTypeInfo.gizmoOrigin;
 				}
 				
-				if (raycast4_box(new Vector3(ent.x - entHhsz, ent.y - entHhsz, ent.z - entHhsz), new Vector3(ent.x + entHhsz, ent.y + entHhsz, ent.z + entHhsz), rayStart, rayDir))
+				// Get offset center
+				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
+				var entCenter = new Vector3(ent.x, ent.y, ent.z + (entOrient == kGizmoOriginBottom ? entHSize.z : 0));
+				
+				if (raycast4_box(new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
+								 new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
+								 rayStart, rayDir))
 				{
 					if (raycast4_get_hit_distance() < closestDist)
 					{

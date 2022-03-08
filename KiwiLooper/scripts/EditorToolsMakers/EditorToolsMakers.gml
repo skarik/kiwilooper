@@ -83,6 +83,15 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.zrotation = 0.0;
 					ent.entity = m_entityToMake;
 					
+					for (var propIndex = 0; propIndex < array_length(ent.entity.properties); ++propIndex)
+					{
+						var property = ent.entity.properties[propIndex];
+						if (entpropHasDefaultValue(property))
+						{
+							variable_instance_set(ent, property[0], property[2]);
+						}
+					}
+					
 					m_editor.m_entityInstList.Add(ent);
 				}
 			}

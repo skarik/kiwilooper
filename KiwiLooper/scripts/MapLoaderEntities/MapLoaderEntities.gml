@@ -115,6 +115,9 @@ function MapLoadEntities(filedata, entityInstanceList)
 							instance.xscale = tx;
 							instance.yscale = ty;
 							instance.zscale = tz;
+							// Apply game-maker scaling for other effects
+							instance.image_xscale = tx;
+							instance.image_yscale = ty;
 						}
 						else 
 						{
