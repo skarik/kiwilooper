@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_textures16","path":"sprites/suie_textures16/suie_textures16.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_textures16",
     "tags": [],
     "resourceType": "GMSequence",

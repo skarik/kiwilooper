@@ -83,7 +83,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_gizmoEnts","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_gizmoEnts",
     "tags": [],
     "resourceType": "GMSequence",

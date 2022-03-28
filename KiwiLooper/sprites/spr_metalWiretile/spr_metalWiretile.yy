@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalWiretile","path":"sprites/spr_metalWiretile/spr_metalWiretile.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalWiretile",
     "tags": [],
     "resourceType": "GMSequence",

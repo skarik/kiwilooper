@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalRug0","path":"sprites/spr_metalRug0/spr_metalRug0.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalRug0",
     "tags": [],
     "resourceType": "GMSequence",

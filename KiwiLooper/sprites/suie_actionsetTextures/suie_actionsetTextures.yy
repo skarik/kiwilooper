@@ -67,7 +67,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_actionsetTextures",
     "tags": [],
     "resourceType": "GMSequence",

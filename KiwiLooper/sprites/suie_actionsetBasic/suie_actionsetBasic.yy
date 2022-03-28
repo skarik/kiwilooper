@@ -107,7 +107,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_actionsetBasic","path":"sprites/suie_actionsetBasic/suie_actionsetBasic.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_actionsetBasic",
     "tags": [],
     "resourceType": "GMSequence",

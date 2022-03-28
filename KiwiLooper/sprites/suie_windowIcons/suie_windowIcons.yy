@@ -71,7 +71,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_windowIcons","path":"sprites/suie_windowIcons/suie_windowIcons.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_windowIcons",
     "tags": [],
     "resourceType": "GMSequence",

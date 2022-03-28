@@ -67,7 +67,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_cursors","path":"sprites/suie_cursors/suie_cursors.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_cursors",
     "tags": [],
     "resourceType": "GMSequence",

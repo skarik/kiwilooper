@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalScreen0","path":"sprites/spr_metalScreen0/spr_metalScreen0.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalScreen0",
     "tags": [],
     "resourceType": "GMSequence",

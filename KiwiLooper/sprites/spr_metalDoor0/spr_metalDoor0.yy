@@ -67,7 +67,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalDoor0","path":"sprites/spr_metalDoor0/spr_metalDoor0.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalDoor0",
     "tags": [],
     "resourceType": "GMSequence",

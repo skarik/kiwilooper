@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "sfx_metalPowerOverlay",
     "tags": [],
     "resourceType": "GMSequence",

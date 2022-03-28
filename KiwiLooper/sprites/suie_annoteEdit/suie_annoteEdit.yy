@@ -83,7 +83,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_annoteEdit","path":"sprites/suie_annoteEdit/suie_annoteEdit.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_annoteEdit",
     "tags": [],
     "resourceType": "GMSequence",

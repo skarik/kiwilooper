@@ -64,6 +64,14 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.x = m_gizmo.x;
 					ent.y = m_gizmo.y;
 					ent.z = m_gizmo.z;
+					// fill in missing transformation values (even if they're unused)
+					variable_instance_set_if_not_exists(ent, "xscale", 1.0);
+					variable_instance_set_if_not_exists(ent, "yscale", 1.0);
+					variable_instance_set_if_not_exists(ent, "zscale", 1.0);
+					variable_instance_set_if_not_exists(ent, "xrotation", 0.0);
+					variable_instance_set_if_not_exists(ent, "yrotation", 0.0);
+					variable_instance_set_if_not_exists(ent, "zrotation", 0.0);
+					// save ent
 					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
 					
 					m_editor.m_entityInstList.Add(ent);
@@ -81,6 +89,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.xrotation = 0.0;
 					ent.yrotation = 0.0;
 					ent.zrotation = 0.0;
+					// save ent
 					ent.entity = m_entityToMake;
 					
 					for (var propIndex = 0; propIndex < array_length(ent.entity.properties); ++propIndex)

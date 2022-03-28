@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalCrate0","path":"sprites/spr_metalCrate0/spr_metalCrate0.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalCrate0",
     "tags": [],
     "resourceType": "GMSequence",

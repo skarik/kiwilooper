@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalBoard","path":"sprites/spr_metalBoard/spr_metalBoard.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalBoard",
     "tags": [],
     "resourceType": "GMSequence",

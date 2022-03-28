@@ -67,7 +67,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_toolsetObject","path":"sprites/suie_toolsetObject/suie_toolsetObject.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_toolsetObject",
     "tags": [],
     "resourceType": "GMSequence",

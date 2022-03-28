@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalPDA","path":"sprites/spr_metalPDA/spr_metalPDA.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalPDA",
     "tags": [],
     "resourceType": "GMSequence",

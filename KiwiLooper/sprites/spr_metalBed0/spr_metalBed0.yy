@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalBed0","path":"sprites/spr_metalBed0/spr_metalBed0.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalBed0",
     "tags": [],
     "resourceType": "GMSequence",

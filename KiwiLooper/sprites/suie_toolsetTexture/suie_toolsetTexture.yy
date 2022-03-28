@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_toolsetTexture","path":"sprites/suie_toolsetTexture/suie_toolsetTexture.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_toolsetTexture",
     "tags": [],
     "resourceType": "GMSequence",

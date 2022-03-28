@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalTable1","path":"sprites/spr_metalTable1/spr_metalTable1.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalTable1",
     "tags": [],
     "resourceType": "GMSequence",

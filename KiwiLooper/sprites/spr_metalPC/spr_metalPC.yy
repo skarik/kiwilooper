@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"spr_metalPC","path":"sprites/spr_metalPC/spr_metalPC.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "spr_metalPC",
     "tags": [],
     "resourceType": "GMSequence",

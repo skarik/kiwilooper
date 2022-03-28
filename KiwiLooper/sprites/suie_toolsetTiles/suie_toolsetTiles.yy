@@ -71,7 +71,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"suie_toolsetTiles","path":"sprites/suie_toolsetTiles/suie_toolsetTiles.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "suie_toolsetTiles",
     "tags": [],
     "resourceType": "GMSequence",
