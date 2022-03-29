@@ -153,9 +153,28 @@ function MapLoadEntities(filedata, entityInstanceList)
 						variable_instance_set(instance, property[0], value);
 					}
 					break;
+					
+				case kValueTypeString:
+				case kValueTypeLively:
+					{
+						var value = buffer_read(buffer, buffer_string);
+						variable_instance_set(instance, property[0], value);
+					}
+					break;
 			
 				default:
 					assert(false); // Unknown type!
+				}
+			}
+			
+			// Fix up undefined values with defaults
+			for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
+			{
+				var property = ent.properties[propertyIndex];
+				if (entpropHasDefaultValue(property)
+					&& is_undefined(variable_instance_get(instance, property[0])) )
+				{
+					variable_instance_set(instance, property[0], property[2]);
 				}
 			}
 		
@@ -191,6 +210,17 @@ function MapSaveEntities(filedata, entityInstanceList)
 	{
 		var instance = entityInstanceList.GetEntity(entIndex);
 		var ent = instance.entity;
+		
+		// Fix up undefined values with defaults
+		for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
+		{
+			var property = ent.properties[propertyIndex];
+			if (entpropHasDefaultValue(property)
+				&& is_undefined(variable_instance_get(instance, property[0])) )
+			{
+				variable_instance_set(instance, property[0], property[2]);
+			}
+		}
 		
 		// Entity element format:
 		//	string					entity name
@@ -276,6 +306,15 @@ function MapSaveEntities(filedata, entityInstanceList)
 				{
 					var value = variable_instance_get(instance, property[0]);
 					buffer_write(buffer, buffer_u8, value ? 0xFF : 0x00); // No documentation on buffer_bool, so force to u8 here
+				}
+				break;
+				
+			case kValueTypeString:
+			case kValueTypeLively:
+				{
+					var value = variable_instance_get(instance, property[0]);
+					
+					buffer_write(buffer, buffer_string, value);
 				}
 				break;
 			

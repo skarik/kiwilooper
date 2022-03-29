@@ -276,7 +276,7 @@ m_mesh = meshb_Begin();
 			var layer_name_post_numeral = string_char_at(layer_name, min(layer_name_search_position + 5, string_length(layer_name)));
 			if (!is_numeral(layer_name_post_numeral))
 			{
-				show_error("bad layer, shit!", true);
+				show_error("bad layer named, \"" + layer_name_post_numeral + "\", shit!", true);
 			}
 		
 			var current_height = real(layer_name_post_numeral);

@@ -7,9 +7,9 @@
 function Vector3(n_x, n_y, n_z) constructor
 {
 	// Default values
-	x = is_real(n_x) ? n_x : 0.0;
-	y = is_real(n_y) ? n_y : 0.0;
-	z = is_real(n_z) ? n_z : 0.0;
+	x = is_numeric(n_x) ? n_x : 0.0;
+	y = is_numeric(n_y) ? n_y : 0.0;
+	z = is_numeric(n_z) ? n_z : 0.0;
 	
 	// Functions
 	

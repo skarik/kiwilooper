@@ -404,6 +404,7 @@
     {"id":{"name":"ot_EditorTest","path":"objects/ot_EditorTest/ot_EditorTest.yy",},"order":0,},
     {"id":{"name":"suie_textures16","path":"sprites/suie_textures16/suie_textures16.yy",},"order":7,},
     {"id":{"name":"DrawShapesAlternate","path":"scripts/DrawShapesAlternate/DrawShapesAlternate.yy",},"order":10,},
+    {"id":{"name":"_execute_step","path":"objects/_execute_step/_execute_step.yy",},"order":14,},
     {"id":{"name":"instance_get_left","path":"scripts/instance_get_left/instance_get_left.yy",},"order":2,},
     {"id":{"name":"DebugAssertHelpers","path":"scripts/DebugAssertHelpers/DebugAssertHelpers.yy",},"order":17,},
     {"id":{"name":"is_space","path":"scripts/is_space/is_space.yy",},"order":2,},
@@ -522,7 +523,7 @@
     {"folderPath":"folders/Sprites/character/kiwi.yy","order":1,"resourceVersion":"1.0","name":"kiwi","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Objects/Game/Character.yy","order":5,"resourceVersion":"1.0","name":"Character","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Sprites/masks.yy","order":4,"resourceVersion":"1.0","name":"masks","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Scripts/Game/Character.yy","order":6,"resourceVersion":"1.0","name":"Character","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Scripts/Game/Character AI/Character.yy","order":1,"resourceVersion":"1.0","name":"Character","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Scripts/Game/Collision.yy","order":7,"resourceVersion":"1.0","name":"Collision","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Sprites/objects.yy","order":5,"resourceVersion":"1.0","name":"objects","tags":[
         "objects",
@@ -638,6 +639,8 @@
     {"CopyToMask":-1,"filePath":"datafiles/sound/door","resourceVersion":"1.0","name":"button1.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"_temp_testing.kmf","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"test.kmf","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest1.kmf","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest1_1.kmf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
     "IDEVersion": "2022.2.1.618",

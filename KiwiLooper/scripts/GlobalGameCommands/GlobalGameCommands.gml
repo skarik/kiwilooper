@@ -103,7 +103,7 @@ function _Game_LoadMapInternal()
 					var property = ent.properties[propIndex];
 					var bSpecialTransform = entpropIsSpecialTransform(property);
 					
-					if (bSpecialTransform)
+					/*if (bSpecialTransform)
 					{
 						if (property[1] == kValueTypePosition)
 						{
@@ -127,6 +127,27 @@ function _Game_LoadMapInternal()
 					else
 					{
 						array_push(saved_property_info, [property[0], variable_instance_get(entInstance, property[0])]);
+					}*/
+					
+					// check the type - if it's a lively, we need to loop through all the current instances and find the matching one to replace the value
+					if (property[1] == kValueTypeLively)
+					{
+						for (var entSearchIndex = 0; entSearchIndex < entlist.GetEntityCount(); ++entSearchIndex)
+						{
+							var entSearchInstance = entlist.GetEntity(entSearchIndex);
+							var entSearch = entSearchInstance.entity;
+							
+							var targetname = variable_instance_get(entSearchInstance, "targetname");
+							if (!is_undefined(targetname))
+							{
+								if (targetname == variable_instance_get(entInstance, property[0]))
+								{
+									variable_instance_set(entInstance, property[0], entSearchInstance);
+									array_push(saved_property_info, [property[0], entSearchInstance]);
+									break; // Found!
+								}
+							}
+						}
 					}
 				}
 				
@@ -140,6 +161,25 @@ function _Game_LoadMapInternal()
 				// (TODO: this may be a non-issue, experiment in the future)
 				//for (var propIndex = 0; propIndex < saved_propertyInfo
 				// This will not work, the object's create event is NOT called on the instance_change call.
+				if (array_length(saved_property_info) > 0)
+				{
+					var executor = inew(_execute_step);
+					with (executor)
+					{
+						fn = function()
+						{
+							for (var propIndex = 0; propIndex < array_length(saved_property_info); ++propIndex)
+							{
+								var property_name = saved_property_info[propIndex][0];
+								var property_value = saved_property_info[propIndex][1];
+								
+								variable_instance_set(target, property_name, property_value);
+							}
+						};
+					}
+					executor.target = entInstance;
+					executor.saved_property_info = saved_property_info;
+				}
 			}
 		}
 	}

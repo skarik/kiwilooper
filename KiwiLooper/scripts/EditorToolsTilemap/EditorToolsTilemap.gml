@@ -165,6 +165,8 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 				{
 					var kInputHeight = other.m_tileMax.z;
 					
+					if (kInputHeight < 0) continue; // Skip sub-zero layers since the mesher will crash
+					
 					for (var ix = other.m_tileMin.x; ix <= other.m_tileMax.x; ++ix)
 					{
 						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)

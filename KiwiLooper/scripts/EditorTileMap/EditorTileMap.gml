@@ -109,7 +109,8 @@ function ATilemap() constructor
 			for (var layerIndex = 0; layerIndex < array_length(usedHeights); ++layerIndex)
 			{
 				var layerHeight = usedHeights[layerIndex];
-				assert(is_real(layerHeight) || is_int32(layerHeight) || is_int64(layerHeight));
+				assert(is_numeric(layerHeight)
+						|| is_real(layerHeight) || is_int32(layerHeight) || is_int64(layerHeight));
 		
 				var newTileLayer = layer_create(100 - layerHeight, "floor" + string(layerHeight));
 				if (is_array(ioLayersCreated))

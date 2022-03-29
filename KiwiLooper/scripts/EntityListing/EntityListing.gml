@@ -7,10 +7,12 @@ function _EntityInfoInit()
 	#macro kValueTypeColor 4
 	#macro kValueTypeBoolean 5
 	#macro kValueTypeInteger 6
+	#macro kValueTypeString 7
+	#macro kValueTypeLively 8
 	
-	#macro kGizmoDrawmodeBillboard 0
-	#macro kGizmoDrawmodeHidden 1
-	#macro kGizmoDrawmodeFlatsprite 2
+	#macro kGizmoDrawmodeBillboard 0	// Draw a billboard
+	#macro kGizmoDrawmodeHidden 1		// Do not draw
+	#macro kGizmoDrawmodeFlatsprite 2	// Draw a raised flat sprite, with volume
 	
 	#macro kGizmoOriginCenter 0
 	#macro kGizmoOriginBottom 1
@@ -34,6 +36,7 @@ function _EntityInfoInit()
 				["", kValueTypeScale],
 				["translucent", kValueTypeBoolean, false],
 				["lit", kValueTypeBoolean, true],
+				["targetname", kValueTypeString, ""],
 			],
 		},
 	
@@ -157,6 +160,11 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
 			gizmoDrawmode: kGizmoDrawmodeHidden,
+			
+			properties:
+			[
+				["m_targetLively", kValueTypeLively],
+			],
 		},
 		{
 			parent: "lively_base",
@@ -174,7 +182,7 @@ function _EntityInfoInit()
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
-			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 		},
 		{
 			parent: "lively_base",
@@ -512,6 +520,13 @@ function entpropSetFromString(instance, property, stringValue)
 					convertedValue = make_color_rgb(tuple[0], tuple[1], tuple[2]);
 				}
 			}
+		}
+		break;
+		
+	case kValueTypeString:
+	case kValueTypeLively:
+		{
+			convertedValue = stringValue;
 		}
 		break;
 		

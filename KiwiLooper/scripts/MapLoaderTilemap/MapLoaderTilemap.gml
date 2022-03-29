@@ -21,25 +21,41 @@ function MapLoadTilemap(filedata, tilemap)
 	var extrainfoA = buffer_read(buffer, buffer_u32);
 	var extrainfoB = buffer_read(buffer, buffer_u32);
 	
-	if (featureset == kMapTilemapFeature_XYHeight)
+	if (featureset & kMapTilemapFeature_XYHeight|kMapTilemapFeature_TextureRotation)
 	{
-		// We have the simplest kind of featureset.
-		// Assuming the ATilemap already exists, we simply add tiles.
-		// Each entry will be a AMapTile:
-		//	u8		floorType
-		//	u8		wallType
-		//	s8		height
-		//	s16		x
-		//	s16		y
-		
 		for (var elementIndex = 0; elementIndex < elementcount; ++elementIndex)
 		{
 			var tile = new AMapTile();
-			tile.floorType	= buffer_read(buffer, buffer_u8);
-			tile.wallType	= buffer_read(buffer, buffer_u8);
-			tile.height		= buffer_read(buffer, buffer_s8);
-			tile.x			= buffer_read(buffer, buffer_s16);
-			tile.y			= buffer_read(buffer, buffer_s16);
+			
+			if (featureset & kMapTilemapFeature_XYHeight)
+			{
+				// We have the simplest kind of featureset.
+				// Assuming the ATilemap already exists, we simply add tiles.
+				// Each entry will be a AMapTile:
+				//	u8		floorType
+				//	u8		wallType
+				//	s8		height
+				//	s16		x
+				//	s16		y
+				
+				tile.floorType	= buffer_read(buffer, buffer_u8);
+				tile.wallType	= buffer_read(buffer, buffer_u8);
+				tile.height		= buffer_read(buffer, buffer_s8);
+				tile.x			= buffer_read(buffer, buffer_s16);
+				tile.y			= buffer_read(buffer, buffer_s16);
+			}
+			
+			if (featureset & kMapTilemapFeature_TextureRotation)
+			{
+				//	kMapTilemapFeature_TextureRotation:
+				//		u16		rotation & flip flags
+		
+				var tile_flags	= buffer_read(buffer, buffer_u16);
+				tile.floorRotate90	= (tile_flags & 0x1) != 0;
+				tile.floorFlipX		= (tile_flags & 0x2) != 0;
+				tile.floorFlipY		= (tile_flags & 0x4) != 0;
+			}
+			
 			tilemap.AddTile(tile);
 		}
 		
@@ -71,7 +87,7 @@ function MapSaveTilemap(filedata, tilemap)
 	//	u32			extra info B
 	//	varies[]	tiles
 	
-	buffer_write(buffer, buffer_u32, kMapTilemapFeature_XYHeight);
+	buffer_write(buffer, buffer_u32, kMapTilemapFeature_XYHeight | kMapTilemapFeature_TextureRotation);
 	buffer_write(buffer, buffer_u32, array_length(tilemap.tiles));
 	buffer_write(buffer, buffer_u32, 0);
 	buffer_write(buffer, buffer_u32, 0);
@@ -79,11 +95,14 @@ function MapSaveTilemap(filedata, tilemap)
 	for (var tileIndex = 0; tileIndex < array_length(tilemap.tiles); ++tileIndex)
 	{
 		// Each entry will be a AMapTile:
-		//	u8		floorType
-		//	u8		wallType
-		//	s8		height
-		//	s16		x
-		//	s16		y
+		//	kMapTilemapFeature_XYHeight:
+		//		u8		floorType
+		//		u8		wallType
+		//		s8		height
+		//		s16		x
+		//		s16		y
+		//	kMapTilemapFeature_TextureRotation:
+		//		u16		rotation & flip flags
 		
 		var tile = tilemap.tiles[tileIndex];
 		buffer_write(buffer, buffer_u8, tile.floorType);
@@ -91,6 +110,13 @@ function MapSaveTilemap(filedata, tilemap)
 		buffer_write(buffer, buffer_s8, tile.height);
 		buffer_write(buffer, buffer_s16, tile.x);
 		buffer_write(buffer, buffer_s16, tile.y);
+		
+		// Texture rotation
+		buffer_write(buffer, buffer_u16, 
+					(tile.floorRotate90 ? 0x1 : 0)
+					| (tile.floorFlipX ? 0x2 : 0)
+					| (tile.floorFlipY ? 0x14: 0)
+					);
 	}
 	
 	// Save the buffer we just created to the filedata.
