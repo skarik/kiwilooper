@@ -1,5 +1,6 @@
 /// @function AEditorGizmoEntityBillboards() constructor
 /// @desc Editor gizmo for rendering all billboards for ents
+/// TODO: Rename this. This is no longer just rendering all billboards, but ALL gizmos.
 function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 {
 	x = 0;
@@ -64,9 +65,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 				var entColor = GetEntColor(ent);
 				
 				// Generate center and other dimensions
-				var entCenter = new Vector3(ent.x, ent.y, ent.z);
-				if (entOrient == kGizmoOriginBottom)
-					entCenter.z += entHullsize * 0.5; // todo: factor in scalez if available
+				var entCenter = entGetSelectionCenter(ent, entOrient, new Vector3(entHullsize * 0.5 * ent.xscale, entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale));
 				
 				if (entGizmoType == kGizmoDrawmodeBillboard)
 				{
@@ -102,9 +101,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			var entColor = GetEntColor(ent);
 			
 			// Generate center and other dimensions
-			var entCenter = new Vector3(ent.x, ent.y, ent.z);
-			if (entOrient == kGizmoOriginBottom)
-				entCenter.z += entHullsize * 0.5 * ent.zscale;
+			var entCenter = entGetSelectionCenter(ent, entOrient, new Vector3(entHullsize * 0.5 * ent.xscale, entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale));
 			
 			if (entGizmoType == kGizmoDrawmodeBillboard)
 			{
@@ -122,6 +119,38 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 						entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, i * 2))
 						);
 				}
+			}
+			else if (entGizmoType == kGizmoDrawmodeQuadWall)
+			{	
+				// TODO: Check & allow for lighting
+				MeshbAddQuadUVs(
+					m_mesh, entColor, 1.0,
+					new Vector3(lengthdir_x(entHullsize * ent.xscale, ent.zrotation), lengthdir_y(entHullsize * ent.xscale, ent.zrotation), 0),
+					new Vector3(0, 0, -entHullsize * ent.zscale),
+					entUvs,
+					//entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, 0.0, -entHullsize * 0.5 * ent.zscale))
+					entCenter.add(new Vector3(lengthdir_x(-entHullsize * 0.5 * ent.xscale, ent.zrotation), lengthdir_y(-entHullsize * 0.5 * ent.xscale, ent.zrotation), entHullsize * 0.5 * ent.zscale))
+					);
+			}
+			else if (entGizmoType == kGizmoDrawmodeCube)
+			{	
+				// TODO: Check & allow for lighting
+				// Bottom
+				MeshbAddQuadUVs(
+					m_mesh, entColor, 1.0,
+					new Vector3(entHullsize * ent.xscale, 0, 0),
+					new Vector3(0, entHullsize * ent.yscale, 0),
+					entUvs,
+					entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, -entHullsize * 0.5 * ent.zscale))
+					);
+				// Top
+				MeshbAddQuadUVs(
+					m_mesh, entColor, 1.0,
+					new Vector3(entHullsize * ent.xscale, 0, 0),
+					new Vector3(0, entHullsize * ent.yscale, 0),
+					entUvs,
+					entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale))
+					);
 			}
 		}
 

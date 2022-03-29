@@ -96,6 +96,8 @@ function MapLoadEntities(filedata, entityInstanceList)
 							instance.xrotation = tx;
 							instance.yrotation = ty;
 							instance.zrotation = tz;
+							// Apply game-maker rotations for other effects
+							instance.image_angle = tz;
 						}
 						else 
 						{

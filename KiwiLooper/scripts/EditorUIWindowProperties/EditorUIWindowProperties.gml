@@ -30,7 +30,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static sh_uScissorRect = shader_get_uniform(sh_editorDefaultScissor, "uScissorRect");
 	static kPropertyHeight = 12;
-	static kPropertyColumn = 50;
+	static kPropertyColumn = 75;
 	static kPropertyMargin = 2;
 	static kDragWidth = 10;
 	

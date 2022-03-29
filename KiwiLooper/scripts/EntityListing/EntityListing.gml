@@ -13,9 +13,12 @@ function _EntityInfoInit()
 	#macro kGizmoDrawmodeBillboard 0	// Draw a billboard
 	#macro kGizmoDrawmodeHidden 1		// Do not draw
 	#macro kGizmoDrawmodeFlatsprite 2	// Draw a raised flat sprite, with volume
+	#macro kGizmoDrawmodeQuadWall 3
+	#macro kGizmoDrawmodeCube 4
 	
 	#macro kGizmoOriginCenter 0
 	#macro kGizmoOriginBottom 1
+	#macro kGizmoOriginBottomCorner 2
 	
 	#macro kProxyTypeNone 0		// No proxy: the actual object is created.
 	#macro kProxyTypeProp 1		// Specific kind of proxy usually reserved for props. Treats the given object as a special prop.
@@ -106,11 +109,12 @@ function _EntityInfoInit()
 			desc: "Door used in initial LD47 creation",
 			objectIndex: o_livelyDoor,
 			
-			gizmoSprite: suie_gizmoEnts,
+			gizmoSprite: spr_metalDoor0,
 			gizmoIndex: 0,
-			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoDrawmode: kGizmoDrawmodeCube,
+			gizmoOrigin: kGizmoOriginBottomCorner,
 			
-			hullsize: 8,
+			hullsize: 32,
 			
 			properties:
 			[
@@ -157,9 +161,12 @@ function _EntityInfoInit()
 			name: "usable_pc",
 			objectIndex: o_usablePC,
 			
-			gizmoSprite: suie_gizmoEnts,
+			gizmoSprite: spr_metalPC,
 			gizmoIndex: 4,
-			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoDrawmode: kGizmoDrawmodeQuadWall,
+			gizmoOrigin: kGizmoOriginBottom,
+			
+			hullsize: 16,
 			
 			properties:
 			[
@@ -608,3 +615,19 @@ function entpropHasDefaultValue(property)
 	}
 	return false;
 }
+
+#region Helpers
+
+/// @function entGetSelectionCenter(selection, orient, hsize)
+/// @desc Returns the selection center of the given object with given properties. This math is done often, so is made global.
+function entGetSelectionCenter(selection, orient, hsize)
+{
+	gml_pragma("forceinline");
+	return new Vector3(
+		selection.x + (orient == kGizmoOriginBottomCorner ? hsize.x : 0),
+		selection.y + (orient == kGizmoOriginBottomCorner ? hsize.y : 0),
+		selection.z + ((orient == kGizmoOriginBottom || orient == kGizmoOriginBottomCorner) ? hsize.z : 0)
+		);
+}
+
+#endregion //Helpers

@@ -98,7 +98,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				
 				// Get offset center
 				var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
-				var entCenter = new Vector3(selection.x, selection.y, selection.z + (entOrient == kGizmoOriginBottom ? entHSize.z : 0));
+				var entCenter = entGetSelectionCenter(selection, entOrient, entHSize);
 				
 				m_showSelectGizmo.m_mins[0] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
 				m_showSelectGizmo.m_maxes[0] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
@@ -199,7 +199,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				
 				// Get offset center
 				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
-				var entCenter = new Vector3(ent.x, ent.y, ent.z + (entOrient == kGizmoOriginBottom ? entHSize.z : 0));
+				var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
 				
 				if (raycast4_box(new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
 								 new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
