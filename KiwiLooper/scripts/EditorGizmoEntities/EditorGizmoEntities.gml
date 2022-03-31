@@ -1,6 +1,5 @@
 /// @function AEditorGizmoEntityBillboards() constructor
 /// @desc Editor gizmo for rendering all billboards for ents
-/// TODO: Rename this. This is no longer just rendering all billboards, but ALL gizmos.
 function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 {
 	x = 0;
@@ -160,5 +159,252 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 	Draw = function()
 	{
 		vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+	}
+}
+
+/// @function AEditorGizmoEntityRenderObjects() constructor
+/// @desc Editor gizmo for creating renderers for entities
+function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
+{
+	x = 0;
+	y = 0;
+	z = 0;
+	
+	// Structure holding the renderer state
+	static ARenderInfo = function(n_object, n_renderer) constructor
+	{
+		object		= n_object;
+		renderer	= n_renderer;
+		valid		= true;
+		
+		bHasLit				= variable_instance_exists(n_object, "lit");
+		bHasTranslucency	= variable_instance_exists(n_object, "translucent");
+		
+		bHasEntTransform	= is_struct(n_object.entity.gizmoMesh) ? (variable_struct_exists(n_object.entity.gizmoMesh, "transform") && is_array(n_object.entity.gizmoMesh.transform)) : false;
+	};
+	
+	rendermap = ds_map_create();
+	renderlist = [];
+	
+	/// @function Cleanup()
+	/// @desc Cleans up the lookup structures & items used for rendering
+	Cleanup = function()
+	{
+		for (var i = 0; i < array_length(renderlist); ++i)
+		{
+			var renderInfo = renderlist[i];
+			if (is_struct(renderInfo))
+			{
+				idelete(renderInfo.renderer);
+				delete renderInfo;
+			}
+		}
+		renderlist = [];
+		ds_map_destroy(rendermap);
+		rendermap = null;
+	}
+	
+	
+	/// @function Step()
+	/// @desc Manages renderer instances, updates all the renderer transforms.
+	Step = function()
+	{
+		// Mark all renderers as unused for now
+		CE_ArrayForEach(renderlist,
+			function(renderInfo, index)
+			{
+				renderInfo.valid = false;
+			});
+		
+		// Update renderers in entlist
+		var entInstanceList = m_editor.m_entityInstList;
+		for (var entIndex = 0; entIndex < entInstanceList.GetEntityCount(); ++entIndex)
+		{
+			var entInstance = entInstanceList.GetEntity(entIndex);
+			
+			// Skip if no mesh defined
+			if (is_undefined(entInstance.entity.gizmoMesh) || !is_struct(entInstance.entity.gizmoMesh))
+				continue;
+			
+			var renderInfo = rendermap[?entInstance];
+			
+			// Create a renderer if it does not exist
+			if (!is_struct(renderInfo))
+			{
+				renderInfo = AddRendererForInstance(entInstance, entInstance.entity);
+			}
+			assert(is_struct(renderInfo));
+			
+			// Mark as used
+			renderInfo.valid = true;
+			
+			// Update the transformation for the object
+			renderInfo.renderer.x = entInstance.x;
+			renderInfo.renderer.y = entInstance.y;
+			renderInfo.renderer.z = entInstance.z;
+			renderInfo.renderer.xscale = entInstance.xscale;
+			renderInfo.renderer.yscale = entInstance.yscale;
+			renderInfo.renderer.zscale = entInstance.zscale;
+			renderInfo.renderer.xrotation = entInstance.xrotation;
+			renderInfo.renderer.yrotation = entInstance.yrotation;
+			renderInfo.renderer.zrotation = entInstance.zrotation;
+			// Update the rendering properties
+			if (renderInfo.bHasLit)
+				renderInfo.renderer.lit = entInstance.lit;
+			if (renderInfo.bHasTranslucency)
+				renderInfo.renderer.translucent = entInstance.translucent;
+			// Apply custom transforms
+			if (renderInfo.bHasEntTransform)
+			{
+				var transforms = entInstance.entity.gizmoMesh.transform;
+				for (var transformIndex = 0; transformIndex < array_length(transforms); ++transformIndex)
+				{
+					var transform = transforms[transformIndex];
+					if (transform[0] == kGizmoMeshTransformRotateZ) renderInfo.renderer.zrotation += transform[1];
+				}
+			}
+			
+			// Renderer has been updated!
+		}
+		
+		// Clean up all renderers that weren't used
+		for (var i = 0; i < array_length(renderlist); ++i)
+		{
+			var renderInfo = renderlist[i];
+			if (!is_struct(renderInfo))
+			{
+				array_delete(renderlist, i, 1);
+				--i;
+			}
+			else if (!renderInfo.valid)
+			{
+				ds_map_delete(rendermap, renderInfo.object);
+				array_delete(renderlist, i, 1);
+				--i;
+				
+				idelete(renderInfo.renderer);
+				delete renderInfo;
+			}
+		}
+	}
+	
+	static AddRendererForInstance = function(inInstance, inEntity)
+	{
+		var new_renderer = inew(ob_3DObject);
+		new_renderer.m_renderInstance = inInstance;
+		new_renderer.m_renderEntity = inEntity;
+		with (new_renderer)
+		{
+			// Create empty mesh
+			m_mesh = meshb_Begin();
+			meshb_AddQuad(m_mesh, [MBVertexDefault(), MBVertexDefault(), MBVertexDefault(), MBVertexDefault()]);
+			meshb_End(m_mesh);
+		}
+		new_renderer.m_updateMesh = method(new_renderer, function()
+		{
+			/// @function entGetNormalizedCenterOffset(selection, orient)
+			/// @desc Returns the selection center of the given object with given properties. This math is done often, so is made global.
+			static entGetNormalizedCenterOffset = function(selection, orient)
+			{
+				gml_pragma("forceinline");
+				return new Vector3(
+					(orient == kGizmoOriginBottomCorner) ? 0.5 : 0,
+					(orient == kGizmoOriginBottomCorner) ? 0.5 : 0,
+					(orient == kGizmoOriginBottom || orient == kGizmoOriginBottomCorner) ? 0.5 : 0
+					);
+			}
+			
+			if (iexists(m_renderInstance)) // Check since we can sometimes delete the instance before the renderer has a chance to stop.
+			{
+				var entMesh			= m_renderEntity.gizmoMesh;
+				assert(is_struct(entMesh));
+				var entHullsize		= m_renderEntity.hullsize;
+				var entOrigin		= m_renderEntity.gizmoOrigin;
+				var entOffset		= entGetNormalizedCenterOffset(m_renderEntity, entOrigin);
+					
+				var uvs = sprite_get_uvs(entMesh.sprite, entMesh.index);
+				meshb_BeginEdit(m_mesh);
+				if (entMesh.shape == kGizmoMeshShapeQuadWall)
+				{
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(0, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(0,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(0, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3(0,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
+						]);
+				}
+				else if (entMesh.shape == kGizmoMeshShapeCube)
+				{
+					// Bottom
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1))
+						]);
+					// Top
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
+						]);
+						
+					// Back (X)
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0))
+						]);
+					// Front (X)
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0))
+						]);
+						
+					// Back (Y)
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0))
+						]);
+					// Front (Y)
+					meshb_AddQuad(m_mesh, [
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
+						]);
+				}
+				else
+				{
+					assert(false);
+				}
+				meshb_End(m_mesh);
+			}
+		});
+		new_renderer.m_renderEvent = method(new_renderer, function()
+		{
+			if (iexists(m_renderInstance))
+			{
+				var entMesh = m_renderEntity.gizmoMesh;
+				vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(entMesh.sprite, entMesh.index));
+			}
+		});
+		new_renderer.m_updateMesh();
+		
+		// Create render info with our new renderer
+		var renderInfo = new ARenderInfo(inInstance, new_renderer);
+		
+		// Add the render info to both the map & the list
+		array_push(renderlist, renderInfo);
+		rendermap[?inInstance] = renderInfo;
+		
+		// Return the newly created info for immediate use
+		return renderInfo;
 	}
 }

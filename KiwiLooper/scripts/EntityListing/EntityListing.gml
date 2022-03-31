@@ -13,8 +13,11 @@ function _EntityInfoInit()
 	#macro kGizmoDrawmodeBillboard 0	// Draw a billboard
 	#macro kGizmoDrawmodeHidden 1		// Do not draw
 	#macro kGizmoDrawmodeFlatsprite 2	// Draw a raised flat sprite, with volume
-	#macro kGizmoDrawmodeQuadWall 3
-	#macro kGizmoDrawmodeCube 4
+	
+	#macro kGizmoMeshShapeQuadWall 0
+	#macro kGizmoMeshShapeCube 1
+	
+	#macro kGizmoMeshTransformRotateZ 8
 	
 	#macro kGizmoOriginCenter 0
 	#macro kGizmoOriginBottom 1
@@ -104,15 +107,21 @@ function _EntityInfoInit()
 		
 		// Livelies:
 		{
-			parent: "lively_base",
 			name: "lively_door_test",
+			parent: "lively_base",
 			desc: "Door used in initial LD47 creation",
 			objectIndex: o_livelyDoor,
 			
-			gizmoSprite: spr_metalDoor0,
-			gizmoIndex: 0,
-			gizmoDrawmode: kGizmoDrawmodeCube,
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			gizmoOrigin: kGizmoOriginBottomCorner,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeCube,
+				sprite:	spr_metalDoor0,
+				index:	0,
+			},
 			
 			hullsize: 32,
 			
@@ -122,8 +131,8 @@ function _EntityInfoInit()
 			],
 		},
 		{
-			parent: "lively_base",
 			name: "lively_exploding_wires",
+			parent: "lively_base",
 			desc: "",
 			objectIndex: o_livelyExplodingWires,
 			
@@ -138,8 +147,8 @@ function _EntityInfoInit()
 			],
 		},
 		{
-			parent: "lively_base",
 			name: "lively_level_goal",
+			parent: "lively_base",
 			desc: "",
 			objectIndex: o_livelyGoalArea,
 			
@@ -157,14 +166,24 @@ function _EntityInfoInit()
 		
 		// Usables:
 		{
-			parent: "lively_base",
 			name: "usable_pc",
+			parent: "lively_base",
 			objectIndex: o_usablePC,
 			
-			gizmoSprite: spr_metalPC,
+			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
-			gizmoDrawmode: kGizmoDrawmodeQuadWall,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			gizmoOrigin: kGizmoOriginBottom,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadWall,
+				sprite:	spr_metalPC,
+				index:	0,
+				transform:
+				[
+					[kGizmoMeshTransformRotateZ, 90],
+				],
+			},
 			
 			hullsize: 16,
 			
@@ -174,8 +193,8 @@ function _EntityInfoInit()
 			],
 		},
 		{
-			parent: "lively_base",
 			name: "usable_logbook",
+			parent: "lively_base",
 			objectIndex: o_usableLogbook,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -183,8 +202,8 @@ function _EntityInfoInit()
 			gizmoDrawmode: kGizmoDrawmodeHidden,
 		},
 		{
-			parent: "lively_base",
 			name: "usable_corpse_robo",
+			parent: "lively_base",
 			objectIndex: o_usableCorpseRobo,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -192,8 +211,8 @@ function _EntityInfoInit()
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
 		},
 		{
-			parent: "lively_base",
 			name: "usable_corpse_kiwi",
+			parent: "lively_base",
 			objectIndex: o_usableCorpseKiwi,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -300,6 +319,10 @@ function _EntityInfoInit_FillMissingDefaults()
 		if (!variable_struct_exists(currentEntry, "gizmoOrigin"))
 		{
 			currentEntry.gizmoOrigin = kGizmoOriginCenter;
+		}
+		if (!variable_struct_exists(currentEntry, "gizmoMesh"))
+		{
+			currentEntry.gizmoMesh = undefined;
 		}
 	}
 }

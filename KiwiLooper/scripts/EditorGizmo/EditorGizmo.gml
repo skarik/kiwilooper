@@ -5,13 +5,6 @@ function EditorGizmoSetup()
 	
 	global.m_editorFlatShaded_uFlatColor = shader_get_uniform(sh_editorFlatShaded, "uFlatColor");
 	
-	m_entList = [
-		// type, sprite, index, hullsize
-		[ob_3DLight, suie_gizmoEnts, 0, 8],
-		[o_ambientOverride, suie_gizmoEnts, 1, 8],
-		[o_livelyDoor, suie_gizmoEnts, 5, 8],
-		];
-	
 	m_gizmoObject = inew(ob_3DObject);
 	m_gizmoObject.translucent = false;
 	m_gizmoObject.lit = false;
@@ -60,15 +53,9 @@ function EditorGizmoSetup()
 
 	with (m_gizmoObject)
 	{
-		//m_axes = new AEditorGizmoAxes();
 		m_axes = other.EditorGizmoGet(AEditorGizmoAxes);
-		//m_select = new AEditorGizmoSelectBox();
-		// need a move gizmo (x, y, z)
-		//m_mover = new AEditorGizmoPointMove();
-		//m_movertest = new AEditorGizmoAxesMove();
-		
-		m_entRenderers = other.EditorGizmoGet(AEditorGizmoEntityBillboards);
-		
+		m_entBillboards = other.EditorGizmoGet(AEditorGizmoEntityBillboards);
+		m_entRenderObjects = other.EditorGizmoGet(AEditorGizmoEntityRenderObjects);
 		m_testMouse = other.EditorGizmoGet(AEditorGizmoSelectBox3D);
 	}
 	
