@@ -7,6 +7,11 @@ ortho_vertical = GameCamera.height * 0.5;
 orthographic = false;
 clear_color = c_gray;
 
+#macro kCameraDefaultZNear 600
+#macro kCameraDefaultZFar 4000
+znear = 600;
+zfar = 4000;
+
 // override render order
 depth = -10;
 

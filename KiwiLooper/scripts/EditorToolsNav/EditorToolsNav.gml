@@ -281,6 +281,10 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 				cameraY += lengthdir_y((vPosition - vPositionPrevious), cameraRotZ)
 						 - lengthdir_x((uPosition - uPositionPrevious), cameraRotZ);
 			}
+			else if (bMouseLeft && bMouseRight)
+			{
+				cameraZoom += (vPosition - vPositionPrevious) / 500.0;
+			}
 		}
 	}
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)

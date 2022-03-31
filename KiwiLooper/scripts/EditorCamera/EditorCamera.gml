@@ -25,4 +25,7 @@ function EditorCameraUpdate()
 
 	o_Camera3D.orthographic = false;
 	o_Camera3D.fov_vertical = 10;
+	
+	o_Camera3D.znear = kCameraDefaultZNear * cameraZoom;
+	o_Camera3D.zfar = max(kCameraDefaultZFar, kCameraDefaultZFar * cameraZoom);
 }

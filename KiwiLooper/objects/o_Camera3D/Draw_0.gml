@@ -17,9 +17,9 @@ surface_set_target(buffer_scene3d);
 	// Create transformation
 	var mat_projection;
 	if (!orthographic)
-		mat_projection = matrix_build_projection_perspective_fov(fov_vertical * (GameCamera.height / min(GameCamera.width, GameCamera.height)), Screen.width / Screen.height, 600, 4000);
+		mat_projection = matrix_build_projection_perspective_fov(fov_vertical * (GameCamera.height / min(GameCamera.width, GameCamera.height)), Screen.width / Screen.height, znear, zfar);
 	else
-		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, 4000);
+		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, zfar);
 	var mat_view = matrix_build_lookat(
 		// from
 		x, y, z,
