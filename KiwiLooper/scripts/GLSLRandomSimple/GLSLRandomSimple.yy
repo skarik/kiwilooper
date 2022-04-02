@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Shorthand",
-    "path": "folders/Scripts/Core/Shorthand.yy",
+    "name": "Random",
+    "path": "folders/Scripts/Core/Random.yy",
   },
   "resourceVersion": "1.0",
-  "name": "idelete",
+  "name": "GLSLRandomSimple",
   "tags": [],
   "resourceType": "GMScript",
 }

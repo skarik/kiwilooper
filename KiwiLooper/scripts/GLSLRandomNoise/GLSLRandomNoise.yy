@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Core/Random.yy",
   },
   "resourceVersion": "1.0",
-  "name": "mt19937_set_state",
+  "name": "GLSLRandomNoise",
   "tags": [],
   "resourceType": "GMScript",
 }

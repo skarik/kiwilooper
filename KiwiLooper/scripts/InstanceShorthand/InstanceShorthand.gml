@@ -1,0 +1,43 @@
+/// @function idelete(object_to_delete)
+function idelete(argument0)
+{
+	if (argument0 == noone)
+		return 0;
+	with (argument0)
+	{
+	    instance_destroy();
+	}  
+	return 0;
+}
+
+/// iexists(object_to_check)
+function iexists(argument0)
+{
+	return instance_exists(argument0);
+}
+
+/// @function inew(object_index)
+function inew(argument0)
+{
+	return instance_create_depth(0, 0, 0, argument0);
+}
+
+/// @function inew(object_index)
+function inew_unique(argument0)
+{
+	if (!iexists(argument0))
+	{
+		return instance_create_depth(0, 0, 0, argument0);
+	}
+	return null;
+}
+
+/// @function place_unique(object_index, x, y)
+function place_unique(argument0, argument1, argument2)
+{
+	if ( !position_meeting(argument0,argument1,argument2) )
+	{
+	    return instance_create_layer(argument0,argument1,layer,argument2);
+	}
+	return null;
+}

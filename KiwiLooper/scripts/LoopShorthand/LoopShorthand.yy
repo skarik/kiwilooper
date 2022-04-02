@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Random",
-    "path": "folders/Scripts/Core/Random.yy",
+    "name": "Shorthand",
+    "path": "folders/Scripts/Core/Shorthand.yy",
   },
   "resourceVersion": "1.0",
-  "name": "mt19937_seed",
+  "name": "LoopShorthand",
   "tags": [],
   "resourceType": "GMScript",
 }
