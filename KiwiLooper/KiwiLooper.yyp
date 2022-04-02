@@ -444,7 +444,7 @@
     {"name":"Windows","path":"options/windows/options_windows.yy",},
     {"name":"operagx","path":"options/operagx/options_operagx.yy",},
   ],
-  "isDnDProject": false,
+  "defaultScriptType": 1,
   "isEcma": false,
   "configs": {
     "name": "Default",
@@ -571,8 +571,8 @@
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
   ],
   "TextureGroups": [
-    {"isScaled":true,"autocrop":false,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
-    {"isScaled":true,"autocrop":false,"border":8,"mipsToGenerate":-1,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"tiled_texgroup","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"compressFormat":"bz2","autocrop":false,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"compressFormat":"bz2","autocrop":false,"border":8,"mipsToGenerate":-1,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"tiled_texgroup","resourceType":"GMTextureGroup",},
   ],
   "IncludedFiles": [
     {"CopyToMask":-1,"filePath":"datafiles/sound/element","resourceVersion":"1.0","name":"shock_loop.wav","resourceType":"GMIncludedFile",},
@@ -643,7 +643,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest1_1.kmf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2022.2.1.618",
+    "IDEVersion": "2022.3.0.624",
   },
   "resourceVersion": "1.5",
   "name": "KiwiLooper",
