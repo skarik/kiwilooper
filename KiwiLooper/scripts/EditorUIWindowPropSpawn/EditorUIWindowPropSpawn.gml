@@ -35,8 +35,6 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 	
 	static InitPropListing = function()
 	{
-		//var props = tag_get_asset_ids([], asset_sprite);
-		//var props = tag_get_asset_ids("", asset_sprite);
 		var props = tag_get_asset_ids("objects", asset_sprite);
 		for (var i = 0; i < array_length(props); ++i)
 		{
@@ -59,6 +57,8 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 	}
 	static InitPropLayout = function()
 	{
+		draw_set_font(f_04b03);
+		
 		var pen = {x: kLineMargin, y: kLineMargin};
 		var advance_height = 0;
 		for (var i = 0; i < array_length(prop_items); ++i)
@@ -69,9 +69,9 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 			advance_height = max(advance_height, sprite_get_height(prop_items[i].sprite));
 			
 			// Advance the pen
-			pen.x += sprite_get_width(prop_items[i].sprite) + kLineMargin;
+			pen.x += max(sprite_get_width(prop_items[i].sprite), string_width(prop_items[i].name)) + kLineMargin;
 			if (i < array_length(prop_items) - 1
-				&& pen.x > m_size.x - (sprite_get_width(prop_items[i+1].sprite) + kLineMargin) - kDragWidth)
+				&& pen.x > m_size.x - (max(sprite_get_width(prop_items[i+1].sprite), string_width(prop_items[i+1].name)) + kLineMargin) - kDragWidth)
 			{
 				pen.x = kLineMargin;
 				pen.y += advance_height + kLineLabelHeight + kLineMargin;
@@ -85,6 +85,11 @@ function AEditorWindowPropSpawn() : AEditorWindow() constructor
 	static GetCurrentProp = function()
 	{
 		return prop_items[item_focused].sprite;
+	}
+	
+	static onResize = function()
+	{
+		InitPropLayout();
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)

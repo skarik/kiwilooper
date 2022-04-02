@@ -61,6 +61,8 @@ function AEditorWindowSplatSpawn() : AEditorWindow() constructor
 	}
 	static InitSplatLayout = function()
 	{
+		draw_set_font(f_04b03);
+		
 		var pen = {x: kLineMargin, y: kLineMargin};
 		var advance_height = 0;
 		for (var i = 0; i < array_length(splat_items); ++i)
@@ -71,9 +73,9 @@ function AEditorWindowSplatSpawn() : AEditorWindow() constructor
 			advance_height = max(advance_height, sprite_get_height(splat_items[i].sprite));
 			
 			// Advance the pen
-			pen.x += sprite_get_width(splat_items[i].sprite) + kLineMargin;
+			pen.x += max(sprite_get_width(splat_items[i].sprite), string_width(splat_items[i].name)) + kLineMargin;
 			if (i < array_length(splat_items) - 1
-				&& pen.x > m_size.x - (sprite_get_width(splat_items[i+1].sprite) + kLineMargin) - kDragWidth)
+				&& pen.x > m_size.x - (max(sprite_get_width(splat_items[i+1].sprite), string_width(splat_items[i+1].name)) + kLineMargin) - kDragWidth)
 			{
 				pen.x = kLineMargin;
 				pen.y += advance_height + kLineLabelHeight + kLineMargin;
@@ -91,6 +93,11 @@ function AEditorWindowSplatSpawn() : AEditorWindow() constructor
 	static GetCurrentIndex = function()
 	{
 		return splat_items[item_focused].index;
+	}
+	
+	static onResize = function()
+	{
+		InitSplatLayout();
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)

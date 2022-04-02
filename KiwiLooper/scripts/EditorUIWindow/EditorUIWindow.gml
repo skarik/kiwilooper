@@ -41,6 +41,7 @@ function AEditorWindow() constructor
 	
 	hovering_button_index = kWindowHoverButtonNone;
 	
+	static onResize = function() {}
 	static onMouseMove = function(mouseX, mouseY) {}
 	static onMouseEvent = function(mouseX, mouseY, button, event) {}
 	static onMouseLeave = function(mouseX, mouseY) {}
@@ -535,6 +536,12 @@ function EditorWindowingUpdate(mouseX, mouseY)
 			// Check for dragging stop
 			if (mouse_check_button_released(mb_left))
 			{
+				// Call on-resize when ending resize
+				if (windowResizing)
+				{
+					windowCurrent.onResize();
+				}
+				
 				windowDragging = false;
 				windowCurrent.dragging = false;
 				
@@ -544,6 +551,12 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		}
 		else
 		{
+			// Call on-resize when ending resize
+			if (is_struct(windowCurrent) && windowResizing)
+			{
+				windowCurrent.onResize();
+			}
+			
 			windowDragging = false;
 			windowResizing = false;
 		}
