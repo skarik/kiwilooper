@@ -373,6 +373,7 @@
     {"id":{"name":"EditorToolsTilemap","path":"scripts/EditorToolsTilemap/EditorToolsTilemap.yy",},"order":1,},
     {"id":{"name":"o_fxKiwiWrench","path":"objects/o_fxKiwiWrench/o_fxKiwiWrench.yy",},"order":0,},
     {"id":{"name":"TilesInformation","path":"scripts/TilesInformation/TilesInformation.yy",},"order":16,},
+    {"id":{"name":"EditorUIWindowSplatSpawn","path":"scripts/EditorUIWindowSplatSpawn/EditorUIWindowSplatSpawn.yy",},"order":10,},
     {"id":{"name":"Game","path":"objects/Game/Game.yy",},"order":6,},
     {"id":{"name":"suie_actionsetBasic","path":"sprites/suie_actionsetBasic/suie_actionsetBasic.yy",},"order":8,},
     {"id":{"name":"ob_3DLight","path":"objects/ob_3DLight/ob_3DLight.yy",},"order":0,},

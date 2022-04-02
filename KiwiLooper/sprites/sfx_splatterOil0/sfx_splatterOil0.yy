@@ -86,6 +86,8 @@
   },
   "resourceVersion": "1.0",
   "name": "sfx_splatterOil0",
-  "tags": [],
+  "tags": [
+    "splats",
+  ],
   "resourceType": "GMSprite",
 }

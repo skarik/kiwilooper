@@ -78,6 +78,8 @@
   },
   "resourceVersion": "1.0",
   "name": "sfx_splatterBloodstep0",
-  "tags": [],
+  "tags": [
+    "splats",
+  ],
   "resourceType": "GMSprite",
 }

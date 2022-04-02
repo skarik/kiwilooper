@@ -80,7 +80,7 @@ function EditorToolsSetup()
 		new AEditorToolStateMakeProp(),		// kEditorToolMakeProp
 		new AEditorToolStateMakeEntity(),	// kEditorToolMakeEntity
 		new AEditorToolStateTexturing(),	// kEditorToolTexture
-		new AEditorToolState(),
+		new AEditorToolStateMakeSplat(),	// kEditorToolSplats
 		new AEditorToolStateTranslate(),	// kEditorToolTranslate
 		new AEditorToolStateRotate(),		// kEditorToolRotate
 		new AEditorToolState(),
@@ -97,9 +97,6 @@ function EditorToolsUpdate()
 	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
 	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
 	
-	//var distT = abs(viewRayPos[2] / viewRayDir[2]);
-	//toolFlatX = viewRayPos[0] + viewRayDir[0] * distT;
-	//toolFlatY = viewRayPos[1] + viewRayDir[1] * distT;
 	// Collide with the flat XYZ
 	if (raycast4_axisplane(kAxisZ, 0.0, Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
 	{

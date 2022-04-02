@@ -98,6 +98,8 @@
   },
   "resourceVersion": "1.0",
   "name": "sfx_splatterBlood0",
-  "tags": [],
+  "tags": [
+    "splats",
+  ],
   "resourceType": "GMSprite",
 }
