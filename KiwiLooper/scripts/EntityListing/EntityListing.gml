@@ -35,6 +35,8 @@ function _EntityInfoInit()
 			objectIndex: ob_lively,
 			proxy: kProxyTypeDefault,
 			
+			hullsize: 16,
+			
 			properties:
 			[
 				["", kValueTypePosition],
@@ -43,6 +45,26 @@ function _EntityInfoInit()
 				["translucent", kValueTypeBoolean, false],
 				["lit", kValueTypeBoolean, true],
 				["targetname", kValueTypeString, ""],
+			],
+		},
+		{
+			hidden: true,
+			name: "doodad_base",
+			proxy: kProxyTypeDefault,
+			
+			hullsize: 16,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 7,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["", kValueTypeRotation],
+				["", kValueTypeScale],
+				["translucent", kValueTypeBoolean, false],
+				["lit", kValueTypeBoolean, true],
 			],
 		},
 	
@@ -219,6 +241,19 @@ function _EntityInfoInit()
 			gizmoIndex: 4,
 			gizmoDrawmode: kGizmoDrawmodeHidden,
 		},
+		
+		// Doodads:
+		{
+			name: "ui_exit_text",
+			parent: "doodad_base",
+			objectIndex: o_uiwExitText,
+			
+			proxy: kProxyTypeNone,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 7,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+		},
 	];
 	global.entityList_Count = array_length(global.entityList);
 	
@@ -288,6 +323,11 @@ function _EntityInfoInit_FillMissingDefaults()
 	{
 		var currentEntry = global.entityList[entIndex];
 		
+		// Default to null object
+		if (!variable_struct_exists(currentEntry, "objectIndex"))
+		{
+			currentEntry.objectIndex = _dummy;
+		}
 		// Default to full proxy
 		if (!variable_struct_exists(currentEntry, "proxy"))
 		{
