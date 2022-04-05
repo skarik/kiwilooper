@@ -125,11 +125,11 @@ function AEditorGizmoGrid() : AEditorGizmoBase() constructor
 			shader_set_uniform_f(global.m_editorLineEdge_uLineSizeAndFade, 0.5, 0, 0, 0);
 			
 			gpu_set_zfunc(cmpfunc_greater);
-			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, 0.5, 0.5, 0.5, 0.05);
+			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, 0.5, 0.5, 0.5, 0.10);
 			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
 			
 			gpu_set_zfunc(last_ztest);
-			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, 1.0, 1.0, 1.0, 0.1);
+			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, 1.0, 1.0, 1.0, 0.20);
 			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
 			
 			drawShaderSet(last_shader);

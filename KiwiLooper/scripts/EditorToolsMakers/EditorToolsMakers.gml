@@ -42,14 +42,28 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			m_editor.EditorWindowFree(m_window);
 			m_window = null;
 		}
+		
+		m_editor.toolGridTemporaryDisable = false;
 	}
 	
 	onStep = function()
 	{
+		// Keyboard "no-snap" override toggle
+		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
+		
 		if (m_hasEntityToMake)
 		{
 			m_gizmo.SetEnabled();
 			m_gizmo.SetVisible();
+			
+			// Update gizmo position to snaps
+			if (m_editor.toolGrid && !m_editor.toolGridTemporaryDisable)
+			{
+				if (!m_gizmo.m_dragX) m_gizmo.x = round_nearest(m_gizmo.x, m_editor.toolGridSize);
+				if (!m_gizmo.m_dragY) m_gizmo.y = round_nearest(m_gizmo.y, m_editor.toolGridSize);
+				if (!m_gizmo.m_dragZ) m_gizmo.z = round_nearest(m_gizmo.z, m_editor.toolGridSize);
+				// TODO: We're double-snapping at the present
+			}
 			
 			if (keyboard_check_pressed(vk_enter))
 			{
@@ -196,14 +210,27 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 			m_editor.EditorWindowFree(m_window);
 			m_window = null;
 		}
+		
+		m_editor.toolGridTemporaryDisable = false;
 	}
 	
 	onStep = function()
 	{
+		// Keyboard "no-snap" override toggle
+		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
+		
 		if (m_hasPropToMake)
 		{
 			m_gizmo.SetEnabled();
 			m_gizmo.SetVisible();
+			
+			// Update gizmo position to snaps
+			if (m_editor.toolGrid && !m_editor.toolGridTemporaryDisable)
+			{
+				if (!m_gizmo.m_dragX) m_gizmo.x = round_nearest(m_gizmo.x, m_editor.toolGridSize);
+				if (!m_gizmo.m_dragY) m_gizmo.y = round_nearest(m_gizmo.y, m_editor.toolGridSize);
+				if (!m_gizmo.m_dragZ) m_gizmo.z = round_nearest(m_gizmo.z, m_editor.toolGridSize);
+			}
 			
 			if (keyboard_check_pressed(vk_enter))
 			{

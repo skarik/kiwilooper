@@ -89,22 +89,89 @@ function EditorGizmoUpdate()
 		m_testMouse.m_min.set(other.toolWorldX - 4, other.toolWorldY - 4, other.toolWorldZ - 4);
 		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4);
 		
-		if (other.toolGrid)
+		// Grid update:
+		
+		if (other.toolGrid && !other.toolGridTemporaryDisable)
 		{
-			m_grid.SetVisible();
-			m_grid.SetEnabled();
+			// Ensure we only use active translation gizmos with the grid
+			var gizmoTranslation = other.EditorGizmoFind(AEditorGizmoPointMove);
+			var gizmoTranslation2 = other.EditorGizmoFind(AEditorGizmoAxesMove);
 			
-			// Update grid orientation based on the grid options & last collided object
-			m_grid.x = round((other.toolWorldValid ? other.toolWorldX : other.toolFlatX + 0.01) / other.toolGridSize) * other.toolGridSize;
-			m_grid.y = round((other.toolWorldValid ? other.toolWorldY : other.toolFlatY + 0.01) / other.toolGridSize) * other.toolGridSize;
-			m_grid.z = round((other.toolWorldValid ? other.toolWorldZ : 0               + 0.01) / other.toolGridSize) * other.toolGridSize;
+			if ((gizmoTranslation != null && gizmoTranslation.GetVisible() && gizmoTranslation.GetEnabled())
+				|| (gizmoTranslation2 != null && gizmoTranslation2.GetVisible() && gizmoTranslation2.GetEnabled()))
+			{
+				m_grid.SetVisible();
+				m_grid.SetEnabled();
 			
-			m_grid.xscale = other.toolGridSize / 16;
-			m_grid.yscale = other.toolGridSize / 16;
-			m_grid.zscale = other.toolGridSize / 16;
+				// Update grid orientation based on the grid options & last collided object
 			
-			m_grid.xrotation = (abs(other.toolWorldNormal.y) > 0.707) ? 90 : 0;
-			m_grid.yrotation = (abs(other.toolWorldNormal.x) > 0.707) ? 90 : 0;
+				// If we have an object selection, pull their position for the grid basis
+				var last_selection = EditorSelectionGetLast();
+			
+				var bIsStructSelection = is_struct(last_selection);
+				var bIsInstanceSelection = !bIsStructSelection && iexists(last_selection);
+				
+				if ( bIsInstanceSelection
+						|| (bIsStructSelection && (last_selection.type == kEditorSelection_Prop || last_selection.type == kEditorSelection_Splat))
+					)
+				{
+					m_grid.x = bIsStructSelection ? last_selection.object.x : last_selection.x;
+					m_grid.y = bIsStructSelection ? last_selection.object.y : last_selection.y;
+					m_grid.z = bIsStructSelection ? last_selection.object.z : last_selection.z;
+				
+					// Change the grid rotation based on the active tool
+					if (   (gizmoTranslation != null  && (gizmoTranslation.m_mouseOverZ  || gizmoTranslation.m_dragZ))
+						|| (gizmoTranslation2 != null && (gizmoTranslation2.m_mouseOverZ || gizmoTranslation2.m_dragZ))
+						)
+					{
+						m_grid.xrotation = (abs(other.viewrayForward[1]) > abs(other.viewrayForward[0])) ? 90 : 0;
+						m_grid.yrotation = (abs(other.viewrayForward[0]) > abs(other.viewrayForward[1])) ? 90 : 0;
+					}
+					else
+					{
+						m_grid.xrotation = 0;
+						m_grid.yrotation = 0;
+					}
+				}
+				// Otherwise, we limit the grid to the world
+				else
+				{
+					if (gizmoTranslation != null)
+					{
+						m_grid.x = gizmoTranslation.x;
+						m_grid.y = gizmoTranslation.y;
+						m_grid.z = gizmoTranslation.z;
+					}
+					else if (gizmoTranslation2 != null)
+					{
+						m_grid.x = gizmoTranslation2.x;
+						m_grid.y = gizmoTranslation2.y;
+						m_grid.z = gizmoTranslation2.z;
+					}
+					else
+					{
+						m_grid.x = other.toolWorldValid ? other.toolWorldX : other.toolFlatX;
+						m_grid.y = other.toolWorldValid ? other.toolWorldY : other.toolFlatY;
+						m_grid.z = other.toolWorldValid ? other.toolWorldZ : 0;
+					}
+				
+					m_grid.xrotation = (abs(other.toolWorldNormal.y) > 0.707) ? 90 : 0;
+					m_grid.yrotation = (abs(other.toolWorldNormal.x) > 0.707) ? 90 : 0;
+				}
+			
+				m_grid.x = round((m_grid.x + 0.01) / other.toolGridSize) * other.toolGridSize;
+				m_grid.y = round((m_grid.y + 0.01) / other.toolGridSize) * other.toolGridSize;
+				m_grid.z = round((m_grid.z + 0.01) / other.toolGridSize) * other.toolGridSize;
+			
+				m_grid.xscale = other.toolGridSize / 16;
+				m_grid.yscale = other.toolGridSize / 16;
+				m_grid.zscale = other.toolGridSize / 16;
+			}
+			else
+			{
+				m_grid.SetInvisible();
+				m_grid.SetDisabled();
+			}
 		}
 		else
 		{

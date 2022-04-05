@@ -70,6 +70,7 @@ function EditorToolsSetup()
 	
 	toolGrid = true;
 	toolGridSize = 16;
+	toolGridTemporaryDisable = false;
 	
 	EditorProxyObject_Init();
 	

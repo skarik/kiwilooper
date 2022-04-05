@@ -196,6 +196,9 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 	
 	m_active = false;
 	
+	m_dragStart = [];
+	m_dragViewrayStart = [];
+	
 	GetConsumingMouse = function()
 	{
 		return m_dragX || m_dragY || m_dragZ;
@@ -288,21 +291,31 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 				m_dragY = true;
 			else if (m_mouseOverZ)
 				m_dragZ = true;
+				
+			if (m_dragX || m_dragY || m_dragZ)
+			{
+				m_dragStart = [x, y, z];
+				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
+			}
 		}
 		
+		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
 			if (m_dragX)
 			{
-				x += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) x = round_nearest(x, m_editor.toolGridSize);
 			}
 			if (m_dragY)
 			{
-				y += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) y = round_nearest(y, m_editor.toolGridSize);
 			}
 			if (m_dragZ)
 			{
-				z += (m_editor.viewrayPixel[2] - m_editor.viewrayPixelPrevious[2]) * 1200 * kScreensizeFactor;
+				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) z = round_nearest(z, m_editor.toolGridSize);
 			}
 		}
 		

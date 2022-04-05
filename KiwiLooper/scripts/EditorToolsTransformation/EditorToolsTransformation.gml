@@ -30,10 +30,15 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			m_transformGizmo.SetInvisible();
 			m_transformGizmo.SetDisabled();
 		}
+		
+		m_editor.toolGridTemporaryDisable = false; // Reset states
 	};
 	
 	onStep = function()
 	{
+		// Keyboard "no-snap" override toggle
+		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
+		
 		var bValidSelection = array_length(m_editor.m_selection) > 0;
 		if (bValidSelection)
 		{
@@ -78,12 +83,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
 			{
-				/*var bSignalChange = 
-					target.x != m_transformGizmo.x
-					|| target.y != m_transformGizmo.y
-					|| target.z != m_transformGizmo.z; // TODO: This should be "last valid position for 'target'"
-				*/
-				var snap = m_editor.toolGrid;
+				var snap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 				var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.x, m_editor.toolGridSize) : m_transformGizmo.x) : target.x;
 				var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.y, m_editor.toolGridSize) : m_transformGizmo.y) : target.y;
 				var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.z, m_editor.toolGridSize) : m_transformGizmo.z) : target.z;
@@ -150,6 +150,9 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 	
 	onStep = function()
 	{
+		// Keyboard "no-snap" override toggle
+		var bEnableAngleSnaps = keyboard_check(vk_shift);
+		
 		var bValidSelection = array_length(m_editor.m_selection) > 0;
 		if (bValidSelection)
 		{
@@ -205,15 +208,20 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 			{
 				if (bCanRotate)
 				{
+					var snap = bEnableAngleSnaps;
+					var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.xrotation, 15) : m_transformGizmo.xrotation) : target.xrotation;
+					var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.yrotation, 15) : m_transformGizmo.yrotation) : target.yrotation;
+					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zrotation, 15) : m_transformGizmo.zrotation) : target.zrotation;
+				
 					var bSignalChange = 
-						target.xrotation != m_transformGizmo.xrotation
-						|| target.yrotation != m_transformGizmo.yrotation
-						|| target.zrotation != m_transformGizmo.zrotation;
+							target.xrotation != next_x
+						|| target.yrotation != next_y
+						|| target.zrotation != next_z;
 				
-					target.xrotation = m_transformGizmo.xrotation;
-					target.yrotation = m_transformGizmo.yrotation;
-					target.zrotation = m_transformGizmo.zrotation;
-				
+					target.xrotation = next_x;
+					target.yrotation = next_y;
+					target.zrotation = next_z;
+					
 					if (bSignalChange)
 					{
 						EditorGlobalSignalTransformChange(target);

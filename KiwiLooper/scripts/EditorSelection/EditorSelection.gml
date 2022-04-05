@@ -108,3 +108,15 @@ function EditorSelectionUpdate()
 		window = null;
 	}
 }
+
+/// @function EditorSelectionGetLast()
+/// @desc Returns the last selected object in the current selection group. ``null`` if nothing has been selected.
+function EditorSelectionGetLast()
+{
+	var editor = EditorGet();
+	if (array_length(editor.m_selection) > 0)
+	{
+		return editor.m_selection[array_length(editor.m_selection) - 1];
+	}
+	return null;
+}
