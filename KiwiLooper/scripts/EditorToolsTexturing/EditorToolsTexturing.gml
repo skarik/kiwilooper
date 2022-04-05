@@ -8,17 +8,6 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 	
 	onBegin = function()
 	{
-		//m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
-		/*m_gizmo = m_editor.EditorGizmoGet(AEditorGizmo3DEditBox);
-		m_gizmo.SetVisible();
-		m_gizmo.SetEnabled();
-		m_gizmo.m_color = c_gold;
-		m_gizmo.m_alpha = 0.75;*/
-		
-		/*if (m_window == null)
-		{
-			m_window = m_editor.EditorWindowAlloc(AEditorWindowTextureApplier); // TODO: No window. use the tiny menu!
-		}*/
 		if (m_windowBrowser == null)
 		{
 			m_windowBrowser = m_editor.EditorWindowAlloc(AEditorWindowTileBrowser);

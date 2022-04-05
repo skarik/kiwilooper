@@ -65,7 +65,6 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 	
 	onBegin = function()
 	{
-		//m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoFlatGridCursorBox);
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmo3DEditBox);
 		m_gizmo.SetVisible();
 		m_gizmo.SetEnabled();

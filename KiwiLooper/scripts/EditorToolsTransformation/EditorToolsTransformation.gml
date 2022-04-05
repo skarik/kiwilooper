@@ -59,7 +59,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				}
 				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
 				{
-					assert(false); // TODO
+					target = m_editor.m_selection[0].object;
 				}
 			}
 			
@@ -78,18 +78,28 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
 			else
 			{
-				var bSignalChange = 
+				/*var bSignalChange = 
 					target.x != m_transformGizmo.x
 					|| target.y != m_transformGizmo.y
-					|| target.z != m_transformGizmo.z;
+					|| target.z != m_transformGizmo.z; // TODO: This should be "last valid position for 'target'"
+				*/
+				var snap = m_editor.toolGrid;
+				var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.x, m_editor.toolGridSize) : m_transformGizmo.x) : target.x;
+				var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.y, m_editor.toolGridSize) : m_transformGizmo.y) : target.y;
+				var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.z, m_editor.toolGridSize) : m_transformGizmo.z) : target.z;
 				
-				target.x = m_transformGizmo.x;
-				target.y = m_transformGizmo.y;
-				target.z = m_transformGizmo.z;
+				var bSignalChange = 
+					   target.x != next_x
+					|| target.y != next_y
+					|| target.z != next_z;
+				
+				target.x = next_x;
+				target.y = next_y;
+				target.z = next_z;
 				
 				if (bSignalChange)
 				{
-					EditorGlobalSignalTransformChange(target);
+					EditorGlobalSignalTransformChange(target); // TODO: Include the type of object that is moving
 				}
 			}
 		}
@@ -160,6 +170,10 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
+				{
+					target = m_editor.m_selection[0].object;
+				}
+				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
 				{
 					target = m_editor.m_selection[0].object;
 				}

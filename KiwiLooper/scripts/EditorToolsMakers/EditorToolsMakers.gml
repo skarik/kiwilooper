@@ -325,15 +325,37 @@ function AEditorToolStateMakeSplat() : AEditorToolState() constructor
 				var splat_index = m_window.GetCurrentIndex();
 				
 				// create the new shit
-				var splat = inew(ob_splatter);
+				/*var splat = inew(ob_splatter);
 					splat.sprite_index = splat_sprite;
 					splat.image_index = splat_index;
 					splat.x = m_gizmo.x;
 					splat.y = m_gizmo.y;
+					splat.z = m_gizmo.z;*/
+					
+				var splat = new ASplatEntry();
+					splat.x = m_gizmo.x;
+					splat.y = m_gizmo.y;
 					splat.z = m_gizmo.z;
+					
+					splat.xrotation = 0;
+					splat.yrotation = 0;
+					splat.zrotation = 0;
+					
+					splat.xscale = 1.0;
+					splat.yscale = 1.0;
+					splat.zscale = 1.0;
+					
+					splat.blend = bm_normal;
+					splat.color = c_white;
+					
+					splat.sprite = splat_sprite;
+					splat.index = splat_index;
+					
+				m_editor.m_splatmap.AddSplat(splat);
 				
 				// TODO: Create splat
-				
+				idelete(ob_splatter);
+				m_editor.m_splatmap.SpawnSplats();
 			}
 			else if (keyboard_check_pressed(vk_backspace)
 				|| keyboard_check_pressed(vk_delete)

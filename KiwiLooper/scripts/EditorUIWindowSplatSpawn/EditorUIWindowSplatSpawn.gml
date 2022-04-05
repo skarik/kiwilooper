@@ -35,6 +35,8 @@ function AEditorWindowSplatSpawn() : AEditorWindow() constructor
 	
 	static InitSplatListing = function()
 	{
+		splat_items = [];
+		
 		var splats = tag_get_asset_ids("splats", asset_sprite);
 		for (var i = 0; i < array_length(splats); ++i)
 		{

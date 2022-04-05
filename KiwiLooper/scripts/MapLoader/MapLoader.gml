@@ -1,6 +1,7 @@
 #macro kMapHeaderWord_Tilemap	0x0001
 #macro kMapHeaderWord_Props		0x0002
 #macro kMapHeaderWord_Entities	0x0004
+#macro kMapHeaderWord_Splats	0x0008
 
 function MapFreeFiledata(filedata)
 {
@@ -21,6 +22,12 @@ function MapFreeFiledata(filedata)
 		buffer_delete(filedata.blob_entities);
 		filedata.blob_entities = null;
 	}
+	
+	if (filedata.blob_splats != null)
+	{
+		buffer_delete(filedata.blob_splats);
+		filedata.blob_splats = null;
+	}
 }
 
 function AMapFiledata() constructor
@@ -28,6 +35,7 @@ function AMapFiledata() constructor
 	blob_tilemap = null;
 	blob_props = null;
 	blob_entities = null;
+	blob_splats = null;
 }
 
 function MapLoadFiledata(filepath)
@@ -71,6 +79,10 @@ function MapLoadFiledata(filepath)
 			
 		case kMapHeaderWord_Entities:
 			filedata.blob_entities = blob;
+			break;
+			
+		case kMapHeaderWord_Splats:
+			filedata.blob_splats = blob;
 			break;
 			
 		default:
@@ -125,7 +137,8 @@ function MapSaveFiledata(filepath, filedata)
 	
 	var total_size = GetSize(filedata.blob_tilemap)
 		+ GetSize(filedata.blob_props)
-		+ GetSize(filedata.blob_entities);
+		+ GetSize(filedata.blob_entities)
+		+ GetSize(filedata.blob_splats);
 	
 	// Create a slow temp buffer for writing
 	var outbuffer = buffer_create(total_size, buffer_fixed, 1);
@@ -142,6 +155,10 @@ function MapSaveFiledata(filepath, filedata)
 	if (filedata.blob_entities != null)
 	{
 		WriteBlob(outbuffer, filedata.blob_entities, kMapHeaderWord_Entities);
+	}
+	if (filedata.blob_splats != null)
+	{
+		WriteBlob(outbuffer, filedata.blob_splats, kMapHeaderWord_Splats);
 	}
 	
 	// Save the information

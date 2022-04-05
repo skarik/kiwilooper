@@ -57,6 +57,7 @@ function EditorGizmoSetup()
 		m_entBillboards = other.EditorGizmoGet(AEditorGizmoEntityBillboards);
 		m_entRenderObjects = other.EditorGizmoGet(AEditorGizmoEntityRenderObjects);
 		m_testMouse = other.EditorGizmoGet(AEditorGizmoSelectBox3D);
+		m_grid = other.EditorGizmoGet(AEditorGizmoGrid);
 	}
 	
 	m_gizmoObject.m_renderEvent = function()
@@ -87,6 +88,29 @@ function EditorGizmoUpdate()
 		m_testMouse.m_alpha = 0.5;
 		m_testMouse.m_min.set(other.toolWorldX - 4, other.toolWorldY - 4, other.toolWorldZ - 4);
 		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4);
+		
+		if (other.toolGrid)
+		{
+			m_grid.SetVisible();
+			m_grid.SetEnabled();
+			
+			// Update grid orientation based on the grid options & last collided object
+			m_grid.x = round((other.toolWorldValid ? other.toolWorldX : other.toolFlatX + 0.01) / other.toolGridSize) * other.toolGridSize;
+			m_grid.y = round((other.toolWorldValid ? other.toolWorldY : other.toolFlatY + 0.01) / other.toolGridSize) * other.toolGridSize;
+			m_grid.z = round((other.toolWorldValid ? other.toolWorldZ : 0               + 0.01) / other.toolGridSize) * other.toolGridSize;
+			
+			m_grid.xscale = other.toolGridSize / 16;
+			m_grid.yscale = other.toolGridSize / 16;
+			m_grid.zscale = other.toolGridSize / 16;
+			
+			m_grid.xrotation = (abs(other.toolWorldNormal.y) > 0.707) ? 90 : 0;
+			m_grid.yrotation = (abs(other.toolWorldNormal.x) > 0.707) ? 90 : 0;
+		}
+		else
+		{
+			m_grid.SetInvisible();
+			m_grid.SetDisabled();
+		}
 	}
 	
 	// create mouse state to forward

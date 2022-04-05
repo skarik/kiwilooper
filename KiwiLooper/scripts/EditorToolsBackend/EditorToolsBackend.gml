@@ -68,6 +68,9 @@ function EditorToolsSetup()
 	toolWorldNormal = new Vector3();
 	toolWorldValid = false;
 	
+	toolGrid = true;
+	toolGridSize = 16;
+	
 	EditorProxyObject_Init();
 	
 	// Set up all tool states that hold the various tools
@@ -244,4 +247,30 @@ function EditorToolInstance()
 		return toolStates[toolCurrent];
 	}
 	return null;
+}
+
+//=============================================================================
+
+function EditorToolGridToggle()
+{
+	with (EditorGet())
+	{
+		toolGrid = !toolGrid;
+	}
+}
+
+function EditorToolGridLarger()
+{
+	with (EditorGet())
+	{
+		toolGridSize = min(128, toolGridSize * 2);
+	}
+}
+
+function EditorToolGridSmaller()
+{
+	with (EditorGet())
+	{
+		toolGridSize = max(1, toolGridSize / 2);
+	}
 }

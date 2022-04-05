@@ -39,6 +39,9 @@ MapRebuildGraphics = function()
 	
 	// Create the 3d-ify chain
 	inew(o_tileset3DIze);
+	
+	// Now that we have collision, recreate the splats
+	MapRebuildSplats();
 }
 MapRebuilPropsOnly = function()
 {
@@ -64,6 +67,16 @@ MapRebuilPropsOnly = function()
 	// Create the missing part of the 3d-ify chain
 	inew(o_props3DIze);
 }
+MapRebuildSplats = function()
+{
+	// Delete all splats
+	idelete(ob_splatter);
+	
+	// Trigger the splats
+	m_splatmap.SpawnSplats();
+	
+	// Done.
+}
 MapFreeAllIntermediateLayers = function()
 {
 	// Delete all current intermediate layers
@@ -80,5 +93,5 @@ EditorGizmoSetup();
 EditorSelectionSetup();
 
 EditorTileMapSetup();
-EditorPropMapSetup();
+EditorPropAndSplatSetup();
 m_entityInstList = new AEntityList();

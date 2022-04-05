@@ -94,6 +94,7 @@ function EditorGlobalSaveMap_Work(filepath)
 	MapSaveTilemap(filedata, EditorGet().m_tilemap);
 	MapSaveProps(filedata, EditorGet().m_propmap);
 	MapSaveEntities(filedata, EditorGet().m_entityInstList);
+	MapSaveSplats(filedata, EditorGet().m_splatmap);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -124,6 +125,7 @@ function EditorGlobalLoadMap_Work(filepath)
 	MapLoadTilemap(filedata, EditorGet().m_tilemap);
 	MapLoadProps(filedata, EditorGet().m_propmap);
 	MapLoadEntities(filedata, EditorGet().m_entityInstList);
+	MapLoadSplats(filedata, EditorGet().m_splatmap);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
@@ -157,6 +159,9 @@ function EditorGlobalNukeMap_Work()
 
 		// Go through the ents
 		m_entityInstList.Clear(); // this clears the list
+		
+		// Clear the splats
+		m_splatmap.Clear();
 	}
 }
 

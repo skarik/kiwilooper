@@ -184,6 +184,14 @@ function _Game_LoadMapInternal()
 		}
 	}
 	
+	// Load in splats
+	{
+		var splatmap = new ASplatMap();
+		MapLoadSplats(filedata, splatmap);
+		
+		splatmap.SpawnSplats();
+	}
+	
 	MapFreeFiledata(filedata);
 	delete filedata;
 }
@@ -196,6 +204,8 @@ function Game_LoadEditor(fromTestSession)
 	// Destroy all props first
 	idelete(o_tileset3DIze);
 	idelete(o_props3DIze);
+	// Destroy all splatters for good measure
+	idelete(ob_splatter);
 	
 	// Destroy all characters
 	idelete(ob_character);

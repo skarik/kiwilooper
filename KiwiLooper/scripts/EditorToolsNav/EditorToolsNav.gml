@@ -81,6 +81,21 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 					m_showSelectGizmo.m_maxes[0] = propBBox.getMax();
 					m_showSelectGizmo.m_trses[0] = matrix_multiply(propRotation, propTranslation);
 				}
+				else if (selection.type == kEditorSelection_Splat)
+				{
+					var splat = selection.object;
+					
+					// get the bbox
+					var splatBBox = SplatGetBBox(splat);
+					var splatTranslation = matrix_build_translation(splat);
+					var splatRotation = matrix_build_rotation(splat);
+			
+					splatBBox.extents.multiplyComponentSelf(Vector3FromScale(splat));
+					
+					m_showSelectGizmo.m_mins[0] = splatBBox.getMin();
+					m_showSelectGizmo.m_maxes[0] = splatBBox.getMax();
+					m_showSelectGizmo.m_trses[0] = matrix_multiply(splatRotation, splatTranslation);
+				}
 				// todo: tiles
 				else
 				{
@@ -245,7 +260,33 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			}
 		}
 		
-		if (closestEnt != null)
+		// Run through all splats
+		for (var splatIndex = 0; splatIndex < m_editor.m_splatmap.GetSplatCount(); ++splatIndex)
+		{
+			var splat = m_editor.m_splatmap.GetSplat(splatIndex);
+			
+			// Get the splat BBox & transform it into the world
+			var splatBBox = SplatGetBBox(splat);
+			var splatRotation = matrix_build_rotation(splat);
+			
+			// Cast against it
+			if (raycast4_box_rotated(
+				splatBBox.center.add(Vector3FromTranslation(splat)),
+				splatBBox.extents.multiplyComponent(Vector3FromScale(splat)),
+				splatRotation,
+				true,
+				rayStart, rayDir))
+			{
+				if (raycast4_get_hit_distance() < closestDist)
+				{
+					closestDist = raycast4_get_hit_distance();
+					closestEnt = EditorSelectionWrapSplat(splat);
+				}
+			}
+		}
+		
+		// If we hit something, save it
+		if (is_struct(closestEnt) || closestEnt != null)
 		{
 			m_editor.m_selection[0] = closestEnt;
 		}
