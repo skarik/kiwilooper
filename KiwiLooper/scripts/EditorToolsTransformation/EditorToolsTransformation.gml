@@ -56,15 +56,18 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		{
 			// Gather transform target first
 			var target = m_editor.m_selection[0];
+			var target_type = kEditorSelection_None;
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
 				{
 					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Prop;
 				}
 				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
 				{
 					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Splat;
 				}
 			}
 			
@@ -99,7 +102,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				
 				if (bSignalChange)
 				{
-					EditorGlobalSignalTransformChange(target); // TODO: Include the type of object that is moving
+					EditorGlobalSignalTransformChange(target, target_type);
 				}
 			}
 		}
@@ -170,15 +173,18 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 		{
 			// Gather transform target first
 			var target = m_editor.m_selection[0];
+			var target_type = kEditorSelection_None;
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
 				{
 					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Prop;
 				}
 				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
 				{
 					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Splat;
 				}
 			}
 			var bCanRotate = is_struct(target) ? variable_struct_exists(target, "xrotation") : variable_instance_exists(target, "xrotation");
@@ -224,7 +230,7 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 					
 					if (bSignalChange)
 					{
-						EditorGlobalSignalTransformChange(target);
+						EditorGlobalSignalTransformChange(target, target_type);
 					}
 				}
 			}

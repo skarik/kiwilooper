@@ -326,6 +326,15 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 			{
 				cameraZoom += (vPosition - vPositionPrevious) / 500.0;
 			}
+			
+			if (mouse_wheel_down())
+			{
+				cameraZoom += 0.1;
+			}
+			else if (mouse_wheel_up())
+			{
+				cameraZoom -= 0.1;
+			}
 		}
 	}
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)

@@ -22,6 +22,13 @@ function EditorGlobalDeleteSelection()
 			case kEditorSelection_Prop:
 				m_propmap.RemoveProp(currentSelection.object);
 				delete currentSelection.object;
+				MapRebuilPropsOnly();
+				break;
+				
+			case kEditorSelection_Splat:
+				m_splatmap.RemoveSplat(currentSelection.object);
+				delete currentSelection.object;
+				MapRebuildSplats();
 				break;
 			}
 		}
@@ -42,7 +49,7 @@ function EditorGlobalClearSelection()
 	m_selectionSingle = false;
 }
 
-function EditorGlobalSignalTransformChange(entity)
+function EditorGlobalSignalTransformChange(entity, type)
 {
 	with (EditorGet())
 	{
@@ -69,7 +76,14 @@ function EditorGlobalSignalTransformChange(entity)
 		// If the incoming ent is a prop, we gotta rebuild prop meshes
 		if (is_struct(entity)) // assume struct inputs are props
 		{
-			MapRebuilPropsOnly();
+			if (type == kEditorSelection_Prop)
+			{
+				MapRebuilPropsOnly();
+			}
+			else if (type == kEditorSelection_Splat)
+			{
+				MapRebuildSplats();
+			}
 		}
 	}
 }

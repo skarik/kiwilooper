@@ -176,6 +176,18 @@ function EditorToolsUpdate()
 	{
 		toolCurrent = toolCurrentRequested;
 	}
+	// Other camera inputs
+	{
+		if (mouse_wheel_down())
+		{
+			cameraZoom += 0.05;
+		}
+		else if (mouse_wheel_up())
+		{
+			cameraZoom -= 0.05;
+		}
+		cameraZoom = max(0.05, cameraZoom);
+	}
 	
 	// Update the states now:
 	{

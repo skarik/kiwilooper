@@ -310,8 +310,12 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			else
 			{
 				var instance = entity_instance;
+				var instance_type = kEditorSelection_None;
 				if (editing_target == kEditorSelection_Prop)
+				{
 					instance = prop_instance;
+					instance_type = kEditorSelection_Prop;
+				}
 				
 				var property = entity_info.properties[property_focused];
 				var value = property_values[property_focused];
@@ -342,7 +346,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				// Update the transform for other objects.
 				if (entpropIsSpecialTransform(property))
 				{
-					EditorGlobalSignalTransformChange(instance);
+					EditorGlobalSignalTransformChange(instance, instance_type);
 				}
 			}
 		}
