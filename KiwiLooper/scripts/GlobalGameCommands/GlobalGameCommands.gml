@@ -26,6 +26,28 @@ function Game_LoadMap( map, asEditor = false )
 	}
 }
 
+/// @function Game_AdvanceMap( map )
+function Game_AdvanceMap( map )
+{
+	if (map == null)
+	{
+		if (room_last != room)
+		{
+			global.game_loadingInfo = kGameLoadingFromGMS;
+			room_goto_next();
+		}
+		else
+		{
+			global.game_loadingInfo = kGameLoadingInvalid;
+			room_goto(rm_EmptyMap);
+		}
+	}
+	else
+	{
+		Game_LoadMap(map);
+	}
+}
+
 /// @function Game_Event_RoomStart()
 function Game_Event_RoomStart()
 {

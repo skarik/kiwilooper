@@ -224,21 +224,45 @@ function MapSaveEntities(filedata, entityInstanceList)
 			}
 		}
 		
+		/// @function PropertyIsValid(instance, property)
+		function PropertyIsValid(instance, property)
+		{
+			var bSpecialTransform = entpropIsSpecialTransform(property);
+			return bSpecialTransform || !is_undefined(variable_instance_get(instance, property[0]));
+		}
+		// First, count number of valid properties
+		var validPropertyCount = 0;
+		for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
+		{
+			if (PropertyIsValid(instance, ent.properties[propertyIndex]))
+			{
+				validPropertyCount++; // TODO: Cache the property so we only check once
+			}
+		}
+		
 		// Entity element format:
 		//	string					entity name
 		//	u16						keyvalue count
 		//	{string,u8,varies}[]	keyvalue {name, type, value}
 		
 		buffer_write(buffer, buffer_string, ent.name);
-		buffer_write(buffer, buffer_u16, array_length(ent.properties));
+		buffer_write(buffer, buffer_u16, validPropertyCount); // We write valid property count, not ent.properties. Could be less or more.
 		
 		for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
 		{
 			var property = ent.properties[propertyIndex];
+			var bSpecialTransform = entpropIsSpecialTransform(property);
+			
+			// Skip undefined/unsupported variables
+			if (!PropertyIsValid(instance, property))
+			{
+				continue;
+			}
+			
 			buffer_write(buffer, buffer_string, property[0]);
 			buffer_write(buffer, buffer_u8, property[1]);
 			
-			var bSpecialTransform = entpropIsSpecialTransform(property);
+			
 			switch (property[1])
 			{
 			case kValueTypePosition:
@@ -276,7 +300,7 @@ function MapSaveEntities(filedata, entityInstanceList)
 						value = new Vector3(instance.xscale, instance.yscale, instance.zscale);
 					else 
 						value = variable_instance_get(instance, property[0]);
-				
+						
 					buffer_write(buffer, buffer_f16, value.x);
 					buffer_write(buffer, buffer_f16, value.y);
 					buffer_write(buffer, buffer_f16, value.z);
@@ -315,7 +339,6 @@ function MapSaveEntities(filedata, entityInstanceList)
 			case kValueTypeLively:
 				{
 					var value = variable_instance_get(instance, property[0]);
-					
 					buffer_write(buffer, buffer_string, value);
 				}
 				break;

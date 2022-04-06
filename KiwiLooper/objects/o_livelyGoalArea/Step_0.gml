@@ -16,6 +16,6 @@ if (m_fadeOut)
 	m_fadeTime += Time.deltaTime;
 	if (m_fadeTime > 0.5)
 	{
-		room_goto_next();
+		Game_AdvanceMap(nextlevel); // Variation on Game_LoadMap that defaults to room_goto_next.
 	}
 }

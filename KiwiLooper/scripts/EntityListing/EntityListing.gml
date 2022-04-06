@@ -183,6 +183,7 @@ function _EntityInfoInit()
 			properties:
 			[
 				["", kValueTypePosition],
+				["nextlevel", kValueTypeString],
 			],
 		},
 		
