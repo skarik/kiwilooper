@@ -1,6 +1,7 @@
-#macro kGameLoadingInvalid 0
+#macro kGameLoadingNone 0
 #macro kGameLoadingFromGMS 1
 #macro kGameLoadingFromDisk 2
+#macro kGameLoadingInvalid 3
 
 /// @function Game_LoadMap( map, [asEditor = false] )
 /// @desc Load the given map or room.
@@ -75,6 +76,21 @@ function Game_Event_RoomStart()
 // Call by object `Game` in Room Start event.
 function _Game_LoadMapInternal()
 {
+	if (global.game_loadingInfo == kGameLoadingInvalid)
+	{
+		// Pop up the "invalid info" UI bit
+		var uis_info = inew(o_uisScriptable);
+		uis_info.m_renderEvent = function()
+		{
+			draw_set_alpha(1.0);
+			draw_set_color(c_white);
+			draw_set_halign(fa_center);
+			draw_set_valign(fa_middle);
+			draw_set_font(f_04b03);
+			draw_text(GameCamera.width / 2, GameCamera.height / 2, "NO LEVEL LOADED");
+		};
+	}
+	
 	if (global.game_loadingInfo != kGameLoadingFromDisk)
 	{
 		return;
@@ -220,7 +236,7 @@ function _Game_LoadMapInternal()
 
 //=============================================================================
 
-/// @function function Game_LoadEditor(fromTestSession)
+///@function function Game_LoadEditor(fromTestSession)
 function Game_LoadEditor(fromTestSession)
 {
 	// Destroy all props first
@@ -235,9 +251,12 @@ function Game_LoadEditor(fromTestSession)
 	// Destroy gameplay now
 	idelete(Gameplay);
 	
+	// Destroy all UI
+	idelete(ob_userInterfaceElement); // This should be OK with callee's
+	
 	// Mark we're no longer loading anything
 	global.game_editorRun = false;
-	global.game_loadingInfo = kGameLoadingInvalid;
+	global.game_loadingInfo = kGameLoadingNone;
 	global.game_loadingMap = "";
 	
 	// Return to the editor, the state of it should stay saved

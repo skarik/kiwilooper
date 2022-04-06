@@ -188,6 +188,7 @@
     {"id":{"name":"settingsLoad","path":"scripts/settingsLoad/settingsLoad.yy",},"order":14,},
     {"id":{"name":"string_rtrim","path":"scripts/string_rtrim/string_rtrim.yy",},"order":6,},
     {"id":{"name":"ssy_aiSafe","path":"sprites/ssy_aiSafe/ssy_aiSafe.yy",},"order":1,},
+    {"id":{"name":"o_uisScriptable","path":"objects/o_uisScriptable/o_uisScriptable.yy",},"order":4,},
     {"id":{"name":"o_EditorProxy","path":"objects/o_EditorProxy/o_EditorProxy.yy",},"order":1,},
     {"id":{"name":"suie_toolsetTiles","path":"sprites/suie_toolsetTiles/suie_toolsetTiles.yy",},"order":1,},
     {"id":{"name":"ssettingGetMax","path":"scripts/ssettingGetMax/ssettingGetMax.yy",},"order":1,},
