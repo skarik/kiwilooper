@@ -121,6 +121,9 @@ function AEditorGizmoFlatGridCursorBox() : AEditorGizmoSelectBox() constructor
 /// @desc Editor gizmo for the selection box.
 function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 {
+	static kColor = c_white;
+	static kAlpha = 0.5;
+	
 	AddCube = function(kBorderExpand)
 	{
 		gml_pragma("forceinline");
@@ -133,25 +136,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			)
@@ -159,25 +162,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_max.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_max.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_max.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_max.z),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			)
@@ -187,25 +190,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_min.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_min.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_min.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			)
@@ -213,25 +216,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_max.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			)
@@ -241,25 +244,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_min.y, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_min.y, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_min.y, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_min.y, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			)
@@ -267,25 +270,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_max.y, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_max.y, m_min.z - kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_max.y, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				new Vector3(m_max.x + kBorderExpand, m_max.y, m_max.z + kBorderExpand),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			)
@@ -304,25 +307,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_min.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_min.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_min.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_min.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			)
@@ -330,25 +333,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_min.y - kBorderExpand, m_max.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_min.y - kBorderExpand, m_max.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_max.y + kBorderExpand, m_max.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_max.y + kBorderExpand, m_max.z)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			)
@@ -358,25 +361,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_min.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			)
@@ -384,25 +387,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_max.x, m_min.y - kBorderExpand, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x, m_max.y + kBorderExpand, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 0.0 - kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x, m_min.y - kBorderExpand, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x, m_max.y + kBorderExpand, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			)
@@ -412,25 +415,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_min.y, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_min.y, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_min.y, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_min.y, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			)
@@ -438,25 +441,25 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_max.y, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_max.y, m_min.z - kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 0.0 - kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_min.x - kBorderExpand, m_max.y, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(0.0 - kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			),
 			new MBVertex(
 				(new Vector3(m_max.x + kBorderExpand, m_max.y, m_max.z + kBorderExpand)).transformAMatrixSelf(transformation),
-				c_white, 1.0,
+				kColor, kAlpha,
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			)

@@ -303,13 +303,32 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 	m_mouseRight = false;
 	m_mouseMiddle = false;
 	
+	Parent_onBegin = onBegin;
+	onBegin = function()
+	{
+		Parent_onBegin();
+		
+		// Limit the mouse position to inside the window:
+		Screen.limitMouse = true;
+	};
+	Parent_onEnd = onEnd;
+	onEnd = function(trueEnd)
+	{
+		Parent_onEnd(trueEnd);
+		
+		// Disable limiting the mouse position to inside the window:
+		Screen.limitMouse = false;
+	};
+	
 	onStep = function()
 	{
 		var bMouseLeft = m_mouseLeft;
 		var bMouseRight = m_mouseRight;
+		var bMouseMiddle = m_mouseMiddle;
+		
 		with (m_editor)
 		{
-			if (bMouseLeft && !bMouseRight)
+			if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
 			{
 				cameraRotZ -= (uPosition - uPositionPrevious) * 0.2;
 				cameraRotY += (vPosition - vPositionPrevious) * 0.2;

@@ -172,6 +172,11 @@ function EditorToolsUpdate()
 	{
 		toolCurrent = kEditorToolCamera;
 	}
+	else if (mouse_check_button(mb_middle) || mouse_check_button_released(mb_middle))
+	{
+		// Game-style view rotate
+		toolCurrent = kEditorToolCamera;
+	}
 	else
 	{
 		toolCurrent = toolCurrentRequested;

@@ -31,6 +31,9 @@ windowScale = 1.0;
 offset_x = 0;
 offset_y = 0;
 
+// Is the mouse limited to stay within the window?
+limitMouse = false;
+
 // Hide the cursor
 window_set_cursor(cr_none);
 

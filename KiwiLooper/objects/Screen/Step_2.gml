@@ -7,3 +7,4 @@ if (Debug.recordModeEnabled)
 	
 	record_shot_count += 1;
 }
+
