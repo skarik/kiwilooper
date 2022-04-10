@@ -41,6 +41,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		var kBorderExpand = 1 * kScreensizeFactor;
 		var kAxisLength = 32 * kScreensizeFactor;
 		var kArrowHalfsize = 5 * kScreensizeFactor;
+		var kScreenLength = 500 * kScreensizeFactor;
 		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
 		var pixelY = m_editor.vPosition - GameCamera.view_y;
@@ -107,21 +108,31 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 				m_dragY = true;
 			else if (m_mouseOverZ)
 				m_dragZ = true;
+				
+			if (m_dragX || m_dragY || m_dragZ)
+			{
+				m_dragStart = [x, y, z];
+				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
+			}
 		}
 		
+		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
 			if (m_dragX)
 			{
-				x += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) x = round_nearest(x, m_editor.toolGridSize);
 			}
 			if (m_dragY)
 			{
-				y += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) y = round_nearest(y, m_editor.toolGridSize);
 			}
 			if (m_dragZ)
 			{
-				z += (m_editor.viewrayPixel[2] - m_editor.viewrayPixelPrevious[2]) * 1200 * kScreensizeFactor;
+				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) z = round_nearest(z, m_editor.toolGridSize);
 			}
 		}
 		
@@ -136,15 +147,41 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		meshb_BeginEdit(m_mesh);
 			if (m_active)
 			{
-				var xcolor = m_mouseOverX ? c_white : c_red;
-				MeshbAddLine(m_mesh, xcolor, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
-				var ycolor = m_mouseOverY ? c_white : c_midgreen;
-				MeshbAddLine(m_mesh, ycolor, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
-				var zcolor = m_mouseOverZ ? c_white : c_midblue;
-				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
+				var xshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragX;
+				var xcolor = merge_color(c_red, c_white, m_dragX ? 1.0 : (m_mouseOverX ? 0.7 : 0.0));
+				if (!xshouldfade && !m_dragX)
+				{
+					MeshbAddLine2(m_mesh, xcolor, 1.0, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
+				}
+				else
+				{
+					MeshbAddLine2(m_mesh, xcolor, xshouldfade ? 0.5 : 1.0, kBorderExpand/2, kScreenLength*2, new Vector3(1, 0, 0), new Vector3(x-kScreenLength,y,z));
+				}
+				
+				var yshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragY;
+				var ycolor = merge_color(c_midgreen, c_white, m_dragY ? 1.0 : (m_mouseOverY ? 0.7 : 0.0));
+				if (!yshouldfade && !m_dragY)
+				{
+					MeshbAddLine2(m_mesh, ycolor, 1.0, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
+				}
+				else
+				{
+					MeshbAddLine2(m_mesh, ycolor, yshouldfade ? 0.5 : 1.0, kBorderExpand/2, kScreenLength*2, new Vector3(0, 1, 0), new Vector3(x,y-kScreenLength,z));
+				}
+				
+				var zshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragZ;
+				var zcolor = merge_color(c_midblue, c_white, m_dragZ ? 1.0 : (m_mouseOverZ ? 0.7 : 0.0));
+				if (!zshouldfade && !m_dragZ)
+				{
+					MeshbAddLine2(m_mesh, zcolor, 1.0, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
+				}
+				else
+				{
+					MeshbAddLine2(m_mesh, zcolor, zshouldfade ? 0.5 : 1.0, kBorderExpand/2, kScreenLength*2, new Vector3(0, 0, 1), new Vector3(x,y,z-kScreenLength));
+				}
 			}
 			else
 			{
@@ -333,20 +370,36 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		meshb_BeginEdit(m_mesh);
 			if (m_active)
 			{
+				var xshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragX;
 				var xcolor = merge_color(c_red, c_white, m_dragX ? 1.0 : (m_mouseOverX ? 0.7 : 0.0));
-				MeshbAddLine(m_mesh, xcolor, kBorderExpand, kScreenLength*2, new Vector3(1, 0, 0), new Vector3(x-kScreenLength,y,z));
-				MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
-				MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-1, 0, 0), new Vector3(x - kAxisLength,y,z));
+				MeshbAddLine2(m_mesh, xcolor, xshouldfade ? 0.5 : 1.0, kBorderExpand, kScreenLength*2, new Vector3(1, 0, 0), new Vector3(x-kScreenLength,y,z));
+				if (!xshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-1, 0, 0), new Vector3(x - kAxisLength,y,z));
+				}
+				
+				var yshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragY;
 				var ycolor = merge_color(c_midgreen, c_white, m_dragY ? 1.0 : (m_mouseOverY ? 0.7 : 0.0));
-				MeshbAddLine(m_mesh, ycolor, kBorderExpand, kScreenLength*2, new Vector3(0, 1, 0), new Vector3(x,y-kScreenLength,z));
-				MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
-				MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, -1, 0), new Vector3(x,y - kAxisLength,z));
+				MeshbAddLine2(m_mesh, ycolor, yshouldfade ? 0.5 : 1.0, kBorderExpand, kScreenLength*2, new Vector3(0, 1, 0), new Vector3(x,y-kScreenLength,z));
+				if (!yshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, -1, 0), new Vector3(x,y - kAxisLength,z));
+				}
+				
+				var zshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragZ;
 				var zcolor = merge_color(c_midblue, c_white, m_dragZ ? 1.0 : (m_mouseOverZ ? 0.7 : 0.0));
-				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kScreenLength*2, new Vector3(0, 0, 1), new Vector3(x,y,z-kScreenLength));
-				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
-				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, -1), new Vector3(x,y,z - kAxisLength));
-			
-				/*var xycolor = c_yellow;
+				MeshbAddLine2(m_mesh, zcolor, zshouldfade ? 0.5 : 1.0, kBorderExpand, kScreenLength*2, new Vector3(0, 0, 1), new Vector3(x,y,z-kScreenLength));
+				if (!zshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, -1), new Vector3(x,y,z - kAxisLength));
+				}
+				
+				// 2D-axis colors
+				/*
+				var xycolor = c_yellow;
 				MeshbAddQuad(m_mesh, xycolor, new Vector3(kArrowHalfsize * 2, 0, 0), new Vector3(0, kArrowHalfsize * 2, 0), new Vector3(x + 4,y + 4,z));
 				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, 0.707, 0), new Vector3(x + kAxisLength,y + kAxisLength,z));
 				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, -0.707, 0), new Vector3(x + kAxisLength,y - kAxisLength,z));
@@ -587,85 +640,101 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
 				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));*/
 				
+				// Can likely generalize by having an "X" vector and a "Y" vector.
+				// ie, z rotation would be x (1,0,0) and y (0,1,0)
+				//		x rotation would be x (0,1,0) and y (0,0,1)
 				
+				///@function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+				var MeshbAddArc = function(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+				{
+					for (var i = startAngle; i < endAngle; i += angleDiv)
+					{
+						MeshbAddLine(
+							mesh, color,
+							width,
+							radius * 2 * pi * (angleDiv / 360),
+							planarX.multiply(lengthdir_x(1, i + 90 + angleDiv * 0.5)).add(planarY.multiply(lengthdir_y(1, i + 90 + angleDiv * 0.5))),
+							center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i)))
+							);
+					}
+				};
+				
+				var kGizmoCenter = new Vector3(x, y, z);
 				var kAngleDiv = 180 / 10;
 				
-				var kAngleMinZ = (m_editor.viewrayForward[1] > 0) ? 0 : 180;
-				var kAngleMaxZ = kAngleMinZ + 180;
-				var zcolor = m_mouseOverZ ? c_white : c_midblue;
+				// Draw order:
+				var kAxisListing = [kAxisZ, kAxisX, kAxisY];
 				
-				// Draw the Z rotation axes
-				for (var i = kAngleMinZ; i < kAngleMaxZ; i += kAngleDiv)
+				// Following listings are in XYZ order:
+				var kPlanarListing = [
+					[new Vector3(0, 1, 0), new Vector3(0, 0, 1)],
+					[new Vector3(0, 0, 1), new Vector3(1, 0, 0)],
+					[new Vector3(1, 0, 0), new Vector3(0, 1, 0)],
+					];
+				var kDragListing = [
+					[m_dragX, m_mouseOverX],
+					[m_dragY, m_mouseOverY],
+					[m_dragZ, m_mouseOverZ],
+					];
+				var kColorListing = [c_red, c_midgreen, c_midblue];
+				
+				// Loop through each axis as it's a lot of repeated code
+				for (var axisIndex = 0; axisIndex < 3; ++axisIndex)
 				{
-					if (m_mouseOverZ)
+					var currentAxis = kAxisListing[axisIndex];
+					
+					var bDrag = kDragListing[currentAxis][0];
+					var bMouseOver = kDragListing[currentAxis][1];
+					var kPlanarX = kPlanarListing[currentAxis][0];
+					var kPlanarY = kPlanarListing[currentAxis][1];
+					var bcolor = kColorListing[currentAxis];
+					
+					var kAngleMin, kAngleMax;
+					if (currentAxis == kAxisZ)
 					{
-						MeshbAddLine(
-							m_mesh, c_midblue,
-							kBorderExpand * 0.5,
-							kInnerLength * 2 * pi * (kAngleDiv / 360),
-							new Vector3(lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0),
-							new Vector3(x + lengthdir_x(kInnerLength, i), y + lengthdir_y(kInnerLength, i), z)
-							);
+						kAngleMin = (m_editor.viewrayForward[1] > 0) ? 0 : 180;
+						kAngleMax = kAngleMin + 180;
 					}
-					MeshbAddLine(
-						m_mesh, zcolor,
-						kBorderExpand * 0.5,
-						kAxisLength * 2 * pi * (kAngleDiv / 360),
-						new Vector3(lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0),
-						new Vector3(x + lengthdir_x(kAxisLength, i), y + lengthdir_y(kAxisLength, i), z)
-						);
-				}
-				
-				var kAngleMinX = (m_editor.viewrayForward[2] > 0) ? 0 : 180;
-				var kAngleMaxX = kAngleMinX + 180;
-				var xcolor = m_mouseOverX ? c_white : c_red;
-				
-				// Draw the X rotation axes
-				for (var i = kAngleMinX; i < kAngleMaxX; i += kAngleDiv)
-				{
-					if (m_mouseOverX)
+					else if (currentAxis == kAxisX)
 					{
-						MeshbAddLine(
-							m_mesh, c_red,
-							kBorderExpand * 0.5,
-							kInnerLength * 2 * pi * (kAngleDiv / 360),
-							new Vector3(0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5)),
-							new Vector3(x, y + lengthdir_x(kInnerLength, i), z + lengthdir_y(kInnerLength, i))
-							);
+						kAngleMin = (m_editor.viewrayForward[2] > 0) ? 0 : 180;
+						kAngleMax = kAngleMin + 180;
 					}
-					MeshbAddLine(
-						m_mesh, xcolor,
-						kBorderExpand * 0.5,
-						kAxisLength * 2 * pi * (kAngleDiv / 360),
-						new Vector3(0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5), lengthdir_y(1, i + 90 + kAngleDiv * 0.5)),
-						new Vector3(x, y + lengthdir_x(kAxisLength, i), z + lengthdir_y(kAxisLength, i))
-						);
-				}
-				
-				var kAngleMinY = (m_editor.viewrayForward[0] > 0) ? 0 : 180;
-				var kAngleMaxY = kAngleMinY + 180;
-				var ycolor = m_mouseOverY ? c_white : c_midgreen;
-				
-				// Draw the Z rotation axes
-				for (var i = kAngleMinY; i < kAngleMaxY; i += kAngleDiv)
-				{
-					if (m_mouseOverY)
+					else if (currentAxis == kAxisY)
 					{
-						MeshbAddLine(
-							m_mesh, c_midgreen,
-							kBorderExpand * 0.5,
-							kInnerLength * 2 * pi * (kAngleDiv / 360),
-							new Vector3(lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5)),
-							new Vector3(x + lengthdir_y(kInnerLength, i), y, z + lengthdir_x(kInnerLength, i))
-							);
+						kAngleMin = (m_editor.viewrayForward[0] > 0) ? 0 : 180;
+						kAngleMax = kAngleMin + 180;
 					}
-					MeshbAddLine(
-						m_mesh, ycolor,
-						kBorderExpand * 0.5,
-						kAxisLength * 2 * pi * (kAngleDiv / 360),
-						new Vector3(lengthdir_y(1, i + 90 + kAngleDiv * 0.5), 0, lengthdir_x(1, i + 90 + kAngleDiv * 0.5)),
-						new Vector3(x + lengthdir_y(kAxisLength, i), y, z + lengthdir_x(kAxisLength, i))
-						);
+					
+					var acolor;
+					acolor = bMouseOver ? c_white : bcolor;
+
+					if ((!m_dragX && !m_dragY && !m_dragZ) || bDrag)
+					{
+						// If we're dragging, we change the angle to be full circle
+						if (bDrag)
+						{
+							kAngleMin = 0;
+							kAngleMax = 360;
+						}
+						
+						// Draw the rotation axes
+						if (bMouseOver) MeshbAddArc(m_mesh, acolor, kBorderExpand * 0.5, kInnerLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
+						MeshbAddArc(m_mesh, bcolor, kBorderExpand * 0.5, kAxisLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
+						
+						if (bDrag)
+						{
+							MeshbAddLine(m_mesh, bcolor, kBorderExpand, kAxisLength - kInnerLength,
+								kPlanarX.multiply(lengthdir_x(1, m_dragStart[currentAxis])).add(kPlanarY.multiply(lengthdir_y(1, m_dragStart[currentAxis]))),
+								kGizmoCenter.add(kPlanarX.multiply(lengthdir_x(kInnerLength, m_dragStart[currentAxis]))).add(kPlanarY.multiply(lengthdir_y(kInnerLength, m_dragStart[currentAxis])))
+								);
+								
+							MeshbAddLine(m_mesh, bcolor, kBorderExpand, kAxisLength - kInnerLength,
+								kPlanarX.multiply(lengthdir_x(1, zrotation)).add(kPlanarY.multiply(lengthdir_y(1, zrotation))),
+								kGizmoCenter.add(kPlanarX.multiply(lengthdir_x(kInnerLength, zrotation))).add(kPlanarY.multiply(lengthdir_y(kInnerLength, zrotation)))
+								);
+						}
+					}
 				}
 			}
 			else

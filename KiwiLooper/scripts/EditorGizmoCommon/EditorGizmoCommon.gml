@@ -95,7 +95,13 @@ function AEditorGizmoBase() constructor
 		return _mouseReleased[_MouseGetButtonIndex(button)];
 	}
 	
-	MeshbAddLine = function(mesh, color, width, length, normal, position)
+	///@function MeshbAddLine(mesh, color, width, length, normal, position)
+	static MeshbAddLine = function(mesh, color, width, length, normal, position)
+	{
+		MeshbAddLine2(mesh, color, 1.0, width, length, normal, position);
+	};
+	///@function MeshbAddLine2(mesh, color, alpha, width, length, normal, position)
+	static MeshbAddLine2 = function(mesh, color, alpha, width, length, normal, position)
 	{
 		// Get the X and Y alternates to the normal
 		var cross_x, cross_y;
@@ -116,22 +122,22 @@ function AEditorGizmoBase() constructor
 		meshb_AddQuad(mesh, [
 			new MBVertex(
 				position.add(cross_x.multiply(width)),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, -0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_x.multiply(width).add(normal.multiply(length))),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, -0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_x.multiply(-width)),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, 0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_x.multiply(-width).add(normal.multiply(length))),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, 0.5),
 				normal),
 			]);
@@ -139,22 +145,22 @@ function AEditorGizmoBase() constructor
 		meshb_AddQuad(mesh, [
 			new MBVertex(
 				position.add(cross_y.multiply(width)),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, -0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_y.multiply(width).add(normal.multiply(length))),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, -0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_y.multiply(-width)),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, 0.5),
 				normal),
 			new MBVertex(
 				position.add(cross_y.multiply(-width).add(normal.multiply(length))),
-				color, 1.0,
+				color, alpha,
 				new Vector2(0.5, 0.5),
 				normal),
 			]);
