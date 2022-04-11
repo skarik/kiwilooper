@@ -559,15 +559,19 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 			}
 		}
 		
+		var bEnableAngleSnaps = keyboard_check(vk_shift);
+		var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
 			if (m_dragX)
 			{
 				xrotation += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
 			}
 			if (m_dragY)
 			{
 				yrotation += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
 			}
 			if (m_dragZ)
 			{
@@ -596,6 +600,7 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 					// calculate angle difference in the world
 					zrotation = m_dragStart[2] - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
 				}
+				if (bLocalSnap) zrotation = round_nearest(zrotation, 15);
 			}
 		}
 		
@@ -656,6 +661,42 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 							planarX.multiply(lengthdir_x(1, i + 90 + angleDiv * 0.5)).add(planarY.multiply(lengthdir_y(1, i + 90 + angleDiv * 0.5))),
 							center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i)))
 							);
+					}
+				};
+				///@function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+				var MeshbAddFlatArc = function(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+				{
+					var normal = planarX.cross(planarY);
+					for (var i = startAngle; i < endAngle; i += angleDiv)
+					{
+						var offset_a = planarX.multiply(lengthdir_x(1, i)).add(planarY.multiply(lengthdir_y(1, i)));
+						var offset_b = planarX.multiply(lengthdir_x(1, i + angleDiv)).add(planarY.multiply(lengthdir_y(1, i + angleDiv)));
+						
+						var u_a = (i - startAngle) / (endAngle - startAngle);
+						var u_b = ((i + angleDiv) - startAngle) / (endAngle - startAngle);
+						
+						meshb_AddQuad(mesh, [
+							new MBVertex(
+								center.add(offset_a.multiply(radius - width)),
+								color, alpha,
+								new Vector2(u_a, 0),
+								normal),
+							new MBVertex(
+								center.add(offset_a.multiply(radius)),
+								color, alpha,
+								new Vector2(u_a, 1),
+								normal),
+							new MBVertex(
+								center.add(offset_b.multiply(radius - width)),
+								color, alpha,
+								new Vector2(u_b, 0),
+								normal),
+							new MBVertex(
+								center.add(offset_b.multiply(radius)),
+								color, alpha,
+								new Vector2(u_b, 1),
+								normal),
+							]);
 					}
 				};
 				
@@ -719,20 +760,33 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 						}
 						
 						// Draw the rotation axes
-						if (bMouseOver) MeshbAddArc(m_mesh, acolor, kBorderExpand * 0.5, kInnerLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
+						//if (bMouseOver) MeshbAddArc(m_mesh, acolor, kBorderExpand * 0.5, kInnerLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
+						if (bMouseOver && !bDrag) MeshbAddFlatArc(m_mesh, acolor, 0.5, kAxisLength - kInnerLength, kAxisLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
 						MeshbAddArc(m_mesh, bcolor, kBorderExpand * 0.5, kAxisLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
 						
 						if (bDrag)
 						{
+							MeshbAddArc(m_mesh, bcolor, kBorderExpand * 0.5, kInnerLength, kAngleMin, kAngleMax, kAngleDiv, kPlanarX, kPlanarY, kGizmoCenter);
+							
 							MeshbAddLine(m_mesh, bcolor, kBorderExpand, kAxisLength - kInnerLength,
 								kPlanarX.multiply(lengthdir_x(1, m_dragStart[currentAxis])).add(kPlanarY.multiply(lengthdir_y(1, m_dragStart[currentAxis]))),
 								kGizmoCenter.add(kPlanarX.multiply(lengthdir_x(kInnerLength, m_dragStart[currentAxis]))).add(kPlanarY.multiply(lengthdir_y(kInnerLength, m_dragStart[currentAxis])))
 								);
 								
+							var angle = m_dragX ? xrotation : (m_dragY ? yrotation : zrotation);
+							var angleDivCount = max(1, ceil(abs(angle - m_dragStart[currentAxis]) / kAngleDiv));
+								
 							MeshbAddLine(m_mesh, bcolor, kBorderExpand, kAxisLength - kInnerLength,
-								kPlanarX.multiply(lengthdir_x(1, zrotation)).add(kPlanarY.multiply(lengthdir_y(1, zrotation))),
-								kGizmoCenter.add(kPlanarX.multiply(lengthdir_x(kInnerLength, zrotation))).add(kPlanarY.multiply(lengthdir_y(kInnerLength, zrotation)))
+								kPlanarX.multiply(lengthdir_x(1, angle)).add(kPlanarY.multiply(lengthdir_y(1, angle))),
+								kGizmoCenter.add(kPlanarX.multiply(lengthdir_x(kInnerLength, angle))).add(kPlanarY.multiply(lengthdir_y(kInnerLength, angle)))
 								);
+								
+							MeshbAddFlatArc(m_mesh, acolor, 0.5,
+								kAxisLength - kInnerLength, kAxisLength,
+								min(m_dragStart[currentAxis], angle),
+								max(m_dragStart[currentAxis], angle),
+								abs(angle - m_dragStart[currentAxis]) / angleDivCount,
+								kPlanarX, kPlanarY, kGizmoCenter);
 						}
 					}
 				}
