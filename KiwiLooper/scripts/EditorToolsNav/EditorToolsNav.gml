@@ -343,7 +343,36 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 			}
 			else if (bMouseLeft && bMouseRight)
 			{
-				cameraZoom += (vPosition - vPositionPrevious) / 500.0;
+				//cameraZoom += (vPosition - vPositionPrevious) / 500.0;
+				var cameraPos = new Vector3(cameraX, cameraY, cameraZ);
+				
+				// Create the forward vector
+				var cameraDir = new Vector3(
+					lengthdir_x(1.0, o_Camera3D.zrotation) * lengthdir_x(1.0, o_Camera3D.yrotation), 
+					lengthdir_y(1.0, o_Camera3D.zrotation) * lengthdir_x(1.0, o_Camera3D.yrotation), 
+					lengthdir_y(1.0, o_Camera3D.yrotation));
+				var cameraSide = cameraDir.cross(new Vector3(0, 0, 1)).normal();
+				var cameraTop = cameraSide.cross(cameraDir).normal();
+				
+				// Perform the movement
+				cameraPos.addSelf(
+					cameraSide
+						.multiply(uPosition - uPositionPrevious)
+						.add(
+							cameraTop.multiply(vPosition - vPositionPrevious)
+							)
+					);
+				
+				// Save out result
+				cameraX = cameraPos.x;
+				cameraY = cameraPos.y;
+				cameraZ = cameraPos.z;
+				
+				// Explicitly delete temp calc structures
+				delete cameraPos;
+				delete cameraDir;
+				delete cameraSide;
+				delete cameraTop;
 			}
 			
 			if (mouse_wheel_down())

@@ -13,6 +13,7 @@ function Vector3(n_x, n_y, n_z) constructor
 	
 	// Functions
 	
+	///@function set(n_x, n_y, n_z)
 	static set = function(n_x, n_y, n_z)
 	{
 		x = n_x;
@@ -20,6 +21,7 @@ function Vector3(n_x, n_y, n_z) constructor
 		z = n_z;
 	}
 	
+	///@function getElement(index)
 	static getElement = function(index)
 	{
 		gml_pragma("forceinline");
@@ -29,11 +31,13 @@ function Vector3(n_x, n_y, n_z) constructor
 		return undefined;
 	}
 	
+	///@function copy()
 	static copy = function()
 	{
 		return new Vector3(x, y, z);
 	}
 	
+	///@function copyFrom(right)
 	static copyFrom = function(right)
 	{
 		x = right.x;
@@ -41,6 +45,7 @@ function Vector3(n_x, n_y, n_z) constructor
 		z = right.z;
 	}
 	
+	///@function addSelf(right)
 	static addSelf = function(right)
 	{
 		x += right.x;

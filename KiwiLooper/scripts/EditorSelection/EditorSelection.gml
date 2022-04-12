@@ -120,3 +120,33 @@ function EditorSelectionGetLast()
 	}
 	return null;
 }
+
+/// @function EditorSelectionGetPosition()
+function EditorSelectionGetPosition()
+{
+	// TODO check average position of all objects
+	var selection = EditorSelectionGetLast();
+	if (selection != null)
+	{
+		if (is_struct(selection)) 
+		{
+			if (selection.type == kEditorSelection_Prop || selection.type == kEditorSelection_Splat)
+			{
+				return Vector3FromTranslation(selection.object);
+			}
+			else if (selection.type == kEditorSelection_Tile)
+			{
+				return new Vector3(selection.object.x * 16, selection.object.y * 16, selection.object.height * 16);
+			}
+			else if (selection.type == kEditorSelection_TileFace)
+			{
+				return new Vector3(selection.object.tile.x * 16, selection.object.tile.y * 16, selection.object.tile.height * 16);
+			}
+		}
+		else if (iexists(selection))
+		{
+			return Vector3FromTranslation(selection);
+		}
+	}
+	return new Vector3(0, 0, 0);
+}

@@ -29,3 +29,14 @@ function EditorCameraUpdate()
 	o_Camera3D.znear = kCameraDefaultZNear * cameraZoom;
 	o_Camera3D.zfar = max(kCameraDefaultZFar, kCameraDefaultZFar * cameraZoom);
 }
+
+function EditorCameraCenterOnSelection()
+{
+	if (EditorSelectionGetLast() != null)
+	{
+		var position = EditorSelectionGetPosition();
+		cameraX = position.x;
+		cameraY = position.y;
+		cameraZ = position.z;
+	}
+}

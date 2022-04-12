@@ -110,6 +110,9 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			var property = entity_info.properties[iProperty];
 			property_values[iProperty] = entpropToString(entity_instance, property);
 		}
+		
+		// Update the title now
+		m_title = entityInfo.name + " Properties";
 	} // End InitWithEntityInfo()
 	
 	static InitUpdateEntityInfoTransform = function()
@@ -162,6 +165,9 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		
 		InitUpdateEntityInfoTransform();
 		property_values[3] = entpropToString(prop, entity_info.properties[3]);
+		
+		// Update the title now
+		m_title = string_replace(sprite_get_name(prop.sprite), "spr_", "") + " Prop-erties";
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)

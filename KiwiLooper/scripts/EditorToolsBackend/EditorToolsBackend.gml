@@ -92,48 +92,8 @@ function EditorToolsSetup()
 	assert(array_length(toolStates) == kEditorTool_MAX);
 }
 
-function EditorToolsUpdate()
+function EditorToolsUpdate_CheckShortcuts()
 {
-	// Update mouse positions
-	var pixelX = uPosition - GameCamera.view_x;
-	var pixelY = vPosition - GameCamera.view_y;
-	
-	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
-	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
-	
-	// Collide with the flat XYZ
-	if (raycast4_axisplane(kAxisZ, 0.0, Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
-	{
-		toolFlatX = viewRayPos[0] + viewRayDir[0] * raycast4_get_hit_distance();
-		toolFlatY = viewRayPos[1] + viewRayDir[1] * raycast4_get_hit_distance();
-	}
-	
-	toolTileX = max(0, floor(toolFlatX / 16));
-	toolTileY = max(0, floor(toolFlatY / 16));
-	
-	viewrayPixelPrevious= viewrayPixel;
-	viewrayPixel		= viewRayDir;
-	viewrayTopLeft		= o_Camera3D.viewToRay(0, 0);
-	viewrayBottomRight	= o_Camera3D.viewToRay(GameCamera.width, GameCamera.height);
-	viewrayForward		= [
-		(viewrayTopLeft[0] + viewrayBottomRight[0]) * 0.5,
-		(viewrayTopLeft[1] + viewrayBottomRight[1]) * 0.5,
-		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
-		
-	// Do picker collision with the map
-	if (raycast4_tilemap(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
-	{
-		toolWorldX = viewRayPos[0] + viewrayPixel[0] * raycast4_get_hit_distance();
-		toolWorldY = viewRayPos[1] + viewrayPixel[1] * raycast4_get_hit_distance();
-		toolWorldZ = viewRayPos[2] + viewrayPixel[2] * raycast4_get_hit_distance();
-		toolWorldNormal.copyFrom(raycast4_get_hit_normal());
-		toolWorldValid = true;
-	}
-	else
-	{
-		toolWorldValid = false;
-	}
-	
 	// Hard-coded shortcuts:
 	if (keyboard_check_pressed(ord("Q")))
 	{
@@ -145,7 +105,14 @@ function EditorToolsUpdate()
 	}
 	if (keyboard_check_pressed(ord("E")))
 	{
-		toolCurrentRequested = kEditorToolRotate;
+		if (keyboard_check(vk_control))
+		{
+			EditorCameraCenterOnSelection();
+		}
+		else
+		{
+			toolCurrentRequested = kEditorToolRotate;
+		}
 	}
 	
 	// Hard-coded command overrides:
@@ -193,6 +160,52 @@ function EditorToolsUpdate()
 		}
 		cameraZoom = max(0.05, cameraZoom);
 	}
+}
+
+function EditorToolsUpdate()
+{
+	// Update mouse positions
+	var pixelX = uPosition - GameCamera.view_x;
+	var pixelY = vPosition - GameCamera.view_y;
+	
+	var viewRayPos = [o_Camera3D.x, o_Camera3D.y, o_Camera3D.z];
+	var viewRayDir = o_Camera3D.viewToRay(pixelX, pixelY);
+	
+	// Collide with the flat XYZ
+	if (raycast4_axisplane(kAxisZ, 0.0, Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
+	{
+		toolFlatX = viewRayPos[0] + viewRayDir[0] * raycast4_get_hit_distance();
+		toolFlatY = viewRayPos[1] + viewRayDir[1] * raycast4_get_hit_distance();
+	}
+	
+	toolTileX = max(0, floor(toolFlatX / 16));
+	toolTileY = max(0, floor(toolFlatY / 16));
+	
+	viewrayPixelPrevious= viewrayPixel;
+	viewrayPixel		= viewRayDir;
+	viewrayTopLeft		= o_Camera3D.viewToRay(0, 0);
+	viewrayBottomRight	= o_Camera3D.viewToRay(GameCamera.width, GameCamera.height);
+	viewrayForward		= [
+		(viewrayTopLeft[0] + viewrayBottomRight[0]) * 0.5,
+		(viewrayTopLeft[1] + viewrayBottomRight[1]) * 0.5,
+		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
+		
+	// Do picker collision with the map
+	if (raycast4_tilemap(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
+	{
+		toolWorldX = viewRayPos[0] + viewrayPixel[0] * raycast4_get_hit_distance();
+		toolWorldY = viewRayPos[1] + viewrayPixel[1] * raycast4_get_hit_distance();
+		toolWorldZ = viewRayPos[2] + viewrayPixel[2] * raycast4_get_hit_distance();
+		toolWorldNormal.copyFrom(raycast4_get_hit_normal());
+		toolWorldValid = true;
+	}
+	else
+	{
+		toolWorldValid = false;
+	}
+	
+	// Check shortcuts before state update, since shortcuts can do temp state changes
+	EditorToolsUpdate_CheckShortcuts();
 	
 	// Update the states now:
 	{
