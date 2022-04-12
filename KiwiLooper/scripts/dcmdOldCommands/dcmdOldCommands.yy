@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Engine/Debug/Cmd.yy",
   },
   "resourceVersion": "1.0",
-  "name": "dcmdParseGiveItem",
+  "name": "dcmdOldCommands",
   "tags": [],
   "resourceType": "GMScript",
 }

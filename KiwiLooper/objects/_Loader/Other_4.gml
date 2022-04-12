@@ -1,5 +1,8 @@
 commonStart();
 
+// Loader state for later
+bRoomIsSet = false;
+
 inew(System);
 inew(Screen);
 inew(GameCamera);
@@ -74,14 +77,17 @@ debugOut("default depth buffer state: " + (surface_get_depth_disable() ? "off" :
 if (Settings.startup_overrideSave)
 {
 	// force update quest stuff now that player is ready
-	if (Settings.startup_overrideSave) {
+	if (Settings.startup_overrideSave)
+	{
 		dcmdRunString(Settings.startup_command);
-		Settings.startup_command = "";
 	}
-	if (room_exists(Settings.startup_roomOverride))
-		room_goto(Settings.startup_roomOverride);
-	else
-		room_goto_next();
+	if (_Loader.bRoomIsSet == false)
+	{
+		if (room_exists(Settings.startup_roomOverride))
+			room_goto(Settings.startup_roomOverride);
+		else
+			room_goto_next();
+	}
 }
 // or t_try to load a game
 else if (Debug.reset || true)// || !gameLoad())

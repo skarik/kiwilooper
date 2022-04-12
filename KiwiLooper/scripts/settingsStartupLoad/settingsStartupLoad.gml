@@ -1,4 +1,5 @@
-function settingsStartupLoad() {
+function settingsStartupLoad()
+{
 	with (Settings)
 	{
 	    ini_open("settings.ini");
@@ -8,15 +9,11 @@ function settingsStartupLoad() {
 	
 		startup_overrideSave	= ini_read_real("startup", "overridesave", false);
 	
-		startup_command			= ini_read_string("startup", "command", "");
+		startup_command			+= ini_read_string("startup", "command", "");
 	
 		startup_window_xoffset	= ini_read_real("startup", "window_xoffset", 0);
 		startup_window_yoffset	= ini_read_real("startup", "window_yoffset", 0);
 
 	    ini_close();
 	}
-
-
-
-
 }
