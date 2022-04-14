@@ -16,7 +16,9 @@ function _EntityInfoInit()
 	
 	#macro kGizmoMeshShapeQuadWall 0
 	#macro kGizmoMeshShapeCube 1
+	#macro kGizmoMeshShapeQuadFloor 2
 	
+	#macro kGizmoMeshTransformScaleZ 5
 	#macro kGizmoMeshTransformRotateZ 8
 	
 	#macro kGizmoOriginCenter 0
@@ -127,6 +129,42 @@ function _EntityInfoInit()
 			],
 		},
 		
+		// Characters:
+		{
+			name: "chara_robot",
+			desc: "",
+			objectIndex: o_charaRobot,
+			
+			gizmoSprite: object_get_sprite(o_charaRobot),
+			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottom,
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		{
+			name: "chara_powercell",
+			desc: "Doodad character, can be destroyed.",
+			objectIndex: o_charaPowercell,
+			
+			gizmoSprite: object_get_sprite(o_charaPowercell),
+			gizmoIndex: 0,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottom,
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		
 		// Livelies:
 		{
 			name: "lively_door_test",
@@ -146,11 +184,29 @@ function _EntityInfoInit()
 			},
 			
 			hullsize: 32,
+		},
+		{
+			name: "lively_door_test_platform",
+			parent: "lively_base",
+			desc: "Door used in initial LD47 creation",
+			objectIndex: o_livelyDoorPlatform,
 			
-			properties:
-			[
-				["", kValueTypePosition],
-			],
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottomCorner,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeCube,
+				sprite:	spr_metalDoor0,
+				index:	0,
+				transform:
+				[
+					[kGizmoMeshTransformScaleZ, 0.5],
+				],
+			},
+			
+			hullsize: 32,
 		},
 		{
 			name: "lively_exploding_wires",
@@ -159,13 +215,21 @@ function _EntityInfoInit()
 			objectIndex: o_livelyExplodingWires,
 			
 			gizmoSprite: suie_gizmoEnts,
-			gizmoIndex: 0,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	spr_metalDoor0,
+				index:	0,
+			},
 			
 			hullsize: 8,
 			
 			properties:
 			[
-				["", kValueTypePosition],
+				["m_targetDoor", kValueTypeLively],
 			],
 		},
 		{
@@ -182,8 +246,46 @@ function _EntityInfoInit()
 			
 			properties:
 			[
-				["", kValueTypePosition],
 				["nextlevel", kValueTypeString],
+			],
+		},
+		
+		{
+			name: "lively_doorpower_to_roompower",
+			parent: "lively_base",
+			desc: "Hooks the power state of a door to be reflected in global powerstate.",
+			objectIndex: o_livelyHookDoorToPowerstate,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["m_doorToCheck", kValueTypeLively],
+			],
+		},
+		{
+			name: "lively_relay_door",
+			parent: "lively_base",
+			desc: "Copies incoming powerstate to given doors.",
+			objectIndex: o_livelyHookDoorToPowerstate,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["m_door0", kValueTypeLively],
+				["m_door1", kValueTypeLively],
+				["m_door2", kValueTypeLively],
 			],
 		},
 		
@@ -223,6 +325,12 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
 			gizmoDrawmode: kGizmoDrawmodeHidden,
+			
+			properties:
+			[
+				["logString", kValueTypeString],
+				["logStringQueued", kValueTypeString],
+			],
 		},
 		{
 			name: "usable_corpse_robo",
