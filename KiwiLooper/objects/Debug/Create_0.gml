@@ -33,3 +33,6 @@ if (convention_mode || demo_mode)
 {
 	window_set_fullscreen(true);
 }
+
+// Game debugging values
+lively_show_explode_wire_target = true;

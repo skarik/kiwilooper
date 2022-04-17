@@ -339,6 +339,14 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				{
 					property_edit_cursor = min(string_length(value), property_edit_cursor + 1);
 				}
+				else if (keyboard_check_pressed(vk_home))
+				{
+					property_edit_cursor = 0;
+				}
+				else if (keyboard_check_pressed(vk_end))
+				{
+					property_edit_cursor = string_length(value);
+				}
 				
 				// Perform typing controls
 				var l_valueCursor = inputPollTyping(value, property_edit_cursor);

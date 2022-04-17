@@ -166,6 +166,7 @@
     {"id":{"name":"EditorUIWindowProperties","path":"scripts/EditorUIWindowProperties/EditorUIWindowProperties.yy",},"order":4,},
     {"id":{"name":"o_usablePC","path":"objects/o_usablePC/o_usablePC.yy",},"order":2,},
     {"id":{"name":"sfx_splatterBlood0","path":"sprites/sfx_splatterBlood0/sfx_splatterBlood0.yy",},"order":0,},
+    {"id":{"name":"DebugTools","path":"scripts/DebugTools/DebugTools.yy",},"order":20,},
     {"id":{"name":"CE_StringUtil","path":"scripts/CE_StringUtil/CE_StringUtil.yy",},"order":2,},
     {"id":{"name":"fmusic_is_during_intro","path":"scripts/fmusic_is_during_intro/fmusic_is_during_intro.yy",},"order":3,},
     {"id":{"name":"inputSet","path":"scripts/inputSet/inputSet.yy",},"order":11,},

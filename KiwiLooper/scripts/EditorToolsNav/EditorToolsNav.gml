@@ -375,14 +375,14 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 				delete cameraTop;
 			}
 			
-			if (mouse_wheel_down())
+			/*if (mouse_wheel_down())
 			{
 				cameraZoom += 0.1;
 			}
 			else if (mouse_wheel_up())
 			{
 				cameraZoom -= 0.1;
-			}
+			}*/ // Duplicate action, already hardcoded in the shortcuts.
 		}
 	}
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)

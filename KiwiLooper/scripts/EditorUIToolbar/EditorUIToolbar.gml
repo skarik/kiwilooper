@@ -38,7 +38,7 @@ function AToolbar() constructor
 			{
 				element.m_state_isDown = element.m_onCheckDown();
 				
-				if (point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize, topLeft.y + kButtonSize))
+				if (point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize - 1, topLeft.y + kButtonSize - 1))
 				{
 					element.m_state_isHovered = true;
 					element.m_state_hoveredTime += Time.deltaTime;

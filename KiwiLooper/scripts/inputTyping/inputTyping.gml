@@ -60,6 +60,72 @@ function inputPollTyping(value, cursor)
 				cursor++;
 			}
 		}
+		if (keyboard_check_pressed(0xBF)) //VK_OEM_2
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("?", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("/", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xC0)) //VK_OEM_3
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("~", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("`", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xDB)) //VK_OEM_4
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("{", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("[", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xDC)) //VK_OEM_5
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("|", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("\\", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xDD)) //VK_OEM_6
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("}", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("]", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xDE)) //VK_OEM_7
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("\"", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("'", value, cursor + 1);
+				cursor++;
+			}
+		}
 	}
 	// Check space
 	if (keyboard_check_pressed(vk_space)) {

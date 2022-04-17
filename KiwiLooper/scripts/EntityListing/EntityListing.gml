@@ -221,11 +221,11 @@ function _EntityInfoInit()
 			gizmoMesh:
 			{
 				shape:	kGizmoMeshShapeQuadFloor,
-				sprite:	spr_metalDoor0,
+				sprite:	spr_metalWiretile,
 				index:	0,
 			},
 			
-			hullsize: 8,
+			hullsize: 16,
 			
 			properties:
 			[
@@ -325,11 +325,20 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
 			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_usableLogbook),
+				index:	0,
+				lit:	false,
+			},
 			
 			properties:
 			[
 				["logString", kValueTypeString],
 				["logStringQueued", kValueTypeString],
+				["lit", kValueTypeBoolean, false],
 			],
 		},
 		{
@@ -339,7 +348,20 @@ function _EntityInfoInit()
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
-			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_usableCorpseRobo),
+				index:	0,
+				lit:	false,
+			},
+			
+			properties:
+			[
+				["lit", kValueTypeBoolean, false],
+			],
 		},
 		{
 			name: "usable_corpse_kiwi",
@@ -349,6 +371,19 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 4,
 			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_usableCorpseKiwi),
+				index:	0,
+				lit:	false,
+			},
+			
+			properties:
+			[
+				["lit", kValueTypeBoolean, false],
+			],
 		},
 		
 		// Doodads:

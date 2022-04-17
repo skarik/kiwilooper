@@ -48,8 +48,32 @@ function MapLoadFiledata(filepath)
 	//	u64		size
 	//	u8[]	blob
 	
-	var rawbuffer = fioReadToBuffer(filepath);
+	var rawbuffer = null;
+	
+	// We want to try several variations of the filepath, for easier dev:
+	var filepath_variations = [
+		filepath,
+		"maps/" + filepath,
+		filepath + ".kmf",
+		"maps/" + filepath + ".kmf",
+		];
+		
+	// attempt loads until we find success with one of the filepath variations
+	for (var i = 0; i < array_length(filepath_variations); ++i)
+	{
+		rawbuffer = fioReadToBuffer(filepath_variations[i]);
+		if (rawbuffer != null) 
+		{
+			break;
+		}
+	}
 	assert(rawbuffer != null);
+	
+	// If it's null, we return failure - so that the loader can check this and enter a useful error state
+	if (rawbuffer == null)
+	{
+		return null;
+	}
 	
 	// Now we read in until we're at the end of the file
 	var l_eof = false;

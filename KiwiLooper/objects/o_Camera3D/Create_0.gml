@@ -19,11 +19,11 @@ depth = -10;
 m_viewprojection = matrix_build_identity();
 m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
 
-/// @function camera.positionToView(x, y, z)
-/// @desc Transforms 3D position into 2D position
-/// @param x {Real}
-/// @param y {Real}
-/// @param z {Real}
+///@function camera.positionToView(x, y, z)
+///@desc Transforms 3D position into 2D position
+///@param x {Real}
+///@param y {Real}
+///@param z {Real}
 positionToView = function(n_x, n_y, n_z)
 {
 	// w-coordinate divide is not handled in matrix_transform_vertex
@@ -41,10 +41,10 @@ positionToView = function(n_x, n_y, n_z)
 		];
 }
 
-/// @function camera.viewToRay(x, y)
-/// @desc Transforms 2D position into a 3D ray for the camera
-/// @param x {Real}
-/// @param y {Real}
+///@function camera.viewToRay(x, y)
+///@desc Transforms 2D position into a 3D ray for the camera
+///@param x {Real}
+///@param y {Real}
 viewToRay = function(n_x, n_y)
 {
 	// w-coordinate divide is not handled in matrix_transform_vertex

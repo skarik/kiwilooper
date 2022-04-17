@@ -52,12 +52,25 @@ if (iexists(m_targetDoor))
 			m_targetDoor.m_onActivation(id);
 		}
 	}
-}
-// If door shouldnt be open, we must close it
-if (!door_wants_open)
-{
-	if (!m_targetDoor.closing && m_targetDoor.openstate > 0.5)
+	// If door shouldnt be open, we must close it
+	if (!door_wants_open)
 	{
-		m_targetDoor.m_onActivation(id);
+		if (!m_targetDoor.closing && m_targetDoor.openstate > 0.5)
+		{
+			m_targetDoor.m_onActivation(id);
+		}
+	}
+}
+else
+{
+	// Create error text for debugging for now 
+	// for LD40 - we almost always want the exploding wires to have a target.
+	// for other puzzles, we might not want this, so this is also wrapped within a debug mode variable
+	if (Debug.lively_show_explode_wire_target)
+	{
+		if (!variable_instance_exists(this, "_debug_text"))
+		{
+			_debug_text = Debug_CreateWorldRenderText(x, y, z, "no target", c_red);
+		}
 	}
 }

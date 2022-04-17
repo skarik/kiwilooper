@@ -95,23 +95,26 @@ function EditorToolsSetup()
 function EditorToolsUpdate_CheckShortcuts()
 {
 	// Hard-coded shortcuts:
-	if (keyboard_check_pressed(ord("Q")))
+	if (!WindowingHasConsumingFocus())
 	{
-		toolCurrentRequested = kEditorToolSelect;
-	}
-	if (keyboard_check_pressed(ord("W")))
-	{
-		toolCurrentRequested = kEditorToolTranslate;
-	}
-	if (keyboard_check_pressed(ord("E")))
-	{
-		if (keyboard_check(vk_control))
+		if (keyboard_check_pressed(ord("Q")))
 		{
-			EditorCameraCenterOnSelection();
+			toolCurrentRequested = kEditorToolSelect;
 		}
-		else
+		if (keyboard_check_pressed(ord("W")))
 		{
-			toolCurrentRequested = kEditorToolRotate;
+			toolCurrentRequested = kEditorToolTranslate;
+		}
+		if (keyboard_check_pressed(ord("E")))
+		{
+			if (keyboard_check(vk_control))
+			{
+				EditorCameraCenterOnSelection();
+			}
+			else
+			{
+				toolCurrentRequested = kEditorToolRotate;
+			}
 		}
 	}
 	
@@ -149,6 +152,7 @@ function EditorToolsUpdate_CheckShortcuts()
 		toolCurrent = toolCurrentRequested;
 	}
 	// Other camera inputs
+	if (!m_toolbar.ContainsMouse() && !m_actionbar.ContainsMouse() && !m_minimenu.ContainsMouse() && !WindowingContainsMouse())
 	{
 		if (mouse_wheel_down())
 		{

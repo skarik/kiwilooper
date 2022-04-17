@@ -9,7 +9,12 @@ function Game_LoadMap( map, asEditor = false )
 {
 	global.game_editorRun = asEditor;
 	
-	if (is_string(map))
+	if (is_undefined(map))
+	{
+		global.game_loadingInfo = kGameLoadingInvalid;
+		room_goto(rm_EmptyMap);
+	}
+	else if (is_string(map))
 	{
 		global.game_loadingInfo = kGameLoadingFromDisk;
 		global.game_loadingMap = map;
@@ -76,19 +81,25 @@ function Game_Event_RoomStart()
 // Call by object `Game` in Room Start event.
 function _Game_LoadMapInternal()
 {
-	if (global.game_loadingInfo == kGameLoadingInvalid)
+	static ShowFailureMessage = function(extra_text="")
 	{
 		// Pop up the "invalid info" UI bit
 		var uis_info = inew(o_uisScriptable);
-		uis_info.m_renderEvent = function()
+		uis_info.extra_text = extra_text;
+		uis_info.m_renderEvent = method(uis_info, function()
 		{
 			draw_set_alpha(1.0);
 			draw_set_color(c_white);
 			draw_set_halign(fa_center);
 			draw_set_valign(fa_middle);
 			draw_set_font(f_04b03);
-			draw_text(GameCamera.width / 2, GameCamera.height / 2, "NO LEVEL LOADED");
-		};
+			draw_text(GameCamera.width / 2, GameCamera.height / 2, "NO LEVEL LOADED"+extra_text);
+		});
+	}
+	
+	if (global.game_loadingInfo == kGameLoadingInvalid)
+	{
+		ShowFailureMessage();
 	}
 	
 	if (global.game_loadingInfo != kGameLoadingFromDisk)
@@ -98,6 +109,11 @@ function _Game_LoadMapInternal()
 	
 	// Load in the map
 	var filedata = MapLoadFiledata(global.game_loadingMap);
+	if (filedata == null)
+	{
+		ShowFailureMessage("\ncould not load \"" + global.game_loadingMap + "\"");
+		return;
+	}
 	
 	// Load in tiles
 	{
@@ -167,8 +183,12 @@ function _Game_LoadMapInternal()
 						array_push(saved_property_info, [property[0], variable_instance_get(entInstance, property[0])]);
 					}*/
 					
+					if (bSpecialTransform)
+					{
+					
+					}
 					// check the type - if it's a lively, we need to loop through all the current instances and find the matching one to replace the value
-					if (property[1] == kValueTypeLively)
+					else if (property[1] == kValueTypeLively)
 					{
 						for (var entSearchIndex = 0; entSearchIndex < entlist.GetEntityCount(); ++entSearchIndex)
 						{
@@ -186,6 +206,11 @@ function _Game_LoadMapInternal()
 								}
 							}
 						}
+					}
+					// all other types of variables just get copied over naiively
+					else
+					{
+						array_push(saved_property_info, [property[0], variable_instance_get(entInstance, property[0])]);
 					}
 				}
 				
