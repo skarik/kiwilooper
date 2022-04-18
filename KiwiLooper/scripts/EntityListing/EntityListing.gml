@@ -9,6 +9,7 @@ function _EntityInfoInit()
 	#macro kValueTypeInteger 6
 	#macro kValueTypeString 7
 	#macro kValueTypeLively 8
+	#macro kValueTypeEnum 9
 	
 	#macro kGizmoDrawmodeBillboard 0	// Draw a billboard
 	#macro kGizmoDrawmodeHidden 1		// Do not draw
@@ -74,7 +75,7 @@ function _EntityInfoInit()
 		{
 			name: "light",
 			desc: "Normal dynamic 3D light",
-			objectIndex: ob_3DLight,
+			objectIndex: ob_3DLightDynamic,
 			proxy: kProxyTypeNone,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -89,6 +90,13 @@ function _EntityInfoInit()
 				["intensity", kValueTypeFloat],
 				["range", kValueTypeFloat],
 				["color", kValueTypeColor],
+				["mode", kValueTypeEnum, kLightModeNone,
+					[
+						["None", kLightModeNone],
+						["Powerstate", kLightModePowerstate],
+						["Y Oscillate", kLightModeYOscillate]
+					],
+				],
 			],
 		},
 		{
@@ -286,6 +294,22 @@ function _EntityInfoInit()
 				["m_door0", kValueTypeLively],
 				["m_door1", kValueTypeLively],
 				["m_door2", kValueTypeLively],
+			],
+		},
+		{
+			name: "lively_powerstate",
+			parent: "lively_base",
+			objectIndex: o_livelyRoomState,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
 			],
 		},
 		
@@ -682,6 +706,7 @@ function entpropSetFromString(instance, property, stringValue)
 		break;
 		
 	case kValueTypeInteger:
+	case kValueTypeEnum:
 		try
 		{
 			convertedValue = round(real(stringValue));

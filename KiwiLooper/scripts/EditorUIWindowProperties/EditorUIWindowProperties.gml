@@ -326,41 +326,89 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				var property = entity_info.properties[property_focused];
 				var value = property_values[property_focused];
 				
-				// Move the edit cursor
-				if (property_edit_cursor == null)
+				// Use the "dropdown" editor
+				if (property[1] == kValueTypeEnum)
 				{
-					property_edit_cursor = string_length(value);
+					var enum_value = variable_instance_get(entity_instance, property[0]);
+					var enum_index = null;
+					
+					// Find the current index of the property
+					for (var propertySubIndex = 0; propertySubIndex < array_length(property[3]); ++propertySubIndex)
+					{
+						if (property[3][propertySubIndex][1] == enum_value)
+						{
+							enum_index = propertySubIndex;
+							break;
+						}
+					}
+					
+					// Select next index if we receive input
+					var next_value = property[3][0][1]; // Default to first value
+					if (enum_index != null && enum_index < array_length(property[3]) - 1)
+					{
+						next_value = property[3][enum_index + 1][1];
+					}
+					
+					var prev_value = property[3][array_length(property[3]) - 1][1]; // Default to last value
+					if (enum_index != null && enum_index > 0)
+					{
+						prev_value = property[3][enum_index - 1][1];
+					}
+					
+					// Roll forward if left click
+					if (property_mouseover == property_focused)
+					{
+						if (mouse_check_button_pressed(mb_left))
+						{
+							variable_instance_set(entity_instance, property[0], next_value);
+						}
+						else if (mouse_check_button_pressed(mb_right))
+						{
+							variable_instance_set(entity_instance, property[0], prev_value);
+						}
+						// Update the focused value
+						property_values[property_focused] = string(variable_instance_get(entity_instance, property[0]));
+					}
 				}
-				if (keyboard_check_pressed(vk_left))
+				// Use the string editor
+				else
 				{
-					property_edit_cursor = max(0, property_edit_cursor - 1);
-				}
-				else if (keyboard_check_pressed(vk_right))
-				{
-					property_edit_cursor = min(string_length(value), property_edit_cursor + 1);
-				}
-				else if (keyboard_check_pressed(vk_home))
-				{
-					property_edit_cursor = 0;
-				}
-				else if (keyboard_check_pressed(vk_end))
-				{
-					property_edit_cursor = string_length(value);
-				}
+					// Move the edit cursor
+					if (property_edit_cursor == null)
+					{
+						property_edit_cursor = string_length(value);
+					}
+					if (keyboard_check_pressed(vk_left))
+					{
+						property_edit_cursor = max(0, property_edit_cursor - 1);
+					}
+					else if (keyboard_check_pressed(vk_right))
+					{
+						property_edit_cursor = min(string_length(value), property_edit_cursor + 1);
+					}
+					else if (keyboard_check_pressed(vk_home))
+					{
+						property_edit_cursor = 0;
+					}
+					else if (keyboard_check_pressed(vk_end))
+					{
+						property_edit_cursor = string_length(value);
+					}
 				
-				// Perform typing controls
-				var l_valueCursor = inputPollTyping(value, property_edit_cursor);
-				value = l_valueCursor.value;
-				property_edit_cursor = l_valueCursor.cursor;
+					// Perform typing controls
+					var l_valueCursor = inputPollTyping(value, property_edit_cursor);
+					value = l_valueCursor.value;
+					property_edit_cursor = l_valueCursor.cursor;
 				
-				// Check the result of typing:
-				property_values[property_focused] = value;
-				property_change_ok = entpropSetFromString(instance, property, property_values[property_focused]);
+					// Check the result of typing:
+					property_values[property_focused] = value;
+					property_change_ok = entpropSetFromString(instance, property, property_values[property_focused]);
 				
-				// Update the transform for other objects.
-				if (entpropIsSpecialTransform(property))
-				{
-					EditorGlobalSignalTransformChange(instance, instance_type);
+					// Update the transform for other objects.
+					if (entpropIsSpecialTransform(property))
+					{
+						EditorGlobalSignalTransformChange(instance, instance_type);
+					}
 				}
 			}
 		}
@@ -554,6 +602,22 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				// Draw the text for the color values behind
 				draw_set_color(color_get_value(color) > 128 ? c_black : c_white);
 				draw_text(l_textX, l_textY, property_value);
+			}
+			else if (property[1] == kValueTypeEnum)
+			{
+				var enum_value = variable_instance_get(entity_instance, property[0]);
+				var enum_index = null;
+				
+				// Find the matching value in the property
+				for (var propertySubIndex = 0; propertySubIndex < array_length(property[3]); ++propertySubIndex)
+				{
+					if (property[3][propertySubIndex][1] == enum_value)
+					{
+						enum_index = propertySubIndex;
+						break;
+					}
+				}
+				draw_text(l_textX, l_textY, (enum_index == null) ? "N/A" : property[3][enum_index][0]);
 			}
 			else
 			{

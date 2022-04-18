@@ -136,6 +136,7 @@ function MapLoadEntities(filedata, entityInstanceList)
 					break;
 					
 				case kValueTypeInteger:
+				case kValueTypeEnum:
 					{
 						var value = buffer_read(buffer, buffer_s32);
 						variable_instance_set(instance, property[0], value);
@@ -315,6 +316,7 @@ function MapSaveEntities(filedata, entityInstanceList)
 				break;
 			
 			case kValueTypeInteger:
+			case kValueTypeEnum:
 				{
 					var value = variable_instance_get(instance, property[0]);
 					buffer_write(buffer, buffer_s32, value);
