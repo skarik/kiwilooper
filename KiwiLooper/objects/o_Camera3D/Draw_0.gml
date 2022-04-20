@@ -60,29 +60,127 @@ surface_set_target(buffer_scene3d);
 	gpu_set_alphatestenable(true);
 	gpu_set_alphatestref(0.5);
 	
-	// draw all objects
-	drawShaderSet(sh_litEnvironment);
-	lightPushUniforms(lightParams);
-	with (ob_3DObject)
+	var RenderLitObjects = function()
 	{
-		if (visible && !translucent && lit)
+		with (ob_3DObject)
 		{
-			var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
-			var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
-			var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
-			var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
-			var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, 1, 1, 1);
+			if (visible && !translucent && lit)
+			{
+				var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
+				var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
+				var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
+				var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
+				var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, 1, 1, 1);
 		
-			var mat_object = mat_object_scal;
-			mat_object = matrix_multiply(mat_object, mat_object_rotx);
-			mat_object = matrix_multiply(mat_object, mat_object_roty);
-			mat_object = matrix_multiply(mat_object, mat_object_rotz);
-			mat_object = matrix_multiply(mat_object, mat_object_pos);
-			matrix_set(matrix_world, mat_object);
-			m_renderEvent();
+				var mat_object = mat_object_scal;
+				mat_object = matrix_multiply(mat_object, mat_object_rotx);
+				mat_object = matrix_multiply(mat_object, mat_object_roty);
+				mat_object = matrix_multiply(mat_object, mat_object_rotz);
+				mat_object = matrix_multiply(mat_object, mat_object_pos);
+				matrix_set(matrix_world, mat_object);
+				m_renderEvent();
+			}
 		}
 	}
-	drawShaderReset();
+	
+	// draw all objects
+	if (global.lightingMode == kLightingModeForward)
+	{
+		drawShaderSet(sh_litEnvironment);
+		lightPushUniforms(lightParams);
+		RenderLitObjects();
+		drawShaderReset();
+	}
+	else if (global.lightingMode == kLightingModeDeferred)
+	{
+		surface_reset_target(); // Reset our rendering target
+		
+		// the main surface is now on buffer_scene3d
+		// we need a few other buffers
+		var buffer_albedo  = surface_create(GameCamera.width, GameCamera.height);
+		var buffer_normals = surface_create(GameCamera.width, GameCamera.height);
+		var buffer_illumin = surface_create(GameCamera.width, GameCamera.height);
+		var buffer_depth   = surface_create(GameCamera.width, GameCamera.height);
+		
+		surface_clear_color_alpha(buffer_albedo,  c_black, 0.0);
+		surface_clear_color_alpha(buffer_normals, c_black, 0.0);
+		surface_clear_color_alpha(buffer_illumin, c_black, 0.0);
+		surface_clear_color_alpha(buffer_depth, c_black, 0.0);
+				
+		// set the buffers we're going to render to
+		surface_set_target(buffer_scene3d); // Use 3d scene's depth buffer
+		surface_set_target_ext(0, buffer_albedo);
+		surface_set_target_ext(1, buffer_normals);
+		surface_set_target_ext(2, buffer_illumin);
+		surface_set_target_ext(3, buffer_depth);
+		
+		{ // surface_reset_target() also resets the view projection matrices
+			matrix_set(matrix_view, mat_view);
+			matrix_set(matrix_projection, mat_projection);
+		}
+		
+		// Set up the gather, and render all the objects
+		drawShaderSet(sh_gatherEnvironment);
+		lightPushGatherUniforms_Deferred();
+		RenderLitObjects();
+		drawShaderReset();
+		
+		// Reset all the bindings (the surface_set_target_ext(0,...) is another item on the stack)
+		surface_reset_target();
+		surface_reset_target();
+		
+		// Render to buffer_scene3d for our compositing:
+		
+		gpu_set_ztestenable(false);
+		gpu_set_zwriteenable(false);
+		gpu_set_zfunc(cmpfunc_always);
+		
+		// now composite to the main scene
+		surface_set_target(buffer_scene3d);
+		
+		{ // surface_reset_target() also resets the view projection matrices
+			matrix_set(matrix_view, mat_view);
+			matrix_set(matrix_projection, mat_projection);
+		}
+		
+		/*drawShaderSet(sh_compositeLighting);
+		lightPushUniforms(lightParams);
+		texture_set_stage(global.deferred_samplers.textureAlbedo, surface_get_texture(buffer_albedo));
+		texture_set_stage(global.deferred_samplers.textureNormal, surface_get_texture(buffer_normals));
+		texture_set_stage(global.deferred_samplers.textureDepth,  surface_get_texture(buffer_depth));
+		// Draw a quad using the albedo
+		draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+			draw_vertex_texture(-1, -1, 0, 1);
+			draw_vertex_texture(1, -1, 1, 1);
+			draw_vertex_texture(-1, 1, 0, 0);
+			draw_vertex_texture(1, 1, 1, 0);
+		draw_primitive_end();
+		drawShaderReset();*/
+		
+		drawShaderSet(sh_lightAmbient);
+		lightDeferredPushUniforms_Ambient(buffer_albedo, buffer_normals, buffer_illumin, buffer_depth);
+		// Draw a quad using the albedo
+		draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+			draw_vertex_texture(-1, -1, 0, 1);
+			draw_vertex_texture(1, -1, 1, 1);
+			draw_vertex_texture(-1, 1, 0, 0);
+			draw_vertex_texture(1, 1, 1, 0);
+		draw_primitive_end();
+		drawShaderReset();
+		
+		drawShaderSet(sh_lightPoint);
+			// loop through all the lgihts
+		drawShaderReset();
+		
+		surface_free(buffer_albedo);
+		surface_free(buffer_normals);
+		surface_free(buffer_illumin);
+		surface_free(buffer_depth);
+		
+		gpu_set_ztestenable(true);
+		gpu_set_zwriteenable(true);
+		gpu_set_zfunc(cmpfunc_lessequal);
+	}
 	// draw unlit
 	with (ob_3DObject)
 	{

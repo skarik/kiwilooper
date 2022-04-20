@@ -1,6 +1,5 @@
-//
-// Simple passthrough fragment shader
-//
+///@desc Forward lit environment shader
+
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 varying vec3 v_vNormal;
@@ -52,6 +51,5 @@ void main()
 		totalLighting = vec3(1.0, 1.0, 1.0);
 	}
 	
-	//gl_FragColor = (v_vColour + total_brightness) * texture2D( gm_BaseTexture, v_vTexcoord );
-	gl_FragColor = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
+	gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
 }
