@@ -43,11 +43,10 @@ vec3 calculate_world_position( float depth )
 
 void main()
 {
-	vec4 baseAlbedo = texture2D( textureAlbedo, v_vTexcoord );
-	if (baseAlbedo.a < 0.5) discard;
-	
-	vec4 baseNormal = texture2D( textureNormal, v_vTexcoord );
 	vec4 baseDepth  = texture2D( textureDepth,  v_vTexcoord );
+	if (baseDepth.a < 0.5) discard;
+	vec4 baseAlbedo = texture2D( textureAlbedo, v_vTexcoord );
+	vec4 baseNormal = texture2D( textureNormal, v_vTexcoord );
 	vec4 baseIllum  = texture2D( textureIllum,  v_vTexcoord );
 	
 	vec3	pixelNormal		= baseNormal.xyz * 2.0 - 1.0;

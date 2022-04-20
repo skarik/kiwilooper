@@ -109,7 +109,7 @@ surface_set_target(buffer_scene3d);
 				
 		// set the buffers we're going to render to
 		surface_set_target(buffer_scene3d); // Use 3d scene's depth buffer
-		surface_set_target_ext(0, buffer_albedo);
+		//surface_set_target_ext(0, buffer_albedo);
 		surface_set_target_ext(1, buffer_normals);
 		surface_set_target_ext(2, buffer_illumin);
 		surface_set_target_ext(3, buffer_depth);
@@ -126,7 +126,7 @@ surface_set_target(buffer_scene3d);
 		drawShaderReset();
 		
 		// Reset all the bindings (the surface_set_target_ext(0,...) is another item on the stack)
-		surface_reset_target();
+		//surface_reset_target();
 		surface_reset_target();
 		
 		// Render to buffer_scene3d for our compositing:
@@ -134,6 +134,9 @@ surface_set_target(buffer_scene3d);
 		gpu_set_ztestenable(false);
 		gpu_set_zwriteenable(false);
 		gpu_set_zfunc(cmpfunc_always);
+		
+		// Copy to the albedo
+		surface_copy(buffer_albedo, 0, 0, buffer_scene3d);
 		
 		// now composite to the main scene
 		surface_set_target(buffer_scene3d);
@@ -168,14 +171,31 @@ surface_set_target(buffer_scene3d);
 		draw_primitive_end();
 		drawShaderReset();
 		
+		gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
+		
 		drawShaderSet(sh_lightPoint);
-			// loop through all the lgihts
+		lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+			var allLights = lightParams[3];
+			// loop through all the lights
+			for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
+			{
+				var light = allLights[lightIndex];
+				lightDeferredPushUniforms_Point_Index(lightIndex);
+				draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+					draw_vertex_texture(-1, -1, 0, 1);
+					draw_vertex_texture(1, -1, 1, 1);
+					draw_vertex_texture(-1, 1, 0, 0);
+					draw_vertex_texture(1, 1, 1, 0);
+				draw_primitive_end();
+			}
 		drawShaderReset();
 		
 		surface_free(buffer_albedo);
 		surface_free(buffer_normals);
 		surface_free(buffer_illumin);
 		surface_free(buffer_depth);
+		
+		gpu_set_blendmode(bm_normal);
 		
 		gpu_set_ztestenable(true);
 		gpu_set_zwriteenable(true);
