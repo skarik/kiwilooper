@@ -6,7 +6,7 @@
 ///@function lightInitialize()
 function lightInitialize()
 {
-	global.lightingMode = kLightingModeDeferred;
+	global.lightingMode = kLightingModeForward;//kLightingModeDeferred;
 	
 	// global for the clean hack for now
 	

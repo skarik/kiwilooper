@@ -12,4 +12,13 @@ SelectLightMode = function()
 
 SelectLightMode();
 
-alarm[1] = 1;
+onPostLevelLoad = function() 
+{
+	// Reselect the light state when we finish loading up
+	SelectLightMode();
+}
+onEditorStep = function()
+{
+	// Reselect light state every step in the editor to preview the settings
+	SelectLightMode();
+};

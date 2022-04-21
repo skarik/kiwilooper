@@ -157,8 +157,10 @@ function _Game_LoadMapInternal()
 					var property = ent.properties[propIndex];
 					var bSpecialTransform = entpropIsSpecialTransform(property);
 					
-					/*if (bSpecialTransform)
+					if (bSpecialTransform)
 					{
+						// TODO: Is this needed here?
+						/*
 						if (property[1] == kValueTypePosition)
 						{
 							array_push(saved_property_info, ["x", entInstance.x]);
@@ -177,15 +179,7 @@ function _Game_LoadMapInternal()
 							array_push(saved_property_info, ["yscale", entInstance.yscale]);
 							array_push(saved_property_info, ["zscale", entInstance.zscale]);
 						}
-					}
-					else
-					{
-						array_push(saved_property_info, [property[0], variable_instance_get(entInstance, property[0])]);
-					}*/
-					
-					if (bSpecialTransform)
-					{
-					
+						*/
 					}
 					// check the type - if it's a lively, we need to loop through all the current instances and find the matching one to replace the value
 					else if (property[1] == kValueTypeLively)
@@ -238,11 +232,35 @@ function _Game_LoadMapInternal()
 								
 								variable_instance_set(target, property_name, property_value);
 							}
+							
+							// Perform post-level-load 
+							if (variable_instance_exists(target, "onPostLevelLoad"))
+							{
+								target.onPostLevelLoad();
+							}
 						};
 					}
 					executor.target = entInstance;
 					executor.saved_property_info = saved_property_info;
 				}
+			}
+			// No proxy, we set the properties directly so we're OK.
+			else
+			{
+				// Perform post-level load
+				var executor = inew(_execute_step);
+				with (executor)
+				{
+					fn = function()
+					{
+						// Perform post-level-load 
+						if (variable_instance_exists(target, "onPostLevelLoad"))
+						{
+							target.onPostLevelLoad();
+						}
+					};
+				}
+				executor.target = entInstance;
 			}
 		}
 	}

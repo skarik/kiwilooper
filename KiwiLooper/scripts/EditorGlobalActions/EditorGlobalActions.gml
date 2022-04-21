@@ -143,6 +143,9 @@ function EditorGlobalLoadMap_Work(filepath)
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
+	
+	// Setup all callbacks for the entities now.
+	EditorEntities_SetupCallbacks();
 }
 
 function EditorGlobalNewMap()

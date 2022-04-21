@@ -9,3 +9,5 @@ EditorGizmoUpdate(); // must always be before ToolsUpdate due to overriding some
 EditorSelectionUpdate();
 
 EditorToolsUpdate();
+
+EditorEntities_RunCallbacks();
