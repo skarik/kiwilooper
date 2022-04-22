@@ -28,6 +28,13 @@ function EditorCameraUpdate()
 	
 	o_Camera3D.znear = kCameraDefaultZNear * cameraZoom;
 	o_Camera3D.zfar = max(kCameraDefaultZFar, kCameraDefaultZFar * cameraZoom);
+	
+	
+	// Update listener too
+	faudioListenerSetPosition(Audio.mainListener, cameraX, cameraY, cameraZ);
+	faudioListenerSetOrientation(Audio.mainListener,
+		lengthdir_x(-1, o_Camera3D.zrotation), lengthdir_y(-1, o_Camera3D.zrotation), 0,
+		0, 0, 1);
 }
 
 function EditorCameraCenterOnSelection()

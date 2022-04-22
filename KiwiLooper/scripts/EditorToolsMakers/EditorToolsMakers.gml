@@ -88,11 +88,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					// save ent
 					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
 					
-					// set up editor callback
-					if (!variable_instance_exists(ent, "onEditorStep"))
-					{
-						ent.onEditorStep = EmptyFunction;
-					}
+					// set up editor callbacks
+					EditorEntity_SetupCallback(ent);
 					
 					m_editor.m_entityInstList.Add(ent);
 				}
@@ -121,11 +118,8 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 						}
 					}
 					
-					// set up editor callback
-					if (!variable_instance_exists(ent, "onEditorStep"))
-					{
-						ent.onEditorStep = EmptyFunction;
-					}
+					// set up editor callbacks
+					EditorEntity_SetupCallback(ent);
 					
 					m_editor.m_entityInstList.Add(ent);
 				}

@@ -34,7 +34,22 @@ function _EntityInfoInit()
 		// Base classes:
 		{
 			hidden: true,
+			name: "lively_point_base",
+			objectIndex: ob_lively,
+			proxy: kProxyTypeDefault,
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["targetname", kValueTypeString, ""],
+			],
+		},
+		{
+			hidden: true,
 			name: "lively_base",
+			parent: "lively_point_base",
 			objectIndex: ob_lively,
 			proxy: kProxyTypeDefault,
 			
@@ -47,7 +62,6 @@ function _EntityInfoInit()
 				["", kValueTypeScale],
 				["translucent", kValueTypeBoolean, false],
 				["lit", kValueTypeBoolean, true],
-				["targetname", kValueTypeString, ""],
 			],
 		},
 		{
@@ -94,7 +108,8 @@ function _EntityInfoInit()
 					[
 						["None", kLightModeNone],
 						["Powerstate", kLightModePowerstate],
-						["Y Oscillate", kLightModeYOscillate]
+						["Y Oscillate", kLightModeYOscillate],
+						["Blink Slow", kLightModeBlinkSlow],
 					],
 				],
 			],
@@ -170,6 +185,30 @@ function _EntityInfoInit()
 			properties:
 			[
 				["", kValueTypePosition],
+			],
+		},
+		
+		// Audio:
+		{
+			name: "audio_ambient",
+			desc: "Plays looping ambient audio",
+			objectIndex: ob_audioAmbient,
+			proxy: kProxyTypeNone,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 3,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["m_sound", kValueTypeString],
+				["m_pitch", kValueTypeFloat],
+				["m_gain", kValueTypeFloat],
+				["m_falloffStart", kValueTypeFloat],
+				["m_falloffEnd", kValueTypeFloat],
 			],
 		},
 		

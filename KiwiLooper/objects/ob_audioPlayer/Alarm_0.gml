@@ -3,6 +3,7 @@
 m_buffer = faudioBufferLoad(m_sound);
 if (m_buffer == nullptr)
 {
+	// TODO: make this less of a death-knell error
 	show_error("Could not load sound: \"" + m_sound + "\"", true);
 }
 

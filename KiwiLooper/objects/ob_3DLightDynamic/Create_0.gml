@@ -3,6 +3,7 @@
 #macro kLightModeNone			0
 #macro kLightModePowerstate		1
 #macro kLightModeYOscillate		2
+#macro kLightModeBlinkSlow		3
 
 m_lightStepper = method(id, Lighting_GetModeList()[0].step);
 SelectLightMode = function()

@@ -76,6 +76,27 @@ function Game_Event_RoomStart()
 	// Create gameplay
 	if (!iexists(Gameplay))
 		inew(Gameplay);
+		
+	// If NOT loading from disk, perform callbacks on objects
+	if (global.game_loadingInfo == kGameLoadingFromGMS)
+	{
+		with (all)
+		{
+			if (variable_instance_exists(id, "onPostLevelLoad"))
+			{
+				// Perform post-level load
+				var executor = inew(_execute_step);
+				with (executor)
+				{
+					fn = function()
+					{
+						target.onPostLevelLoad();
+					};
+				}
+				executor.target = entInstance;
+			}
+		}
+	}
 }
 
 // Call by object `Game` in Room Start event.
@@ -296,6 +317,10 @@ function Game_LoadEditor(fromTestSession)
 	
 	// Destroy all UI
 	idelete(ob_userInterfaceElement); // This should be OK with callee's
+	
+	// Kill leaking audio
+	idelete(ob_audioAmbient);
+	idelete(ob_audioPlayer);
 	
 	// Mark we're no longer loading anything
 	global.game_editorRun = false;

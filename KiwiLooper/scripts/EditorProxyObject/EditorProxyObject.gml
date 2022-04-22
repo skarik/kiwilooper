@@ -18,6 +18,16 @@ function ProxyClass()
 
 function EmptyFunction(){};
 
+function EditorEntity_SetupCallback(entInstance)
+{
+	if (!variable_instance_exists(entInstance, "onEditorStep"))
+	{
+		entInstance.onEditorStep = EmptyFunction;
+	}
+	
+	entInstance.onEditorDrawGizmo_Exists = variable_instance_exists(entInstance, "onEditorDrawGizmo");
+}
+
 function EditorEntities_SetupCallbacks()
 {
 	with (EditorGet())
@@ -26,11 +36,7 @@ function EditorEntities_SetupCallbacks()
 		for (var entIndex = 0; entIndex < entInstanceList.GetEntityCount(); ++entIndex)
 		{
 			var entInstance = entInstanceList.GetEntity(entIndex);
-			
-			if (!variable_instance_exists(entInstance, "onEditorStep"))
-			{
-				entInstance.onEditorStep = EmptyFunction;
-			}
+			EditorEntity_SetupCallback(entInstance);
 		}
 	}
 }

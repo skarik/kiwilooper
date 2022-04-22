@@ -37,6 +37,16 @@ function Lighting_GetModeList()
 				intensity = min(intensity * 1.4, 1.0);
 			},
 		},
+		
+		{
+			index:	kLightModeBlinkSlow,
+			name:	"Blink Slow",
+			step:	function()
+			{
+				intensity = sin(Time.time * 4.3) * 11.0 + 0.5;
+				intensity = saturate(intensity);
+			},
+		},
 	];
 	
 	return possibleLightModes;
