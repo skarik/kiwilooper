@@ -461,6 +461,59 @@ function _EntityInfoInit()
 			gizmoIndex: 7,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
 		},
+		
+		{
+			name: "env_billboard",
+			parent: "lively_point_base",
+			objectIndex: o_billboardDynamic,
+			
+			proxy: kProxyTypeNone,
+			
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+			
+			properties:
+			[
+				["lit", kValueTypeBoolean, false],
+				["translucent", kValueTypeBoolean, false],
+				["spriteindex", kValueTypeEnum, 0,
+					[
+						["glare0", 0],
+						["glare1", 1],
+					],
+				],
+				["color", kValueTypeColor, c_white],
+				["brightness", kValueTypeFloat, 1.0],
+				["scale", kValueTypeFloat, 1.0],
+				["animSpeed", kValueTypeFloat, 0.0],
+				["orientation", kValueTypeEnum, kBillboardOrientFaceCamera,
+					[
+						["Face Camera", kBillboardOrientFaceCamera],
+						["Standing Face", kBillboardOrientStandingFace],
+						["Floor Face", kBillboardOrientFloorFace],
+					],
+				],
+				["spritemode", kValueTypeEnum, kBillboardSpriteModeNormal,
+					[
+						["Normal", kBillboardSpriteModeNormal],
+						["No Z", kBillboardSpriteModeNoZ],
+					],
+				],
+				["blendmode", kValueTypeEnum, bm_normal,
+					[
+						["Alpha Blend", bm_normal],
+						["Additive", bm_add],
+					],
+				],
+				["lightmode", kValueTypeEnum, kLightModeNone,
+					[
+						["None", kLightModeNone],
+						["Powerstate", kLightModePowerstate],
+						["Y Oscillate", kLightModeYOscillate],
+						["Blink Slow", kLightModeBlinkSlow],
+					],
+				],
+			],
+		},
 	];
 	global.entityList_Count = array_length(global.entityList);
 	
