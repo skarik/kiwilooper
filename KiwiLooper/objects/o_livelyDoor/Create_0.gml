@@ -12,6 +12,12 @@ startz = z;
 
 door_open_sound = (room == rm_Ship5) ? "sound/door/doom_door_open0.wav" : "sound/door/door_open0.wav";
 
+// Reset the startz on post-level-load
+onPostLevelLoad = function()
+{
+	startz = z;
+};
+
 // Set up callback
 m_onActivation = function(activatedBy)
 {
@@ -200,3 +206,4 @@ m_renderEvent = function()
 {
 	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(ssy_power, 0));
 }
+

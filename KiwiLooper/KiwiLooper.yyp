@@ -659,6 +659,7 @@
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest1_4.kmf","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/sound/ambient","resourceVersion":"1.0","name":"alarm1.wav","resourceType":"GMIncludedFile",},
     {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest3_1_stress.kmf","resourceType":"GMIncludedFile",},
+    {"CopyToMask":-1,"filePath":"datafiles/maps","resourceVersion":"1.0","name":"gametest4_1_elevation.kmf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
     "IDEVersion": "2022.3.0.624",

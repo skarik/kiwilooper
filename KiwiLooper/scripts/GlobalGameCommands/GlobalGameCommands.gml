@@ -181,7 +181,6 @@ function _Game_LoadMapInternal()
 					if (bSpecialTransform)
 					{
 						// TODO: Is this needed here?
-						/*
 						if (property[1] == kValueTypePosition)
 						{
 							array_push(saved_property_info, ["x", entInstance.x]);
@@ -200,7 +199,6 @@ function _Game_LoadMapInternal()
 							array_push(saved_property_info, ["yscale", entInstance.yscale]);
 							array_push(saved_property_info, ["zscale", entInstance.zscale]);
 						}
-						*/
 					}
 					// check the type - if it's a lively, we need to loop through all the current instances and find the matching one to replace the value
 					else if (property[1] == kValueTypeLively)
