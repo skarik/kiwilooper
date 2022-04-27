@@ -136,6 +136,11 @@ surface_set_target(buffer_scene3d);
 		gpu_set_zfunc(cmpfunc_always);
 		
 		// Copy to the albedo
+		{	// reset the matrices for the copy since they're inconsistent at this point
+			matrix_set(matrix_world, mat_world_previous);
+			matrix_set(matrix_view, mat_view_previous);
+			matrix_set(matrix_projection, mat_projection_previous);
+		}
 		surface_copy(buffer_albedo, 0, 0, buffer_scene3d);
 		
 		// now composite to the main scene
