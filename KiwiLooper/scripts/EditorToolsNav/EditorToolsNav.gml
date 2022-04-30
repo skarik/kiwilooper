@@ -52,11 +52,16 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	PickerUpdateVisuals = function()
 	{
 		m_showSelectGizmo = m_editor.EditorGizmoGet(AEditorGizmoMultiSelectBox3D);
-		// Draw the box around the picker
-		if (array_length(m_editor.m_selection) > 0)
+		
+		var kSelectionCount = array_length(m_editor.m_selection);
+		if (kSelectionCount > 0)
 		{
 			m_showSelectGizmo.SetVisible();
 			m_showSelectGizmo.SetEnabled();
+			
+			m_showSelectGizmo.m_mins  = array_create(kSelectionCount, new Vector3(0, 0, 0));
+			m_showSelectGizmo.m_maxes = array_create(kSelectionCount, new Vector3(0, 0, 0));
+			m_showSelectGizmo.m_trses = array_create(kSelectionCount, matrix_build_identity());
 			
 			// TODO: Loop through all the ents in the selection and put a box around each one.
 			// TODO: Selection may not be an object, and may be a struct instead. Also check for that.
@@ -64,6 +69,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			var iSelection = 0;
 			var selection = m_editor.m_selection[iSelection];
 			
+			// Draw box around the selection
 			if (is_struct(selection))
 			{
 				if (selection.type == kEditorSelection_Prop)
@@ -77,9 +83,9 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			
 					propBBox.extents.multiplyComponentSelf(Vector3FromScale(prop));
 					
-					m_showSelectGizmo.m_mins[0] = propBBox.getMin();
-					m_showSelectGizmo.m_maxes[0] = propBBox.getMax();
-					m_showSelectGizmo.m_trses[0] = matrix_multiply(propRotation, propTranslation);
+					m_showSelectGizmo.m_mins[iSelection] = propBBox.getMin();
+					m_showSelectGizmo.m_maxes[iSelection] = propBBox.getMax();
+					m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(propRotation, propTranslation);
 				}
 				else if (selection.type == kEditorSelection_Splat)
 				{
@@ -92,9 +98,9 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			
 					splatBBox.extents.multiplyComponentSelf(Vector3FromScale(splat));
 					
-					m_showSelectGizmo.m_mins[0] = splatBBox.getMin();
-					m_showSelectGizmo.m_maxes[0] = splatBBox.getMax();
-					m_showSelectGizmo.m_trses[0] = matrix_multiply(splatRotation, splatTranslation);
+					m_showSelectGizmo.m_mins[iSelection] = splatBBox.getMin();
+					m_showSelectGizmo.m_maxes[iSelection] = splatBBox.getMax();
+					m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(splatRotation, splatTranslation);
 				}
 				// todo: tiles
 				else
@@ -115,9 +121,9 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
 				var entCenter = entGetSelectionCenter(selection, entOrient, entHSize);
 				
-				m_showSelectGizmo.m_mins[0] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
-				m_showSelectGizmo.m_maxes[0] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
-				m_showSelectGizmo.m_trses[0] = matrix_build_identity();
+				m_showSelectGizmo.m_mins[iSelection] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
+				m_showSelectGizmo.m_maxes[iSelection] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
+				m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
 			}
 		}
 		else
@@ -168,7 +174,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	/// @desc Runs the picker.
 	static PickerRun = function()
 	{
-		m_editor.m_selection = [];
+		m_editor.m_selection = []; // Reset the entire selection
 		m_editor.m_selectionSingle = true;
 		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
