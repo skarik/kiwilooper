@@ -54,8 +54,21 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 			AddChoice(new AChoice("OK", null, true));
 		}
 		parent_Open();
-		//m_editor.EditorWindowSetFocus(self); // Does this work?
+		with (m_editor)
+		{
+			EditorWindowSignalModalStart();
+		}
 	};
+	
+	static parent_Close = Close;
+	static Close = function()
+	{
+		with (m_editor)
+		{
+			EditorWindowSignalModalEnd();
+		}
+		parent_Close();
+	}
 	
 	static ConsumesFocus = function()
 	{
@@ -142,7 +155,7 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 		draw_set_halign(fa_left);
 		draw_set_valign(fa_top);
 		draw_set_font(f_04b03);
-		draw_text_ext(m_position.x + kContentMargin, m_position.y + kContentMargin, content, 0, m_size.x - kContentMargin * 2);
+		draw_text_ext(m_position.x + kContentMargin, m_position.y + kContentMargin, content, -1, m_size.x - kContentMargin * 2);
 		
 		// Draw buttons
 		var button_count = array_length(choices);

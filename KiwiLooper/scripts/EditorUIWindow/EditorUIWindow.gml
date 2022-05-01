@@ -252,6 +252,7 @@ function AEditorWindow() constructor
 function EditorWindowingSetup()
 {
 	windowCurrent = null;
+	windowCurrentModal = null;
 	windows = [];
 	
 	windowDragging = false;
@@ -404,7 +405,11 @@ function EditorWindowSetFocus(window)
 		windowCurrent.focused = true;
 		
 		// Ensure the window is at the end of the windowing list so it draws on top.
-		if (windowCurrent != windows[array_length(windows) - 1])
+		if (array_length(windows) == 0)
+		{
+			windowCurrent = null;
+		}
+		else if (windowCurrent != windows[array_length(windows) - 1])
 		{
 			CE_ArraySwap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
 		}
@@ -424,6 +429,29 @@ function EditorWindowFind(type)
 		}
 	}
 	return null;
+}
+/// @function EditorWindowSignalModalStart()
+/// @desc Signal we have a new modal window to work with
+function EditorWindowSignalModalStart()
+{
+	// Find the window with the modal flag
+	for (var i = 0; i < array_length(windows); ++i)
+	{
+		if (windows[i].m_modal)
+		{
+			windowCurrentModal = windows[i];
+		}
+	}
+	if (windowCurrentModal != null)
+	{
+		windowCurrent = windowCurrentModal;
+	}
+}
+/// @function EditorWindowSignalModalEnd()
+/// @desc Signal we are ending modal mode
+function EditorWindowSignalModalEnd()
+{
+	windowCurrentModal = null;
 }
 
 function EditorWindowingUpdate(mouseX, mouseY)
@@ -475,9 +503,16 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	}
 	
 	// On clicks, update the focus window
-	if (mouse_check_button_pressed(mb_left) || mouse_check_button_pressed(mb_right) || mouse_check_button_pressed(mb_middle))
+	if (windowCurrentModal != null && is_struct(windowCurrentModal))
 	{
-		EditorWindowSetFocus(hovered_window);
+		EditorWindowSetFocus(windowCurrentModal); // Make sure the modal window is focused and on top.
+	}
+	else
+	{
+		if (mouse_check_button_pressed(mb_left) || mouse_check_button_pressed(mb_right) || mouse_check_button_pressed(mb_middle))
+		{
+			EditorWindowSetFocus(hovered_window);
+		}
 	}
 	
 	// Update dragging

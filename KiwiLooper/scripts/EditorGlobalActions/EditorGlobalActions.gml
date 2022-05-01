@@ -154,6 +154,9 @@ function EditorGlobalNewMap()
 	{
 		// create the AEditorWindowDialog
 		var dialog = EditorWindowAlloc(AEditorWindowDialog);
+		dialog.content = "Warning: about to destroy the current map.";
+		dialog.AddChoice(new dialog.AChoice("Continue", null));
+		dialog.AddChoice(new dialog.AChoice("Cancel", null));
 		dialog.Open();
 	}
 	
