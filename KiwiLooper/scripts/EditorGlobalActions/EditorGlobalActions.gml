@@ -150,8 +150,15 @@ function EditorGlobalLoadMap_Work(filepath)
 
 function EditorGlobalNewMap()
 {
+	with (EditorGet())
+	{
+		// create the AEditorWindowDialog
+		var dialog = EditorWindowAlloc(AEditorWindowDialog);
+		dialog.Open();
+	}
+	
 	// TODO: wait to ask
-	EditorGlobalNukeMap();
+	//EditorGlobalNukeMap();
 }
 
 function EditorGlobalNukeMap()
