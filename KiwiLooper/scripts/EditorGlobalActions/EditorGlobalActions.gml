@@ -155,22 +155,22 @@ function EditorGlobalNewMap()
 		// create the AEditorWindowDialog
 		var dialog = EditorWindowAlloc(AEditorWindowDialog);
 		dialog.content = "Warning: about to destroy the current map.";
-		dialog.AddChoice(new dialog.AChoice("Continue", null));
+		dialog.AddChoice(new dialog.AChoice("Continue", EditorGlobalNukeMap_Work));
 		dialog.AddChoice(new dialog.AChoice("Cancel", null));
 		dialog.Open();
 	}
-	
-	// TODO: wait to ask
-	//EditorGlobalNukeMap();
 }
 
 function EditorGlobalNukeMap()
 {
-	// TODO: wait to ask
-	EditorGlobalNukeMap_Work();
 	with (EditorGet())
 	{
-		MapRebuildGraphics();
+		// create the AEditorWindowDialog
+		var dialog = EditorWindowAlloc(AEditorWindowDialog);
+		dialog.content = "Warning: about to nuke the current map and settings.";
+		dialog.AddChoice(new dialog.AChoice("Continue", EditorGlobalNukeMap_Work));
+		dialog.AddChoice(new dialog.AChoice("Cancel", null));
+		dialog.Open();
 	}
 }
 
@@ -189,6 +189,11 @@ function EditorGlobalNukeMap_Work()
 		
 		// Clear the splats
 		m_splatmap.Clear();
+		
+		
+		// Now rebuild everything
+		// TODO: Is there a beter way to do this
+		MapRebuildGraphics();
 	}
 }
 
