@@ -11,6 +11,7 @@
     {"id":{"name":"EditorGizmoEntities","path":"scripts/EditorGizmoEntities/EditorGizmoEntities.yy",},"order":3,},
     {"id":{"name":"CE_Matrix","path":"scripts/CE_Matrix/CE_Matrix.yy",},"order":0,},
     {"id":{"name":"rm_Ship1_Child_FirstLoop","path":"rooms/rm_Ship1_Child_FirstLoop/rm_Ship1_Child_FirstLoop.yy",},"order":7,},
+    {"id":{"name":"MapTileMap","path":"scripts/MapTileMap/MapTileMap.yy",},"order":5,},
     {"id":{"name":"fioGameMakerWrapper","path":"scripts/fioGameMakerWrapper/fioGameMakerWrapper.yy",},"order":0,},
     {"id":{"name":"ssy_cutsceneCg","path":"sprites/ssy_cutsceneCg/ssy_cutsceneCg.yy",},"order":11,},
     {"id":{"name":"object_get_index","path":"scripts/object_get_index/object_get_index.yy",},"order":8,},

@@ -97,8 +97,14 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 					m_showSelectGizmo.m_trses[0] = matrix_multiply(splatRotation, splatTranslation);
 				}
 				// todo: tiles
-				else
+				else if (selection.type == kEditorSelection_Tile)
 				{
+					var tile = selection.object;
+					
+					// todo
+					m_showSelectGizmo.m_mins[0]  = new Vector3(tile.x * 16,		 tile.y * 16,	   -16)				.add(new Vector3(-0.5, -0.5, -0.5));
+					m_showSelectGizmo.m_maxes[0] = new Vector3(tile.x * 16 + 16, tile.y * 16 + 16, tile.height * 16).add(new Vector3( 0.5,  0.5,  0.5));
+					m_showSelectGizmo.m_trses[0] = matrix_build_identity();
 				}
 			}
 			else if (iexists(selection))
@@ -281,6 +287,32 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				{
 					closestDist = raycast4_get_hit_distance();
 					closestEnt = EditorSelectionWrapSplat(splat);
+				}
+			}
+		}
+		
+		// Run against the terrain
+		if (raycast4_tilemap(rayStart, rayDir))
+		{
+			//closestDist = raycast4_get_hit_distance();
+			if (raycast4_get_hit_distance() < closestDist)
+			{
+				var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
+				var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
+				var hitBlockZ = rayStart.z + rayDir.z * raycast4_get_hit_distance();
+				var hitNormal = new Vector3();
+				hitNormal.copyFrom(raycast4_get_hit_normal());
+			
+				// Extrude the opposite from the hit normal, and get the block position
+				var blockX = floor((hitBlockX - hitNormal.x) / 16.0);
+				var blockY = floor((hitBlockY - hitNormal.y) / 16.0);
+				var blockZ = floor((hitBlockZ - hitNormal.z) / 16.0);
+			
+				var tile_index = m_editor.m_tilemap.GetPositionIndex(blockX, blockY);
+				if (tile_index != -1)
+				{
+					closestDist = raycast4_get_hit_distance();
+					closestEnt = EditorSelectionWrapTile(m_editor.m_tilemap.tiles[tile_index]);
 				}
 			}
 		}
