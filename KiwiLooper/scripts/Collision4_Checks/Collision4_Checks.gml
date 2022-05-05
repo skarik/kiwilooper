@@ -1,5 +1,27 @@
 #macro kMaxStepHeight 7
 
+function _collision4_init()
+{
+	global.tiles_main = null;
+}
+gml_pragma("global", "_collision4_init()");
+
+// get the current tilemap
+function _collision4_get_tilemap()
+{
+	gml_pragma("forceinline");
+	if (iexists(global.tiles_main))
+	{
+		return global.tiles_main;
+	}
+	else if (iexists(o_tileset3DIze))
+	{
+		return o_tileset3DIze;
+	}
+	return null;
+}
+
+/// @function collision4_get_highest(check_x, check_y, check_z)
 function collision4_get_highest(check_x, check_y, check_z)
 {
 	var x1 = check_x - sprite_get_xoffset(mask_index) + sprite_get_bbox_left(mask_index);
@@ -7,15 +29,17 @@ function collision4_get_highest(check_x, check_y, check_z)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		// Check for the tile collision at the given point (fast)
 		var result_tile = max(
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;
@@ -70,6 +94,7 @@ function collision4_get_highest(check_x, check_y, check_z)
 	return 0;
 }
 
+/// @function collision4_get_highest_corpseSpecial(check_x, check_y, check_z)
 // Corpse special is specific checking for corpses. It's almost identical except for
 // - thicker corpses
 // - corpses above are ignored
@@ -80,15 +105,17 @@ function collision4_get_highest_corpseSpecial(check_x, check_y, check_z)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		// Check for the tile collision at the given point (fast)
 		var result_tile = max(
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;
@@ -144,6 +171,7 @@ function collision4_get_highest_corpseSpecial(check_x, check_y, check_z)
 	return 0;
 }
 
+/// @function collision4_get_lowest(check_x, check_y, check_z)
 function collision4_get_lowest(check_x, check_y, check_z)
 {
 	var x1 = check_x - sprite_get_xoffset(mask_index) + sprite_get_bbox_left(mask_index);
@@ -151,15 +179,17 @@ function collision4_get_lowest(check_x, check_y, check_z)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		// Check for the tile collision at the given point (fast)
 		var result_tile = min(
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;
@@ -214,6 +244,7 @@ function collision4_get_lowest(check_x, check_y, check_z)
 	return 0;
 }
 
+/// @function collision4_meeting(check_x, check_y, check_z)
 function collision4_meeting(check_x, check_y, check_z)
 {
 	var x1 = check_x - sprite_get_xoffset(mask_index) + sprite_get_bbox_left(mask_index);
@@ -221,15 +252,17 @@ function collision4_meeting(check_x, check_y, check_z)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		// Check for the tile collision at the given point (fast)
 		var result_tile = max(
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;
@@ -289,7 +322,7 @@ function collision4_meeting(check_x, check_y, check_z)
 	return false;
 }
 
-/// @description collision4_line(x1, y1, z1, x2, y2, z2)
+/// @function collision4_line(x1, y1, z1, x2, y2, z2)
 /// @param {Real} x1
 /// @param {Real} y1
 /// @param {Real} z1
@@ -298,8 +331,10 @@ function collision4_meeting(check_x, check_y, check_z)
 /// @param {Real} z2
 function collision4_line(check_x1, check_y1, check_z1, check_x2, check_y2, check_z2)
 {
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		var dx = check_x2 - check_x1;
 		var dy = check_y2 - check_y1;
@@ -322,7 +357,7 @@ function collision4_line(check_x1, check_y1, check_z1, check_x2, check_y2, check
 			var cel_x = floor(sample_x / 16);
 			var cel_y = floor(sample_y / 16);
 			
-			var result_height = o_tileset3DIze.m_heightMap.get(cel_x, cel_y) * 16;
+			var result_height = tilemap.m_heightMap.get(cel_x, cel_y) * 16;
 			
 			if (result_height > sample_z + kMaxStepHeight)
 			{

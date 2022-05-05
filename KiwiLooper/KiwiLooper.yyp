@@ -130,6 +130,7 @@
     {"id":{"name":"f_Oxygen10","path":"fonts/f_Oxygen10/f_Oxygen10.yy",},"order":4,},
     {"id":{"name":"sh_litEnvironment","path":"shaders/sh_litEnvironment/sh_litEnvironment.yy",},"order":0,},
     {"id":{"name":"ssy_system","path":"sprites/ssy_system/ssy_system.yy",},"order":30,},
+    {"id":{"name":"LayerHelpers","path":"scripts/LayerHelpers/LayerHelpers.yy",},"order":22,},
     {"id":{"name":"bounceOut","path":"scripts/bounceOut/bounceOut.yy",},"order":1,},
     {"id":{"name":"o_debugUiBase","path":"objects/o_debugUiBase/o_debugUiBase.yy",},"order":10,},
     {"id":{"name":"tmsin","path":"scripts/tmsin/tmsin.yy",},"order":9,},

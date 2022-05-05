@@ -5,15 +5,17 @@ function collision4_get_tileextra(check_x, check_y)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		// Check for the tile collision at the given point (fast)
 		var result_extras = min(
-			o_tileset3DIze.m_heightMap.getExtras(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.getExtras(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.getExtras(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.getExtras(floor(x2 / 16), floor(y2 / 16)));
+			tilemap.m_heightMap.getExtras(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.getExtras(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.getExtras(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.getExtras(floor(x2 / 16), floor(y2 / 16)));
 		
 		return result_extras;
 	}
@@ -33,17 +35,19 @@ function collision4_get_groundtype(check_x, check_y, check_z)
 	var y1 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_top(mask_index);
 	var y2 = check_y - sprite_get_yoffset(mask_index) + sprite_get_bbox_bottom(mask_index);
 	
+	var tilemap = _collision4_get_tilemap();
+	
 	// Go to the tilemap, check the elevations
-	if (iexists(o_tileset3DIze))
+	if (tilemap != null)
 	{
 		var result_groundtype = kGroundType_Tileset;
 		
 		// Check for the tile collision at the given point (fast)
 		var result_tile = max(
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
-			o_tileset3DIze.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y1 / 16)),
+			tilemap.m_heightMap.get(floor(x1 / 16), floor(y2 / 16)),
+			tilemap.m_heightMap.get(floor(x2 / 16), floor(y2 / 16))) * 16;
 		
 		// Check for all elevation spots
 		var area_z_max = result_tile;

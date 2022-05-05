@@ -246,28 +246,11 @@ m_mesh = meshb_Begin();
 	{
 		var current_layer = all_layers[i];
 	
-		var tilemap = layer_tilemap_get_id(current_layer);
-		if (!layer_tilemap_exists(current_layer, tilemap))
+		var tilemap = layer_get_tilemap_fallback(current_layer);
+		if (tilemap == null)
 		{
-			tilemap = null;
-			
-			var all_elements = layer_get_all_elements(current_layer);
-			for (var iElement = 0; iElement < array_length(all_elements); ++iElement)
-			{
-				var possible_tilemap = all_elements[iElement];
-				if (layer_get_element_type(possible_tilemap) == layerelementtype_tilemap)
-				{
-					tilemap = possible_tilemap;
-					break;
-				}
-			}
-			
-			if (tilemap == null)
-			{
-				continue;
-			}
+			continue;
 		}
-		//	continue;
 		
 		var layer_name = layer_get_name(current_layer);
 		var layer_name_search_position = string_pos("floor", layer_name);
@@ -288,28 +271,11 @@ m_mesh = meshb_Begin();
 	{
 		var current_layer = all_layers[i];
 	
-		var tilemap = layer_tilemap_get_id(current_layer);
-		if (!layer_tilemap_exists(current_layer, tilemap))
+		var tilemap = layer_get_tilemap_fallback(current_layer);
+		if (tilemap == null)
 		{
-			tilemap = null;
-			
-			var all_elements = layer_get_all_elements(current_layer);
-			for (var iElement = 0; iElement < array_length(all_elements); ++iElement)
-			{
-				var possible_tilemap = all_elements[iElement];
-				if (layer_get_element_type(possible_tilemap) == layerelementtype_tilemap)
-				{
-					tilemap = possible_tilemap;
-					break;
-				}
-			}
-			
-			if (tilemap == null)
-			{
-				continue;
-			}
+			continue;
 		}
-		//	continue;
 		
 		var layer_name = layer_get_name(current_layer);
 		var layer_name_search_position = string_pos("walls", layer_name);
@@ -325,6 +291,12 @@ meshb_End(m_mesh);
 m_renderEvent = function()
 {
 	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
+}
+
+// Mark this tileset as the collision one
+if (global.tiles_main == null)
+{
+	global.tiles_main = id;
 }
 
 // Now that we have elevation, we can build props!

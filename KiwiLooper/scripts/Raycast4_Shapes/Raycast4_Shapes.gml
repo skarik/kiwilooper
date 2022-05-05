@@ -111,12 +111,14 @@ function raycast4_box_rotated(boxCenter, boxExtents, preRotation, frontfaces, ra
 /// @param {Vector3} rayDir
 function raycast4_tilemap(rayOrigin, rayDir)
 {
-	if (iexists(o_tileset3DIze))
+	var tilemap = _collision4_get_tilemap();
+	
+	if (tilemap != null)
 	{
 		// Generate tileset's bbox
-		var l_tilesetMin = o_tileset3DIze.m_minPosition.copy();
-		l_tilesetMin.z = min(o_tileset3DIze.m_minPosition.z, o_tileset3DIze.m_heightMap.m_defaultHeight * 16);
-		var l_tilesetMax = o_tileset3DIze.m_maxPosition.copy();
+		var l_tilesetMin = tilemap.m_minPosition.copy();
+		l_tilesetMin.z = min(tilemap.m_minPosition.z, tilemap.m_heightMap.m_defaultHeight * 16);
+		var l_tilesetMax = tilemap.m_maxPosition.copy();
 		l_tilesetMax.x += 16;
 		l_tilesetMax.y += 16;
 		
@@ -167,8 +169,8 @@ function raycast4_tilemap(rayOrigin, rayDir)
 				// Get if there's any blocks in the current position
 				
 				// Get the min & max Z for the current position.
-				var l_minHeight = o_tileset3DIze.m_heightMap.m_defaultHeight;
-				var l_maxHeight = o_tileset3DIze.m_heightMap.get(ix, iy);
+				var l_minHeight = tilemap.m_heightMap.m_defaultHeight;
+				var l_maxHeight = tilemap.m_heightMap.get(ix, iy);
 				
 				// Flat block, don't check.
 				if (l_minHeight == l_maxHeight) continue;
