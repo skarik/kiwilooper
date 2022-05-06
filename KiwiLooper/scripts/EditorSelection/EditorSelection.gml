@@ -3,6 +3,8 @@
 #macro kEditorSelection_Tile		2
 #macro kEditorSelection_TileFace	3
 #macro kEditorSelection_Splat		4
+#macro kEditorSelection_Voxel		5
+#macro kEditorSelection_VoxelFace	6
 
 function AEditorSelection() constructor
 {

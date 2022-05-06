@@ -24,3 +24,12 @@ function layer_get_tilemap_fallback(in_layer)
 	
 	return tilemap;
 }
+
+///@function layer_destroy_list(layers)
+function layer_destroy_list(in_layers)
+{
+	for (var i = 0; i < array_length(in_layers); ++i)
+	{
+		layer_destroy(in_layers[i]);
+	}
+}

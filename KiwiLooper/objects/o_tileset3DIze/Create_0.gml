@@ -300,4 +300,10 @@ if (global.tiles_main == null)
 }
 
 // Now that we have elevation, we can build props!
-inew(o_props3DIze);
+if (global.tiles_main == id)
+{
+	if (!iexists(o_props3DIze))
+	{
+		inew(o_props3DIze);
+	}
+}

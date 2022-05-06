@@ -12,6 +12,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	m_transformGizmoWasConsumingMouse = false;
 	m_previousTarget = null;
 	
+	m_dragWorldStart = new Vector3(0, 0, 0);
+	
 	onBegin = function()
 	{
 		Parent_onBegin();
@@ -34,26 +36,78 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		m_editor.toolGridTemporaryDisable = false; // Reset states
 	};
 	
+	m_haveTileSelectionState = false;
+	m_haveTileSelectionGhost = false;
+	m_tileSelectionGhostTilemap = null;
+	m_tileSelectionGhostRenderer = null;
+	
+	/// @function BeginTileSelection()
+	BeginTileSelection = function()
+	{
+		if (!m_haveTileSelectionState)
+		{
+			m_haveTileSelectionState = true;
+			m_haveTileSelectionGhost = false;
+		}
+	}
+	/// @function EndTileSelection()
+	EndTileSelection = function()
+	{
+		if (m_haveTileSelectionState)
+		{
+			// Clear up state
+			m_haveTileSelectionState = false;
+			
+			// Clear up ghost
+			if (m_haveTileSelectionGhost)
+			{
+				m_haveTileSelectionGhost = false;
+				
+				if (is_struct(m_tileSelectionGhostTilemap))
+				{
+					// TODO: confirm before we lose geo
+					delete m_tileSelectionGhostTilemap;
+					m_tileSelectionGhostTilemap = null;
+				}
+			
+				if (iexists(m_tileSelectionGhostRenderer))
+				{
+					idelete(m_haveTileSelectionGhost);
+					m_haveTileSelectionGhost = null;
+				}
+			}
+		}
+	}
+	
 	onStep = function()
 	{
 		// Keyboard "no-snap" override toggle
 		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
 		
-		var bValidSelection = array_length(m_editor.m_selection) > 0;
-		if (bValidSelection)
+		var bIsValidSelection = array_length(m_editor.m_selection) > 0;
+		var bIsObjectSelection = false;
+		if (bIsValidSelection)
 		{
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Tile
-					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace
+					|| m_editor.m_selection[0].type == kEditorSelection_Voxel
+					|| m_editor.m_selection[0].type == kEditorSelection_VoxelFace)
 				{
-					bValidSelection = false;
+					bIsObjectSelection = false;
 				}
 			}
 		}
+		var bIsTileSelection = !bIsObjectSelection && bIsValidSelection;
 		
-		if (bValidSelection)
+		if (bIsObjectSelection)
 		{
+			if (m_haveTileSelectionState)
+			{
+				EndTileSelection();
+			}
+			
 			// Gather transform target first
 			var target = m_editor.m_selection[0];
 			var target_type = kEditorSelection_None;
@@ -92,7 +146,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.z, m_editor.toolGridSize) : m_transformGizmo.z) : target.z;
 				
 				var bSignalChange = 
-					   target.x != next_x
+						target.x != next_x
 					|| target.y != next_y
 					|| target.z != next_z;
 				
@@ -106,8 +160,160 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				}
 			}
 		}
+		// Tile-based selection:
+		else if (bIsTileSelection)
+		{
+			if (!m_haveTileSelectionState)
+			{
+				BeginTileSelection();
+			}
+			
+			// Gather transform target first
+			var tile = m_editor.m_selection[0];
+			var target_type = kEditorSelection_None;
+			if (m_editor.m_selection[0].type == kEditorSelection_Tile)
+			{
+				tile = m_editor.m_selection[0].object;
+				target_type = kEditorSelection_Tile;
+			}
+			else if (m_editor.m_selection[0].type == kEditorSelection_TileFace)
+			{
+				tile = m_editor.m_selection[0].object.tile;
+				target_type = kEditorSelection_Tile;
+			}
+			
+			// Set up gizmo at the tile position
+			if (!m_transformGizmo.m_enabled || m_previousTarget != tile)
+			{
+				// Todo: clear up ghost???
+				
+				m_transformGizmo.SetVisible();
+				m_transformGizmo.SetEnabled();
+		
+				m_transformGizmo.x = tile.x * 16;
+				m_transformGizmo.y = tile.y * 16;
+				m_transformGizmo.z = tile.height * 16;
+				
+				m_previousTarget = tile;
+				
+				// set up initial drag spots
+				m_dragWorldStart.copyFrom(m_transformGizmo);
+			}
+			// If the gizmo IS set up, then we ghost when the gizmo is updated.
+			else
+			{
+				var bDragging = m_transformGizmo.m_dragX || m_transformGizmo.m_dragY || m_transformGizmo.m_dragZ;
+				
+				if (bDragging)
+				{
+					// Beginning drag:
+					if (!m_haveTileSelectionGhost)
+					{
+						m_haveTileSelectionGhost = true;
+						
+						// Create a tileset with the selected tile
+						m_tileSelectionGhostTilemap = new ATilemap();
+						m_tileSelectionGhostTilemap.AddTile(tile);
+						m_tileSelectionGhostTilemap.AddHeight(tile.height);
+						
+						// Remove the tile from the current map
+						var workingTileIndex = m_editor.m_tilemap.GetTileIndex(tile);
+						m_editor.m_tilemap.DeleteTileIndex(workingTileIndex);
+						m_editor.m_tilemap.RemoveHeightSlow(tile.height);
+						
+						// Rebuild the current map
+						with (m_editor)
+						{
+							idelete(o_tileset3DIze);
+							
+							// Delete all current intermediate layers
+							MapFreeAllIntermediateLayers();
+							// Set up the tiles
+							m_tilemap.BuildLayers(intermediateLayers);
+	
+							// Create the 3d-ify chain
+							inew(o_tileset3DIze);
+						}
+						
+						// Delete the current map
+						with (m_editor)
+						{
+							// Delete all current intermediate layers
+							MapFreeAllIntermediateLayers();
+						}
+						// Build a temp map for the new tilemap
+						var temp_layers = [];
+						m_tileSelectionGhostTilemap.BuildLayers(temp_layers);
+						// Create the map
+						m_tileSelectionGhostRenderer = inew(o_tileset3DIze);
+						
+						// Now reset the main map to normal state
+						layer_destroy_list(temp_layers);
+						with (m_editor)
+						{
+							// Set up the tiles
+							m_tilemap.BuildLayers(intermediateLayers);
+							// Set up the props
+							m_propmap.RebuildPropLayer(intermediateLayers);
+						}
+						
+					}
+					
+					// Continuing drag:
+					if (m_haveTileSelectionGhost)
+					{
+						// Update position of ghost based on start/stop
+						m_tileSelectionGhostRenderer.x = m_transformGizmo.x - m_dragWorldStart.x;
+						m_tileSelectionGhostRenderer.y = m_transformGizmo.y - m_dragWorldStart.y;
+						m_tileSelectionGhostRenderer.z = m_transformGizmo.z - m_dragWorldStart.z;
+					}
+				}
+				else if (!bDragging)
+				{
+					// Stopping drag:
+					if (m_haveTileSelectionGhost)
+					{
+						m_haveTileSelectionGhost = false;
+						
+						// Remove the ghost renderer
+						idelete(m_tileSelectionGhostRenderer);
+						m_tileSelectionGhostRenderer = null;
+						
+						// Move the tile from the ghost back to the tileset
+						for (var tileIndex = 0; tileIndex < array_length(m_tileSelectionGhostTilemap.tiles); ++tileIndex)
+						{
+							m_editor.m_tilemap.AddTile(m_tileSelectionGhostTilemap.tiles[tileIndex]);
+							m_editor.m_tilemap.AddHeight(m_tileSelectionGhostTilemap.tiles[tileIndex].height);
+						}
+						delete m_tileSelectionGhostTilemap;
+						m_tileSelectionGhostTilemap = null;
+						
+						// Rebuild the main map
+						with (m_editor)
+						{
+							idelete(o_tileset3DIze);
+							
+							// Delete all current intermediate layers
+							MapFreeAllIntermediateLayers();
+							// Set up the tiles
+							m_tilemap.BuildLayers(intermediateLayers);
+							// Set up the props
+							m_propmap.RebuildPropLayer(intermediateLayers);
+	
+							// Create the 3d-ify chain
+							inew(o_tileset3DIze);
+						}
+					}
+				}
+			}
+		}
 		else
 		{
+			if (m_haveTileSelectionState)
+			{
+				EndTileSelection();
+			}
+			
 			m_transformGizmo.SetInvisible();
 			m_transformGizmo.SetDisabled();
 		}

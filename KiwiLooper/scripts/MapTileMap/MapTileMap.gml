@@ -66,6 +66,11 @@ function ATilemap() constructor
 		return -1;
 	}
 	
+	static GetTileIndex = function(tile)
+	{
+		return GetPositionIndex(tile.x, tile.y);
+	}
+	
 	static HasPosition = function(x, y)
 	{
 		return is_struct(GetPosition(x, y));

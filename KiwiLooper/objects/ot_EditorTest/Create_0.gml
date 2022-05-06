@@ -80,10 +80,7 @@ MapRebuildSplats = function()
 MapFreeAllIntermediateLayers = function()
 {
 	// Delete all current intermediate layers
-	for (var layerIndex = 0; layerIndex < array_length(intermediateLayers); ++layerIndex)
-	{
-		layer_destroy(intermediateLayers[layerIndex]);
-	}
+	layer_destroy_list(intermediateLayers);
 	intermediateLayers = [];
 }
 
