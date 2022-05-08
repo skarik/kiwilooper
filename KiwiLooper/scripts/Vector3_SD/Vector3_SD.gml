@@ -45,6 +45,11 @@ function Vector3(n_x, n_y, n_z) constructor
 		z = right.z;
 	}
 	
+	static equals = function(right)
+	{
+		return sqrDistance(right) < (KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER);
+	}
+	
 	///@function addSelf(right)
 	static addSelf = function(right)
 	{
@@ -151,6 +156,16 @@ function Vector3(n_x, n_y, n_z) constructor
 	static magnitude = function()
 	{
 		return sqrt(sqrMagnitude());
+	}
+	
+	static sqrDistance = function(right)
+	{
+		return sqr(x - right.x) + sqr(y - right.y) + sqr(z - right.z);
+	}
+	
+	static distance = function(right)
+	{
+		return sqrt(sqrDistance(right));
 	}
 	
 	static normal = function()

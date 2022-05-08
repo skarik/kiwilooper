@@ -9,6 +9,9 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	m_leftClickEnd = new Vector2(0, 0);
 	m_leftClickDragArea = 0;
 	
+	m_pickerLastClickList = [];
+	m_pickerLastClickIndex = null;
+	
 	onBegin = function()
 	{
 		m_gizmo = m_editor.EditorGizmoGet(AEditorGizmoSelectBox);
@@ -160,7 +163,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				
 				if (m_leftClickDragArea < kDragAreaThreshold)
 				{
-					PickerRun();
+					PickerRun(keyboard_check(vk_control));
 				}
 				else
 				{
@@ -170,23 +173,12 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 	};
 	
-	/// @function PickerRun()
-	/// @desc Runs the picker.
-	static PickerRun = function()
+	///@function PickerCast(rayStart, rayDir, outHitObjects, outHitDistances)
+	static PickerCast = function(rayStart, rayDir, outHitObjects, outHitDistances)
 	{
-		m_editor.m_selection = [];
-		m_editor.m_selectionSingle = true;
-		
-		var pixelX = m_editor.uPosition - GameCamera.view_x;
-		var pixelY = m_editor.vPosition - GameCamera.view_y;
-		
-		// Get a ray
-		var rayStart = new Vector3(o_Camera3D.x, o_Camera3D.y, o_Camera3D.z);
-		var rayDir = Vector3FromArray(o_Camera3D.viewToRay(pixelX, pixelY));
+		var l_priorityHits = ds_priority_create();
 		
 		// Run through the ent table
-		var closestEnt = null;
-		var closestDist = 10000 * 10000.0;
 		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
 			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
@@ -226,11 +218,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 								 new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
 								 rayStart, rayDir))
 				{
-					if (raycast4_get_hit_distance() < closestDist)
-					{
-						closestDist = raycast4_get_hit_distance();
-						closestEnt = ent;
-					}
+					ds_priority_add(l_priorityHits, ent, raycast4_get_hit_distance());
 				}
 			}
 		}
@@ -245,12 +233,6 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			var propTranslation = matrix_build_translation(prop);
 			var propRotation = matrix_build_rotation(prop);
 			
-			var propBBoxMinPushed = propBBox.getMin().transformAMatrix(propTranslation);
-			var propBBoxMaxPushed = propBBox.getMax().transformAMatrix(propTranslation);
-			
-			// TODO: rotation. rotation needs to be passed into raycast4_box_ext, to rotate the ray in the world
-			
-			//if (raycast4_box(propBBoxMinPushed, propBBoxMaxPushed, rayStart, rayDir))
 			if (raycast4_box_rotated(
 				propBBox.center.add(Vector3FromTranslation(prop)),
 				propBBox.extents.multiplyComponent(Vector3FromScale(prop)),
@@ -258,11 +240,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				true,
 				rayStart, rayDir))
 			{
-				if (raycast4_get_hit_distance() < closestDist)
-				{
-					closestDist = raycast4_get_hit_distance();
-					closestEnt = EditorSelectionWrapProp(prop);
-				}
+				ds_priority_add(l_priorityHits, EditorSelectionWrapProp(prop), raycast4_get_hit_distance());
 			}
 		}
 		
@@ -283,44 +261,133 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				true,
 				rayStart, rayDir))
 			{
-				if (raycast4_get_hit_distance() < closestDist)
-				{
-					closestDist = raycast4_get_hit_distance();
-					closestEnt = EditorSelectionWrapSplat(splat);
-				}
+				ds_priority_add(l_priorityHits, EditorSelectionWrapSplat(splat), raycast4_get_hit_distance());
 			}
 		}
 		
 		// Run against the terrain
 		if (raycast4_tilemap(rayStart, rayDir))
 		{
-			//closestDist = raycast4_get_hit_distance();
-			if (raycast4_get_hit_distance() < closestDist)
+			var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
+			var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
+			var hitBlockZ = rayStart.z + rayDir.z * raycast4_get_hit_distance();
+			var hitNormal = new Vector3();
+			hitNormal.copyFrom(raycast4_get_hit_normal());
+			
+			// Extrude the opposite from the hit normal, and get the block position
+			var blockX = floor((hitBlockX - hitNormal.x) / 16.0);
+			var blockY = floor((hitBlockY - hitNormal.y) / 16.0);
+			var blockZ = floor((hitBlockZ - hitNormal.z) / 16.0);
+			
+			var tile_index = m_editor.m_tilemap.GetPositionIndex(blockX, blockY);
+			if (tile_index != -1)
 			{
-				var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
-				var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
-				var hitBlockZ = rayStart.z + rayDir.z * raycast4_get_hit_distance();
-				var hitNormal = new Vector3();
-				hitNormal.copyFrom(raycast4_get_hit_normal());
-			
-				// Extrude the opposite from the hit normal, and get the block position
-				var blockX = floor((hitBlockX - hitNormal.x) / 16.0);
-				var blockY = floor((hitBlockY - hitNormal.y) / 16.0);
-				var blockZ = floor((hitBlockZ - hitNormal.z) / 16.0);
-			
-				var tile_index = m_editor.m_tilemap.GetPositionIndex(blockX, blockY);
-				if (tile_index != -1)
+				ds_priority_add(l_priorityHits, EditorSelectionWrapTile(m_editor.m_tilemap.tiles[tile_index]), raycast4_get_hit_distance());
+			}
+		}
+		
+		// Pull the priority to a list
+		// TODO: someday make this less slow because we hit this all the time
+		var l_priorityHitCount = ds_priority_size(l_priorityHits);
+		for (var i = 0; i < l_priorityHitCount; ++i)
+		{
+			var minp = ds_priority_find_min(l_priorityHits);
+			array_push(outHitObjects, minp);
+			array_push(outHitDistances, ds_priority_find_priority(l_priorityHits, minp));
+			ds_priority_delete_min(l_priorityHits);
+		}
+		ds_priority_destroy(l_priorityHits);
+		
+		return l_priorityHitCount;
+	}
+	
+	/// @function PickerRun(bAdditive = false)
+	/// @desc Runs the picker.
+	static PickerRun = function(bAdditive = false)
+	{
+		// If not additive, then reset the selection
+		if (!bAdditive)
+		{
+			m_editor.m_selection = [];
+			m_editor.m_selectionSingle = true;
+		}
+		
+		var pixelX = m_editor.uPosition - GameCamera.view_x;
+		var pixelY = m_editor.vPosition - GameCamera.view_y;
+		
+		// Get a ray
+		var rayStart = new Vector3(o_Camera3D.x, o_Camera3D.y, o_Camera3D.z);
+		var rayDir = Vector3FromArray(o_Camera3D.viewToRay(pixelX, pixelY));
+		
+		var closestEnt = null;
+		
+		// Cast against all objects in that specific ray
+		var hitObjects = [];
+		var hitDists = [];
+		var hitCount = PickerCast(rayStart, rayDir, hitObjects, hitDists);
+		if (hitCount > 0)
+		{
+			if (!bAdditive)
+			{
+				// if in single click mode, then we run through the list
+				if (array_is_mismatch(m_pickerLastClickList, hitObjects, function(value1, value2)
+					{
+						var b1IsStruct = is_struct(value1);
+						if (b1IsStruct != is_struct(value2))
+						{
+							return false;
+						}
+						else if (b1IsStruct)
+						{
+							if (value1.type == value2.type
+								&& ( (value1.type == kEditorSelection_TileFace && value1.object.tile == value2.object.tile && value1.object.normal.equals(value2.object.normal))
+									|| (value1.type != kEditorSelection_TileFace && value1.object == value2.object)
+									)
+								)
+							{
+								return true;
+							}
+						}
+						else
+						{
+							return value1 == value2;
+						}
+					}))
 				{
-					closestDist = raycast4_get_hit_distance();
-					closestEnt = EditorSelectionWrapTile(m_editor.m_tilemap.tiles[tile_index]);
+					m_pickerLastClickList = CE_ArrayClone(hitObjects);
+					m_pickerLastClickIndex = 0;
 				}
+				else
+				{
+					m_pickerLastClickIndex = (m_pickerLastClickIndex + 1) % hitCount;
+				}
+				closestEnt = hitObjects[m_pickerLastClickIndex];
+			}
+			else
+			{
+				// if in grabber mode, then we just add the last one
+				m_pickerLastClickList = [];
+				m_pickerLastClickIndex = null;
+				
+				closestEnt = hitObjects[0];
 			}
 		}
 		
 		// If we hit something, save it
 		if (is_struct(closestEnt) || closestEnt != null)
 		{
-			m_editor.m_selection[0] = closestEnt;
+			// Not additive, just set up the selection
+			if (!bAdditive)
+			{
+				m_editor.m_selection[0] = closestEnt;
+				m_editor.m_selectionSingle = true;
+			}
+			// Additive, add selection to end
+			else
+			{
+				array_push(m_editor.m_selection, closestEnt);
+				m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
+			}
 		}
 	}
 }

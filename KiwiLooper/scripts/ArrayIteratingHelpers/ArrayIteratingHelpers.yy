@@ -6,7 +6,7 @@
     "path": "folders/Scripts/Core/Array.yy",
   },
   "resourceVersion": "1.0",
-  "name": "array_any_not",
+  "name": "ArrayIteratingHelpers",
   "tags": [],
   "resourceType": "GMScript",
 }
