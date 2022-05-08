@@ -85,7 +85,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
 		
 		var bIsValidSelection = array_length(m_editor.m_selection) > 0;
-		var bIsObjectSelection = false;
+		var bIsObjectSelection = bIsValidSelection;
 		if (bIsValidSelection)
 		{
 			if (is_struct(m_editor.m_selection[0]))
@@ -211,6 +211,13 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					{
 						m_haveTileSelectionGhost = true;
 						
+						// Move the gizmo to the center of the selection
+						m_transformGizmo.x = tile.x * 16;
+						m_transformGizmo.y = tile.y * 16;
+						m_transformGizmo.z = tile.height * 16;
+						// set up initial drag spots
+						m_dragWorldStart.copyFrom(m_transformGizmo);
+						
 						// Create a tileset with the selected tile
 						m_tileSelectionGhostTilemap = new ATilemap();
 						m_tileSelectionGhostTilemap.AddTile(tile);
@@ -282,6 +289,12 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 						// Move the tile from the ghost back to the tileset
 						for (var tileIndex = 0; tileIndex < array_length(m_tileSelectionGhostTilemap.tiles); ++tileIndex)
 						{
+							// Change the XYZ
+							m_tileSelectionGhostTilemap.tiles[tileIndex].x += round((m_transformGizmo.x - m_dragWorldStart.x) / 16);
+							m_tileSelectionGhostTilemap.tiles[tileIndex].y += round((m_transformGizmo.y - m_dragWorldStart.y) / 16);
+							m_tileSelectionGhostTilemap.tiles[tileIndex].height += round((m_transformGizmo.z - m_dragWorldStart.z) / 16);
+							// TODO: safe limits
+							
 							m_editor.m_tilemap.AddTile(m_tileSelectionGhostTilemap.tiles[tileIndex]);
 							m_editor.m_tilemap.AddHeight(m_tileSelectionGhostTilemap.tiles[tileIndex].height);
 						}
