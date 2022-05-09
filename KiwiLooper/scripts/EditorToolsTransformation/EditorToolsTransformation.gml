@@ -16,6 +16,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	m_previousTargetsStart = [];
 	
 	m_dragWorldStart = new Vector3(0, 0, 0);
+	m_dragWorldStartTile = new Vector3(0, 0, 0); // This gets updated constantly as tiles are committed instantly
 	
 	onBegin = function()
 	{
@@ -79,6 +80,71 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					m_haveTileSelectionGhost = null;
 				}
 			}
+		}
+	}
+	
+	BuildGhostRenderer = function()
+	{
+		// Rebuild the current map
+		with (m_editor)
+		{
+			idelete(o_tileset3DIze);
+							
+			// Delete all current intermediate layers
+			MapFreeAllIntermediateLayers();
+			// Set up the tiles
+			m_tilemap.BuildLayers(intermediateLayers);
+	
+			// Create the 3d-ify chain
+			inew(o_tileset3DIze);
+		}
+						
+		// Delete the current map
+		with (m_editor)
+		{
+			// Delete all current intermediate layers
+			MapFreeAllIntermediateLayers();
+		}
+		// Build a temp map for the new tilemap
+		var temp_layers = [];
+		m_tileSelectionGhostTilemap.BuildLayers(temp_layers);
+		// Create the map
+		m_tileSelectionGhostRenderer = inew(o_tileset3DIze);
+						
+		// Now reset the main map to normal state
+		layer_destroy_list(temp_layers);
+		with (m_editor)
+		{
+			// Set up the tiles
+			m_tilemap.BuildLayers(intermediateLayers);
+			// Set up the props
+			m_propmap.RebuildPropLayer(intermediateLayers);
+		}
+	}
+	DestroyGhostRenderer = function()
+	{
+		// Remove the ghost renderer
+		idelete(m_tileSelectionGhostRenderer);
+		m_tileSelectionGhostRenderer = null;
+		
+		// Remove the ghost tilemap
+		delete m_tileSelectionGhostTilemap;
+		m_tileSelectionGhostTilemap = null;
+						
+		// Rebuild the main map
+		with (m_editor)
+		{
+			idelete(o_tileset3DIze);
+							
+			// Delete all current intermediate layers
+			MapFreeAllIntermediateLayers();
+			// Set up the tiles
+			m_tilemap.BuildLayers(intermediateLayers);
+			// Set up the props
+			m_propmap.RebuildPropLayer(intermediateLayers);
+	
+			// Create the 3d-ify chain
+			inew(o_tileset3DIze);
 		}
 	}
 	
@@ -207,20 +273,72 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 						signalSplat = target;
 				}
 			}
-			// Now, setup the ghost for tiles
-			for (var selectIndex = 0; selectIndex < array_length(m_editor.m_selection); ++selectIndex)
-			{
-				var selection = m_editor.m_selection[selectIndex];
 			
-				if (!is_struct(selection) || selection.type != kEditorSelection_Tile)
+			if ((m_transformGizmo.m_dragX || m_transformGizmo.m_dragY || m_transformGizmo.m_dragZ)
+				&& array_is_any_of(m_editor.m_selection, function(value, index){ return is_struct(value) && value.type == kEditorSelection_Tile})
+				)
+			{
+				if (!m_haveTileSelectionGhost)
 				{
-					continue;
+					m_haveTileSelectionGhost = true;
+					
+					// We need to set up a ghost
+					m_dragWorldStartTile.copyFrom(m_transformGizmo);
+					
+					// Create a tileset with the selected tile
+					m_tileSelectionGhostTilemap = new ATilemap();
+					CE_ArrayForEach(
+						m_editor.m_selection,
+						function(value, index)
+						{
+							if (!is_struct(value) || value.type != kEditorSelection_Tile)
+							{	
+								return;
+							}
+							
+							// Add the tile to the ghost map
+							var tile = value.object;
+							m_tileSelectionGhostTilemap.AddTile(tile);
+							m_tileSelectionGhostTilemap.AddHeight(tile.height);
+							
+							// Remove the tile from the current map
+							var workingTileIndex = m_editor.m_tilemap.GetTileIndex(tile);
+							m_editor.m_tilemap.DeleteTileIndex(workingTileIndex);
+							m_editor.m_tilemap.RemoveHeightSlow(tile.height);
+						});
+						
+					// Build the ghost renderer now
+					BuildGhostRenderer();
 				}
 				
-				// Grab tile
-				var tile = selection.object;
+				// Continuing drag:
+				if (m_haveTileSelectionGhost)
+				{
+					// Update position of ghost based on start/stop
+					m_tileSelectionGhostRenderer.x = round_nearest(m_transformGizmo.x - m_dragWorldStartTile.x, 16.0);
+					m_tileSelectionGhostRenderer.y = round_nearest(m_transformGizmo.y - m_dragWorldStartTile.y, 16.0);
+					m_tileSelectionGhostRenderer.z = round_nearest(m_transformGizmo.z - m_dragWorldStartTile.z, 16.0);
+				}
+			}
+			else if (m_haveTileSelectionGhost)
+			{
+				m_haveTileSelectionGhost = false;
 				
-				// TODO
+				// Move the tiles from the ghost back to the tileset
+				for (var tileIndex = 0; tileIndex < array_length(m_tileSelectionGhostTilemap.tiles); ++tileIndex)
+				{
+					// Change the XYZ
+					m_tileSelectionGhostTilemap.tiles[tileIndex].x += round((m_transformGizmo.x - m_dragWorldStartTile.x) / 16);
+					m_tileSelectionGhostTilemap.tiles[tileIndex].y += round((m_transformGizmo.y - m_dragWorldStartTile.y) / 16);
+					m_tileSelectionGhostTilemap.tiles[tileIndex].height += round((m_transformGizmo.z - m_dragWorldStartTile.z) / 16);
+					// TODO: safe limits
+							
+					m_editor.m_tilemap.AddTile(m_tileSelectionGhostTilemap.tiles[tileIndex]);
+					m_editor.m_tilemap.AddHeight(m_tileSelectionGhostTilemap.tiles[tileIndex].height);
+				}
+				
+				// Destroy renderer
+				DestroyGhostRenderer();
 			}
 			
 			// Rebuild the splats & props at the end so we don't rebuild it multiple times in the movement loop
