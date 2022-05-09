@@ -414,7 +414,6 @@ function EditorWindowSetFocus(window)
 /// @desc Return found window with the given type, or null if not created.
 function EditorWindowFind(type)
 {
-	//InitUpdateEntityInfoTransform
 	// Pull saved position by class
 	for (var i = 0; i < array_length(windows); ++i)
 	{

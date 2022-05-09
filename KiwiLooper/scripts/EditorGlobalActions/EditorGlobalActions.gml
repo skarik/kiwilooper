@@ -49,19 +49,22 @@ function EditorGlobalClearSelection()
 	m_selectionSingle = false;
 }
 
-function EditorGlobalSignalTransformChange(entity, type)
+function EditorGlobalSignalTransformChange(entity, type, deferMeshBuilds=false)
 {
 	with (EditorGet())
 	{
 		// Update all gizmos
-		var gizmo;
+		/*var gizmo;
 		gizmo = EditorGizmoFind(AEditorGizmoPointMove);
 		if (is_struct(gizmo))
 		{
 			gizmo.x = entity.x;
 			gizmo.y = entity.y;
 			gizmo.z = entity.z;
-		}
+		}*/
+		// Update all tools:
+		var tool = toolStates[kEditorToolTranslate];
+		tool.onSignalTransformChange(entity, type);
 		
 		// TODO: fill with the other gizmos
 		
@@ -70,19 +73,22 @@ function EditorGlobalSignalTransformChange(entity, type)
 		panel = EditorWindowFind(AEditorWindowProperties);
 		if (is_struct(panel))
 		{
-			panel.InitUpdateEntityInfoTransform();
+			panel.InitUpdateEntityInfoTransform(entity);
 		}
 		
 		// If the incoming ent is a prop, we gotta rebuild prop meshes
-		if (is_struct(entity)) // assume struct inputs are props
+		if (!deferMeshBuilds)
 		{
-			if (type == kEditorSelection_Prop)
+			if (is_struct(entity)) // assume struct inputs are props
 			{
-				MapRebuilPropsOnly();
-			}
-			else if (type == kEditorSelection_Splat)
-			{
-				MapRebuildSplats();
+				if (type == kEditorSelection_Prop)
+				{
+					MapRebuilPropsOnly();
+				}
+				else if (type == kEditorSelection_Splat)
+				{
+					MapRebuildSplats();
+				}
 			}
 		}
 	}

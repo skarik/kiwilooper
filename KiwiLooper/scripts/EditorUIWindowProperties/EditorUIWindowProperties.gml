@@ -115,8 +115,14 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		m_title = entityInfo.name + " Properties";
 	} // End InitWithEntityInfo()
 	
-	static InitUpdateEntityInfoTransform = function()
+	static InitUpdateEntityInfoTransform = function(incoming_entity)
 	{
+		if (entity_instance != incoming_entity
+			&& prop_instance != incoming_entity)
+		{
+			return; // Skip if there's no matching entity
+		}
+		
 		var instance = entity_instance;
 		if (editing_target == kEditorSelection_Prop)
 			instance = prop_instance;
@@ -163,7 +169,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			],
 		};
 		
-		InitUpdateEntityInfoTransform();
+		InitUpdateEntityInfoTransform(prop);
 		property_values[3] = entpropToString(prop, entity_info.properties[3]);
 		
 		// Update the title now

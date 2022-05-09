@@ -44,6 +44,19 @@ function EditorSelectionWrapSplat( splat )
 	return selection;
 }
 
+function EditorSelectionWrap( ent, type )
+{
+	switch (type)
+	{
+	case kEditorSelection_None:		return ent;
+	case kEditorSelection_Prop:		return EditorSelectionWrapProp(ent);
+	case kEditorSelection_Tile:		return EditorSelectionWrapTile(ent);
+	case kEditorSelection_TileFace:	return EditorSelectionWrapTileFace(ent.tile, ent.normal);
+	case kEditorSelection_Splat:	return EditorSelectionWrapSplat(ent);
+	}
+	return null;
+}
+
 function EditorSelectionSetup()
 {
 	m_selection = [];
@@ -124,11 +137,10 @@ function EditorSelectionGetLast()
 	return null;
 }
 
-/// @function EditorSelectionGetPosition()
-function EditorSelectionGetPosition()
+/// @function EditorSelectionGetPosition(selection)
+/// @param selection {Selection} Editor struct or ent instance
+function EditorSelectionGetPosition(selection)
 {
-	// TODO check average position of all objects
-	var selection = EditorSelectionGetLast();
 	if (selection != null)
 	{
 		if (is_struct(selection)) 
@@ -152,6 +164,29 @@ function EditorSelectionGetPosition()
 		}
 	}
 	return new Vector3(0, 0, 0);
+}
+
+/// @function EditorSelectionGetLastPosition()
+function EditorSelectionGetLastPosition()
+{
+	return EditorSelectionGetPosition(EditorSelectionGetLast());
+}
+
+/// @function EditorSelectionGetAveragePosition()
+function EditorSelectionGetAveragePosition()
+{
+	var editor = EditorGet();
+	
+	var positionAcculm = new Vector3(0, 0, 0);
+	if (array_length(editor.m_selection) <= 0)
+	{
+		return positionAcculm
+	}
+	else for (var selectionIndex = 0; selectionIndex < array_length(editor.m_selection); ++selectionIndex)
+	{
+		positionAcculm.addSelf(EditorSelectionGetPosition(editor.m_selection[selectionIndex]));
+	}
+	return positionAcculm.divide(array_length(editor.m_selection));
 }
 
 /// @function EditorSelectionEqual(value1, value2)

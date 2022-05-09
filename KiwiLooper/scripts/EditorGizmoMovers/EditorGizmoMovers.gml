@@ -21,6 +21,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 	
 	m_dragStart = [];
 	m_dragViewrayStart = [];
+	m_snapOffset = [0, 0, 0];
 	
 	GetConsumingMouse = function()
 	{
@@ -122,17 +123,17 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			if (m_dragX)
 			{
 				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) x = round_nearest(x, m_editor.toolGridSize);
+				if (bLocalSnap) x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
 			}
 			if (m_dragY)
 			{
 				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) y = round_nearest(y, m_editor.toolGridSize);
+				if (bLocalSnap) y = round_nearest(y - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[1];
 			}
 			if (m_dragZ)
 			{
 				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) z = round_nearest(z, m_editor.toolGridSize);
+				if (bLocalSnap) z = round_nearest(z - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[2];
 			}
 		}
 		

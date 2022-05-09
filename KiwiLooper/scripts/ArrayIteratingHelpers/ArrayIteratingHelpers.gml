@@ -72,3 +72,36 @@ function array_get_index_pred(array, value, eq_callback)
 	}
 	return null;
 }
+
+/// @func array_contains(array, value)
+/// @param array {Array 1d}
+/// @param value
+function array_contains(array, value)
+{
+	var len = array_length(array);
+	for (var i = 0; i < len; ++i)
+	{
+		if (array[i] == value)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/// @func array_contains_pred(array, value, eq_callback)
+/// @param array {Array 1d}
+/// @param value
+/// @param eq_callback
+function array_contains_pred(array, value, eq_callback)
+{
+	var len = array_length(array);
+	for (var i = 0; i < len; ++i)
+	{
+		if (eq_callback(array[i], value))
+		{
+			return true;
+		}
+	}
+	return false;
+}

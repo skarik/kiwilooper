@@ -180,7 +180,6 @@
     {"id":{"name":"sh_lightPoint","path":"shaders/sh_lightPoint/sh_lightPoint.yy",},"order":3,},
     {"id":{"name":"_paletteLoad","path":"scripts/_paletteLoad/_paletteLoad.yy",},"order":0,},
     {"id":{"name":"utilConstants","path":"scripts/utilConstants/utilConstants.yy",},"order":5,},
-    {"id":{"name":"array_contains","path":"scripts/array_contains/array_contains.yy",},"order":2,},
     {"id":{"name":"o_playerKiwi","path":"objects/o_playerKiwi/o_playerKiwi.yy",},"order":1,},
     {"id":{"name":"array_concat","path":"scripts/array_concat/array_concat.yy",},"order":1,},
     {"id":{"name":"GlobalGameCommands","path":"scripts/GlobalGameCommands/GlobalGameCommands.yy",},"order":17,},

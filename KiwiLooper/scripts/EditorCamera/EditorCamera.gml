@@ -41,7 +41,7 @@ function EditorCameraCenterOnSelection()
 {
 	if (EditorSelectionGetLast() != null)
 	{
-		var position = EditorSelectionGetPosition();
+		var position = EditorSelectionGetLastPosition();
 		cameraX = position.x;
 		cameraY = position.y;
 		cameraZ = position.z;

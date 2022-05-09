@@ -12,6 +12,9 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	m_transformGizmoWasConsumingMouse = false;
 	m_previousTarget = null;
 	
+	m_previousTargets = [];
+	m_previousTargetsStart = [];
+	
 	m_dragWorldStart = new Vector3(0, 0, 0);
 	
 	onBegin = function()
@@ -79,29 +82,154 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		}
 	}
 	
+	onSignalTransformChange = function(entity, type)
+	{
+		if (m_transformGizmo.m_enabled)
+		{
+			if (!m_transformGizmo.m_dragX && !m_transformGizmo.m_dragY && !m_transformGizmo.m_dragZ)
+			{
+				var temp_selection = EditorSelectionWrap(entity, type);
+				if (array_contains_pred(m_editor.m_selection, temp_selection, EditorSelectionEqual))
+				{
+					// Run through all the objects and get their positions
+					var target_center = EditorSelectionGetAveragePosition();
+					m_transformGizmo.x = target_center.x;
+					m_transformGizmo.y = target_center.y;
+					m_transformGizmo.z = target_center.z;
+				}
+			}
+		}
+	}
+	
 	onStep = function()
 	{
 		// Keyboard "no-snap" override toggle
 		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
 		
 		var bIsValidSelection = array_length(m_editor.m_selection) > 0;
-		var bIsObjectSelection = bIsValidSelection;
-		if (bIsValidSelection)
+		var bIsSingleSelection = m_editor.m_selectionSingle;
+		
+		if (!bIsValidSelection)
 		{
-			if (is_struct(m_editor.m_selection[0]))
+			m_transformGizmo.SetInvisible();
+			m_transformGizmo.SetDisabled();
+			
+			m_previousTargets = [];
+		}
+		else 
+		{
+			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
+			if (!m_transformGizmo.m_enabled || array_is_mismatch(m_previousTargets, m_editor.m_selection, EditorSelectionEqual))
 			{
-				if (m_editor.m_selection[0].type == kEditorSelection_Tile
-					|| m_editor.m_selection[0].type == kEditorSelection_TileFace
-					|| m_editor.m_selection[0].type == kEditorSelection_Voxel
-					|| m_editor.m_selection[0].type == kEditorSelection_VoxelFace)
+				m_transformGizmo.SetVisible();
+				m_transformGizmo.SetEnabled();
+				m_previousTargets = CE_ArrayClone(m_editor.m_selection);
+				
+				// Run through all the objects and get their positions
+				var target_center = EditorSelectionGetAveragePosition();
+				m_transformGizmo.x = target_center.x;
+				m_transformGizmo.y = target_center.y;
+				m_transformGizmo.z = target_center.z;
+				
+				// Mark starting point of the dragging start
+				m_dragWorldStart.copyFrom(target_center);
+				
+				for (var selectIndex = 0; selectIndex < array_length(m_previousTargets); ++selectIndex)
 				{
-					bIsObjectSelection = false;
+					m_previousTargetsStart[selectIndex] = EditorSelectionGetPosition(m_previousTargets[selectIndex]);
 				}
 			}
+			
+			var snap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+			var offset_x = bIsSingleSelection ? 0.0 : (snap ? (round_nearest(m_dragWorldStart.x, m_editor.toolGridSize) - m_dragWorldStart.x) : 0.0);
+			var offset_y = bIsSingleSelection ? 0.0 : (snap ? (round_nearest(m_dragWorldStart.y, m_editor.toolGridSize) - m_dragWorldStart.y) : 0.0);
+			var offset_z = bIsSingleSelection ? 0.0 : (snap ? (round_nearest(m_dragWorldStart.z, m_editor.toolGridSize) - m_dragWorldStart.z) : 0.0);
+			m_transformGizmo.m_snapOffset = [offset_x, offset_y, offset_z];
+			
+			var delta_x = (m_transformGizmo.x - m_dragWorldStart.x);
+			var delta_y = (m_transformGizmo.y - m_dragWorldStart.y);
+			var delta_z = (m_transformGizmo.z - m_dragWorldStart.z);
+			
+			var bSignalAnyPropChange = false;
+			var bSignalAnySplatChange = false;
+			var signalProp = null;
+			var signalSplat = null;
+			
+			// Run through the drag logic with each given type of object
+			for (var selectIndex = 0; selectIndex < array_length(m_editor.m_selection); ++selectIndex)
+			{
+				var selection = m_editor.m_selection[selectIndex];
+			
+				// Gather transform target first
+				var target = selection;
+				var target_type = kEditorSelection_None;
+				if (is_struct(selection))
+				{
+					if (selection.type == kEditorSelection_Prop)
+					{
+						target = selection.object;
+						target_type = kEditorSelection_Prop;
+					}
+					else if (selection.type == kEditorSelection_Splat)
+					{
+						target = selection.object;
+						target_type = kEditorSelection_Splat;
+					}
+					else if (selection.type == kEditorSelection_Tile || selection.type == kEditorSelection_TileFace)
+						continue; // Skip the world stuff for now
+				}
+				
+				// Apply the offset based on the drag position offset
+				var startPosition = m_previousTargetsStart[selectIndex];
+				
+				var next_x = startPosition.x + delta_x;
+				var next_y = startPosition.y + delta_y;
+				var next_z = startPosition.z + delta_z;
+				
+				var bSignalChange = 
+						target.x != next_x
+					|| target.y != next_y
+					|| target.z != next_z;
+				
+				target.x = next_x;
+				target.y = next_y;
+				target.z = next_z;
+				
+				if (bSignalChange)
+				{
+					EditorGlobalSignalTransformChange(target, target_type, true);
+					
+					bSignalAnyPropChange |= (target_type == kEditorSelection_Prop);
+					if (target_type == kEditorSelection_Prop)
+						signalProp = target;
+					bSignalAnySplatChange |= (target_type == kEditorSelection_Splat);
+					if (target_type == kEditorSelection_Splat)
+						signalSplat = target;
+				}
+			}
+			// Now, setup the ghost for tiles
+			for (var selectIndex = 0; selectIndex < array_length(m_editor.m_selection); ++selectIndex)
+			{
+				var selection = m_editor.m_selection[selectIndex];
+			
+				if (!is_struct(selection) || selection.type != kEditorSelection_Tile)
+				{
+					continue;
+				}
+				
+				// Grab tile
+				var tile = selection.object;
+				
+				// TODO
+			}
+			
+			// Rebuild the splats & props at the end so we don't rebuild it multiple times in the movement loop
+			if (bSignalAnyPropChange)	EditorGlobalSignalTransformChange(signalProp, kEditorSelection_Prop);
+			if (bSignalAnySplatChange)	EditorGlobalSignalTransformChange(signalSplat, kEditorSelection_Splat);
 		}
-		var bIsTileSelection = !bIsObjectSelection && bIsValidSelection;
 		
-		if (bIsObjectSelection)
+		#region old
+		/*if (bIsObjectSelection)
 		{
 			if (m_haveTileSelectionState)
 			{
@@ -329,7 +457,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			
 			m_transformGizmo.SetInvisible();
 			m_transformGizmo.SetDisabled();
-		}
+		}*/
+		#endregion
 		
 		m_transformGizmoWasConsumingMouse = m_transformGizmoConsumingMouse;
 		m_transformGizmoConsumingMouse = m_transformGizmo.GetConsumingMouse();
