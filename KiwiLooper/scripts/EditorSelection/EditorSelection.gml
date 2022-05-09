@@ -153,3 +153,32 @@ function EditorSelectionGetPosition()
 	}
 	return new Vector3(0, 0, 0);
 }
+
+/// @function EditorSelectionEqual(value1, value2)
+function EditorSelectionEqual(value1, value2)
+{
+	var b1IsStruct = is_struct(value1);
+	if (b1IsStruct != is_struct(value2))
+	{
+		return false;
+	}
+	else if (b1IsStruct)
+	{
+		if (value1.type == value2.type
+			&& ( (value1.type == kEditorSelection_TileFace && value1.object.tile == value2.object.tile && value1.object.normal.equals(value2.object.normal))
+				|| (value1.type != kEditorSelection_TileFace && value1.object == value2.object)
+				)
+			)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return value1 == value2;
+	}
+}

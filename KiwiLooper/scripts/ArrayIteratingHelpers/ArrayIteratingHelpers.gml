@@ -60,3 +60,15 @@ function array_is_mismatch(_array1, _array2, _eq_callback)
 	}
 	return false;
 }
+
+/// @function array_get_index_pred(array, value, eq_callback)
+function array_get_index_pred(array, value, eq_callback)
+{
+	var i = 0;
+	repeat (array_length(array))
+	{
+		if (eq_callback(array[i], value)) return i;
+		++i;
+	}
+	return null;
+}

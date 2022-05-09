@@ -56,77 +56,83 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	{
 		m_showSelectGizmo = m_editor.EditorGizmoGet(AEditorGizmoMultiSelectBox3D);
 		// Draw the box around the picker
-		if (array_length(m_editor.m_selection) > 0)
+		var l_selectionCount = array_length(m_editor.m_selection);
+		if (l_selectionCount > 0)
 		{
 			m_showSelectGizmo.SetVisible();
 			m_showSelectGizmo.SetEnabled();
 			
-			// TODO: Loop through all the ents in the selection and put a box around each one.
-			// TODO: Selection may not be an object, and may be a struct instead. Also check for that.
+			// Clear out array every frame to ensure correct sizing
+			m_showSelectGizmo.m_mins = array_create(l_selectionCount);
+			m_showSelectGizmo.m_maxes = array_create(l_selectionCount);
+			m_showSelectGizmo.m_trses = array_create(l_selectionCount);
 			
-			var iSelection = 0;
-			var selection = m_editor.m_selection[iSelection];
-			
-			if (is_struct(selection))
+			// Build out the boxes for each item in the selection:
+			for (var iSelection = 0; iSelection < l_selectionCount; ++iSelection)
 			{
-				if (selection.type == kEditorSelection_Prop)
-				{
-					var prop = selection.object;
-					
-					// get the bbox
-					var propBBox = PropGetBBox(prop.sprite);
-					var propTranslation = matrix_build_translation(prop);
-					var propRotation = matrix_build_rotation(prop);
+				var selection = m_editor.m_selection[iSelection];
 			
-					propBBox.extents.multiplyComponentSelf(Vector3FromScale(prop));
-					
-					m_showSelectGizmo.m_mins[0] = propBBox.getMin();
-					m_showSelectGizmo.m_maxes[0] = propBBox.getMax();
-					m_showSelectGizmo.m_trses[0] = matrix_multiply(propRotation, propTranslation);
-				}
-				else if (selection.type == kEditorSelection_Splat)
+				if (is_struct(selection))
 				{
-					var splat = selection.object;
+					if (selection.type == kEditorSelection_Prop)
+					{
+						var prop = selection.object;
 					
-					// get the bbox
-					var splatBBox = SplatGetBBox(splat);
-					var splatTranslation = matrix_build_translation(splat);
-					var splatRotation = matrix_build_rotation(splat);
+						// get the bbox
+						var propBBox = PropGetBBox(prop.sprite);
+						var propTranslation = matrix_build_translation(prop);
+						var propRotation = matrix_build_rotation(prop);
 			
-					splatBBox.extents.multiplyComponentSelf(Vector3FromScale(splat));
+						propBBox.extents.multiplyComponentSelf(Vector3FromScale(prop));
 					
-					m_showSelectGizmo.m_mins[0] = splatBBox.getMin();
-					m_showSelectGizmo.m_maxes[0] = splatBBox.getMax();
-					m_showSelectGizmo.m_trses[0] = matrix_multiply(splatRotation, splatTranslation);
+						m_showSelectGizmo.m_mins[iSelection] = propBBox.getMin();
+						m_showSelectGizmo.m_maxes[iSelection] = propBBox.getMax();
+						m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(propRotation, propTranslation);
+					}
+					else if (selection.type == kEditorSelection_Splat)
+					{
+						var splat = selection.object;
+					
+						// get the bbox
+						var splatBBox = SplatGetBBox(splat);
+						var splatTranslation = matrix_build_translation(splat);
+						var splatRotation = matrix_build_rotation(splat);
+			
+						splatBBox.extents.multiplyComponentSelf(Vector3FromScale(splat));
+					
+						m_showSelectGizmo.m_mins[iSelection] = splatBBox.getMin();
+						m_showSelectGizmo.m_maxes[iSelection] = splatBBox.getMax();
+						m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(splatRotation, splatTranslation);
+					}
+					// todo: tiles
+					else if (selection.type == kEditorSelection_Tile)
+					{
+						var tile = selection.object;
+					
+						// todo
+						m_showSelectGizmo.m_mins[iSelection]  = new Vector3(tile.x * 16,		 tile.y * 16,	   -16)				.add(new Vector3(-0.5, -0.5, -0.5));
+						m_showSelectGizmo.m_maxes[iSelection] = new Vector3(tile.x * 16 + 16, tile.y * 16 + 16, tile.height * 16).add(new Vector3( 0.5,  0.5,  0.5));
+						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
+					}
 				}
-				// todo: tiles
-				else if (selection.type == kEditorSelection_Tile)
+				else if (iexists(selection))
 				{
-					var tile = selection.object;
-					
-					// todo
-					m_showSelectGizmo.m_mins[0]  = new Vector3(tile.x * 16,		 tile.y * 16,	   -16)				.add(new Vector3(-0.5, -0.5, -0.5));
-					m_showSelectGizmo.m_maxes[0] = new Vector3(tile.x * 16 + 16, tile.y * 16 + 16, tile.height * 16).add(new Vector3( 0.5,  0.5,  0.5));
-					m_showSelectGizmo.m_trses[0] = matrix_build_identity();
+					var entTypeInfo, entHhsz, entGizmoType, entOrient;
+				
+					// Get the entity info:
+					entTypeInfo		= selection.entity;
+					entHhsz			= entTypeInfo.hullsize * 0.5;
+					entGizmoType	= entTypeInfo.gizmoDrawmode;
+					entOrient		= entTypeInfo.gizmoOrigin;
+				
+					// Get offset center
+					var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
+					var entCenter = entGetSelectionCenter(selection, entOrient, entHSize);
+				
+					m_showSelectGizmo.m_mins[iSelection] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
+					m_showSelectGizmo.m_maxes[iSelection] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
+					m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
 				}
-			}
-			else if (iexists(selection))
-			{
-				var entTypeInfo, entHhsz, entGizmoType, entOrient;
-				
-				// Get the entity info:
-				entTypeInfo		= selection.entity;
-				entHhsz			= entTypeInfo.hullsize * 0.5;
-				entGizmoType	= entTypeInfo.gizmoDrawmode;
-				entOrient		= entTypeInfo.gizmoOrigin;
-				
-				// Get offset center
-				var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
-				var entCenter = entGetSelectionCenter(selection, entOrient, entHSize);
-				
-				m_showSelectGizmo.m_mins[0] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
-				m_showSelectGizmo.m_maxes[0] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
-				m_showSelectGizmo.m_trses[0] = matrix_build_identity();
 			}
 		}
 		else
@@ -167,7 +173,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				}
 				else
 				{
-					// todo
+					LassoRun();
 				}
 			}
 		}
@@ -330,29 +336,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			if (!bAdditive)
 			{
 				// if in single click mode, then we run through the list
-				if (array_is_mismatch(m_pickerLastClickList, hitObjects, function(value1, value2)
-					{
-						var b1IsStruct = is_struct(value1);
-						if (b1IsStruct != is_struct(value2))
-						{
-							return false;
-						}
-						else if (b1IsStruct)
-						{
-							if (value1.type == value2.type
-								&& ( (value1.type == kEditorSelection_TileFace && value1.object.tile == value2.object.tile && value1.object.normal.equals(value2.object.normal))
-									|| (value1.type != kEditorSelection_TileFace && value1.object == value2.object)
-									)
-								)
-							{
-								return true;
-							}
-						}
-						else
-						{
-							return value1 == value2;
-						}
-					}))
+				if (array_is_mismatch(m_pickerLastClickList, hitObjects, EditorSelectionEqual))
 				{
 					m_pickerLastClickList = CE_ArrayClone(hitObjects);
 					m_pickerLastClickIndex = 0;
@@ -379,16 +363,147 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			// Not additive, just set up the selection
 			if (!bAdditive)
 			{
-				m_editor.m_selection[0] = closestEnt;
+				m_editor.m_selection = [closestEnt];
 				m_editor.m_selectionSingle = true;
 			}
-			// Additive, add selection to end
+			// Additive, add/remove selection to end
 			else
 			{
-				array_push(m_editor.m_selection, closestEnt);
+				var selection_index = array_get_index_pred(m_editor.m_selection, closestEnt, EditorSelectionEqual);
+				if (selection_index == null)
+				{
+					array_push(m_editor.m_selection, closestEnt);
+				}
+				else
+				{
+					array_delete(m_editor.m_selection, selection_index, 1);
+				}
 				m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
 			}
 		}
+	}
+	
+	/// @function LassoCast(lassoMin, lassoMax, outHitObjects)
+	static LassoCast = function(lassoMin, lassoMax, outHitObjects)
+	{
+		var lassoRect = new Rect2(lassoMin, lassoMax);
+		
+		// Run through the ent table
+		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
+		{
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
+			if (entTypeIndex != entlistIterationLength())
+			{
+				entTypeInfo		= entlistIterationGet(entTypeIndex);
+				entType			= entTypeInfo.objectIndex;
+				entHhsz			= entTypeInfo.hullsize * 0.5;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entOrient		= entTypeInfo.gizmoOrigin;
+			}
+			// Check for proxies:
+			else
+			{
+				entType		= m_editor.OProxyClass;
+			}
+			
+			// Count through the ents
+			var entCount = instance_number(entType);
+			for (var entIndex = 0; entIndex < entCount; ++entIndex)
+			{
+				var ent = instance_find(entType, entIndex);
+				// Check for proxies:
+				if (entTypeIndex == entlistIterationLength())
+				{
+					entTypeInfo		= ent.entity;
+					entHhsz			= entTypeInfo.hullsize * 0.5;
+					entGizmoType	= entTypeInfo.gizmoDrawmode;
+					entOrient		= entTypeInfo.gizmoOrigin;
+				}
+				
+				// Get offset center
+				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
+				var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
+				
+				if (lassoRect.contains2(entCenter))
+				{
+					array_push(outHitObjects, ent);
+				}
+			}
+		}
+		
+		// Run through all props
+		for (var propIndex = 0; propIndex < m_editor.m_propmap.GetPropCount(); ++propIndex)
+		{
+			var prop = m_editor.m_propmap.GetProp(propIndex);
+			
+			// Get the prop BBox & transform it into the world
+			var propBBox = PropGetBBox(prop.sprite);
+			var propTranslation = matrix_build_translation(prop);
+			var propRotation = matrix_build_rotation(prop);
+			
+			if (lassoRect.contains2(
+					propBBox.center.add(Vector3FromTranslation(prop))))
+			{
+				array_push(outHitObjects, EditorSelectionWrapProp(prop));
+			}
+		}
+		
+		// Run through all splats
+		for (var splatIndex = 0; splatIndex < m_editor.m_splatmap.GetSplatCount(); ++splatIndex)
+		{
+			var splat = m_editor.m_splatmap.GetSplat(splatIndex);
+			
+			// Get the splat BBox & transform it into the world
+			var splatBBox = SplatGetBBox(splat);
+			var splatRotation = matrix_build_rotation(splat);
+			
+			if (lassoRect.contains2(
+					splatBBox.center.add(Vector3FromTranslation(splat))))
+			{
+				array_push(outHitObjects, EditorSelectionWrapSplat(splat));
+			}
+		}
+		
+		// Run against the terrain
+		var lassoRectScaled = new Rect2(lassoMin.divide(16.0).subtract(new Vector2(0.5, 0.5)), lassoMax.divide(16.0).subtract(new Vector2(0.5, 0.5)));
+		for (var tileIndex = 0; tileIndex < array_length(m_editor.m_tilemap.tiles); ++tileIndex)
+		{
+			var tile =  m_editor.m_tilemap.tiles[tileIndex];
+			if (lassoRectScaled.contains2(tile))
+			{
+				array_push(outHitObjects, EditorSelectionWrapTile(tile));
+			}
+		}
+		
+		return array_length(outHitObjects);
+	}
+	
+	/// @function LassoRun(bAdditive = false)
+	static LassoRun = function(bAdditive = false)
+	{
+		// If not additive, then reset the selection
+		if (!bAdditive)
+		{
+			m_editor.m_selection = [];
+			m_editor.m_selectionSingle = true;
+		}
+		
+		var rectStart = new Vector2(min(m_leftClickStart.x, m_leftClickEnd.x), min(m_leftClickStart.y, m_leftClickEnd.y));
+		var rectEnd   = new Vector2(max(m_leftClickStart.x, m_leftClickEnd.x), max(m_leftClickStart.y, m_leftClickEnd.y));
+		
+		// Grab all the objects in the XY rect
+		var hitObjects = [];
+		var hitCount = LassoCast(rectStart, rectEnd, hitObjects);
+		// Append all objects to the list
+		if (hitCount > 0)
+		{
+			for (var i = 0; i < hitCount; ++i)
+			{
+				array_push(m_editor.m_selection, hitObjects[i]);
+			}
+		}
+		
+		m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
 	}
 }
 
