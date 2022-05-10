@@ -50,8 +50,8 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			entOrient		= entTypeInfo.gizmoOrigin;
 			
 			// Get sprite info for this type
-			var entSpriteWidth = max(entHullsize, sprite_get_width(entSprite) * 0.6);
-			var entSpriteHeight = max(entHullsize, sprite_get_height(entSprite) * 0.6);
+			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
+			var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
 			var entUvs = sprite_get_uvs(entSprite, entImageIndex);
 			
 			// Count through the ents
@@ -94,8 +94,8 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			entOrient		= entTypeInfo.gizmoOrigin;
 			
 			// Get sprite info for this type
-			var entSpriteWidth = max(entHullsize, sprite_get_width(entSprite) * 0.6);
-			var entSpriteHeight = max(entHullsize, sprite_get_height(entSprite) * 0.6);
+			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
+			var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
 			var entUvs = sprite_get_uvs(entSprite, entImageIndex);
 			var entColor = GetEntColor(ent);
 			
