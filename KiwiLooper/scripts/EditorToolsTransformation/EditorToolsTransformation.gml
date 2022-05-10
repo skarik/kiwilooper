@@ -15,6 +15,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	m_previousTargets = [];
 	m_previousTargetsStart = [];
 	
+	m_isDragging = false;
 	m_dragWorldStart = new Vector3(0, 0, 0);
 	m_dragWorldStartTile = new Vector3(0, 0, 0); // This gets updated constantly as tiles are committed instantly
 	
@@ -152,7 +153,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	{
 		if (m_transformGizmo.m_enabled)
 		{
-			if (!m_transformGizmo.m_dragX && !m_transformGizmo.m_dragY && !m_transformGizmo.m_dragZ)
+			if (!m_isDragging && !m_transformGizmo.m_dragX && !m_transformGizmo.m_dragY && !m_transformGizmo.m_dragZ)
 			{
 				var temp_selection = EditorSelectionWrap(entity, type);
 				if (array_contains_pred(m_editor.m_selection, temp_selection, EditorSelectionEqual))
@@ -344,6 +345,9 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			// Rebuild the splats & props at the end so we don't rebuild it multiple times in the movement loop
 			if (bSignalAnyPropChange)	EditorGlobalSignalTransformChange(signalProp, kEditorSelection_Prop);
 			if (bSignalAnySplatChange)	EditorGlobalSignalTransformChange(signalSplat, kEditorSelection_Splat);
+			
+			// Update dragging state after everything has been moved
+			m_isDragging = m_transformGizmo.m_dragX || m_transformGizmo.m_dragY || m_transformGizmo.m_dragZ;
 		}
 		
 		#region old
