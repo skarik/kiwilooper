@@ -522,6 +522,8 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 	{
 		Parent_onBegin();
 		
+		m_editor.m_statusbar.m_toolHelpText = "Left drag to rotate. Right drag to flat pan (XY). Left + Right drag to camera pan (XYZ)."
+		
 		// Limit the mouse position to inside the window:
 		Screen.limitMouse = true;
 	};
