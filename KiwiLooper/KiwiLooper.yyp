@@ -144,6 +144,7 @@
     {"id":{"name":"sui_starhorizon","path":"sprites/sui_starhorizon/sui_starhorizon.yy",},"order":4,},
     {"id":{"name":"settingsAudioDefaults","path":"scripts/settingsAudioDefaults/settingsAudioDefaults.yy",},"order":5,},
     {"id":{"name":"controlZero","path":"scripts/controlZero/controlZero.yy",},"order":8,},
+    {"id":{"name":"EditorUIWindowDialog","path":"scripts/EditorUIWindowDialog/EditorUIWindowDialog.yy",},"order":11,},
     {"id":{"name":"sfx_circleShadow10","path":"sprites/sfx_circleShadow10/sfx_circleShadow10.yy",},"order":1,},
     {"id":{"name":"circInOut","path":"scripts/circInOut/circInOut.yy",},"order":3,},
     {"id":{"name":"o_debugUiButton_KillPlayer","path":"objects/o_debugUiButton_KillPlayer/o_debugUiButton_KillPlayer.yy",},"order":11,},
