@@ -39,11 +39,14 @@ function EditorCameraUpdate()
 
 function EditorCameraCenterOnSelection()
 {
-	if (EditorSelectionGetLast() != null)
+	with (EditorGet())
 	{
-		var position = EditorSelectionGetLastPosition();
-		cameraX = position.x;
-		cameraY = position.y;
-		cameraZ = position.z;
+		if (EditorSelectionGetLast() != null)
+		{
+			var position = EditorSelectionGetLastPosition();
+			cameraX = position.x;
+			cameraY = position.y;
+			cameraZ = position.z;
+		}
 	}
 }

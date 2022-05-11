@@ -27,8 +27,11 @@ function AToolbarTop() : AToolbar() constructor
 				extra_width = kTextPadding * 2 + string_width(element.m_text);
 			}
 			
+			// Update enabled state
+			element.m_state_isEnabled = (element.m_onCanClick == null) ? true : element.m_onCanClick();
+			
 			// Check if mouse is inside
-			if (element.m_isButton)
+			if (element.m_isButton && element.m_state_isEnabled)
 			{
 				element.m_state_isDown = (element.m_onCheckDown == null) ? false : element.m_onCheckDown();
 				
@@ -93,12 +96,19 @@ function AToolbarTop() : AToolbar() constructor
 										topLeft.x + kButtonSize + extra_width, topLeft.y + kButtonSize,
 										false);
 				}
-				draw_set_color(element.m_state_isHovered ? c_white : c_gray);
+				draw_set_color((element.m_state_isHovered && element.m_state_isEnabled) ? c_white : c_gray);
 				DrawSpriteRectangle(topLeft.x, topLeft.y,
 									topLeft.x + kButtonSize + extra_width, topLeft.y + kButtonSize,
 									true);
 				
-				draw_sprite(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding);
+				if (element.m_state_isEnabled)
+				{
+					draw_sprite(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding);
+				}
+				else
+				{
+					draw_sprite_ext(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding, 1,1,0, c_gray, 1.0);
+				}
 				
 				if (has_text)
 				{
@@ -143,19 +153,20 @@ function AToolbarTop() : AToolbar() constructor
 	};
 }
 
-/// @function AToolbarElementAsButtonInfo2(sprite, spriteIndex, tooltip, text, onClick, onCheckDown)
+/// @function AToolbarElementAsButtonInfo2(sprite, spriteIndex, tooltip, text, onClick, onCheckDown, onCanClick)
 /// @param {Sprite} UI Icon
 /// @param {Real} UI Icon image_index
 /// @param {String} Hover tooltip
 /// @param {String} Text to add
 /// @param {Function} onClick callback
 /// @param {Function} onCheckDown callback
-function AToolbarElementAsButtonInfo2(sprite, spriteIndex, tooltip, text, onClick, onCheckDown)
+function AToolbarElementAsButtonInfo2(sprite, spriteIndex, tooltip, text, onClick, onCheckDown, onCanClick=null)
 {
 	element = new AToolbarElement();
 	element.m_isButton = true;
 	element.m_onClick = onClick;
 	element.m_onCheckDown = onCheckDown;
+	element.m_onCanClick = onCanClick;
 	element.m_sprite = sprite;
 	element.m_spriteIndex = spriteIndex;
 	element.m_tooltip = tooltip;

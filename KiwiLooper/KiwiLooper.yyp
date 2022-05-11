@@ -223,6 +223,7 @@
     {"id":{"name":"spr_roboDead","path":"sprites/spr_roboDead/spr_roboDead.yy",},"order":3,},
     {"id":{"name":"o_3DLightYOsc","path":"objects/o_3DLightYOsc/o_3DLightYOsc.yy",},"order":3,},
     {"id":{"name":"EditorTileMap","path":"scripts/EditorTileMap/EditorTileMap.yy",},"order":2,},
+    {"id":{"name":"suie_actionsetExtra","path":"sprites/suie_actionsetExtra/suie_actionsetExtra.yy",},"order":11,},
     {"id":{"name":"Screen","path":"objects/Screen/Screen.yy",},"order":10,},
     {"id":{"name":"settingsStartupLoad","path":"scripts/settingsStartupLoad/settingsStartupLoad.yy",},"order":17,},
     {"id":{"name":"o_debugPowerVisualizer","path":"objects/o_debugPowerVisualizer/o_debugPowerVisualizer.yy",},"order":8,},

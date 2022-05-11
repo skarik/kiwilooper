@@ -141,6 +141,7 @@ function AToolbarElement() constructor
 	m_isButton		= false; // If false, then is a separator.
 	m_onClick		= function() {};
 	m_onCheckDown	= function() { return false; };
+	m_onCanClick	= function() { return true; };
 	m_sprite		= sui_handy;
 	m_spriteIndex	= 0;
 	m_tooltip		= "Handy";
@@ -150,6 +151,7 @@ function AToolbarElement() constructor
 	m_state_hoveredTime	= 0.0;
 	m_state_showTooltip	= false;
 	m_state_isDown		= false;
+	m_state_isEnabled	= true;
 	
 	m_editor		= EditorGet();
 }
