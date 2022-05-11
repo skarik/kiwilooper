@@ -41,6 +41,7 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid", null, EditorToolGridToggle, function(){ return toolGrid; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 8, "Larger Grid", null, EditorToolGridLarger, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 9, "Smaller Grid", null, EditorToolGridSmaller, null));
+		m_actionbar.labelGridSize = m_actionbar.AddElement(AToolbarElementAsLabel(null, 0, "Current grid size", "Grid: 16", 15));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 0, "Center on selection", null, EditorCameraCenterOnSelection, null, function(){ return EditorSelectionGetLast() != null; }));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());

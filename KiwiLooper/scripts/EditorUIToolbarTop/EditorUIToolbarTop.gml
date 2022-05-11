@@ -22,16 +22,19 @@ function AToolbarTop() : AToolbar() constructor
 			
 			// Get element extra width that text adds
 			var extra_width = 0;
-			if (is_string(element.m_text))
+			var has_text = is_string(element.m_text);
+			if (has_text)
 			{
-				extra_width = kTextPadding * 2 + string_width(element.m_text);
+				extra_width = (element.m_width > 0) ? element.m_width : (kTextPadding * 2 + string_width(element.m_text));
 			}
+			
+			var bIsLabel = !element.m_isButton && has_text;
 			
 			// Update enabled state
 			element.m_state_isEnabled = (element.m_onCanClick == null) ? true : element.m_onCanClick();
 			
 			// Check if mouse is inside
-			if (element.m_isButton && element.m_state_isEnabled)
+			if ((element.m_isButton || bIsLabel) && element.m_state_isEnabled)
 			{
 				element.m_state_isDown = (element.m_onCheckDown == null) ? false : element.m_onCheckDown();
 				
@@ -44,7 +47,7 @@ function AToolbarTop() : AToolbar() constructor
 						element.m_state_showTooltip = true;
 					}
 					
-					if (mouse_check_button_pressed(mb_left))
+					if (element.m_isButton && mouse_check_button_pressed(mb_left))
 					{
 						element.m_onClick();
 						element.m_state_isDown = true;
@@ -62,7 +65,7 @@ function AToolbarTop() : AToolbar() constructor
 			}
 			
 			// Advance cursor.
-			topLeft.x += element.m_isButton ? (kButtonSize + extra_width) : kSpacerSize;
+			topLeft.x += (element.m_isButton || bIsLabel) ? (kButtonSize + extra_width) : kSpacerSize;
 		}
 		m_elementsWidth = topLeft.x - x;
 	};
@@ -82,11 +85,14 @@ function AToolbarTop() : AToolbar() constructor
 			if (is_string(element.m_text))
 			{
 				draw_set_font(f_04b03);
-				extra_width = kTextPadding * 2 + string_width(element.m_text);
+				extra_width = (element.m_width > 0) ? element.m_width : (kTextPadding * 2 + string_width(element.m_text));
 				has_text = true;
 			}
 			
-			// Check if mouse is inside
+			// Cache if have sprite
+			var has_sprite = sprite_exists(element.m_sprite);
+			
+			// Draw button
 			if (element.m_isButton)
 			{
 				if (element.m_state_isDown)
@@ -141,6 +147,46 @@ function AToolbarTop() : AToolbar() constructor
 					draw_text(topLeft.x + 3, topLeft.y + kButtonSize + 2, element.m_tooltip);
 				}
 			}
+			// Draw label
+			else if (has_text)
+			{
+				if (has_sprite)
+				{
+					draw_sprite(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding);
+				}
+				
+				if (has_text)
+				{
+					draw_set_font(f_04b03);
+					draw_set_color(c_white);
+					draw_set_halign(fa_left);
+					draw_set_valign(fa_middle);
+					draw_text(topLeft.x + kTextPadding, topLeft.y + 1 + kButtonSize / 2, element.m_text);
+				}
+				
+				if (element.m_state_showTooltip)
+				{
+					draw_set_font(f_04b03);
+					var tooltipLength = string_width(element.m_tooltip);
+					var tooltipHeight = string_height(element.m_tooltip);
+					
+					draw_set_color(c_black);
+					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize,
+										topLeft.x + 2 + 3 + tooltipLength,
+										topLeft.y + kButtonSize + 4 + tooltipHeight,
+										false);
+					draw_set_color(c_white);
+					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize,
+										topLeft.x + 2 + 3 + tooltipLength,
+										topLeft.y + kButtonSize + 4 + tooltipHeight,
+										true);
+					
+					draw_set_halign(fa_left);
+					draw_set_valign(fa_top);
+					draw_text(topLeft.x + 3, topLeft.y + kButtonSize + 2, element.m_tooltip);
+				}
+			}
+			// Draw spacer
 			else
 			{
 				draw_set_color(c_gray);
@@ -148,7 +194,7 @@ function AToolbarTop() : AToolbar() constructor
 			}
 			
 			// Advance cursor.
-			topLeft.x += element.m_isButton ? (kButtonSize + extra_width) : kSpacerSize;
+			topLeft.x += (element.m_isButton || has_text) ? (kButtonSize + extra_width) : kSpacerSize;
 		}
 	};
 }

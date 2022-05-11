@@ -299,6 +299,7 @@ function EditorToolGridLarger()
 	with (EditorGet())
 	{
 		toolGridSize = min(128, toolGridSize * 2);
+		m_actionbar.labelGridSize.m_text = "Grid: " + string(toolGridSize);
 	}
 }
 
@@ -307,5 +308,6 @@ function EditorToolGridSmaller()
 	with (EditorGet())
 	{
 		toolGridSize = max(1, toolGridSize / 2);
+		m_actionbar.labelGridSize.m_text = "Grid: " + string(toolGridSize);
 	}
 }

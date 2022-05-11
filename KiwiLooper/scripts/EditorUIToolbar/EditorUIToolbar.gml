@@ -146,6 +146,7 @@ function AToolbarElement() constructor
 	m_spriteIndex	= 0;
 	m_tooltip		= "Handy";
 	m_text			= null;
+	m_width			= -1;
 	
 	m_state_isHovered	= false;
 	m_state_hoveredTime	= 0.0;
@@ -198,4 +199,16 @@ function AToolbarElementAsToolButtonInfo(sprite, spriteIndex, tooltip, editorSta
 function AToolbarElementAsSpacer()
 {
 	return new AToolbarElement();
+}
+/// @function AToolbarElementAsLabel()
+function AToolbarElementAsLabel(sprite, spriteIndex, tooltip, text, width)
+{
+	element = new AToolbarElement();
+	element.m_isButton = false;
+	element.m_sprite = sprite;
+	element.m_spriteIndex = spriteIndex;
+	element.m_tooltip = tooltip;
+	element.m_text = text;
+	element.m_width = width;
+	return element;
 }
