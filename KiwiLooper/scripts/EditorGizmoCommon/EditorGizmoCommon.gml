@@ -165,7 +165,7 @@ function AEditorGizmoBase() constructor
 				normal),
 			]);
 	};
-	
+	///@function MeshbAddBillboardTriangle(mesh, color, width, length, normal, position)
 	static MeshbAddBillboardTriangle = function(mesh, color, width, length, normal, position)
 	{
 		var frontface_direction = new Vector3(m_editor.viewrayForward[0], m_editor.viewrayForward[1], m_editor.viewrayForward[2]);

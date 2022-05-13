@@ -202,6 +202,18 @@ function Vector3(n_x, n_y, n_z) constructor
 		return x * right.x + y * right.y + z * right.z;
 	}
 	
+	static negate = function()
+	{
+		return new Vector3(-x, -y, -z);
+	}
+	static negateSelf = function()
+	{
+		x = -x;
+		y = -y;
+		z = -y;
+		return self;
+	}
+	
 	static transformAMatrix = function(matrix)
 	{
 		gml_pragma("forceinline");

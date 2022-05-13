@@ -788,3 +788,202 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		meshb_End(m_mesh);
 	};
 }
+
+/// @function AEditorGizmoPointScale() constructor
+/// @desc Editor gizmo for scaling objects around.
+function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
+{
+	xrotation = 0;
+	yrotation = 0;
+	zrotation = 0;
+	
+	xscale = 1.0;
+	yscale = 1.0;
+	zscale = 1.0;
+	
+	bbox = new BBox3(new Vector3(), new Vector3());
+	
+	Step = function()
+	{
+		// Calculate the sizing based on the distance to the gizmo:
+		var kScreensizeFactor = CalculateScreensizeFactor();
+		var kBorderExpand = 0.5 * kScreensizeFactor;
+		var kAxisLength = 32 * kScreensizeFactor;
+		var kArrowHalfsize = 4 * kScreensizeFactor;
+		var kScreenLength = 500 * kScreensizeFactor;
+		
+		// Setup local XYZ as it's needed for both collisions and gizmos
+		var kRotation = matrix_build_rotation(self);
+		var kX = (new Vector3(1, 0, 0)).transformAMatrixSelf(kRotation);
+		var kY = (new Vector3(0, 1, 0)).transformAMatrixSelf(kRotation);
+		var kZ = (new Vector3(0, 0, 1)).transformAMatrixSelf(kRotation);
+		var kOffset = bbox.center.transformAMatrix(kRotation);
+		
+		var pixelX = m_editor.uPosition - GameCamera.view_x;
+		var pixelY = m_editor.vPosition - GameCamera.view_y;
+		
+		// Get a ray
+		var rayStart = new Vector3(o_Camera3D.x, o_Camera3D.y, o_Camera3D.z);
+		var rayDir = Vector3FromArray(o_Camera3D.viewToRay(pixelX, pixelY));
+		
+		// Do some collision checks for mousing over the axes
+		m_mouseOverX = false;
+		m_mouseOverY = false;
+		m_mouseOverZ = false;
+		
+		if (MouseAvailable())
+		{
+			// Sort these checks by screen depth
+			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
+			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
+			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+		
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
+			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
+			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
+		
+			// Check collision with each axis.
+			for (var check_index = 0; check_index < 3; ++check_index)
+			{
+				var check_orderLookup = check_depthOrder[check_index][0];
+				if (check_orderLookup == 0)
+				{
+					m_mouseOverX = 
+						raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x - kAxisLength - kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverX) break;
+				}
+				if (check_orderLookup == 1)
+				{
+					m_mouseOverY =
+						raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y - kAxisLength - kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
+					if (m_mouseOverY) break;
+				}
+				if (check_orderLookup == 2)
+				{
+					m_mouseOverZ =
+						raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir)
+						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z - kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z - kAxisLength - kArrowHalfsize*2), rayStart, rayDir);
+					if (m_mouseOverZ) break;
+				}
+			}
+		}
+		
+		// Update active state based on editor using camera
+		if (m_editor.toolCurrent == kEditorToolCamera)
+		{
+			m_active = false;
+		}
+		else
+		{
+			m_active = true;
+		}
+		
+		// Update click states
+		if (MouseCheckButtonPressed(mb_left))
+		{
+			if (m_mouseOverX)
+				m_dragX = true;
+			else if (m_mouseOverY)
+				m_dragY = true;
+			else if (m_mouseOverZ)
+				m_dragZ = true;
+				
+			if (m_dragX || m_dragY || m_dragZ)
+			{
+				m_dragStart = [xscale, yscale, zscale];
+				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
+			}
+		}
+		
+		var bEnableAngleSnaps = keyboard_check(vk_shift);
+		var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+		if (m_dragX || m_dragY || m_dragZ)
+		{
+			if (m_dragX)
+			{
+				xscale = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 120 * kScreensizeFactor;
+				if (bLocalSnap) xscale = round_nearest(xscale, 0.1);
+			}
+			if (m_dragY)
+			{
+				yscale = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 120 * kScreensizeFactor;
+				if (bLocalSnap) yscale = round_nearest(yscale, 0.1);
+			}
+			if (m_dragZ)
+			{
+				zscale = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 120 * kScreensizeFactor;
+				if (bLocalSnap) zscale = round_nearest(zscale, 0.1);
+			}
+		}
+		
+		if (MouseCheckButtonReleased(mb_left) || !m_active)
+		{
+			m_dragX = false;
+			m_dragY = false;
+			m_dragZ = false;
+		}
+		
+		// Update the visuals
+		meshb_BeginEdit(m_mesh);
+			if (m_active)
+			{
+				var kPos = (new Vector3(x, y, z)).add(kOffset);
+				
+				var xshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragX;
+				var xcolor = merge_color(c_red, c_white, m_dragX ? 1.0 : (m_mouseOverX ? 0.7 : 0.0));
+				if (!xshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX, kPos.add(kX.multiply(bbox.extents.x)) );
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX.negate(), kPos.add(kX.multiply(-bbox.extents.x)) );
+				}
+				
+				var yshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragY;
+				var ycolor = merge_color(c_midgreen, c_white, m_dragY ? 1.0 : (m_mouseOverY ? 0.7 : 0.0));
+				if (!yshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY, kPos.add(kY.multiply(bbox.extents.y)) );
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY.negate(), kPos.add(kY.multiply(-bbox.extents.y)) );
+				}
+				
+				var zshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragZ;
+				var zcolor = merge_color(c_midblue, c_white, m_dragZ ? 1.0 : (m_mouseOverZ ? 0.7 : 0.0));
+				if (!zshouldfade)
+				{
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ, kPos.add(kZ.multiply(bbox.extents.z)) );
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ.negate(), kPos.add(kZ.multiply(-bbox.extents.z)) );
+				}
+			}
+			else
+			{
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kScreenLength*2, new Vector3(1, 0, 0), new Vector3(x-kScreenLength,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kScreenLength*2, new Vector3(0, 1, 0), new Vector3(x,y-kScreenLength,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kScreenLength*2, new Vector3(0, 0, 1), new Vector3(x,y,z-kScreenLength));
+			}
+		meshb_End(m_mesh);
+	};
+	
+	Draw = function()
+	{
+		var last_shader = drawShaderGet();
+		var last_ztest = gpu_get_zfunc();
+		var last_zwrite = gpu_get_zwriteenable();
+			
+		gpu_set_zwriteenable(false);
+			
+		drawShaderSet(sh_editorFlatShaded);
+			
+		gpu_set_zfunc(cmpfunc_greater);
+		shader_set_uniform_f(global.m_editorFlatShaded_uFlatColor, 0.5, 0.5, 0.5, 1.0);
+		vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+			
+		gpu_set_zfunc(last_ztest);
+		shader_set_uniform_f(global.m_editorFlatShaded_uFlatColor, 1.0, 1.0, 1.0, 1.0);
+		vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+			
+		drawShaderSet(last_shader);
+		gpu_set_zwriteenable(last_zwrite);
+	};
+}

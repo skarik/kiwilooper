@@ -19,6 +19,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	m_dragWorldStart = new Vector3(0, 0, 0);
 	m_dragWorldStartTile = new Vector3(0, 0, 0); // This gets updated constantly as tiles are committed instantly
 	
+	m_transformGizmo = null;
+	
 	onBegin = function()
 	{
 		Parent_onBegin();
@@ -151,7 +153,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 	
 	onSignalTransformChange = function(entity, type)
 	{
-		if (m_transformGizmo.m_enabled)
+		if (is_struct(m_transformGizmo) && m_transformGizmo.m_enabled)
 		{
 			if (!m_isDragging && !m_transformGizmo.IsDraggingAny())
 			{
@@ -386,8 +388,10 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to rotate around an axis. Hold Alt to toggle snapping.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to rotate around an axis. Hold Shift to enable snapping.";
 	};
+	
+	// TODO onSignalTransformChange = function(entity, type)
 	
 	onStep = function()
 	{
@@ -465,6 +469,178 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 					target.xrotation = next_x;
 					target.yrotation = next_y;
 					target.zrotation = next_z;
+					
+					if (bSignalChange)
+					{
+						EditorGlobalSignalTransformChange(target, target_type);
+					}
+				}
+			}
+		}
+		else
+		{
+			m_transformGizmo.SetInvisible();
+			m_transformGizmo.SetDisabled();
+		}
+		
+		m_transformGizmoWasConsumingMouse = m_transformGizmoConsumingMouse;
+		m_transformGizmoConsumingMouse = m_transformGizmo.GetConsumingMouse();
+		
+		// Update like normal click if not using the transform gizmo
+		if (!m_transformGizmo.GetEnabled() || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))
+		{
+			Parent_onStep();
+		}
+		// Otherwise, minimally update the picker visuals.
+		else
+		{
+			PickerUpdateVisuals();
+		}
+	};
+}
+
+
+/// @function AEditorToolStateScale() constructor
+function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
+{
+	onBegin = function()
+	{
+		Parent_onBegin();
+		
+		m_transformGizmo = m_editor.EditorGizmoGet(AEditorGizmoPointScale);
+		m_transformGizmo.SetInvisible();
+		m_transformGizmo.SetDisabled();
+		
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to scale a local axis. Hold Shift to enable snapping.";
+	};
+	
+	// TODO onSignalTransformChange = function(entity, type)
+	
+	onStep = function()
+	{
+		// Keyboard "no-snap" override toggle
+		var bEnableScaleSnaps = keyboard_check(vk_shift);
+		
+		var bValidSelection = array_length(m_editor.m_selection) > 0;
+		if (bValidSelection)
+		{
+			if (is_struct(m_editor.m_selection[0]))
+			{
+				if (m_editor.m_selection[0].type == kEditorSelection_Tile
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+				{
+					bValidSelection = false;
+				}
+			}
+		}
+		
+		if (bValidSelection)
+		{
+			// Gather transform target first
+			var target = m_editor.m_selection[0];
+			var target_type = kEditorSelection_None;
+			if (is_struct(m_editor.m_selection[0]))
+			{
+				if (m_editor.m_selection[0].type == kEditorSelection_Prop)
+				{
+					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Prop;
+				}
+				else if (m_editor.m_selection[0].type == kEditorSelection_Splat)
+				{
+					target = m_editor.m_selection[0].object;
+					target_type = kEditorSelection_Splat;
+				}
+			}
+			var bCanRotate = is_struct(target) ? variable_struct_exists(target, "xrotation") : variable_instance_exists(target, "xrotation");
+			var bCanScale = is_struct(target) ? variable_struct_exists(target, "xscale") : variable_instance_exists(target, "xscale");
+			
+			// Move to the target position [always]
+			m_transformGizmo.x = target.x;
+			m_transformGizmo.y = target.y;
+			m_transformGizmo.z = target.z;
+			
+			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
+			if (!m_transformGizmo.m_enabled || m_previousTarget != target)
+			{
+				m_transformGizmo.SetVisible();
+				m_transformGizmo.SetEnabled();
+		
+				// Gizmo needs the rotation for proper editin's
+				m_transformGizmo.xrotation = bCanRotate ? target.xrotation : 0.0;
+				m_transformGizmo.yrotation = bCanRotate ? target.yrotation : 0.0;
+				m_transformGizmo.zrotation = bCanRotate ? target.zrotation : 0.0;
+		
+				if (bCanScale)
+				{
+					// set up the size of the scaling object
+					m_transformGizmo.xscale = target.xscale;
+					m_transformGizmo.yscale = target.yscale;
+					m_transformGizmo.zscale = target.zscale;
+					
+					// we need the [unrotated] bbox of the object we're scaling:
+					var bbox;
+					if (target_type == kEditorSelection_None)
+					{
+						var entTypeInfo, entHhsz, entGizmoType, entOrient;
+						
+						// Get the entity info:
+						entTypeInfo		= target.entity;
+						entHhsz			= entTypeInfo.hullsize * 0.5;
+						entGizmoType	= entTypeInfo.gizmoDrawmode;
+						entOrient		= entTypeInfo.gizmoOrigin;
+						
+						// Get offset center
+						var entHSize = new Vector3(entHhsz * target.xscale, entHhsz * target.yscale, entHhsz * target.zscale); // TODO: scale the hhsz
+						var entCenter = entGetSelectionCenter(target, entOrient, entHSize);
+						bbox = new BBox3(entCenter.subtract(Vector3FromTranslation(target)), entHSize);
+					}
+					else if (target_type == kEditorSelection_Prop)
+					{
+						var prop = target;
+						bbox = PropGetBBox(prop.sprite);
+						bbox.extents.multiplyComponentSelf(Vector3FromScale(prop));
+					}
+					else if (target_type == kEditorSelection_Splat)
+					{
+						var splat = target;
+						var bbox = SplatGetBBox(splat);
+						bbox.extents.multiplyComponentSelf(Vector3FromScale(splat));
+					}
+					m_transformGizmo.bbox = bbox;
+				}
+				
+				m_previousTarget = target;
+			}
+			// If the gizmo IS set up, then we update the selected objects' positions to the gizmo translation.
+			else
+			{
+				if (bCanScale)
+				{
+					var snap = bEnableScaleSnaps;
+					var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.xscale, 0.1) : m_transformGizmo.xscale) : target.xscale;
+					var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.yscale, 0.1) : m_transformGizmo.yscale) : target.yscale;
+					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zscale, 0.1) : m_transformGizmo.zscale) : target.zscale;
+					
+					var next_px = m_transformGizmo.m_dragX ? m_transformGizmo.x : target.x;
+					var next_py = m_transformGizmo.m_dragY ? m_transformGizmo.y : target.y;
+					var next_pz = m_transformGizmo.m_dragZ ? m_transformGizmo.z : target.z;
+				
+					var bSignalChange = 
+							target.xscale != next_x
+						|| target.yscale != next_y
+						|| target.zscale != next_z
+						|| target.x != next_px
+						|| target.y != next_py
+						|| target.z != next_pz;
+				
+					target.xscale = next_x;
+					target.yscale = next_y;
+					target.zscale = next_z;
+					
+					target.x = next_px;
+					target.y = next_py;
+					target.z = next_pz;
 					
 					if (bSignalChange)
 					{

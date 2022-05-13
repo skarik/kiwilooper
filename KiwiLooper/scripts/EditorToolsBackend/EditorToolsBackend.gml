@@ -87,7 +87,7 @@ function EditorToolsSetup()
 		new AEditorToolStateMakeSplat(),	// kEditorToolSplats
 		new AEditorToolStateTranslate(),	// kEditorToolTranslate
 		new AEditorToolStateRotate(),		// kEditorToolRotate
-		new AEditorToolState(),
+		new AEditorToolStateScale(),		// kEditorToolScale
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
 }
@@ -115,6 +115,10 @@ function EditorToolsUpdate_CheckShortcuts()
 			{
 				toolCurrentRequested = kEditorToolRotate;
 			}
+		}
+		if (keyboard_check_pressed(ord("R")))
+		{
+			toolCurrentRequested = kEditorToolScale;
 		}
 	}
 	
