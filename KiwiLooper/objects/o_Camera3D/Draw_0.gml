@@ -20,17 +20,22 @@ surface_set_target(buffer_scene3d);
 		mat_projection = matrix_build_projection_perspective_fov(fov_vertical * (GameCamera.height / min(GameCamera.width, GameCamera.height)), Screen.width / Screen.height, znear, zfar);
 	else
 		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, zfar);
+		
+	m_viewForward = [
+		lengthdir_x(1.0, zrotation) * lengthdir_x(1.0, yrotation),
+		lengthdir_y(1.0, zrotation) * lengthdir_x(1.0, yrotation),
+		lengthdir_y(1.0, yrotation)];
+	m_viewUp = [
+		lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, yrotation),
+		-lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, yrotation),
+		lengthdir_x(1.0, yrotation) * lengthdir_x(1.0, xrotation)];
 	var mat_view = matrix_build_lookat(
 		// from
 		x, y, z,
 		// to
-		x + lengthdir_x(1.0, zrotation) * lengthdir_x(1.0, yrotation), 
-		y + lengthdir_y(1.0, zrotation) * lengthdir_x(1.0, yrotation), 
-		z + lengthdir_y(1.0, yrotation),
+		x + m_viewForward[0], y + m_viewForward[1], z + m_viewForward[2],
 		// up
-		lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, yrotation),
-		-lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, yrotation),
-		lengthdir_x(1.0, yrotation) * lengthdir_x(1.0, xrotation));
+		m_viewUp[0], m_viewUp[1], m_viewUp[2]);
 		
 	matrix_set(matrix_view, mat_view);
 	matrix_set(matrix_projection, mat_projection);

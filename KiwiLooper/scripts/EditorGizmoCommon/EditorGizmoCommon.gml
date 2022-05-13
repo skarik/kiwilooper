@@ -166,7 +166,7 @@ function AEditorGizmoBase() constructor
 			]);
 	};
 	
-	MeshbAddBillboardTriangle = function(mesh, color, width, length, normal, position)
+	static MeshbAddBillboardTriangle = function(mesh, color, width, length, normal, position)
 	{
 		var frontface_direction = new Vector3(m_editor.viewrayForward[0], m_editor.viewrayForward[1], m_editor.viewrayForward[2]);
 		var cross_x = frontface_direction.cross(normal);
@@ -189,7 +189,7 @@ function AEditorGizmoBase() constructor
 			normal));
 	};
 	
-	MeshbAddBillboardUVs = function(mesh, color, width, height, uvs, normal, position)
+	static MeshbAddBillboardUVs = function(mesh, color, width, height, uvs, normal, position)
 	{
 		var frontface_direction = new Vector3(m_editor.viewrayForward[0], m_editor.viewrayForward[1], m_editor.viewrayForward[2]);
 		// TODO: just pull this data from the camera matrix Left and Up itself
@@ -222,7 +222,7 @@ function AEditorGizmoBase() constructor
 				]);
 	};
 	
-	MeshbAddQuad = function(mesh, color, xsize, ysize, position)
+	static MeshbAddQuad = function(mesh, color, xsize, ysize, position)
 	{
 		var normal = xsize.cross(ysize);
 		normal.normalize();
@@ -251,7 +251,7 @@ function AEditorGizmoBase() constructor
 			]);
 	};
 	
-	MeshbAddQuadUVs = function(mesh, color, alpha, xsize, ysize, uvs, position)
+	static MeshbAddQuadUVs = function(mesh, color, alpha, xsize, ysize, uvs, position)
 	{
 		var normal = xsize.cross(ysize);
 		normal.normalize();
@@ -278,6 +278,58 @@ function AEditorGizmoBase() constructor
 				(new Vector2(1.0, 1.0)).biasUVSelf(uvs),
 				normal),
 			]);
+	};
+	
+	///@function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+	static MeshbAddArc = function(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+	{
+		for (var i = startAngle; i < endAngle; i += angleDiv)
+		{
+			MeshbAddLine(
+				mesh, color,
+				width,
+				radius * 2 * pi * (angleDiv / 360),
+				planarX.multiply(lengthdir_x(1, i + 90 + angleDiv * 0.5)).add(planarY.multiply(lengthdir_y(1, i + 90 + angleDiv * 0.5))),
+				center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i)))
+				);
+		}
+	};
+	
+	///@function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+	static MeshbAddFlatArc = function(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
+	{
+		var normal = planarX.cross(planarY);
+		for (var i = startAngle; i < endAngle; i += angleDiv)
+		{
+			var offset_a = planarX.multiply(lengthdir_x(1, i)).add(planarY.multiply(lengthdir_y(1, i)));
+			var offset_b = planarX.multiply(lengthdir_x(1, i + angleDiv)).add(planarY.multiply(lengthdir_y(1, i + angleDiv)));
+						
+			var u_a = (i - startAngle) / (endAngle - startAngle);
+			var u_b = ((i + angleDiv) - startAngle) / (endAngle - startAngle);
+						
+			meshb_AddQuad(mesh, [
+				new MBVertex(
+					center.add(offset_a.multiply(radius - width)),
+					color, alpha,
+					new Vector2(u_a, 0),
+					normal),
+				new MBVertex(
+					center.add(offset_a.multiply(radius)),
+					color, alpha,
+					new Vector2(u_a, 1),
+					normal),
+				new MBVertex(
+					center.add(offset_b.multiply(radius - width)),
+					color, alpha,
+					new Vector2(u_b, 0),
+					normal),
+				new MBVertex(
+					center.add(offset_b.multiply(radius)),
+					color, alpha,
+					new Vector2(u_b, 1),
+					normal),
+				]);
+		}
 	};
 	
 	/// @function CalculateScreensizeFactor()

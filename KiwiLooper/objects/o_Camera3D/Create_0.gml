@@ -19,6 +19,9 @@ depth = -10;
 m_viewprojection = matrix_build_identity();
 m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
 
+m_viewForward = [1, 0, 0];
+m_viewUp = [0, 0, 1];
+
 ///@function camera.positionToView(x, y, z)
 ///@desc Transforms 3D position into 2D position
 ///@param x {Real}

@@ -12,20 +12,31 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 	m_mouseOverX = false;
 	m_mouseOverY = false;
 	m_mouseOverZ = false;
+	m_mouseOverC = false;
 	
 	m_dragX = false;
 	m_dragY = false;
 	m_dragZ = false;
+	m_dragC = false; // Is the center circle being dragged? Will toggle X/Y/Z drag depending on mode.
+	
+	/// @function IsDraggingAny()
+	IsDraggingAny = function()
+	{
+		gml_pragma("forceinline");
+		return m_dragX || m_dragY || m_dragZ || m_dragC;
+	}
 	
 	m_active = false;
 	
 	m_dragStart = [];
 	m_dragViewrayStart = [];
 	m_snapOffset = [0, 0, 0];
+	m_collisionDragOffset = [0, 0, 0];
 	
+	/// @function GetConsumingMouse()
 	GetConsumingMouse = function()
 	{
-		return m_dragX || m_dragY || m_dragZ;
+		return IsDraggingAny();
 	}
 	
 	/// @function Cleanup()
@@ -39,10 +50,11 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 	{
 		// Calculate the sizing based on the distance to the gizmo:
 		var kScreensizeFactor = CalculateScreensizeFactor();
-		var kBorderExpand = 1 * kScreensizeFactor;
+		var kBorderExpand = 0.5 * kScreensizeFactor;
 		var kAxisLength = 32 * kScreensizeFactor;
 		var kArrowHalfsize = 5 * kScreensizeFactor;
 		var kScreenLength = 500 * kScreensizeFactor;
+		var kCircleRadius = 8 * kScreensizeFactor;
 		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
 		var pixelY = m_editor.vPosition - GameCamera.view_y;
@@ -55,6 +67,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		m_mouseOverX = false;
 		m_mouseOverY = false;
 		m_mouseOverZ = false;
+		m_mouseOverC = false;
 		
 		if (MouseAvailable())
 		{
@@ -62,14 +75,15 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
 			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
 			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+			var depthC = o_Camera3D.positionToView(x, y, z)[2];
 		
-			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ], [3, depthC]];
 			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
 			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
 			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
 		
 			// Check collision with each axis.
-			for (var check_index = 0; check_index < 3; ++check_index)
+			for (var check_index = 0; check_index < 4; ++check_index)
 			{
 				var check_orderLookup = check_depthOrder[check_index][0];
 				if (check_orderLookup == 0)
@@ -86,6 +100,11 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 				{
 					m_mouseOverZ = raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir);
 					if (m_mouseOverZ) break;
+				}
+				if (check_orderLookup == 3)
+				{
+					m_mouseOverC = raycast4_box(new Vector3(x - kCircleRadius, y - kCircleRadius, z - kCircleRadius), new Vector3(x + kCircleRadius, y + kCircleRadius, z + kCircleRadius), rayStart, rayDir);
+					if (m_mouseOverC) break;
 				}
 			}
 		}
@@ -109,8 +128,10 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 				m_dragY = true;
 			else if (m_mouseOverZ)
 				m_dragZ = true;
+			else if (m_mouseOverC)
+				m_dragC = true;
 				
-			if (m_dragX || m_dragY || m_dragZ)
+			if (m_dragX || m_dragY || m_dragZ || m_dragC)
 			{
 				m_dragStart = [x, y, z];
 				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
@@ -118,19 +139,36 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		}
 		
 		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
-		if (m_dragX || m_dragY || m_dragZ)
+		if (m_dragX || m_dragY || m_dragZ || m_dragC)
 		{
-			if (m_dragX)
+			if (m_dragC)
+			{
+				//TODO: use m_collisionDragOffset
+				// Using the camera, raycast against the world
+				var l_currentPosition = m_editor.toolWorldValid ? [m_editor.toolWorldX, m_editor.toolWorldY, m_editor.toolWorldZ] : [m_editor.toolFlatX, m_editor.toolFlatY, 0];
+				
+				x = l_currentPosition[0];
+				y = l_currentPosition[1];
+				z = l_currentPosition[2];
+				
+				if (bLocalSnap)
+				{
+					x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
+					y = round_nearest(y - m_snapOffset[1], m_editor.toolGridSize) + m_snapOffset[1];
+					z = round_nearest(z - m_snapOffset[2], m_editor.toolGridSize) + m_snapOffset[2];
+				}
+			}
+			else if (m_dragX)
 			{
 				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
 				if (bLocalSnap) x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
 			}
-			if (m_dragY)
+			else if (m_dragY)
 			{
 				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
 				if (bLocalSnap) y = round_nearest(y - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[1];
 			}
-			if (m_dragZ)
+			else if (m_dragZ)
 			{
 				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
 				if (bLocalSnap) z = round_nearest(z - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[2];
@@ -142,6 +180,7 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			m_dragX = false;
 			m_dragY = false;
 			m_dragZ = false;
+			m_dragC = false;
 		}
 		
 		// Update the visuals
@@ -183,6 +222,15 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 				{
 					MeshbAddLine2(m_mesh, zcolor, zshouldfade ? 0.5 : 1.0, kBorderExpand/2, kScreenLength*2, new Vector3(0, 0, 1), new Vector3(x,y,z-kScreenLength));
 				}
+				
+				// draw the circle in center
+				
+				// Create the forward vector
+				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
+				var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
+				var cameraSide = cameraDir.cross(cameraTop).normal();
+				var ccolor = merge_color(c_yellow, c_white, m_dragC ? 1.0 : (m_mouseOverC ? 0.7 : 0.0));
+				MeshbAddArc(m_mesh, ccolor, kBorderExpand, kCircleRadius, 0, 360, 20, cameraSide, cameraTop, new Vector3(x,y,z));
 			}
 			else
 			{
@@ -636,70 +684,9 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		meshb_BeginEdit(m_mesh);
 			if (m_active)
 			{
-				/*var xcolor = m_mouseOverX ? c_white : c_red;
-				MeshbAddLine(m_mesh, xcolor, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(1, 0, 0), new Vector3(x + kAxisLength,y,z));
-				var ycolor = m_mouseOverY ? c_white : c_midgreen;
-				MeshbAddLine(m_mesh, ycolor, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 1, 0), new Vector3(x,y + kAxisLength,z));
-				var zcolor = m_mouseOverZ ? c_white : c_midblue;
-				MeshbAddLine(m_mesh, zcolor, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
-				MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, 1), new Vector3(x,y,z + kAxisLength));*/
-				
 				// Can likely generalize by having an "X" vector and a "Y" vector.
 				// ie, z rotation would be x (1,0,0) and y (0,1,0)
 				//		x rotation would be x (0,1,0) and y (0,0,1)
-				
-				///@function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
-				var MeshbAddArc = function(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
-				{
-					for (var i = startAngle; i < endAngle; i += angleDiv)
-					{
-						MeshbAddLine(
-							mesh, color,
-							width,
-							radius * 2 * pi * (angleDiv / 360),
-							planarX.multiply(lengthdir_x(1, i + 90 + angleDiv * 0.5)).add(planarY.multiply(lengthdir_y(1, i + 90 + angleDiv * 0.5))),
-							center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i)))
-							);
-					}
-				};
-				///@function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
-				var MeshbAddFlatArc = function(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
-				{
-					var normal = planarX.cross(planarY);
-					for (var i = startAngle; i < endAngle; i += angleDiv)
-					{
-						var offset_a = planarX.multiply(lengthdir_x(1, i)).add(planarY.multiply(lengthdir_y(1, i)));
-						var offset_b = planarX.multiply(lengthdir_x(1, i + angleDiv)).add(planarY.multiply(lengthdir_y(1, i + angleDiv)));
-						
-						var u_a = (i - startAngle) / (endAngle - startAngle);
-						var u_b = ((i + angleDiv) - startAngle) / (endAngle - startAngle);
-						
-						meshb_AddQuad(mesh, [
-							new MBVertex(
-								center.add(offset_a.multiply(radius - width)),
-								color, alpha,
-								new Vector2(u_a, 0),
-								normal),
-							new MBVertex(
-								center.add(offset_a.multiply(radius)),
-								color, alpha,
-								new Vector2(u_a, 1),
-								normal),
-							new MBVertex(
-								center.add(offset_b.multiply(radius - width)),
-								color, alpha,
-								new Vector2(u_b, 0),
-								normal),
-							new MBVertex(
-								center.add(offset_b.multiply(radius)),
-								color, alpha,
-								new Vector2(u_b, 1),
-								normal),
-							]);
-					}
-				};
 				
 				var kGizmoCenter = new Vector3(x, y, z);
 				var kAngleDiv = 180 / 10;

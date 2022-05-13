@@ -6,6 +6,7 @@ function APropEntry() constructor
 	_id = null;
 	static Id = function()
 	{
+		gml_pragma("forceinline");
 		return _id;
 	}
 	

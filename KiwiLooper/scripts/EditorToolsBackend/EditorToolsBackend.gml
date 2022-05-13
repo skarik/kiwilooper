@@ -195,17 +195,23 @@ function EditorToolsUpdate()
 		(viewrayTopLeft[2] + viewrayBottomRight[2]) * 0.5];
 		
 	// Do picker collision with the map
-	if (raycast4_tilemap(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel)))
 	{
-		toolWorldX = viewRayPos[0] + viewrayPixel[0] * raycast4_get_hit_distance();
-		toolWorldY = viewRayPos[1] + viewrayPixel[1] * raycast4_get_hit_distance();
-		toolWorldZ = viewRayPos[2] + viewrayPixel[2] * raycast4_get_hit_distance();
-		toolWorldNormal.copyFrom(raycast4_get_hit_normal());
-		toolWorldValid = true;
-	}
-	else
-	{
-		toolWorldValid = false;
+		var pickerObjects = [];
+		var pickerDistances = [];
+		var pickerNormals = [];
+		var pickerCount = EditorPickerCast(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel), pickerObjects, pickerDistances, pickerNormals, kPickerHitMaskTilemap | kPickerHitMaskProp, m_selection);
+		if (pickerCount > 0)
+		{
+			toolWorldX = viewRayPos[0] + viewrayPixel[0] * pickerDistances[0];
+			toolWorldY = viewRayPos[1] + viewrayPixel[1] * pickerDistances[0];
+			toolWorldZ = viewRayPos[2] + viewrayPixel[2] * pickerDistances[0];
+			toolWorldNormal.copyFrom(pickerNormals[0]);
+			toolWorldValid = true;
+		}
+		else
+		{
+			toolWorldValid = false;
+		}
 	}
 	
 	// Check shortcuts before state update, since shortcuts can do temp state changes

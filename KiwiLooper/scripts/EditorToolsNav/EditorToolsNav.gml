@@ -1,3 +1,162 @@
+#macro kPickerHitMaskTilemap	0x01
+#macro kPickerHitMaskEntity		0x02
+#macro kPickerHitMaskProp		0x04
+#macro kPickerHitMaskSplat		0x08
+///@function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask, ignoreList)
+function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask=0xFF, ignoreList=[])
+{
+	var l_priorityHits = ds_priority_create();
+		
+	// Run through the ent table
+	if (hitMask & kPickerHitMaskEntity)
+	{
+		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
+		{
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
+			if (entTypeIndex != entlistIterationLength())
+			{
+				entTypeInfo		= entlistIterationGet(entTypeIndex);
+				entType			= entTypeInfo.objectIndex;
+				entHhsz			= entTypeInfo.hullsize * 0.5;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entOrient		= entTypeInfo.gizmoOrigin;
+			}
+			// Check for proxies:
+			else
+			{
+				entType		= EditorGet().OProxyClass;
+			}
+			
+			// Count through the ents
+			var entCount = instance_number(entType);
+			for (var entIndex = 0; entIndex < entCount; ++entIndex)
+			{
+				var ent = instance_find(entType, entIndex);
+				// Check for proxies:
+				if (entTypeIndex == entlistIterationLength())
+				{
+					entTypeInfo		= ent.entity;
+					entHhsz			= entTypeInfo.hullsize * 0.5;
+					entGizmoType	= entTypeInfo.gizmoDrawmode;
+					entOrient		= entTypeInfo.gizmoOrigin;
+				}
+				
+				// Get offset center
+				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
+				var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
+				
+				if (raycast4_box(new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
+									new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
+									rayStart, rayDir))
+				{
+					if (!array_contains_pred(ignoreList, ent, EditorSelectionEqual))
+					{
+						ds_priority_add(l_priorityHits, [ent, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+					}
+				}
+			}
+		}
+	}
+		
+	// Run through all props
+	if (hitMask & kPickerHitMaskProp)
+	{
+		for (var propIndex = 0; propIndex < EditorGet().m_propmap.GetPropCount(); ++propIndex)
+		{
+			var prop = EditorGet().m_propmap.GetProp(propIndex);
+			
+			// Get the prop BBox & transform it into the world
+			var propBBox = PropGetBBox(prop.sprite);
+			var propTranslation = matrix_build_translation(prop);
+			var propRotation = matrix_build_rotation(prop);
+			
+			if (raycast4_box_rotated(
+				propBBox.center.add(Vector3FromTranslation(prop)),
+				propBBox.extents.multiplyComponent(Vector3FromScale(prop)),
+				propRotation,
+				true,
+				rayStart, rayDir))
+			{
+				var propAsSelection = EditorSelectionWrapProp(prop);
+				if (!array_contains_pred(ignoreList, propAsSelection, EditorSelectionEqual))
+				{
+					ds_priority_add(l_priorityHits, [propAsSelection, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+				}
+			}
+		}
+	}
+		
+	// Run through all splats
+	if (hitMask & kPickerHitMaskSplat)
+	{
+		for (var splatIndex = 0; splatIndex < m_editor.m_splatmap.GetSplatCount(); ++splatIndex)
+		{
+			var splat = EditorGet().m_splatmap.GetSplat(splatIndex);
+			
+			// Get the splat BBox & transform it into the world
+			var splatBBox = SplatGetBBox(splat);
+			var splatRotation = matrix_build_rotation(splat);
+			
+			// Cast against it
+			if (raycast4_box_rotated(
+				splatBBox.center.add(Vector3FromTranslation(splat)),
+				splatBBox.extents.multiplyComponent(Vector3FromScale(splat)),
+				splatRotation,
+				true,
+				rayStart, rayDir))
+			{
+				ds_priority_add(l_priorityHits, [EditorSelectionWrapSplat(splat), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+			}
+		}
+	}
+		
+	// Run against the terrain
+	if (hitMask & kPickerHitMaskTilemap)
+	{
+		if (raycast4_tilemap(rayStart, rayDir))
+		{
+			var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
+			var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
+			var hitBlockZ = rayStart.z + rayDir.z * raycast4_get_hit_distance();
+			var hitNormal = new Vector3();
+			hitNormal.copyFrom(raycast4_get_hit_normal());
+			
+			// Extrude the opposite from the hit normal, and get the block position
+			var blockX = floor((hitBlockX - hitNormal.x) / 16.0);
+			var blockY = floor((hitBlockY - hitNormal.y) / 16.0);
+			var blockZ = floor((hitBlockZ - hitNormal.z) / 16.0);
+			
+			var tile_index = EditorGet().m_tilemap.GetPositionIndex(blockX, blockY);
+			if (tile_index != -1)
+			{
+				ds_priority_add(l_priorityHits, [EditorSelectionWrapTile(EditorGet().m_tilemap.tiles[tile_index]), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+			}
+		}
+	}
+		
+	// Pull the priority to a list
+	// TODO: someday make this less slow because we hit this all the time
+	var l_priorityHitCount = ds_priority_size(l_priorityHits);
+	for (var i = 0; i < l_priorityHitCount; ++i)
+	{
+		var minp = ds_priority_find_min(l_priorityHits);
+		array_push(outHitObjects, minp[0]);
+		array_push(outHitDistances, minp[1]);
+		array_push(outHitNormals, minp[2]);
+		ds_priority_delete_min(l_priorityHits);
+	}
+	ds_priority_destroy(l_priorityHits);
+		
+	return l_priorityHitCount;
+}
+
+///@function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask)
+function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask=0xFF)
+{
+	var droppedNormals = [];
+	return EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, droppedNormals, hitMask);
+}
+
 /// @function AEditorToolStateSelect() constructor
 function AEditorToolStateSelect() : AEditorToolState() constructor
 {
@@ -179,134 +338,6 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 	};
 	
-	///@function PickerCast(rayStart, rayDir, outHitObjects, outHitDistances)
-	static PickerCast = function(rayStart, rayDir, outHitObjects, outHitDistances)
-	{
-		var l_priorityHits = ds_priority_create();
-		
-		// Run through the ent table
-		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
-		{
-			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
-			if (entTypeIndex != entlistIterationLength())
-			{
-				entTypeInfo		= entlistIterationGet(entTypeIndex);
-				entType			= entTypeInfo.objectIndex;
-				entHhsz			= entTypeInfo.hullsize * 0.5;
-				entGizmoType	= entTypeInfo.gizmoDrawmode;
-				entOrient		= entTypeInfo.gizmoOrigin;
-			}
-			// Check for proxies:
-			else
-			{
-				entType		= m_editor.OProxyClass;
-			}
-			
-			// Count through the ents
-			var entCount = instance_number(entType);
-			for (var entIndex = 0; entIndex < entCount; ++entIndex)
-			{
-				var ent = instance_find(entType, entIndex);
-				// Check for proxies:
-				if (entTypeIndex == entlistIterationLength())
-				{
-					entTypeInfo		= ent.entity;
-					entHhsz			= entTypeInfo.hullsize * 0.5;
-					entGizmoType	= entTypeInfo.gizmoDrawmode;
-					entOrient		= entTypeInfo.gizmoOrigin;
-				}
-				
-				// Get offset center
-				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
-				var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
-				
-				if (raycast4_box(new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
-								 new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
-								 rayStart, rayDir))
-				{
-					ds_priority_add(l_priorityHits, ent, raycast4_get_hit_distance());
-				}
-			}
-		}
-		
-		// Run through all props
-		for (var propIndex = 0; propIndex < m_editor.m_propmap.GetPropCount(); ++propIndex)
-		{
-			var prop = m_editor.m_propmap.GetProp(propIndex);
-			
-			// Get the prop BBox & transform it into the world
-			var propBBox = PropGetBBox(prop.sprite);
-			var propTranslation = matrix_build_translation(prop);
-			var propRotation = matrix_build_rotation(prop);
-			
-			if (raycast4_box_rotated(
-				propBBox.center.add(Vector3FromTranslation(prop)),
-				propBBox.extents.multiplyComponent(Vector3FromScale(prop)),
-				propRotation,
-				true,
-				rayStart, rayDir))
-			{
-				ds_priority_add(l_priorityHits, EditorSelectionWrapProp(prop), raycast4_get_hit_distance());
-			}
-		}
-		
-		// Run through all splats
-		for (var splatIndex = 0; splatIndex < m_editor.m_splatmap.GetSplatCount(); ++splatIndex)
-		{
-			var splat = m_editor.m_splatmap.GetSplat(splatIndex);
-			
-			// Get the splat BBox & transform it into the world
-			var splatBBox = SplatGetBBox(splat);
-			var splatRotation = matrix_build_rotation(splat);
-			
-			// Cast against it
-			if (raycast4_box_rotated(
-				splatBBox.center.add(Vector3FromTranslation(splat)),
-				splatBBox.extents.multiplyComponent(Vector3FromScale(splat)),
-				splatRotation,
-				true,
-				rayStart, rayDir))
-			{
-				ds_priority_add(l_priorityHits, EditorSelectionWrapSplat(splat), raycast4_get_hit_distance());
-			}
-		}
-		
-		// Run against the terrain
-		if (raycast4_tilemap(rayStart, rayDir))
-		{
-			var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
-			var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
-			var hitBlockZ = rayStart.z + rayDir.z * raycast4_get_hit_distance();
-			var hitNormal = new Vector3();
-			hitNormal.copyFrom(raycast4_get_hit_normal());
-			
-			// Extrude the opposite from the hit normal, and get the block position
-			var blockX = floor((hitBlockX - hitNormal.x) / 16.0);
-			var blockY = floor((hitBlockY - hitNormal.y) / 16.0);
-			var blockZ = floor((hitBlockZ - hitNormal.z) / 16.0);
-			
-			var tile_index = m_editor.m_tilemap.GetPositionIndex(blockX, blockY);
-			if (tile_index != -1)
-			{
-				ds_priority_add(l_priorityHits, EditorSelectionWrapTile(m_editor.m_tilemap.tiles[tile_index]), raycast4_get_hit_distance());
-			}
-		}
-		
-		// Pull the priority to a list
-		// TODO: someday make this less slow because we hit this all the time
-		var l_priorityHitCount = ds_priority_size(l_priorityHits);
-		for (var i = 0; i < l_priorityHitCount; ++i)
-		{
-			var minp = ds_priority_find_min(l_priorityHits);
-			array_push(outHitObjects, minp);
-			array_push(outHitDistances, ds_priority_find_priority(l_priorityHits, minp));
-			ds_priority_delete_min(l_priorityHits);
-		}
-		ds_priority_destroy(l_priorityHits);
-		
-		return l_priorityHitCount;
-	}
-	
 	/// @function PickerRun(bAdditive = false)
 	/// @desc Runs the picker.
 	static PickerRun = function(bAdditive = false)
@@ -330,7 +361,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Cast against all objects in that specific ray
 		var hitObjects = [];
 		var hitDists = [];
-		var hitCount = PickerCast(rayStart, rayDir, hitObjects, hitDists);
+		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists);
 		if (hitCount > 0)
 		{
 			if (!bAdditive)
@@ -563,12 +594,9 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 				var cameraPos = new Vector3(cameraX, cameraY, cameraZ);
 				
 				// Create the forward vector
-				var cameraDir = new Vector3(
-					lengthdir_x(1.0, o_Camera3D.zrotation) * lengthdir_x(1.0, o_Camera3D.yrotation), 
-					lengthdir_y(1.0, o_Camera3D.zrotation) * lengthdir_x(1.0, o_Camera3D.yrotation), 
-					lengthdir_y(1.0, o_Camera3D.yrotation));
-				var cameraSide = cameraDir.cross(new Vector3(0, 0, 1)).normal();
-				var cameraTop = cameraSide.cross(cameraDir).normal();
+				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
+				var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
+				var cameraSide = cameraDir.cross(cameraTop).normal();
 				
 				// Perform the movement
 				cameraPos.addSelf(
