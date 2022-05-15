@@ -801,7 +801,9 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 	yscale = 1.0;
 	zscale = 1.0;
 	
-	bbox = new BBox3(new Vector3(), new Vector3());
+	bbox = new BBox3(new Vector3(), new Vector3()); // unscaled?
+	
+	m_dragStartPosition = [];
 	
 	Step = function()
 	{
@@ -834,9 +836,9 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 		if (MouseAvailable())
 		{
 			// Sort these checks by screen depth
-			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
-			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
-			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+			var depthX = o_Camera3D.positionToView(x + kX.x, y + kX.y, z + kX.z)[2];
+			var depthY = o_Camera3D.positionToView(x + kY.x, y + kY.y, z + kY.z)[2];
+			var depthZ = o_Camera3D.positionToView(x + kZ.x, y + kZ.y, z + kZ.z)[2];
 		
 			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
 			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
@@ -846,12 +848,15 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 			// Check collision with each axis.
 			for (var check_index = 0; check_index < 3; ++check_index)
 			{
+				var kPos = (new Vector3(x, y, z)).add(kOffset);
+				var kBoxSize = new Vector3(kArrowHalfsize, kArrowHalfsize, kArrowHalfsize);
+				
 				var check_orderLookup = check_depthOrder[check_index][0];
 				if (check_orderLookup == 0)
 				{
 					m_mouseOverX = 
-						raycast4_box(new Vector3(x + kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x + kAxisLength + kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir)
-						|| raycast4_box(new Vector3(x - kAxisLength, y - kArrowHalfsize, z - kArrowHalfsize), new Vector3(x - kAxisLength - kArrowHalfsize*2, y + kArrowHalfsize, z + kArrowHalfsize), rayStart, rayDir);
+						raycast4_box(kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir)
+						|| raycast4_box(kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir);
 					if (m_mouseOverX) break;
 				}
 				if (check_orderLookup == 1)
@@ -893,7 +898,8 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 				
 			if (m_dragX || m_dragY || m_dragZ)
 			{
-				m_dragStart = [xscale, yscale, zscale];
+				m_dragStart = [bbox.extents.x * xscale, bbox.extents.y * yscale, bbox.extents.z * zscale];
+				m_dragStartPosition = [x, y, z];
 				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
 			}
 		}
@@ -902,10 +908,15 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 		var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
+			var lastPosition = Vector3FromArray(m_dragStartPosition);
 			if (m_dragX)
 			{
-				xscale = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 120 * kScreensizeFactor;
-				if (bLocalSnap) xscale = round_nearest(xscale, 0.1);
+				/*xscale = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 120 * kScreensizeFactor;
+				if (bLocalSnap) xscale = round_nearest(xscale, 0.1);*/
+				var xsize = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
+				xscale = xsize / bbox.extents.x;
+				//x = m_dragStartPosition[0] + (m_dragStart[0] - xsize) * 0.5;
+				lastPosition.addSelf(kX.multiply(xsize - m_dragStart[0]));
 			}
 			if (m_dragY)
 			{
@@ -917,6 +928,10 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 				zscale = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 120 * kScreensizeFactor;
 				if (bLocalSnap) zscale = round_nearest(zscale, 0.1);
 			}
+			
+			x = lastPosition.x;
+			y = lastPosition.y;
+			z = lastPosition.z;
 		}
 		
 		if (MouseCheckButtonReleased(mb_left) || !m_active)
@@ -936,24 +951,24 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 				var xcolor = merge_color(c_red, c_white, m_dragX ? 1.0 : (m_mouseOverX ? 0.7 : 0.0));
 				if (!xshouldfade)
 				{
-					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX, kPos.add(kX.multiply(bbox.extents.x)) );
-					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX.negate(), kPos.add(kX.multiply(-bbox.extents.x)) );
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX, kPos.add(kX.multiply(bbox.extents.x * xscale)) );
+					MeshbAddBillboardTriangle(m_mesh, xcolor, kArrowHalfsize, kArrowHalfsize*2, kX.negate(), kPos.add(kX.multiply(-bbox.extents.x * xscale)) );
 				}
 				
 				var yshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragY;
 				var ycolor = merge_color(c_midgreen, c_white, m_dragY ? 1.0 : (m_mouseOverY ? 0.7 : 0.0));
 				if (!yshouldfade)
 				{
-					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY, kPos.add(kY.multiply(bbox.extents.y)) );
-					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY.negate(), kPos.add(kY.multiply(-bbox.extents.y)) );
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY, kPos.add(kY.multiply(bbox.extents.y * yscale)) );
+					MeshbAddBillboardTriangle(m_mesh, ycolor, kArrowHalfsize, kArrowHalfsize*2, kY.negate(), kPos.add(kY.multiply(-bbox.extents.y * yscale)) );
 				}
 				
 				var zshouldfade = (m_dragX || m_dragY || m_dragZ) && !m_dragZ;
 				var zcolor = merge_color(c_midblue, c_white, m_dragZ ? 1.0 : (m_mouseOverZ ? 0.7 : 0.0));
 				if (!zshouldfade)
 				{
-					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ, kPos.add(kZ.multiply(bbox.extents.z)) );
-					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ.negate(), kPos.add(kZ.multiply(-bbox.extents.z)) );
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ, kPos.add(kZ.multiply(bbox.extents.z * zscale)) );
+					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, kZ.negate(), kPos.add(kZ.multiply(-bbox.extents.z * zscale)) );
 				}
 			}
 			else

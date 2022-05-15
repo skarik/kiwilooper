@@ -556,9 +556,9 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 			var bCanScale = is_struct(target) ? variable_struct_exists(target, "xscale") : variable_instance_exists(target, "xscale");
 			
 			// Move to the target position [always]
-			m_transformGizmo.x = target.x;
+			/*m_transformGizmo.x = target.x;
 			m_transformGizmo.y = target.y;
-			m_transformGizmo.z = target.z;
+			m_transformGizmo.z = target.z;*/
 			
 			// If the gizmo is not set up, then we set up initial gizmo position & reference position.
 			if (!m_transformGizmo.m_enabled || m_previousTarget != target)
@@ -570,6 +570,10 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 				m_transformGizmo.xrotation = bCanRotate ? target.xrotation : 0.0;
 				m_transformGizmo.yrotation = bCanRotate ? target.yrotation : 0.0;
 				m_transformGizmo.zrotation = bCanRotate ? target.zrotation : 0.0;
+				
+				m_transformGizmo.x = target.x;
+				m_transformGizmo.y = target.y;
+				m_transformGizmo.z = target.z;
 		
 				if (bCanScale)
 				{
@@ -591,7 +595,8 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 						entOrient		= entTypeInfo.gizmoOrigin;
 						
 						// Get offset center
-						var entHSize = new Vector3(entHhsz * target.xscale, entHhsz * target.yscale, entHhsz * target.zscale); // TODO: scale the hhsz
+						//var entHSize = new Vector3(entHhsz * target.xscale, entHhsz * target.yscale, entHhsz * target.zscale); // TODO: scale the hhsz
+						var entHSize = new Vector3(entHhsz, entHhsz, entHhsz); // TODO: scale the hhsz
 						var entCenter = entGetSelectionCenter(target, entOrient, entHSize);
 						bbox = new BBox3(entCenter.subtract(Vector3FromTranslation(target)), entHSize);
 					}
@@ -599,13 +604,13 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 					{
 						var prop = target;
 						bbox = PropGetBBox(prop.sprite);
-						bbox.extents.multiplyComponentSelf(Vector3FromScale(prop));
+						//bbox.extents.multiplyComponentSelf(Vector3FromScale(prop));
 					}
 					else if (target_type == kEditorSelection_Splat)
 					{
 						var splat = target;
 						var bbox = SplatGetBBox(splat);
-						bbox.extents.multiplyComponentSelf(Vector3FromScale(splat));
+						//bbox.extents.multiplyComponentSelf(Vector3FromScale(splat));
 					}
 					m_transformGizmo.bbox = bbox;
 				}
@@ -622,9 +627,9 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 					var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.yscale, 0.1) : m_transformGizmo.yscale) : target.yscale;
 					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zscale, 0.1) : m_transformGizmo.zscale) : target.zscale;
 					
-					var next_px = m_transformGizmo.m_dragX ? m_transformGizmo.x : target.x;
-					var next_py = m_transformGizmo.m_dragY ? m_transformGizmo.y : target.y;
-					var next_pz = m_transformGizmo.m_dragZ ? m_transformGizmo.z : target.z;
+					var next_px = m_transformGizmo.IsDraggingAny() ? m_transformGizmo.x : target.x;
+					var next_py = m_transformGizmo.IsDraggingAny() ? m_transformGizmo.y : target.y;
+					var next_pz = m_transformGizmo.IsDraggingAny() ? m_transformGizmo.z : target.z;
 				
 					var bSignalChange = 
 							target.xscale != next_x
