@@ -511,7 +511,7 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to scale a local axis. Hold Shift to enable snapping.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to scale a local axis. Hold Alt to toggle snapping.";
 	};
 	onEnd = function(trueEnd)
 	{
