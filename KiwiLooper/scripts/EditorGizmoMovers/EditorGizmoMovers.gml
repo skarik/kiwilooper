@@ -805,6 +805,13 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 	
 	m_dragStartPosition = [];
 	
+	m_mouseOverXSign = 0;
+	m_mouseOverYSign = 0;
+	m_mouseOverZSign = 0;
+	m_dragXSign = 0;
+	m_dragYSign = 0;
+	m_dragZSign = 0;
+	
 	Step = function()
 	{
 		// Calculate the sizing based on the distance to the gizmo:
@@ -854,23 +861,26 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 				var check_orderLookup = check_depthOrder[check_index][0];
 				if (check_orderLookup == 0)
 				{
-					m_mouseOverX = 
-						raycast4_box(kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir)
-						|| raycast4_box(kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir);
+					var check_pos = raycast4_box(kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir)
+					var check_neg = raycast4_box(kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize.negate()), kPos.add(kX.multiply(-bbox.extents.x * xscale)).add(kBoxSize), rayStart, rayDir);
+					m_mouseOverX = check_pos || check_neg;
+					m_mouseOverXSign = check_pos ? 1 : (check_neg ? -1 : 0);
 					if (m_mouseOverX) break;
 				}
 				if (check_orderLookup == 1)
 				{
-					m_mouseOverY =
-						raycast4_box(new Vector3(x - kArrowHalfsize, y + kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y + kAxisLength + kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir)
-						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kAxisLength, z - kArrowHalfsize), new Vector3(x + kArrowHalfsize, y - kAxisLength - kArrowHalfsize*2, z + kArrowHalfsize), rayStart, rayDir);
+					var check_pos = raycast4_box(kPos.add(kY.multiply(bbox.extents.y * yscale)).add(kBoxSize.negate()), kPos.add(kY.multiply(bbox.extents.y * yscale)).add(kBoxSize), rayStart, rayDir);
+					var check_neg = raycast4_box(kPos.add(kY.multiply(-bbox.extents.y * yscale)).add(kBoxSize.negate()), kPos.add(kY.multiply(-bbox.extents.y * yscale)).add(kBoxSize), rayStart, rayDir);
+					m_mouseOverY = check_pos || check_neg;
+					m_mouseOverYSign = check_pos ? 1 : (check_neg ? -1 : 0);
 					if (m_mouseOverY) break;
 				}
 				if (check_orderLookup == 2)
 				{
-					m_mouseOverZ =
-						raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z + kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z + kAxisLength + kArrowHalfsize*2), rayStart, rayDir)
-						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z - kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z - kAxisLength - kArrowHalfsize*2), rayStart, rayDir);
+					var check_pos = raycast4_box(kPos.add(kZ.multiply(bbox.extents.z * zscale)).add(kBoxSize.negate()), kPos.add(kZ.multiply(bbox.extents.z * zscale)).add(kBoxSize), rayStart, rayDir);
+					var check_neg = raycast4_box(kPos.add(kZ.multiply(-bbox.extents.z * zscale)).add(kBoxSize.negate()), kPos.add(kZ.multiply(-bbox.extents.z * zscale)).add(kBoxSize), rayStart, rayDir);
+					m_mouseOverZ = check_pos || check_neg;
+					m_mouseOverZSign = check_pos ? 1 : (check_neg ? -1 : 0);
 					if (m_mouseOverZ) break;
 				}
 			}
@@ -890,12 +900,21 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 		if (MouseCheckButtonPressed(mb_left))
 		{
 			if (m_mouseOverX)
+			{
 				m_dragX = true;
+				m_dragXSign = m_mouseOverXSign;
+			}
 			else if (m_mouseOverY)
+			{
 				m_dragY = true;
+				m_dragYSign = m_mouseOverYSign;
+			}
 			else if (m_mouseOverZ)
+			{
 				m_dragZ = true;
-				
+				m_dragZSign = m_mouseOverZSign;
+			}
+			
 			if (m_dragX || m_dragY || m_dragZ)
 			{
 				m_dragStart = [bbox.extents.x * xscale, bbox.extents.y * yscale, bbox.extents.z * zscale];
@@ -904,31 +923,43 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 			}
 		}
 		
-		var bEnableAngleSnaps = keyboard_check(vk_shift);
-		var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+		//var bEnableAngleSnaps = keyboard_check(vk_shift);
+		//var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
 			var lastPosition = Vector3FromArray(m_dragStartPosition);
+			
+			// Rotate viewray delta into current space
+			var viewrayDelta = new Vector3(m_editor.viewrayPixel[0] - m_dragViewrayStart[0], m_editor.viewrayPixel[1] - m_dragViewrayStart[1], m_editor.viewrayPixel[2] - m_dragViewrayStart[2]);
+			var kRotationInvert = CE_MatrixClone(kRotation);
+			CE_MatrixInverse(kRotationInvert);
+			viewrayDelta.transformAMatrixSelf(kRotationInvert);
+			
+			// Perform the drags
 			if (m_dragX)
 			{
-				/*xscale = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 120 * kScreensizeFactor;
-				if (bLocalSnap) xscale = round_nearest(xscale, 0.1);*/
-				var xsize = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
-				xscale = xsize / bbox.extents.x;
-				//x = m_dragStartPosition[0] + (m_dragStart[0] - xsize) * 0.5;
-				lastPosition.addSelf(kX.multiply(xsize - m_dragStart[0]));
+				var xsize = m_dragStart[0] + viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
+				if (bLocalSnap) xsize = round_nearest(xsize, m_editor.toolGridSize);
+				xscale = xsize / max(1, bbox.extents.x);
+				lastPosition.addSelf(kX.multiply(m_dragXSign * (xsize - m_dragStart[0])));
 			}
 			if (m_dragY)
 			{
-				yscale = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 120 * kScreensizeFactor;
-				if (bLocalSnap) yscale = round_nearest(yscale, 0.1);
+				var ysize = m_dragStart[1] + viewrayDelta.y * 600 * m_dragYSign * kScreensizeFactor;
+				if (bLocalSnap) ysize = round_nearest(ysize, m_editor.toolGridSize);
+				yscale = ysize / max(1, bbox.extents.y);
+				lastPosition.addSelf(kY.multiply(m_dragYSign * (ysize - m_dragStart[1])));
 			}
 			if (m_dragZ)
 			{
-				zscale = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 120 * kScreensizeFactor;
-				if (bLocalSnap) zscale = round_nearest(zscale, 0.1);
+				var zsize = m_dragStart[2] + viewrayDelta.z * 600 * m_dragZSign * kScreensizeFactor;
+				if (bLocalSnap) zsize = round_nearest(zsize, m_editor.toolGridSize);
+				zscale = zsize / max(1, bbox.extents.z);
+				lastPosition.addSelf(kZ.multiply(m_dragZSign * (zsize - m_dragStart[2])));
 			}
 			
+			// Output new offset position
 			x = lastPosition.x;
 			y = lastPosition.y;
 			z = lastPosition.z;

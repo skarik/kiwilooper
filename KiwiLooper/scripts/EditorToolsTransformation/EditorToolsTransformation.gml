@@ -513,13 +513,24 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to scale a local axis. Hold Shift to enable snapping.";
 	};
+	onEnd = function(trueEnd)
+	{
+		Parent_onEnd(trueEnd);
+		if (trueEnd)
+		{
+			m_transformGizmo.SetInvisible();
+			m_transformGizmo.SetDisabled();
+		}
+		
+		m_editor.toolGridTemporaryDisable = false; // Reset states
+	};
 	
 	// TODO onSignalTransformChange = function(entity, type)
 	
 	onStep = function()
 	{
 		// Keyboard "no-snap" override toggle
-		var bEnableScaleSnaps = keyboard_check(vk_shift);
+		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
 		
 		var bValidSelection = array_length(m_editor.m_selection) > 0;
 		if (bValidSelection)
@@ -622,10 +633,13 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 			{
 				if (bCanScale)
 				{
-					var snap = bEnableScaleSnaps;
-					var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.xscale, 0.1) : m_transformGizmo.xscale) : target.xscale;
+					var snap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+					/*var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.xscale, 0.1) : m_transformGizmo.xscale) : target.xscale;
 					var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.yscale, 0.1) : m_transformGizmo.yscale) : target.yscale;
-					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zscale, 0.1) : m_transformGizmo.zscale) : target.zscale;
+					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zscale, 0.1) : m_transformGizmo.zscale) : target.zscale;*/
+					var next_x = m_transformGizmo.m_dragX ? m_transformGizmo.xscale : target.xscale;
+					var next_y = m_transformGizmo.m_dragY ? m_transformGizmo.yscale : target.yscale;
+					var next_z = m_transformGizmo.m_dragZ ? m_transformGizmo.zscale : target.zscale;
 					
 					var next_px = m_transformGizmo.IsDraggingAny() ? m_transformGizmo.x : target.x;
 					var next_py = m_transformGizmo.IsDraggingAny() ? m_transformGizmo.y : target.y;
