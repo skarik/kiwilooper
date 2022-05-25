@@ -101,7 +101,7 @@ function _EntityInfoInit()
 			properties:
 			[
 				["", kValueTypePosition],
-				["intensity", kValueTypeFloat],
+				["brightness", kValueTypeFloat],
 				["range", kValueTypeFloat],
 				["color", kValueTypeColor],
 				["mode", kValueTypeEnum, kLightModeNone,

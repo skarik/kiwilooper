@@ -217,7 +217,7 @@ function lightGatherLights_Forward()
 		light_position_array[i * 4 + 1] = lights[i].y;
 		light_position_array[i * 4 + 2] = lights[i].z;
 		
-		light_params_array[i * 4 + 0] = lights[i].intensity;
+		light_params_array[i * 4 + 0] = lights[i].intensity * lights[i].brightness; // TODO make this not here
 		light_params_array[i * 4 + 1] = 1.0 / lights[i].range;
 		
 		light_color_array[i * 4 + 0] = color_get_red(lights[i].color) / 255.0;
@@ -268,7 +268,7 @@ function lightGatherLights_Deferred()
 		light_position_array[i * 4 + 1] = lights[i].y;
 		light_position_array[i * 4 + 2] = lights[i].z;
 		
-		light_params_array[i * 4 + 0] = lights[i].intensity;
+		light_params_array[i * 4 + 0] = lights[i].intensity * lights[i].brightness; // TODO make this not here
 		light_params_array[i * 4 + 1] = 1.0 / lights[i].range;
 		
 		light_color_array[i * 4 + 0] = color_get_red(lights[i].color) / 255.0;
