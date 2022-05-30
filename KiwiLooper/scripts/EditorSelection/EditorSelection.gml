@@ -79,9 +79,11 @@ function EditorSelectionUpdate()
 					window = EditorWindowAlloc(AEditorWindowProperties);
 					EditorWindowSetFocus(window);
 				}
-				if (window.GetCurrentEntity() != currentSelection.object.Id())
+				if (is_struct(window) && window.GetCurrentEntity() != currentSelection.object.Id())
+				{
 					window.InitWithProp(currentSelection.object);
-				window.Open();
+					window.Open();
+				}
 			}
 			else
 			{
@@ -108,9 +110,11 @@ function EditorSelectionUpdate()
 				window = EditorWindowAlloc(AEditorWindowProperties);
 				EditorWindowSetFocus(window);
 			}
-			if (window.GetCurrentEntity() != currentSelection)
+			if (is_struct(window) && window.GetCurrentEntity() != currentSelection)
+			{
 				window.InitWithEntityInfo(currentSelection, entityInfo);
-			window.Open();
+				window.Open();
+			}
 		}
 		else
 		{

@@ -1,4 +1,5 @@
 ///@desc Deferred surface information
+//#extension GL_EXT_draw_buffers : enable
 
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
@@ -7,6 +8,11 @@ varying vec3 v_vPosition;
 varying vec4 v_vScreenPosition;
 
 uniform vec4 uCameraInfo;
+
+/*layout(location = 0) out vec4 pixelAlbedo;
+layout(location = 1) out vec4 pixelNormal;
+layout(location = 2) out vec4 pixelIllum;
+layout(location = 3) out vec4 pixelDepth;*/
 
 float linearize_depth( float depth, float zNear, float zFar )
 {
@@ -53,6 +59,10 @@ void main()
 	gl_FragData[1] = vec4(normalize(v_vNormal.xyz) * 0.5 + 0.5, 1.0);
 	gl_FragData[2] = vec4(totalLighting.rgb, 1.0);
 	gl_FragData[3] = vec4(encode_to_r8g8(linearDepth), 0, 1.0);
+	/*pixelAlbedo = baseAlbedo;
+	pixelNormal = vec4(normalize(v_vNormal.xyz) * 0.5 + 0.5, 1.0);
+	pixelIllum = vec4(totalLighting.rgb, 1.0);
+	pixelDepth = vec4(encode_to_r8g8(linearDepth), 0, 1.0);*/
 	
 	//gl_FragData[0] = vec4(vec3(linearDepth), 1.0);
 }
