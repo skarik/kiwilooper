@@ -99,3 +99,6 @@ else
 		m_pickedUp = false;
 	}
 }
+
+// Update the glow outline now
+UpdateGlowOutline();

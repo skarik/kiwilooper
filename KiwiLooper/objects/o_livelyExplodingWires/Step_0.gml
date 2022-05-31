@@ -40,28 +40,37 @@ if (iexists(colliding_character))
 }
 
 // Check if a body is nearby
+var bDoorExists = iexists(m_targetDoor);
 var door_wants_open = false;
-if (iexists(m_targetDoor))
 {
 	var connecting_corpse = collision_rectangle(x - 3, y - 3, x + 3, y + 3, ob_usableCorpse, false, true);
 	if (iexists(connecting_corpse))
 	{
 		door_wants_open = true;
-		if (!m_targetDoor.opening && m_targetDoor.openstate < 0.5)
+		if (bDoorExists && !m_targetDoor.opening && m_targetDoor.openstate < 0.5)
 		{
 			m_targetDoor.m_onActivation(id);
 		}
+		
+		// Track conductor to see if we should be electrifying them.
+		UpdateConductor(connecting_corpse);
 	}
+	// no conductor? track effects
+	else
+	{
+		ClearConductor();
+	}
+	
 	// If door shouldnt be open, we must close it
 	if (!door_wants_open)
 	{
-		if (!m_targetDoor.closing && m_targetDoor.openstate > 0.5)
+		if (bDoorExists && !m_targetDoor.closing && m_targetDoor.openstate > 0.5)
 		{
 			m_targetDoor.m_onActivation(id);
 		}
 	}
 }
-else
+if (!bDoorExists)
 {
 	// Create error text for debugging for now 
 	// for LD40 - we almost always want the exploding wires to have a target.

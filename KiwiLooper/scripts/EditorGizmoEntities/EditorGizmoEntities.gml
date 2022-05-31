@@ -228,7 +228,8 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				for (var transformIndex = 0; transformIndex < array_length(transforms); ++transformIndex)
 				{
 					var transform = transforms[transformIndex];
-					if (transform[0] == kGizmoMeshTransformScaleZ) renderInfo.renderer.zscale *= transform[1];
+					if (transform[0] == kGizmoMeshTransformTranslateZ) renderInfo.renderer.z += transform[1];
+					else if (transform[0] == kGizmoMeshTransformScaleZ) renderInfo.renderer.zscale *= transform[1];
 					else if (transform[0] == kGizmoMeshTransformRotateZ) renderInfo.renderer.zrotation += transform[1];
 				}
 			}

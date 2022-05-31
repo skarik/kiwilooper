@@ -19,6 +19,7 @@ function _EntityInfoInit()
 	#macro kGizmoMeshShapeCube 1
 	#macro kGizmoMeshShapeQuadFloor 2
 	
+	#macro kGizmoMeshTransformTranslateZ 2
 	#macro kGizmoMeshTransformScaleZ 5
 	#macro kGizmoMeshTransformRotateZ 8
 	
@@ -270,6 +271,10 @@ function _EntityInfoInit()
 				shape:	kGizmoMeshShapeQuadFloor,
 				sprite:	spr_metalWiretile,
 				index:	0,
+				transform:
+				[
+					[kGizmoMeshTransformTranslateZ, 1],
+				],
 			},
 			
 			hullsize: 16,

@@ -8,6 +8,8 @@ m_pickedUp = false;
 m_pickedUpBy = noone;
 height = 3;
 
+m_electrifiedBottom = false;
+
 onGround = false;
 xspeed = 0.0;
 yspeed = 0.0;
@@ -16,6 +18,45 @@ zspeed = 0.0;
 // Set up state
 image_speed = 0;
 image_index = 0;
+
+m_glowOutline = null;
+UpdateGlowOutline = function()
+{
+	if (m_electrifiedBottom && m_glowOutline == null)
+	{
+		m_glowOutline = inew(ob_3DObject);
+		m_glowOutline.m_renderInstance = id;
+		m_glowOutline.lit = false;
+		m_glowOutline.m_renderEvent = method(m_glowOutline, function()
+		{
+			var last_shader = drawShaderGet();
+			
+			drawShaderSet(sh_unlitColormask);
+			shader_set_uniform_f(global.su_unlitColormask.uColor, 0.4, 1.0, 1.0, 1.0);
+			vertex_submit(m_renderInstance.m_mesh, pr_trianglelist, sprite_get_texture(m_renderInstance.sprite_index, m_renderInstance.image_index));
+			
+			drawShaderSet(last_shader);
+		});
+	}
+	if (m_glowOutline != null)
+	{
+		// Copy transformation, but offset downward
+		m_glowOutline.x = x;
+		m_glowOutline.y = y;
+		m_glowOutline.z = z - 0.2;
+		m_glowOutline.xrotation = xrotation;
+		m_glowOutline.yrotation = yrotation;
+		m_glowOutline.zrotation = zrotation;
+		m_glowOutline.xscale = xscale * (17/16);
+		m_glowOutline.yscale = yscale * (17/16);
+		m_glowOutline.zscale = zscale * (17/16);
+	}
+	else if (!m_electrifiedBottom && m_glowOutline != null)
+	{
+		idelete(m_glowOutline);
+		m_glowOutline = null;
+	}
+}
 
 // Set up callback
 m_onActivation = function(activatedBy)
