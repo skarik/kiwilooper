@@ -189,9 +189,10 @@ function Character_Step()
 		// Update on-ground shock death
 		if (iexists(o_livelyRoomState) && o_livelyRoomState.powered)
 		{
-			if (((z + 64) % 16 > 8) // Quick hack to let us start falling first
-				&& collision4_get_groundtype(x, y, z) == kGroundType_Tileset
-				&& collision4_get_tileextra(x, y) == kTileExtras_Shock)
+			//if (((z + 64) % 16 > 8) // Quick hack to let us start falling first
+			if ((((z + 64) % 16 > 8) // Quick hack to let us start falling first
+				|| (onGround && z == shadowInstance.z))
+				&& World_ShockAtPosition(x, y, z))
 			{
 				if (!isDead)
 				{

@@ -72,6 +72,7 @@
     {"id":{"name":"object_register_name","path":"scripts/object_register_name/object_register_name.yy",},"order":9,},
     {"id":{"name":"spr_kiwiWalk","path":"sprites/spr_kiwiWalk/spr_kiwiWalk.yy",},"order":6,},
     {"id":{"name":"spr_powercellCorpse","path":"sprites/spr_powercellCorpse/spr_powercellCorpse.yy",},"order":1,},
+    {"id":{"name":"WorldGameplay_Checks","path":"scripts/WorldGameplay_Checks/WorldGameplay_Checks.yy",},"order":4,},
     {"id":{"name":"avec2_length","path":"scripts/avec2_length/avec2_length.yy",},"order":3,},
     {"id":{"name":"o_livelyDoorRelay","path":"objects/o_livelyDoorRelay/o_livelyDoorRelay.yy",},"order":7,},
     {"id":{"name":"sh_stylizedAbberation","path":"shaders/sh_stylizedAbberation/sh_stylizedAbberation.yy",},"order":1,},

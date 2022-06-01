@@ -32,13 +32,6 @@ if (explosionDelay > 0.0)
 	}
 }
 
-// Kill the characterif they step on it
-var colliding_character = collision_rectangle(x - 4, y - 4, x + 4, y + 4, ob_character, false, true);
-if (iexists(colliding_character))
-{
-	damageTarget(noone, colliding_character, 1, kDamageTypeShock, x, y);
-}
-
 // Check if a body is nearby
 var bDoorExists = iexists(m_targetDoor);
 var door_wants_open = false;

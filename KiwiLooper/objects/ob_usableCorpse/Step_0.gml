@@ -34,7 +34,7 @@ function mvtcZMotionCorpseSpecial()
 		zspeed = 0;
 		// Seek to floor
 		z = highest_z;
-		// Now on ground
+		// Now on ground 
 		onGround = true;
 	}
 	
@@ -73,16 +73,31 @@ if (!m_pickedUp)
 		}
 	}
 	
+	// Apply landing callback
+	if (!wasOnGround && onGround)
+	{
+		m_onHitGround();
+	}
+	
 	// Shake when landing on ground & moving
 	if (!wasOnGround && onGround && (sqr(xspeed) + sqr(yspeed) > sqr(10)))
 	{
 		effectScreenShake(1.7, 0.3, true);
+	}
+	
+	// Update electrified checks if on ground & sliding at all
+	if (onGround && (sqr(xspeed) + sqr(yspeed) > sqr(1)))
+	{
+		m_onSlideGround();
 	}
 }
 else
 {
 	// Disable collision when on air. This can be done by marking not on ground
 	onGround = false;
+	
+	// Disable electrified
+	m_electrifiedBottom = false;
 	
 	if (iexists(m_pickedUpBy))
 	{

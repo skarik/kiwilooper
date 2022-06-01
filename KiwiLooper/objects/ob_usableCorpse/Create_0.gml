@@ -38,7 +38,7 @@ UpdateGlowOutline = function()
 			drawShaderSet(last_shader);
 		});
 	}
-	if (m_glowOutline != null)
+	else if (m_electrifiedBottom && m_glowOutline != null)
 	{
 		// Copy transformation, but offset downward
 		m_glowOutline.x = x;
@@ -94,6 +94,18 @@ m_onActivation = function(activatedBy)
 m_onVaporize = function(vaporizedBy)
 {
 	instance_destroy();
+}
+m_onHitGround = function()
+{
+	var prev = m_electrifiedBottom;
+	m_electrifiedBottom = World_ShockAtPosition(x, y, z, kWorldSideFloor);
+	if (prev != m_electrifiedBottom)
+	{
+	}
+}
+m_onSlideGround = function()
+{
+	m_electrifiedBottom = World_ShockAtPosition(x, y, z, kWorldSideFloor);
 }
 
 // Create empty mesh

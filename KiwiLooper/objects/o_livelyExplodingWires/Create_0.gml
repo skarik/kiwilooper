@@ -11,22 +11,22 @@ conductor = null;
 	// Conductor updating
 	UpdateConductor = function(in_conductor)
 	{
-		if (conductor == null || !iexists(conductor))
+		/*if (conductor == null || !iexists(conductor))
 		{
 			conductor = in_conductor;
 		}
 		if (iexists(conductor))
 		{
 			conductor.m_electrifiedBottom = true;
-		}
+		}*/
 	}
 	ClearConductor = function()
 	{
-		if (conductor != null && iexists(conductor))
+		/*if (conductor != null && iexists(conductor))
 		{
 			conductor.m_electrifiedBottom = false;
 		}
-		conductor = null;
+		conductor = null;*/
 	}
 #endregion
 
