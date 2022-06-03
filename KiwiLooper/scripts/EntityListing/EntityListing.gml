@@ -19,7 +19,11 @@ function _EntityInfoInit()
 	#macro kGizmoMeshShapeCube 1
 	#macro kGizmoMeshShapeQuadFloor 2
 	
+	#macro kGizmoMeshTransformTranslateX 0
+	#macro kGizmoMeshTransformTranslateY 1
 	#macro kGizmoMeshTransformTranslateZ 2
+	#macro kGizmoMeshTransformScaleX 3
+	#macro kGizmoMeshTransformScaleY 4
 	#macro kGizmoMeshTransformScaleZ 5
 	#macro kGizmoMeshTransformRotateZ 8
 	
@@ -85,7 +89,7 @@ function _EntityInfoInit()
 				["lit", kValueTypeBoolean, true],
 			],
 		},
-	
+		
 		// Lights:
 		{
 			name: "light",
@@ -133,7 +137,7 @@ function _EntityInfoInit()
 				["color", kValueTypeColor],
 			],
 		},
-		
+
 		// Test Proxies:
 		{
 			name: "test_player_start",
@@ -424,6 +428,12 @@ function _EntityInfoInit()
 				sprite:	object_get_sprite(o_usableCorpseRobo),
 				index:	0,
 				lit:	false,
+				transform:
+				[
+					[kGizmoMeshTransformScaleX, sprite_get_width( object_get_sprite(o_usableCorpseRobo)) / 16],
+					[kGizmoMeshTransformScaleY, sprite_get_height(object_get_sprite(o_usableCorpseRobo)) / 16],
+					[kGizmoMeshTransformTranslateZ, 1],
+				],
 			},
 			
 			properties:
@@ -446,6 +456,40 @@ function _EntityInfoInit()
 				sprite:	object_get_sprite(o_usableCorpseKiwi),
 				index:	0,
 				lit:	false,
+				transform:
+				[
+					[kGizmoMeshTransformScaleX, sprite_get_width( object_get_sprite(o_usableCorpseKiwi)) / 16],
+					[kGizmoMeshTransformScaleY, sprite_get_height(object_get_sprite(o_usableCorpseKiwi)) / 16],
+					[kGizmoMeshTransformTranslateZ, 1],
+				],
+			},
+			
+			properties:
+			[
+				["lit", kValueTypeBoolean, false],
+			],
+		},
+		{
+			name: "usable_corpse_plug",
+			parent: "lively_base",
+			objectIndex: o_usableCorpsePlug,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_usableCorpsePlug),
+				index:	0,
+				lit:	false,
+				transform:
+				[
+					[kGizmoMeshTransformScaleX, sprite_get_width( object_get_sprite(o_usableCorpsePlug)) / 16],
+					[kGizmoMeshTransformScaleY, sprite_get_height(object_get_sprite(o_usableCorpsePlug)) / 16],
+					[kGizmoMeshTransformTranslateZ, 1],
+				],
 			},
 			
 			properties:

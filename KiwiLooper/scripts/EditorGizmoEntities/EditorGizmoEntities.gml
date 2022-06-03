@@ -228,7 +228,11 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				for (var transformIndex = 0; transformIndex < array_length(transforms); ++transformIndex)
 				{
 					var transform = transforms[transformIndex];
-					if (transform[0] == kGizmoMeshTransformTranslateZ) renderInfo.renderer.z += transform[1];
+					if (transform[0] == kGizmoMeshTransformTranslateX) renderInfo.renderer.x += transform[1];
+					else if (transform[0] == kGizmoMeshTransformTranslateY) renderInfo.renderer.y += transform[1];
+					else if (transform[0] == kGizmoMeshTransformTranslateZ) renderInfo.renderer.z += transform[1];
+					else if (transform[0] == kGizmoMeshTransformScaleX) renderInfo.renderer.xscale *= transform[1];
+					else if (transform[0] == kGizmoMeshTransformScaleY) renderInfo.renderer.yscale *= transform[1];
 					else if (transform[0] == kGizmoMeshTransformScaleZ) renderInfo.renderer.zscale *= transform[1];
 					else if (transform[0] == kGizmoMeshTransformRotateZ) renderInfo.renderer.zrotation += transform[1];
 				}
@@ -306,10 +310,10 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				else if (entMesh.shape == kGizmoMeshShapeQuadFloor)
 				{
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3(-0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
+						new MBVertex((new Vector3(-0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(-0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
 						]);
 				}
 				else if (entMesh.shape == kGizmoMeshShapeCube)

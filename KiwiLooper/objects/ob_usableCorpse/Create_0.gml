@@ -164,3 +164,9 @@ m_renderEvent = function()
 {
 	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sprite_index, image_index));
 }
+
+// Reset the mesh on post-level-load
+onPostLevelLoad = function()
+{
+	m_updateMesh();
+};
