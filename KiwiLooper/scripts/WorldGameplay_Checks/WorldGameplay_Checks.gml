@@ -18,7 +18,8 @@ function World_ShockAtPosition(x, y, z, checkSide=kWorldSideFloorAndWall)
 		{
 			return true;
 		}
-		else if (collision4_get_groundtype(x, y, z) == kGroundType_Tileset
+		else if (iexists(o_livelyRoomState) && o_livelyRoomState.powered
+			&& collision4_get_groundtype(x, y, z) == kGroundType_Tileset
 			&& collision4_get_tileextra(x, y) == kTileExtras_Shock)
 		{
 			return true;

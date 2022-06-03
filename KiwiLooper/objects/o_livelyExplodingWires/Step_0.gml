@@ -40,6 +40,9 @@ var door_wants_open = false;
 	var connecting_corpse = collision_rectangle(x - 3, y - 3, x + 3, y + 3, ob_usableCorpse, false, true);
 	if (iexists(connecting_corpse))
 	{
+		conducting = true;
+		
+		// Update door trigger
 		door_wants_open = true;
 		if (bDoorExists && !m_targetDoor.opening && m_targetDoor.openstate < 0.5)
 		{
@@ -52,6 +55,9 @@ var door_wants_open = false;
 	// no conductor? track effects
 	else
 	{
+		conducting = false;
+		
+		// Clear conduction tracking
 		ClearConductor();
 	}
 	

@@ -3,9 +3,11 @@
 event_inherited();
 
 // Delay before the level-start explosion
-explosionDelay = 1.0;
+//explosionDelay = 1.0;
 // Current conducting object, used to track effects
 conductor = null;
+// Current conducting state
+conducting = false;
 
 #region Local Functions
 	// Conductor updating

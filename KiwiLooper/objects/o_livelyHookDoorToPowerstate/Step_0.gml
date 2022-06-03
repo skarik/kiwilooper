@@ -2,12 +2,25 @@
 
 if (iexists(m_doorToCheck) && iexists(o_livelyRoomState))
 {
-	if (m_doorToCheck.openstate > 0.2)
+	switch (m_doorToCheck.object_index)
 	{
-		o_livelyRoomState.powered = true;
-	}
-	else
-	{
-		o_livelyRoomState.powered = false;
+	case o_livelyDoor:
+	case o_livelyDoorPlatform:
+		{
+			if (m_doorToCheck.openstate > 0.2)
+			{
+				o_livelyRoomState.powered = true;
+			}
+			else
+			{
+				o_livelyRoomState.powered = false;
+			}
+		}
+		break;
+	case o_livelyExplodingWires:
+		{
+			o_livelyRoomState.powered = m_doorToCheck.conducting;
+		}
+		break;
 	}
 }

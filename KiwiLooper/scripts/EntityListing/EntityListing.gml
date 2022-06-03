@@ -286,6 +286,7 @@ function _EntityInfoInit()
 			properties:
 			[
 				["m_targetDoor", kValueTypeLively],
+				["explosionDelay", kValueTypeFloat, 1.0],
 			],
 		},
 		{
