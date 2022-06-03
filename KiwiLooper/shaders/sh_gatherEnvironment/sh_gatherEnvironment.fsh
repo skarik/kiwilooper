@@ -33,7 +33,7 @@ float decode_from_r8g8( vec2 value )
 
 void main()
 {
-	vec4 baseAlbedo = texture2D( gm_BaseTexture, v_vTexcoord );
+	vec4 baseAlbedo = texture2D( gm_BaseTexture, v_vTexcoord ) * v_vColour;
 	vec4 bloodLightSkip = vec4(0.996, 0.388, 0.572, 1.0);
 	
 	// Early alphatest

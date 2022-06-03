@@ -5,10 +5,11 @@ if (explosionDelay > 0.0)
 	explosionDelay -= Time.deltaTime;
 	if (explosionDelay <= 0.0)
 	{
+		var spawn_offset = (new Vector3(0, 0, 1)).transformAMatrixSelf(matrix_build_rotation(self));
 		var explosion = inew(ob_billboardSprite);
-			explosion.x = x;
-			explosion.y = y;
-			explosion.z = z + 16;
+			explosion.x = x + spawn_offset.x * 7;
+			explosion.y = y + spawn_offset.y * 7;
+			explosion.z = z + spawn_offset.z * 7;
 			explosion.sprite_index = sfx_explo5;
 			explosion.killOnEnd = true;
 			explosion.m_updateMesh();
