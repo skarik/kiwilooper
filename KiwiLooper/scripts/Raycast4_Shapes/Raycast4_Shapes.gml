@@ -124,6 +124,11 @@ function raycast4_tilemap(rayOrigin, rayDir)
 		
 		// Raycast against the tileset's bbox.
 		var l_tilesetExtents = l_tilesetMax.subtract(l_tilesetMin);
+		if (l_tilesetExtents.x < 0 || l_tilesetExtents.y < 0 || l_tilesetExtents.z < 0)
+		{
+			return false;
+		}
+		
 		var l_hitTileset = raycast4_box(l_tilesetMin, l_tilesetMax, rayOrigin, rayDir);
 		
 		if (!l_hitTileset)

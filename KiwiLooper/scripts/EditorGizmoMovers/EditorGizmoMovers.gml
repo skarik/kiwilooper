@@ -939,6 +939,8 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 			// Perform the drags
 			if (m_dragX)
 			{
+				show_debug_message(string(bbox.extents.x) + " * " + string(xscale));
+				
 				var xsize = m_dragStart[0] + viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
 				if (bLocalSnap) xsize = round_nearest(xsize, m_editor.toolGridSize);
 				xscale = xsize / max(1, bbox.extents.x);

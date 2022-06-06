@@ -25,20 +25,24 @@ m_heightMap = {
 		}
 	},
 	get: function(x, y) {
+		gml_pragma("forceinline");
 		if (x < 0 || y < 0 || x >= width || y >= height)
 			return m_defaultHeight;
 		return array[x + y * width];
 	},
 	set: function(x, y, value) {
+		gml_pragma("forceinline");
 		array[x + y * width] = value;
 	},
 	
 	getExtras: function(x, y) {
+		gml_pragma("forceinline");
 		if (x < 0 || y < 0 || x >= width || y >= height)
 			return m_defaultHeight;
 		return array_extras[x + y * width];
 	},
 	setExtras: function(x, y, value) {
+		gml_pragma("forceinline");
 		array_extras[x + y * width] = value;
 	},
 };
