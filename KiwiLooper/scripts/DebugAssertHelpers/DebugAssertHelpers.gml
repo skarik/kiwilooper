@@ -3,6 +3,7 @@
 /// @param {Real or Bool} Condition to check.
 function assert(condition)
 {
+	gml_pragma("forceinline");
 	if (debug_mode)
 	{
 		if (!condition)
