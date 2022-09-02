@@ -16,6 +16,13 @@ door_open_sound = (room == rm_Ship5) ? "sound/door/doom_door_open0.wav" : "sound
 onPostLevelLoad = function()
 {
 	startz = z;
+	
+	// Update collision sizes, as sprite is used for collision check
+	if (xscale != 1.0 || yscale != 1.0 || zscale != 1.0)
+	{
+		image_xscale = xscale;
+		image_yscale = yscale;
+	}
 };
 
 // Set up callback
