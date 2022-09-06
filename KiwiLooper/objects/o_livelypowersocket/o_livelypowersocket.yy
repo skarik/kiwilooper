@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spr_metalPlug",
-    "path": "sprites/spr_metalPlug/spr_metalPlug.yy",
+    "name": "spr_metalWiretile",
+    "path": "sprites/spr_metalWiretile/spr_metalWiretile.yy",
   },
   "solid": false,
   "visible": true,
@@ -9,8 +9,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "ob_usableCorpse",
-    "path": "objects/ob_usableCorpse/ob_usableCorpse.yy",
+    "name": "ob_lively",
+    "path": "objects/ob_lively/ob_lively.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -24,18 +24,23 @@
   "physicsStartAwake": true,
   "physicsKinematic": false,
   "physicsShapePoints": [],
-  "eventList": [],
+  "eventList": [
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+  ],
   "properties": [
-    {"varType":5,"value":"noone","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],"resourceVersion":"1.0","name":"m_targetLively","tags":[],"resourceType":"GMObjectProperty",},
+    {"varType":5,"value":"noone","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[
+        "GMObject",
+      ],"resourceVersion":"1.0","name":"m_targetLively","tags":[],"resourceType":"GMObjectProperty",},
     {"varType":3,"value":"True","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],"resourceVersion":"1.0","name":"triggerOnPlug","tags":[],"resourceType":"GMObjectProperty",},
   ],
   "overriddenProperties": [],
   "parent": {
-    "name": "Lively Usables",
-    "path": "folders/Objects/Game/Lively Usables.yy",
+    "name": "Lively",
+    "path": "folders/Objects/Game/Lively.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_usableCorpsePlug",
+  "name": "o_livelyPowerSocket",
   "tags": [],
   "resourceType": "GMObject",
 }

@@ -306,7 +306,37 @@ function _EntityInfoInit()
 				["nextlevel", kValueTypeString],
 			],
 		},
+		{
+			name: "lively_power_socket",
+			parent: "lively_base",
+			desc: "",
+			objectIndex: o_livelyPowerSocket,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_livelyPowerSocket),
+				index:	0,
+				transform:
+				[
+					[kGizmoMeshTransformTranslateZ, 1],
+				],
+			},
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["m_targetLively", kValueTypeLively],
+				["triggerOnPlug", kValueTypeBoolean, true],
+			],
+		},
 		
+		// No-hull livelies
 		{
 			name: "lively_doorpower_to_roompower",
 			parent: "lively_base",
@@ -496,6 +526,8 @@ function _EntityInfoInit()
 			properties:
 			[
 				["lit", kValueTypeBoolean, false],
+				["m_targetLively", kValueTypeLively],
+				["triggerOnPlug", kValueTypeBoolean, true],
 			],
 		},
 		

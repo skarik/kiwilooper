@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Math",
-    "path": "folders/Scripts/Game/Math.yy",
+    "name": "Game",
+    "path": "folders/Scripts/Game.yy",
   },
   "resourceVersion": "1.0",
-  "name": "Vector2_SD",
+  "name": "TriggeringUtils",
   "tags": [],
   "resourceType": "GMScript",
 }

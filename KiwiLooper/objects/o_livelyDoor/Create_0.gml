@@ -23,6 +23,12 @@ onPostLevelLoad = function()
 		image_xscale = xscale;
 		image_yscale = yscale;
 	}
+	
+	// hack to fix.
+	xscale = 1;
+	yscale = 1;
+	
+	m_updateMesh();
 };
 
 // Set up callback
