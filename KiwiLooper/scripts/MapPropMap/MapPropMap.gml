@@ -109,6 +109,7 @@ function APropMap() constructor
 			layer_sprite_angle(asset, prop.zrotation);
 			layer_sprite_xscale(asset, prop.xscale);
 			layer_sprite_yscale(asset, prop.yscale);
+			layer_sprite_index(asset, prop.index);
 		}
 	}
 }

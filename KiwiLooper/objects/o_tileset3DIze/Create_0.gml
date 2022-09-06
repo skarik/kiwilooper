@@ -304,10 +304,13 @@ if (global.tiles_main == null)
 }
 
 // Now that we have elevation, we can build props!
+debugMessage("Checking if main tileset");
 if (global.tiles_main == id)
 {
+	debugMessage("Checking if props exists");
 	if (!iexists(o_props3DIze))
 	{
+		debugMessage("Spawning props.");
 		inew(o_props3DIze);
 	}
 }

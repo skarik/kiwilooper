@@ -153,8 +153,10 @@ function _Game_LoadMapInternal()
 	}
 	
 	// W/ props & ents ready, start 3d-ify chain
+	if (!iexists(o_tileset3DIze) || !iexists(global.tiles_main)) ///global.tiles_main is defined in collision, should be cleaned up
 	{
 		// Create the 3d-ify chain
+		global.tiles_main = null;
 		inew(o_tileset3DIze);
 	}
 	
