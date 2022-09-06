@@ -415,6 +415,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					{
 						EditorGlobalSignalTransformChange(instance, instance_type);
 					}
+					else if (property_change_ok)
+					{
+						EditorGlobalSignalPropertyChange(instance, instance_type, property, value);
+					}
 				}
 			}
 		}

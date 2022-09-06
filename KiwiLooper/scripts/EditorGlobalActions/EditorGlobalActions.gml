@@ -94,6 +94,32 @@ function EditorGlobalSignalTransformChange(entity, type, deferMeshBuilds=false)
 	}
 }
 
+function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMeshBuilds=false)
+{
+	with (EditorGet())
+	{
+		// If the incoming ent is a prop, we gotta rebuild prop meshes
+		if (!deferMeshBuilds)
+		{
+			if (is_struct(entity)) // assume struct inputs are props
+			{
+				if (type == kEditorSelection_Prop)
+				{
+					// Rebuild props when changing the index
+					if (property[0] == "index")
+					{
+						MapRebuilPropsOnly();
+					}
+				}
+				else if (type == kEditorSelection_Splat)
+				{
+					MapRebuildSplats();
+				}
+			}
+		}
+	}
+}
+
 //=============================================================================
 
 function EditorGlobalSaveMap()
