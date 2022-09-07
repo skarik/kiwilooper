@@ -48,14 +48,21 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		return entity_instance;
 	}
 	
-	static MoveForPosition = function(in_x, in_y, in_z)
+	static MoveForPosition = function(in_x, in_y, in_z, in_size)
 	{
-		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
+		// Get the positions in 3D space to get sizes
 		var ent_screenpos = o_Camera3D.positionToView(in_x, in_y, in_z);
+		var ent_screenpos_corner = o_Camera3D.positionToView(in_x + o_Camera3D.m_viewUp[0] * in_size, in_y + o_Camera3D.m_viewUp[1] *in_size, in_z + o_Camera3D.m_viewUp[2] *in_size);
+		
+		// Define the padding for the properties box.
+		var kPadding = 10;
+		var positionOffset = max(32, kPadding + point_distance(ent_screenpos[0], ent_screenpos[1], ent_screenpos_corner[0], ent_screenpos_corner[1]));
+		
+		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
 		if (!has_stored_position)
 		{
-			m_position.x = ent_screenpos[0] + 32;
-			m_position.y = ent_screenpos[1] + 32;
+			m_position.x = ent_screenpos[0] + positionOffset;
+			m_position.y = ent_screenpos[1] + positionOffset;
 		}
 		// Begin clamping check:
 		{
@@ -68,23 +75,22 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			clampPosition();
 			
 			// If we're covering the ent position, move to other corners and clamp
-			var kPadding = 10;
 			if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 			{
-				m_position.x = ent_screenpos[0] - m_size.x - 32;
-				m_position.y = ent_screenpos[1] + 32;
+				m_position.x = ent_screenpos[0] - m_size.x - positionOffset;
+				m_position.y = ent_screenpos[1] + positionOffset;
 				clampPosition();
 				
 				if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 				{
-					m_position.x = ent_screenpos[0] - m_size.x - 32;
-					m_position.y = ent_screenpos[1] - m_size.y - 32;
+					m_position.x = ent_screenpos[0] - m_size.x - positionOffset;
+					m_position.y = ent_screenpos[1] - m_size.y - positionOffset;
 					clampPosition();
 					
 					if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 					{
-						m_position.x = ent_screenpos[0] + 32;
-						m_position.y = ent_screenpos[1] - m_size.y - 32;
+						m_position.x = ent_screenpos[0] + positionOffset;
+						m_position.y = ent_screenpos[1] - m_size.y - positionOffset;
 						clampPosition();
 					}
 				}
@@ -108,7 +114,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		entity_info		= entityInfo;
 		editing_target	= kEditorSelection_None;
 		
-		MoveForPosition(entity_instance.x, entity_instance.y, entity_instance.z);
+		MoveForPosition(entity_instance.x, entity_instance.y, entity_instance.z, entityInfo.hullsize);
 		
 		// Since editing everything is based around key-values, we need to generate string values for each entry now.
 		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
@@ -166,7 +172,9 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		prop_instance	= prop;
 		editing_target	= kEditorSelection_Prop;
 		
-		MoveForPosition(prop_instance.x, prop_instance.y, prop_instance.z);
+		MoveForPosition(prop_instance.x, prop_instance.y, prop_instance.z,
+			max(sprite_get_width(prop_instance.sprite), sprite_get_height(prop_instance.sprite)) * max(prop_instance.xscale, prop_instance.yscale, prop_instance.zscale)
+			);
 		
 		entity_info		= {
 			properties: [
