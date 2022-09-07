@@ -364,6 +364,7 @@
     {"id":{"name":"f_04b03","path":"fonts/f_04b03/f_04b03.yy",},"order":0,},
     {"id":{"name":"EditorCamera","path":"scripts/EditorCamera/EditorCamera.yy",},"order":0,},
     {"id":{"name":"ot_3DPlane","path":"objects/ot_3DPlane/ot_3DPlane.yy",},"order":0,},
+    {"id":{"name":"EditorClipboard","path":"scripts/EditorClipboard/EditorClipboard.yy",},"order":13,},
     {"id":{"name":"VariablesHelpers","path":"scripts/VariablesHelpers/VariablesHelpers.yy",},"order":20,},
     {"id":{"name":"Raycast4_Shapes","path":"scripts/Raycast4_Shapes/Raycast4_Shapes.yy",},"order":3,},
     {"id":{"name":"ssy_usable","path":"sprites/ssy_usable/ssy_usable.yy",},"order":31,},

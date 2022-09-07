@@ -88,6 +88,7 @@ EditorUIBitsSetup();
 EditorCameraSetup();
 EditorGizmoSetup();
 EditorSelectionSetup();
+EditorClipboardSetup();
 
 EditorTileMapSetup();
 EditorPropAndSplatSetup();

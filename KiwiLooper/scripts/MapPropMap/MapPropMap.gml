@@ -24,6 +24,25 @@ function APropEntry() constructor
 	// Sprite
 	index = 0;
 	sprite = null;
+	
+	
+	static copyFrom = function(target)
+	{
+		// Transformation
+		x = target.x;
+		y = target.y;
+		z = target.z;
+		xrotation = target.xrotation;
+		yrotation = target.yrotation;
+		zrotation = target.zrotation;
+		xscale = target.xscale;
+		yscale = target.yscale;
+		zscale = target.zscale;
+		
+		// Sprite
+		index = target.index;
+		sprite = target.sprite;
+	}
 }
 
 /// @function APropMap() constructor
