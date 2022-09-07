@@ -83,6 +83,7 @@ function EditorSelectionUpdate()
 				{
 					window.InitWithProp(currentSelection.object);
 					window.Open();
+					EditorWindowSavePositions(window);
 				}
 			}
 			else
@@ -114,6 +115,7 @@ function EditorSelectionUpdate()
 			{
 				window.InitWithEntityInfo(currentSelection, entityInfo);
 				window.Open();
+				EditorWindowSavePositions(window);
 			}
 		}
 		else

@@ -348,9 +348,8 @@ function EditorWindowAlloc(type)
 	array_push(windows, window);
 	return window;
 }
-/// @function EditorWindowFree(window)
-/// @desc Requests a deferred deletion of the given window.
-function EditorWindowFree(window)
+
+function EditorWindowSavePositions(window)
 {
 	if (is_struct(window))
 	{
@@ -383,6 +382,16 @@ function EditorWindowFree(window)
 			array_push(windowSavedSizes, [window.classType, window.m_size.copy()]);
 		};
 		saveWindowSize(window);
+	}
+}
+
+/// @function EditorWindowFree(window)
+/// @desc Requests a deferred deletion of the given window.
+function EditorWindowFree(window)
+{
+	if (is_struct(window))
+	{
+		EditorWindowSavePositions(window);
 		
 		// Disable window & request free
 		window.request_free = true;

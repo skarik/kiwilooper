@@ -48,24 +48,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		return entity_instance;
 	}
 	
-	static InitWithEntityInfo = function(entityInstance, entityInfo)
+	static MoveForPosition = function(in_x, in_y, in_z)
 	{
-		// Stop editing:
-		if (GetCurrentEntity() != entityInstance || editing_target != kEditorSelection_None)
-		{
-			if (property_editing)
-			{
-				PropertyChangeEnd();
-			}
-			// TODO: Reset the focused/mouseover if the keyvalue doesnt match
-		}
-		
-		entity_instance	= entityInstance;
-		entity_info		= entityInfo;
-		editing_target	= kEditorSelection_None;
-		
 		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
-		var ent_screenpos = o_Camera3D.positionToView(entity_instance.x, entity_instance.y, entity_instance.z);
+		var ent_screenpos = o_Camera3D.positionToView(in_x, in_y, in_z);
 		if (!has_stored_position)
 		{
 			m_position.x = ent_screenpos[0] + 32;
@@ -82,19 +68,20 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			clampPosition();
 			
 			// If we're covering the ent position, move to other corners and clamp
-			if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y))
+			var kPadding = 10;
+			if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 			{
 				m_position.x = ent_screenpos[0] - m_size.x - 32;
 				m_position.y = ent_screenpos[1] + 32;
 				clampPosition();
 				
-				if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y))
+				if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 				{
 					m_position.x = ent_screenpos[0] - m_size.x - 32;
 					m_position.y = ent_screenpos[1] - m_size.y - 32;
 					clampPosition();
 					
-					if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y))
+					if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
 					{
 						m_position.x = ent_screenpos[0] + 32;
 						m_position.y = ent_screenpos[1] - m_size.y - 32;
@@ -103,6 +90,25 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				}
 			}
 		} // End best corner search
+	}
+	
+	static InitWithEntityInfo = function(entityInstance, entityInfo)
+	{
+		// Stop editing:
+		if (GetCurrentEntity() != entityInstance || editing_target != kEditorSelection_None)
+		{
+			if (property_editing)
+			{
+				PropertyChangeEnd();
+			}
+			// TODO: Reset the focused/mouseover if the keyvalue doesnt match
+		}
+		
+		entity_instance	= entityInstance;
+		entity_info		= entityInfo;
+		editing_target	= kEditorSelection_None;
+		
+		MoveForPosition(entity_instance.x, entity_instance.y, entity_instance.z);
 		
 		// Since editing everything is based around key-values, we need to generate string values for each entry now.
 		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
@@ -159,6 +165,8 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		entity_info		= null;
 		prop_instance	= prop;
 		editing_target	= kEditorSelection_Prop;
+		
+		MoveForPosition(prop_instance.x, prop_instance.y, prop_instance.z);
 		
 		entity_info		= {
 			properties: [
