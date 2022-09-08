@@ -1,9 +1,9 @@
 // Structure Definition for Vector3
 
 /// @function Vector3(x, y, z) struct;
-/// @param {Real} n_x
-/// @param {Real} n_y
-/// @param {Real} n_z
+/// @param {Real} [n_x]
+/// @param {Real} [n_y]
+/// @param {Real} [n_z]
 function Vector3(n_x, n_y, n_z) constructor
 {
 	// Default values

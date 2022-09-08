@@ -124,6 +124,20 @@ function EditorToolsUpdate_CheckShortcuts()
 	
 	// Hard-coded command overrides:
 	
+	// Copy selected objects
+	if (keyboard_check(vk_control) && keyboard_check_pressed(ord("C"))
+		&& toolCurrent != kEditorToolCamera
+		&& !WindowingHasConsumingFocus())
+	{
+		EditorClipboardSelectionUpdate();
+	}
+	// Paste selected objects
+	if (keyboard_check(vk_control) && keyboard_check_pressed(ord("V"))
+		&& toolCurrent != kEditorToolCamera
+		&& !WindowingHasConsumingFocus())
+	{
+		EditorClipboardSelectionPaste();
+	}
 	// Delete selected objects
 	if (keyboard_check_pressed(vk_delete)
 		&& toolCurrent != kEditorToolCamera
