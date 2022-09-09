@@ -288,9 +288,15 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 					var entHSize = new Vector3(entHhsz * selection.xscale, entHhsz * selection.yscale, entHhsz * selection.zscale); // TODO: scale the hhsz
 					var entCenter = entGetSelectionCenter(selection, entOrient, entHSize);
 				
-					m_showSelectGizmo.m_mins[iSelection] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
+					/*m_showSelectGizmo.m_mins[iSelection] = new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z);
 					m_showSelectGizmo.m_maxes[iSelection] = new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z);
-					m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
+					m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();*/
+					
+					var entTranslation = matrix_build_translation(entCenter);
+					var entRotation = matrix_build_rotation(selection);
+					m_showSelectGizmo.m_mins[iSelection] = entHSize.multiply(-1.0);
+					m_showSelectGizmo.m_maxes[iSelection] = entHSize.copy();
+					m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(entRotation, entTranslation); //todo: need to rotate the hull offset first
 				}
 			}
 		}

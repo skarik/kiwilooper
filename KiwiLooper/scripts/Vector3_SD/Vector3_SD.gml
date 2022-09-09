@@ -245,6 +245,16 @@ function Vector3(n_x, n_y, n_z) constructor
 		//w = matrix[ 3]*x0 + matrix[ 7]*y0 + matrix[11]*z0 + matrix[15]*w0;
 		return self;
 	}
+	
+	static asArray = function()
+	{
+		return [x, y, z];
+	}
+	
+	static toString = function()
+	{
+		return "<" + string(x) + ", " + string(y) + ", " + string(z) + ">";
+	}
 }
 
 /// @function Vector3FromArray(array)
@@ -265,4 +275,57 @@ function Vector3FromTranslation(structure)
 function Vector3FromScale(structure)
 {
 	return new Vector3(structure.xscale, structure.yscale, structure.zscale);
+}
+
+/// @function Vector3ForwardFromAngles(yangle, zangle)
+/// @desc Creates a direction vector from input Y and Z angles.
+function Vector3ForwardFromAngles(yangle, zangle)
+{
+	var y_x = lengthdir_x(1.0, yangle);
+	
+	return new Vector3(
+		lengthdir_x(1.0, zangle) * y_x,
+		lengthdir_y(1.0, zangle) * y_x,
+		lengthdir_y(1.0, yangle)
+		);
+}
+/// @function Vector3UpFromAngles(xangle, yangle, zangle)
+/// @desc Creates a direction vector from input angles.
+function Vector3UpFromAngles(xangle, yangle, zangle)
+{
+	var z_y = lengthdir_y(1.0, zangle);
+	var z_x = lengthdir_x(1.0, zangle);
+	var x_y = lengthdir_y(1.0, xangle);
+	var y_y = lengthdir_y(1.0, yangle);
+	var y_x = lengthdir_x(1.0, yangle);
+	var x_x = lengthdir_x(1.0, xangle);
+	
+	return new Vector3(
+		 z_y * x_y - z_x * y_y,
+		-z_x * x_y - z_y * y_y,
+		 y_x * x_x
+		);
+}
+/// @function Vector3ForwardAndUpFromAngles(xangle, yangle, zangle)
+function Vector3ForwardAndUpFromAngles(xangle, yangle, zangle)
+{
+	var z_y = lengthdir_y(1.0, zangle);
+	var z_x = lengthdir_x(1.0, zangle);
+	var x_y = lengthdir_y(1.0, xangle);
+	var y_y = lengthdir_y(1.0, yangle);
+	var y_x = lengthdir_x(1.0, yangle);
+	var x_x = lengthdir_x(1.0, xangle);
+	
+	return [
+		new Vector3(
+			z_x * y_x,
+			z_y * y_x,
+			y_y
+			),
+		new Vector3(
+			 z_y * x_y - z_x * y_y,
+			-z_x * x_y - z_y * y_y,
+			 y_x * x_x
+			)
+	];
 }

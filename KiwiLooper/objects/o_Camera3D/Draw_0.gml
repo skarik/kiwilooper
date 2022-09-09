@@ -21,14 +21,19 @@ surface_set_target(buffer_scene3d);
 	else
 		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, zfar);
 		
-	m_viewForward = [
+	var forwardAndUp = Vector3ForwardAndUpFromAngles(xrotation, yrotation, zrotation);
+	m_viewForward	= forwardAndUp[0].asArray();
+	m_viewUp		= forwardAndUp[1].asArray();
+	delete forwardAndUp[0];
+	delete forwardAndUp[1];
+	/*m_viewForward = [
 		lengthdir_x(1.0, zrotation) * lengthdir_x(1.0, yrotation),
 		lengthdir_y(1.0, zrotation) * lengthdir_x(1.0, yrotation),
 		lengthdir_y(1.0, yrotation)];
 	m_viewUp = [
 		lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, yrotation),
 		-lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, yrotation),
-		lengthdir_x(1.0, yrotation) * lengthdir_x(1.0, xrotation)];
+		lengthdir_x(1.0, yrotation) * lengthdir_x(1.0, xrotation)];*/
 	var mat_view = matrix_build_lookat(
 		// from
 		x, y, z,
@@ -183,14 +188,17 @@ surface_set_target(buffer_scene3d);
 		
 		gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
 		
-		drawShaderSet(sh_lightPoint);
-		lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
-			var allLights = lightParams[3];
+		//drawShaderSet(sh_lightPoint);
+		//lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+		drawShaderSet(sh_lightGeneral);
+		lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+			var allLights = lightParams.lightlist;
 			// loop through all the lights
 			for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
 			{
-				var light = allLights[lightIndex];
-				lightDeferredPushUniforms_Point_Index(lightIndex);
+				//var light = allLights[lightIndex];
+				//lightDeferredPushUniforms_Point_Index(lightIndex);
+				lightDeferredPushUniforms_General_Index(lightIndex);
 				draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
 					draw_vertex_texture(-1, -1, 0, 1);
 					draw_vertex_texture(1, -1, 1, 1);

@@ -3,6 +3,13 @@
 #macro kLightingModeForward		0
 #macro kLightingModeDeferred	1
 
+#macro kLightType_Point			0x00
+#macro kLightType_PointSpot		(kLightType_Point | 0x01)
+#macro kLightType_Sphere		0x02
+#macro kLightType_SphereSpot	(kLightType_Sphere | 0x01)
+#macro kLightType_Rect			0x04
+#macro kLightType_RectSpot		(kLightType_Rect | 0x01)
+
 ///@function lightInitialize()
 function lightInitialize()
 {
@@ -75,6 +82,46 @@ function lightInitialize()
 		"textureNormal",
 		"textureDepth",
 	]);
+	
+	// Rect lighting shader
+	global.deferred_rect_uniforms = shaderGetUniforms(sh_lightRect,
+	[
+		"uLightIndex",
+		"uLightPositions",
+		"uLightParams",
+		"uLightColors",
+		"uLightDirections",
+		"uLightOthers",
+		"uInverseViewProjection",
+		"uCameraInfo",
+		"uViewInfo",
+	]);
+	global.deferred_rect_samplers = shaderGetSamplers(sh_lightRect,
+	[
+		"textureAlbedo",
+		"textureNormal",
+		"textureDepth",
+	]);
+	
+	// General lighting shader
+	global.deferred_general_uniforms = shaderGetUniforms(sh_lightGeneral,
+	[
+		"uLightIndex",
+		"uLightPositions",
+		"uLightParams",
+		"uLightColors",
+		"uLightDirections",
+		"uLightOthers",
+		"uInverseViewProjection",
+		"uCameraInfo",
+		"uViewInfo",
+	]);
+	global.deferred_general_samplers = shaderGetSamplers(sh_lightGeneral,
+	[
+		"textureAlbedo",
+		"textureNormal",
+		"textureDepth",
+	]);
 }
 
 ///@function lightPushUniforms(params)
@@ -86,7 +133,8 @@ function lightPushUniforms(params)
 	}
 	else if (global.lightingMode == kLightingModeDeferred)
 	{
-		return lightPushUniforms_Deferred(params);
+		show_error("Should not be called - deferred mode should push uniforms per pass", true);
+		//return lightPushUniforms_Deferred(params);
 	}
 }
 
@@ -103,28 +151,28 @@ function lightPushUniforms_Forward(params)
 	{
 		shader_set_uniform_f(global.m_uLightAmbientColor, 0.2, 0.3, 0.2);
 	}
-	shader_set_uniform_f_array(global.m_uLightPositions, params[0]);
-	shader_set_uniform_f_array(global.m_uLightParams, params[1]);
-	shader_set_uniform_f_array(global.m_uLightColors, params[2]);
+	shader_set_uniform_f_array(global.m_uLightPositions, params.positions);
+	shader_set_uniform_f_array(global.m_uLightParams, params.params);
+	shader_set_uniform_f_array(global.m_uLightColors, params.colors);
 }
 
 function lightPushGatherUniforms_Deferred()
 {
 	shader_set_uniform_f(global.gather_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0, 0);
 }
-function lightPushUniforms_Deferred(params)
+/*function lightPushUniforms_Deferred(params)
 {
-	shader_set_uniform_i(global.deferred_uniforms.uLightCount, array_length(params[0]));
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightPositions, params[0]);
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightParams, params[1]);
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightColors, params[2]);
+	shader_set_uniform_i(global.deferred_uniforms.uLightCount, array_length(params.lightlist));
+	shader_set_uniform_f_array(global.deferred_uniforms.uLightPositions, params.positions);
+	shader_set_uniform_f_array(global.deferred_uniforms.uLightParams, params.params);
+	shader_set_uniform_f_array(global.deferred_uniforms.uLightColors, params.colors);
 	
 	shader_set_uniform_f_array(global.deferred_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
 	shader_set_uniform_f(global.deferred_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
 	shader_set_uniform_f(global.deferred_uniforms.uCameraPosition, o_Camera3D.x, o_Camera3D.y, o_Camera3D.z, 1.0);
 	
 	shader_set_uniform_f(global.deferred_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
-}
+}*/
 
 ///@function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
 function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
@@ -157,9 +205,9 @@ function lightDeferredPushUniforms_Point_Index(index)
 ///@function lightDeferredPushUniforms_Point(params, albedo, normal, depth)
 function lightDeferredPushUniforms_Point(params, albedo, normal, depth)
 {
-	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightPositions, params[0]);
-	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightParams, params[1]);
-	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightColors, params[2]);
+	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightPositions, params.positions);
+	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightParams, params.params);
+	shader_set_uniform_f_array(global.deferred_point_uniforms.uLightColors, params.colors);
 	
 	shader_set_uniform_f_array(global.deferred_point_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
 	shader_set_uniform_f(global.deferred_point_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
@@ -168,6 +216,29 @@ function lightDeferredPushUniforms_Point(params, albedo, normal, depth)
 	texture_set_stage(global.deferred_point_samplers.textureAlbedo, surface_get_texture(albedo));
 	texture_set_stage(global.deferred_point_samplers.textureNormal, surface_get_texture(normal));
 	texture_set_stage(global.deferred_point_samplers.textureDepth,  surface_get_texture(depth));
+}
+
+///@function lightDeferredPushUniforms_General_Index(index)
+function lightDeferredPushUniforms_General_Index(index)
+{
+	shader_set_uniform_i(global.deferred_general_uniforms.uLightIndex, index);
+}
+///@function lightDeferredPushUniforms_General(params, albedo, normal, depth)
+function lightDeferredPushUniforms_General(params, albedo, normal, depth)
+{
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uLightPositions, params.positions);
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uLightParams, params.params);
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uLightColors, params.colors);
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uLightDirections, params.directions);
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uLightOthers, params.others);
+	
+	shader_set_uniform_f_array(global.deferred_general_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
+	shader_set_uniform_f(global.deferred_general_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
+	shader_set_uniform_f(global.deferred_general_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
+	
+	texture_set_stage(global.deferred_general_samplers.textureAlbedo, surface_get_texture(albedo));
+	texture_set_stage(global.deferred_general_samplers.textureNormal, surface_get_texture(normal));
+	texture_set_stage(global.deferred_general_samplers.textureDepth,  surface_get_texture(depth));
 }
 
 ///@function lightGatherLights()
@@ -190,7 +261,7 @@ function lightGatherLights_Forward()
 	with (ob_3DLight)
 	{
 		// Skip invalid lights
-		if (intensity <= 0.0 || range <= 1.0)
+		if (intensity <= 0.0 || range <= 1.0 || type != kLightType_Point)
 		{
 			continue;
 		}
@@ -230,7 +301,11 @@ function lightGatherLights_Forward()
 		light_params_array[i * 4 + 0] = 0.0;
 	}
 	
-	return [light_position_array, light_params_array, light_color_array];
+	return {
+		positions:	light_position_array,
+		params:		light_params_array,
+		colors:		light_color_array,
+	};
 }
 
 function lightGatherLights_Deferred()
@@ -260,20 +335,38 @@ function lightGatherLights_Deferred()
 	var light_position_array = array_create(4 * 32, 0);
 	var light_params_array = array_create(4 * 32, 0);
 	var light_color_array = array_create(4 * 32, 0);
+	var light_direction_array = array_create(4 * 32, 0);
+	var light_other_array = array_create(4 * 32, 0);
 	
 	// Fill up lights
 	for (var i = 0; i < array_length(lights); ++i)
 	{
-		light_position_array[i * 4 + 0] = lights[i].x;
-		light_position_array[i * 4 + 1] = lights[i].y;
-		light_position_array[i * 4 + 2] = lights[i].z;
+		var light = lights[i];
 		
-		light_params_array[i * 4 + 0] = lights[i].intensity * lights[i].brightness; // TODO make this not here
-		light_params_array[i * 4 + 1] = 1.0 / lights[i].range;
+		light_position_array[i * 4 + 0] = light.x;
+		light_position_array[i * 4 + 1] = light.y;
+		light_position_array[i * 4 + 2] = light.z;
+		light_position_array[i * 4 + 3] = light.type;
+		
+		light_params_array[i * 4 + 0] = light.intensity * light.brightness; // TODO make this not here
+		light_params_array[i * 4 + 1] = 1.0 / light.range;
 		
 		light_color_array[i * 4 + 0] = color_get_red(lights[i].color) / 255.0;
 		light_color_array[i * 4 + 1] = color_get_green(lights[i].color) / 255.0;
 		light_color_array[i * 4 + 2] = color_get_blue(lights[i].color) / 255.0;
+		
+		if (light.type == kLightType_Rect)
+		{
+			light_direction_array[i * 4 + 0] = light.facingVector.x;
+			light_direction_array[i * 4 + 1] = light.facingVector.y;
+			light_direction_array[i * 4 + 2] = light.facingVector.z;
+			light_direction_array[i * 4 + 3] = light.yscale * 0.5; // Half-Width
+			
+			light_other_array[i * 4 + 0] = light.upVector.x;
+			light_other_array[i * 4 + 1] = light.upVector.y;
+			light_other_array[i * 4 + 2] = light.upVector.z;
+			light_other_array[i * 4 + 3] = light.zscale * 0.5; // Half-Height
+		}
 	}
 	// Disable all the other lights
 	for (var i = array_length(lights); i < 32; ++i)
@@ -281,5 +374,12 @@ function lightGatherLights_Deferred()
 		light_params_array[i * 4 + 0] = 0.0;
 	}
 	
-	return [light_position_array, light_params_array, light_color_array, lights];
+	return {
+		lightlist:	lights,
+		positions:	light_position_array,
+		params:		light_params_array,
+		colors:		light_color_array,
+		directions:	light_direction_array,
+		others:		light_other_array,
+	};
 }

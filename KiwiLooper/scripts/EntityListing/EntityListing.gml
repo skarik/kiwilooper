@@ -137,6 +137,21 @@ function _EntityInfoInit()
 				["color", kValueTypeColor],
 			],
 		},
+		{
+			name: "light_rect",
+			parent: "light",
+			desc: "Dynamic 3D Rect Light",
+			objectIndex: ob_3DLightDynamic_Rect,
+			proxy: kProxyTypeNone,
+			
+			hullsize: 1,
+			
+			properties:
+			[
+				["", kValueTypeRotation],
+				["", kValueTypeScale],
+			],
+		},
 
 		// Test Proxies:
 		{
