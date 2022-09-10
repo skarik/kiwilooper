@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMSprite",
+  "resourceVersion": "1.0",
+  "name": "sfx_metalPowerOverlay",
   "bboxMode": 0,
   "collisionKind": 1,
   "type": 0,
@@ -24,15 +27,13 @@
   "gridX": 0,
   "gridY": 0,
   "frames": [
-    {"compositeImage":{"FrameId":{"name":"416449d9-e040-46f7-bcd6-746ced76c0aa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
-        {"FrameId":{"name":"416449d9-e040-46f7-bcd6-746ced76c0aa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"LayerId":{"name":"ded7635c-4371-4904-8ded-c2034c43dc0f","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
-      ],"parent":{"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","name":"416449d9-e040-46f7-bcd6-746ced76c0aa","tags":[],"resourceType":"GMSpriteFrame",},
-    {"compositeImage":{"FrameId":{"name":"ecf629c1-6aab-4225-93fb-72d5bf338afa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
-        {"FrameId":{"name":"ecf629c1-6aab-4225-93fb-72d5bf338afa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"LayerId":{"name":"ded7635c-4371-4904-8ded-c2034c43dc0f","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
-      ],"parent":{"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","name":"ecf629c1-6aab-4225-93fb-72d5bf338afa","tags":[],"resourceType":"GMSpriteFrame",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"416449d9-e040-46f7-bcd6-746ced76c0aa",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"ecf629c1-6aab-4225-93fb-72d5bf338afa",},
   ],
   "sequence": {
-    "spriteId": {"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},
+    "resourceType": "GMSequence",
+    "resourceVersion": "1.4",
+    "name": "sfx_metalPowerOverlay",
     "timeUnits": 1,
     "playback": 1,
     "playbackSpeed": 0.0,
@@ -40,13 +41,13 @@
     "autoRecord": true,
     "volume": 1.0,
     "length": 2.0,
-    "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"MessageEventKeyframe",},
-    "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"MomentsEventKeyframe",},
+    "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MessageEventKeyframe>",},
+    "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MomentsEventKeyframe>",},
     "tracks": [
-      {"name":"frames","spriteId":null,"keyframes":{"Keyframes":[
-            {"id":"f6697c1c-dced-4aa8-a9a6-b4d22f3b5136","Key":0.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"416449d9-e040-46f7-bcd6-746ced76c0aa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe`1","elementType":"SpriteFrameKeyframe",},
-            {"id":"46d1691c-54c8-45ac-9aa3-962622204f9b","Key":1.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ecf629c1-6aab-4225-93fb-72d5bf338afa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe`1","elementType":"SpriteFrameKeyframe",},
-          ],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"SpriteFrameKeyframe",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"resourceVersion":"1.0","tags":[],"resourceType":"GMSpriteFramesTrack","modifiers":[],},
+      {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","spriteId":null,"keyframes":{"Keyframes":[
+            {"id":"f6697c1c-dced-4aa8-a9a6-b4d22f3b5136","Key":0.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"416449d9-e040-46f7-bcd6-746ced76c0aa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"46d1691c-54c8-45ac-9aa3-962622204f9b","Key":1.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ecf629c1-6aab-4225-93fb-72d5bf338afa","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+          ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"modifiers":[],},
     ],
     "visibleRange": null,
     "lockOrigin": false,
@@ -62,22 +63,13 @@
     "yorigin": 8,
     "eventToFunction": {},
     "eventStubScript": null,
-    "parent": {"name":"sfx_metalPowerOverlay","path":"sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",},
-    "resourceVersion": "1.4",
-    "name": "sfx_metalPowerOverlay",
-    "tags": [],
-    "resourceType": "GMSequence",
   },
   "layers": [
-    {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"ded7635c-4371-4904-8ded-c2034c43dc0f","tags":[],"resourceType":"GMImageLayer",},
+    {"resourceType":"GMImageLayer","resourceVersion":"1.0","name":"ded7635c-4371-4904-8ded-c2034c43dc0f","visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default",},
   ],
   "nineSlice": null,
   "parent": {
     "name": "objects",
     "path": "folders/Sprites/objects.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "sfx_metalPowerOverlay",
-  "tags": [],
-  "resourceType": "GMSprite",
 }

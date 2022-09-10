@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMSprite",
+  "resourceVersion": "1.0",
+  "name": "suie_actionsetTextures",
   "bboxMode": 0,
   "collisionKind": 1,
   "type": 0,
@@ -24,18 +27,14 @@
   "gridX": 0,
   "gridY": 0,
   "frames": [
-    {"compositeImage":{"FrameId":{"name":"50e112f5-fab6-46e0-acb9-fe7feba4592d","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
-        {"FrameId":{"name":"50e112f5-fab6-46e0-acb9-fe7feba4592d","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":{"name":"70a415e0-2b94-4aff-832a-8f16c6b9a356","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
-      ],"parent":{"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"50e112f5-fab6-46e0-acb9-fe7feba4592d","tags":[],"resourceType":"GMSpriteFrame",},
-    {"compositeImage":{"FrameId":{"name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
-        {"FrameId":{"name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":{"name":"70a415e0-2b94-4aff-832a-8f16c6b9a356","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
-      ],"parent":{"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15","tags":[],"resourceType":"GMSpriteFrame",},
-    {"compositeImage":{"FrameId":{"name":"ad601287-2bdd-445d-bacb-0aa95a568693","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
-        {"FrameId":{"name":"ad601287-2bdd-445d-bacb-0aa95a568693","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"LayerId":{"name":"70a415e0-2b94-4aff-832a-8f16c6b9a356","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
-      ],"parent":{"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","name":"ad601287-2bdd-445d-bacb-0aa95a568693","tags":[],"resourceType":"GMSpriteFrame",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"50e112f5-fab6-46e0-acb9-fe7feba4592d",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"ad601287-2bdd-445d-bacb-0aa95a568693",},
   ],
   "sequence": {
-    "spriteId": {"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},
+    "resourceType": "GMSequence",
+    "resourceVersion": "1.4",
+    "name": "suie_actionsetTextures",
     "timeUnits": 1,
     "playback": 1,
     "playbackSpeed": 30.0,
@@ -43,14 +42,14 @@
     "autoRecord": true,
     "volume": 1.0,
     "length": 3.0,
-    "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"MessageEventKeyframe",},
-    "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"MomentsEventKeyframe",},
+    "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MessageEventKeyframe>",},
+    "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MomentsEventKeyframe>",},
     "tracks": [
-      {"name":"frames","spriteId":null,"keyframes":{"Keyframes":[
-            {"id":"3a122349-4db8-42bc-af97-37542bb6dabb","Key":0.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"50e112f5-fab6-46e0-acb9-fe7feba4592d","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe`1","elementType":"SpriteFrameKeyframe",},
-            {"id":"3dfaf901-de40-4f54-8758-28d6b4b7cda3","Key":1.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe`1","elementType":"SpriteFrameKeyframe",},
-            {"id":"5d35d3df-450b-4668-a800-1aeff5fd6f27","Key":2.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ad601287-2bdd-445d-bacb-0aa95a568693","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe`1","elementType":"SpriteFrameKeyframe",},
-          ],"resourceVersion":"1.0","resourceType":"KeyframeStore`1","elementType":"SpriteFrameKeyframe",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"resourceVersion":"1.0","tags":[],"resourceType":"GMSpriteFramesTrack","modifiers":[],},
+      {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","spriteId":null,"keyframes":{"Keyframes":[
+            {"id":"3a122349-4db8-42bc-af97-37542bb6dabb","Key":0.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"50e112f5-fab6-46e0-acb9-fe7feba4592d","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"3dfaf901-de40-4f54-8758-28d6b4b7cda3","Key":1.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"af8ad02b-dbac-4ce4-90ac-10e024a5af15","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"5d35d3df-450b-4668-a800-1aeff5fd6f27","Key":2.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ad601287-2bdd-445d-bacb-0aa95a568693","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+          ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"modifiers":[],},
     ],
     "visibleRange": null,
     "lockOrigin": false,
@@ -66,22 +65,13 @@
     "yorigin": 0,
     "eventToFunction": {},
     "eventStubScript": null,
-    "parent": {"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},
-    "resourceVersion": "1.4",
-    "name": "suie_actionsetTextures",
-    "tags": [],
-    "resourceType": "GMSequence",
   },
   "layers": [
-    {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"70a415e0-2b94-4aff-832a-8f16c6b9a356","tags":[],"resourceType":"GMImageLayer",},
+    {"resourceType":"GMImageLayer","resourceVersion":"1.0","name":"70a415e0-2b94-4aff-832a-8f16c6b9a356","visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default",},
   ],
   "nineSlice": null,
   "parent": {
     "name": "editor",
     "path": "folders/Sprites/ui/editor.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "suie_actionsetTextures",
-  "tags": [],
-  "resourceType": "GMSprite",
 }
