@@ -151,15 +151,15 @@ function EditorClipboardSelectionPaste()
 				ent.z = clipboard_entry.object.position.z + offsetPosition.z;
 				if (entPropertyExists(clipboard_entry.object.ent, "", kValueTypeRotation))
 				{
-					ent.xrotation = clipboard_entry.object.position.xrotation;
-					ent.yrotation = clipboard_entry.object.position.yrotation;
-					ent.zrotation = clipboard_entry.object.position.zrotation;
+					ent.xrotation = clipboard_entry.object.rotation.x;
+					ent.yrotation = clipboard_entry.object.rotation.y;
+					ent.zrotation = clipboard_entry.object.rotation.z;
 				}
 				if (entPropertyExists(clipboard_entry.object.ent, "", kValueTypeScale))
 				{
-					ent.xscale = clipboard_entry.object.position.xscale;
-					ent.yscale = clipboard_entry.object.position.yscale;
-					ent.zscale = clipboard_entry.object.position.zscale;
+					ent.xscale = clipboard_entry.object.scale.x;
+					ent.yscale = clipboard_entry.object.scale.y;
+					ent.zscale = clipboard_entry.object.scale.z;
 				}
 				// fill in missing transformation values (even if they're unused)
 				variable_instance_set_if_not_exists(ent, "xscale", 1.0);
