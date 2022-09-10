@@ -53,21 +53,25 @@ vec3 calculate_world_position( float depth )
 
 float RectangleSolidAngle( vec3 worldPos, vec3 p0, vec3 p1, vec3 p2, vec3 p3)
 {
+	// Vector from each corner to the pixel being lit
 	vec3 v0 = p0 - worldPos;
 	vec3 v1 = p1 - worldPos;
 	vec3 v2 = p2 - worldPos;
 	vec3 v3 = p3 - worldPos;
-
+	
+	// Cross product of each edge
 	vec3 n0 = normalize(cross(v0, v1));
 	vec3 n1 = normalize(cross(v1, v2));
 	vec3 n2 = normalize(cross(v2, v3));
 	vec3 n3 = normalize(cross(v3, v0));
 	
+	// Angle between each edge
 	float g0 = acos(dot(-n0, n1));
 	float g1 = acos(dot(-n1, n2));
 	float g2 = acos(dot(-n2, n3));
 	float g3 = acos(dot(-n3, n0));
 
+	// Sum the angles
 	return g0 + g1 + g2 + g3 - 2.0 * 3.1415;
 }
 
@@ -177,19 +181,20 @@ void main()
 			float attenuation = clamp(1.0 - (point_closest_len * lightParams.y), 0.0, 1.0);
 			
 			// Do averaged surface response
-			float surface_response = 0.2 * (
+			/*float surface_response = 0.2 * (
 				clamp(dot(pc_delta / pc_len, pixelNormal), 0.0, 1.0) +
 				clamp(dot(p0_delta / p0_len, pixelNormal), 0.0, 1.0) +
 				clamp(dot(p1_delta / p1_len, pixelNormal), 0.0, 1.0) +
 				clamp(dot(p2_delta / p2_len, pixelNormal), 0.0, 1.0) +
 				clamp(dot(p3_delta / p3_len, pixelNormal), 0.0, 1.0)
-				);
+				);*/
+			float surface_response = RectangleSolidAngle(vec3(0, 0, 0), p0, p1, p2, p3);
 			//surface_response = clamp(surface_response * 0.5 + 0.5, 0.0, 1.0); // soft backfaces
 			surface_response = clamp(surface_response, 0.0, 1.0);
 			
 			// Get total response
 			float total_response = attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
+			//total_response = ceil(total_response * 4.0) / 4.0;
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
