@@ -194,7 +194,7 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * surface_response;
-			//total_response = ceil(total_response * 4.0) / 4.0;
+			total_response = ceil(total_response * 4.0) / 4.0;
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
