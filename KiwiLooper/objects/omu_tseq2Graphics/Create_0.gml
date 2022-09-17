@@ -28,12 +28,12 @@ m_menuCallbacks = array_create(3);
 
 m_menuCallbacks[kMainMenuOptionContinue] = function()
 {
-	room_goto(Gameplay.m_checkpoint_room);
+	Game_LoadMap(Gameplay.m_checkpoint_room);
 }
 
 m_menuCallbacks[kMainMenuOptionBegin] = function()
 {
-	room_goto(rm_Ship1);
+	Game_LoadMap(rm_Ship1);
 }
 
 m_menuCallbacks[kMainMenuOptionBreak] = function()

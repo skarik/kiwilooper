@@ -72,27 +72,27 @@ debugOut("default depth buffer state: " + (surface_get_depth_disable() ? "off" :
 
 // Finish and go to next room:
 
-// Either take the override...
-//if ((!Settings.startup_overrideSave && !gameLoad()) && room_exists(Settings.startup_roomOverride))
-if (Settings.startup_overrideSave)
+// First, run the command line options
+if (string_length(Settings.startup_command) > 0)
 {
-	// force update quest stuff now that player is ready
+	dcmdRunString(Settings.startup_command);
+}
+
+// Once the command line options are run, if we're still in this room, run other level settings
+if (_Loader.bRoomIsSet == false)
+{
 	if (Settings.startup_overrideSave)
-	{
-		dcmdRunString(Settings.startup_command);
-	}
-	if (_Loader.bRoomIsSet == false)
 	{
 		if (room_exists(Settings.startup_roomOverride))
 			room_goto(Settings.startup_roomOverride);
 		else
 			room_goto_next();
 	}
-}
-// or t_try to load a game
-else if (Debug.reset || true)// || !gameLoad())
-{
-    // If not, we just continue normally.
-	room_goto_next();
+	else
+	{
+		// If not, we just continue normally.
+		room_goto_next();
+	}
 }
 
+// TODO: Handle game save/load with gameLoad and Debug.reset. May not be necessary.
