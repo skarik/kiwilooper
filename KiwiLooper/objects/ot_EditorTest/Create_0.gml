@@ -78,6 +78,15 @@ MapRebuildSplats = function()
 	// Trigger the splats
 	m_splatmap.SpawnSplats();
 	
+	// Force splats to update
+	if (instance_number(ob_splatter) == 0)
+	{
+		if (iexists(o_splatterRenderer))
+		{
+			o_splatterRenderer.update();
+		}
+	}
+	
 	// Done.
 }
 MapFreeAllIntermediateLayers = function()
