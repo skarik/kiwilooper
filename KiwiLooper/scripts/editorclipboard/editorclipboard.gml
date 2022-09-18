@@ -116,7 +116,7 @@ function EditorClipboardSelectionPaste()
 		}
 		clipboardCenter.divideSelf(array_length(clipboard));
 		// Generate a center position for the camera
-		var offsetPosition = new Vector3(cameraX, cameraY, cameraZ);
+		var offsetPosition = m_state.camera.position.copy();
 		offsetPosition.subtractSelf(clipboardCenter);
 		// Ensure the offset position is aligned to grid
 		if (toolGrid)
@@ -211,7 +211,7 @@ function EditorClipboardSelectionPaste()
 		// Request prop change if needed
 		if (bHasPropChange)
 		{
-			m_editor.MapRebuilPropsOnly();
+			MapRebuilPropsOnly();
 		}
 	}
 }

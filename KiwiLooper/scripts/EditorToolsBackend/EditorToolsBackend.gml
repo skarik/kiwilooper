@@ -174,13 +174,13 @@ function EditorToolsUpdate_CheckShortcuts()
 	{
 		if (mouse_wheel_down())
 		{
-			cameraZoom += 0.05;
+			m_state.camera.zoom += 0.05;
 		}
 		else if (mouse_wheel_up())
 		{
-			cameraZoom -= 0.05;
+			m_state.camera.zoom -= 0.05;
 		}
-		cameraZoom = max(0.05, cameraZoom);
+		m_state.camera.zoom = max(0.05, m_state.camera.zoom);
 	}
 }
 

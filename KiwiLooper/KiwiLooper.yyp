@@ -244,6 +244,7 @@
     {"id":{"name":"instance_nearest_notme","path":"scripts/instance_nearest_notme/instance_nearest_notme.yy",},"order":5,},
     {"id":{"name":"avec2_dot","path":"scripts/avec2_dot/avec2_dot.yy",},"order":2,},
     {"id":{"name":"controlAnyKey","path":"scripts/controlAnyKey/controlAnyKey.yy",},"order":3,},
+    {"id":{"name":"MapEditorState","path":"scripts/MapEditorState/MapEditorState.yy",},"order":6,},
     {"id":{"name":"rm_EditorTest","path":"rooms/rm_EditorTest/rm_EditorTest.yy",},"order":9,},
     {"id":{"name":"RobotAI_SD","path":"scripts/RobotAI_SD/RobotAI_SD.yy",},"order":0,},
     {"id":{"name":"System","path":"objects/System/System.yy",},"order":12,},
@@ -308,6 +309,7 @@
     {"id":{"name":"sfx_explo5","path":"sprites/sfx_explo5/sfx_explo5.yy",},"order":0,},
     {"id":{"name":"omu_tseq1Text","path":"objects/omu_tseq1Text/omu_tseq1Text.yy",},"order":0,},
     {"id":{"name":"duiDrawHoverRect","path":"scripts/duiDrawHoverRect/duiDrawHoverRect.yy",},"order":0,},
+    {"id":{"name":"MapLoaderEditor","path":"scripts/MapLoaderEditor/MapLoaderEditor.yy",},"order":5,},
     {"id":{"name":"MapLoaderSplatmap","path":"scripts/MapLoaderSplatmap/MapLoaderSplatmap.yy",},"order":4,},
     {"id":{"name":"o_charaRobot","path":"objects/o_charaRobot/o_charaRobot.yy",},"order":3,},
     {"id":{"name":"duiStepRectFromSprite","path":"scripts/duiStepRectFromSprite/duiStepRectFromSprite.yy",},"order":4,},
@@ -682,6 +684,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"electric2_hallway.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"electric4_doortest.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest5_1.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest3_1_stress_v2.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
     "IDEVersion": "2022.8.0.34",

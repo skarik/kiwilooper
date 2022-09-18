@@ -583,21 +583,23 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 		{
 			if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
 			{
-				cameraRotZ -= (uPosition - uPositionPrevious) * 0.2;
-				cameraRotY += (vPosition - vPositionPrevious) * 0.2;
+				m_state.camera.rotation.z -= (uPosition - uPositionPrevious) * 0.2;
+				m_state.camera.rotation.y += (vPosition - vPositionPrevious) * 0.2;
 			}
 			else if (bMouseRight && !bMouseLeft)
 			{
-				cameraX += lengthdir_x((vPosition - vPositionPrevious), cameraRotZ)
-						 + lengthdir_y((uPosition - uPositionPrevious), cameraRotZ);
+				m_state.camera.position.x += 
+						   lengthdir_x((vPosition - vPositionPrevious), m_state.camera.rotation.z)
+						 + lengthdir_y((uPosition - uPositionPrevious), m_state.camera.rotation.z);
 				 
-				cameraY += lengthdir_y((vPosition - vPositionPrevious), cameraRotZ)
-						 - lengthdir_x((uPosition - uPositionPrevious), cameraRotZ);
+				m_state.camera.position.y += 
+						   lengthdir_y((vPosition - vPositionPrevious), m_state.camera.rotation.z)
+						 - lengthdir_x((uPosition - uPositionPrevious), m_state.camera.rotation.z);
 			}
 			else if (bMouseLeft && bMouseRight)
 			{
 				//cameraZoom += (vPosition - vPositionPrevious) / 500.0;
-				var cameraPos = new Vector3(cameraX, cameraY, cameraZ);
+				var cameraPos = m_state.camera.position.copy();
 				
 				// Create the forward vector
 				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
@@ -614,9 +616,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 					);
 				
 				// Save out result
-				cameraX = cameraPos.x;
-				cameraY = cameraPos.y;
-				cameraZ = cameraPos.z;
+				m_state.camera.position.copyFrom(cameraPos);
 				
 				// Explicitly delete temp calc structures
 				delete cameraPos;

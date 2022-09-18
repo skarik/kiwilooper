@@ -141,6 +141,7 @@ function EditorGlobalSaveMap_Work(filepath)
 	MapSaveProps(filedata, EditorGet().m_propmap);
 	MapSaveEntities(filedata, EditorGet().m_entityInstList);
 	MapSaveSplats(filedata, EditorGet().m_splatmap);
+	MapSaveEditor(filedata, EditorGet().m_state);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -172,6 +173,7 @@ function EditorGlobalLoadMap_Work(filepath)
 	MapLoadProps(filedata, EditorGet().m_propmap);
 	MapLoadEntities(filedata, EditorGet().m_entityInstList);
 	MapLoadSplats(filedata, EditorGet().m_splatmap);
+	MapLoadEditor(filedata, EditorGet().m_state);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
