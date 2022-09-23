@@ -93,3 +93,11 @@ function meshb_AddQuad(mesh, quadArray)
 	meshb_PushVertex(mesh, vert2);
 	meshb_PushVertex(mesh, vert3);
 }
+
+function meshb_CreateEmptyMesh()
+{
+	var mesh = meshb_Begin();
+	meshb_AddQuad(mesh, [MBVertexDefault(), MBVertexDefault(), MBVertexDefault(), MBVertexDefault()]);
+	meshb_End(mesh);
+	return mesh;
+}

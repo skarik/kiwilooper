@@ -1,17 +1,17 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "Gameplay",
-  "spriteId": {
-    "name": "ssy_system",
-    "path": "sprites/ssy_system/ssy_system.yy",
-  },
+  "name": "ob_environmentEffect",
+  "spriteId": null,
   "solid": false,
-  "visible": false,
+  "visible": true,
   "managed": true,
   "spriteMaskId": null,
-  "persistent": true,
-  "parentObjectId": null,
+  "persistent": false,
+  "parentObjectId": {
+    "name": "ob_3DObject",
+    "path": "objects/ob_3DObject/ob_3DObject.yy",
+  },
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
@@ -25,14 +25,14 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":4,"eventType":7,"collisionObjectId":null,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":5,"eventType":7,"collisionObjectId":null,},
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
-  "properties": [],
+  "properties": [
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"loopPersistent","varType":3,"value":"0","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],},
+  ],
   "overriddenProperties": [],
   "parent": {
-    "name": "Game",
-    "path": "folders/Objects/Game.yy",
+    "name": "Environment Effects",
+    "path": "folders/Objects/Game/Effects/Environment Effects.yy",
   },
 }

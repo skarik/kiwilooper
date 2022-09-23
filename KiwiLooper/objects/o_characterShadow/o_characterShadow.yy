@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_characterShadow",
   "spriteId": {
     "name": "sfx_circleShadow10",
     "path": "sprites/sfx_circleShadow10/sfx_circleShadow10.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,18 +28,14 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [
-    {"propertyId":{"name":"translucent","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"translucent","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
   ],
   "parent": {
     "name": "Backend",
     "path": "folders/Objects/Game/Character/Backend.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_characterShadow",
-  "tags": [],
-  "resourceType": "GMObject",
 }

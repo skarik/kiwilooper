@@ -19,6 +19,13 @@ m_uiUsables = inew(o_uisPlayerUsables);
 m_uiTally = inew(o_uisTallyMarks);
 
 // Set up callbacks
+onPostLevelLoad = function()
+{
+	// Save camera start for death.
+	xstart = x;
+	ystart = y;
+	zstart = z;
+}
 m_onBeginDeath = function()
 {
 	// Create blood here
@@ -59,6 +66,11 @@ m_onBeginDeath = function()
 		visible = true;
 		
 		sound_play_at(x, y, z, "sound/element/shock_death.wav");
+		
+		var spark = inew(o_envFxSpark);
+			spark.x = x;
+			spark.y = y;
+			spark.z = z + 8;
 	}
 	else if (lastDamageType == kDamageTypeMagicVoid)
 	{

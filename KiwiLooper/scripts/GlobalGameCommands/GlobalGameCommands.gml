@@ -308,6 +308,8 @@ function Game_LoadEditor(fromTestSession)
 	idelete(o_props3DIze);
 	// Destroy all splatters for good measure
 	idelete(ob_splatter);
+	// Destroy all effects
+	idelete(ob_environmentEffect);
 	
 	// Destroy all characters
 	idelete(ob_character);

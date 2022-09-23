@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "GlobalGameCommands",
+  "name": "ParticleSystems_SD",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Game",
-    "path": "folders/Scripts/Game.yy",
+    "name": "Effects",
+    "path": "folders/Scripts/Game/Effects.yy",
   },
 }

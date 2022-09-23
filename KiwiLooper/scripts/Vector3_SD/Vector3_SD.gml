@@ -45,6 +45,14 @@ function Vector3(n_x, n_y, n_z) constructor
 		z = right.z;
 	}
 	
+	///@function copyFromArray(right)
+	static copyFromArray = function(right)
+	{
+		x = right[0];
+		y = right[1];
+		z = right[2];
+	}
+	
 	static equals = function(right)
 	{
 		return sqrDistance(right) < (KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER);

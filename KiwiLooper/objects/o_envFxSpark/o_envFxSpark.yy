@@ -1,10 +1,10 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "o_livelyDoor",
+  "name": "o_envFxSpark",
   "spriteId": {
-    "name": "spr_metalDoor0",
-    "path": "sprites/spr_metalDoor0/spr_metalDoor0.yy",
+    "name": "sfx_glare1",
+    "path": "sprites/sfx_glare1/sfx_glare1.yy",
   },
   "solid": false,
   "visible": true,
@@ -12,8 +12,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "ob_lively",
-    "path": "objects/ob_lively/ob_lively.yy",
+    "name": "ob_environmentEffect",
+    "path": "objects/ob_environmentEffect/ob_environmentEffect.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -33,10 +33,10 @@
   ],
   "properties": [],
   "overriddenProperties": [
-    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"lit","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"translucent","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
   ],
   "parent": {
-    "name": "Lively",
-    "path": "folders/Objects/Game/Lively.yy",
+    "name": "Environment Effects",
+    "path": "folders/Objects/Game/Effects/Environment Effects.yy",
   },
 }

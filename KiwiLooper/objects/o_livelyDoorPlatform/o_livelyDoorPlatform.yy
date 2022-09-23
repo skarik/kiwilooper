@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_livelyDoorPlatform",
   "spriteId": {
     "name": "spr_metalDoor0",
     "path": "sprites/spr_metalDoor0/spr_metalDoor0.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,19 +28,15 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [
-    {"propertyId":{"name":"lit","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"lit","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
   ],
   "parent": {
     "name": "Lively",
     "path": "folders/Objects/Game/Lively.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_livelyDoorPlatform",
-  "tags": [],
-  "resourceType": "GMObject",
 }
