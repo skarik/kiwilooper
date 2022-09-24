@@ -546,6 +546,24 @@ function _EntityInfoInit()
 			],
 		},
 		
+		// Effects:
+		{
+			name: "lifxy_sparks",
+			parent: "lively_base",
+			objectIndex: o_livelyFxSpark,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 8,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+			],
+		},
+		
 		// Doodads:
 		{
 			name: "ui_exit_text",

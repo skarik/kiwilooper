@@ -6,6 +6,13 @@ function instanceIsDoor(instance)
 	return instance.object_index == o_livelyDoor || object_is_ancestor(instance.object_index, o_livelyDoor);
 }
 
+/// @function instanceIsLivelyEffect(instance)
+/// @param instance {Instance}
+function instanceIsLivelyEffect(instance)
+{
+	return instance.object_index == ob_livelyEffect || object_is_ancestor(instance.object_index, ob_livelyEffect);
+}
+
 /// @function livelyIsTriggered(object)
 /// @param object {Instance}
 function livelyIsTriggered(object)
@@ -35,6 +42,10 @@ function livelyTriggerActivate(object, caller)
 {
 	gml_pragma("forceinline");
 	if (instanceIsDoor(object))
+	{
+		object.m_onActivation(caller);
+	}
+	else if (instanceIsLivelyEffect(object))
 	{
 		object.m_onActivation(caller);
 	}

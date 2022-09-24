@@ -359,6 +359,7 @@
     {"id":{"name":"EditorUIToolbarTop","path":"scripts/EditorUIToolbarTop/EditorUIToolbarTop.yy",},"order":7,},
     {"id":{"name":"Lighting_Modes","path":"scripts/Lighting_Modes/Lighting_Modes.yy",},"order":1,},
     {"id":{"name":"CE_Readme","path":"scripts/CE_Readme/CE_Readme.yy",},"order":2,},
+    {"id":{"name":"o_livelyFxSpark","path":"objects/o_livelyFxSpark/o_livelyFxSpark.yy",},"order":1,},
     {"id":{"name":"settingsGameplayDefaults","path":"scripts/settingsGameplayDefaults/settingsGameplayDefaults.yy",},"order":11,},
     {"id":{"name":"ssy_nodeAiHide","path":"sprites/ssy_nodeAiHide/ssy_nodeAiHide.yy",},"order":25,},
     {"id":{"name":"TriggeringUtils","path":"scripts/TriggeringUtils/TriggeringUtils.yy",},"order":19,},
@@ -424,6 +425,7 @@
     {"id":{"name":"ob_audioPlayer2","path":"objects/ob_audioPlayer2/ob_audioPlayer2.yy",},"order":2,},
     {"id":{"name":"o_musicEngine","path":"objects/o_musicEngine/o_musicEngine.yy",},"order":4,},
     {"id":{"name":"o_livelyRoomState","path":"objects/o_livelyRoomState/o_livelyRoomState.yy",},"order":3,},
+    {"id":{"name":"ob_livelyEffect","path":"objects/ob_livelyEffect/ob_livelyEffect.yy",},"order":0,},
     {"id":{"name":"InstanceShorthand","path":"scripts/InstanceShorthand/InstanceShorthand.yy",},"order":6,},
     {"id":{"name":"room_register_name","path":"scripts/room_register_name/room_register_name.yy",},"order":1,},
     {"id":{"name":"dcmdOldCommands","path":"scripts/dcmdOldCommands/dcmdOldCommands.yy",},"order":8,},
@@ -603,6 +605,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"glare","folderPath":"folders/Sprites/effects/glare.yy","order":4,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Math","folderPath":"folders/Scripts/Game/Math.yy","order":20,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Environment Effects","folderPath":"folders/Objects/Game/Effects/Environment Effects.yy","order":9,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Lively Effects","folderPath":"folders/Objects/Game/Effects/Lively Effects.yy","order":10,},
   ],
   "AudioGroups": [
     {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
