@@ -52,11 +52,12 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		// Get the positions in 3D space to get sizes
 		var ent_screenpos = o_Camera3D.positionToView(in_x, in_y, in_z);
-		var ent_screenpos_corner = o_Camera3D.positionToView(in_x + o_Camera3D.m_viewUp[0] * in_size, in_y + o_Camera3D.m_viewUp[1] *in_size, in_z + o_Camera3D.m_viewUp[2] *in_size);
+		var ent_screenpos_corner = o_Camera3D.positionToView(in_x + o_Camera3D.m_viewUp[0] * in_size * 0.5, in_y + o_Camera3D.m_viewUp[1] * in_size * 0.5, in_z + o_Camera3D.m_viewUp[2] * in_size * 0.5);
 		
 		// Define the padding for the properties box.
-		var kPadding = 10;
-		var positionOffset = max(32, kPadding + point_distance(ent_screenpos[0], ent_screenpos[1], ent_screenpos_corner[0], ent_screenpos_corner[1]));
+		var kPadding = 10; // Padding around the end position.
+		var kMaxHullOffset = 60; // This needs DPI scale.
+		var positionOffset = min(kMaxHullOffset, kPadding + point_distance(ent_screenpos[0], ent_screenpos[1], ent_screenpos_corner[0], ent_screenpos_corner[1]));
 		
 		// We also want to get the XYZ position of the ent, and put the window somewhere nearby there
 		if (!has_stored_position)
@@ -66,32 +67,51 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		}
 		// Begin clamping check:
 		{
-			var clampPosition = function()
+			var clampPosition = function(bNewPlacement=false)
 			{
 				// Clamp the window position
-				m_position.x = round(max(48, min(m_position.x, GameCamera.width - 48 - m_size.x)));
-				m_position.y = round(max(48, min(m_position.y, GameCamera.height - 48 - m_size.y)));
+				if (!bNewPlacement)
+				{
+					var kEdgePadding = 48;
+					m_position.x = round(max(kEdgePadding - m_size.x, min(m_position.x, GameCamera.width - kEdgePadding)));
+					m_position.y = round(max(kEdgePadding + 16 - m_size.y, min(m_position.y, GameCamera.height - kEdgePadding)));
+				}
+				else
+				{
+					var kEdgePadding = 5;
+					m_position.x = round(max(kEdgePadding, min(m_position.x, GameCamera.width - kEdgePadding - m_size.x)));
+					m_position.y = round(max(kEdgePadding + 16, min(m_position.y, GameCamera.height - kEdgePadding - m_size.y)));
+				}
 			}
 			clampPosition();
 			
 			// If we're covering the ent position, move to other corners and clamp
-			if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
+			var positionOffsetEdge = positionOffset - 1;
+			if (Rect2FromMinSize(m_position, m_size).expand1Self(positionOffsetEdge).contains(ent_screenpos[0], ent_screenpos[1]))
 			{
 				m_position.x = ent_screenpos[0] - m_size.x - positionOffset;
 				m_position.y = ent_screenpos[1] + positionOffset;
-				clampPosition();
+				clampPosition(true);
 				
-				if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
+				if (Rect2FromMinSize(m_position, m_size).expand1Self(positionOffsetEdge).contains(ent_screenpos[0], ent_screenpos[1]))
 				{
 					m_position.x = ent_screenpos[0] - m_size.x - positionOffset;
 					m_position.y = ent_screenpos[1] - m_size.y - positionOffset;
-					clampPosition();
+					clampPosition(true);
 					
-					if (point_in_rectangle(ent_screenpos[0], ent_screenpos[1], m_position.x - kPadding, m_position.y - kPadding, m_position.x + m_size.x + kPadding, m_position.y + m_size.y + kPadding))
+					if (Rect2FromMinSize(m_position, m_size).expand1Self(positionOffsetEdge).contains(ent_screenpos[0], ent_screenpos[1]))
 					{
 						m_position.x = ent_screenpos[0] + positionOffset;
 						m_position.y = ent_screenpos[1] - m_size.y - positionOffset;
-						clampPosition();
+						clampPosition(true);
+						
+						// Go back to the starting position at the end
+						if (Rect2FromMinSize(m_position, m_size).expand1Self(positionOffsetEdge).contains(ent_screenpos[0], ent_screenpos[1]))
+						{
+							m_position.x = ent_screenpos[0] + positionOffset;
+							m_position.y = ent_screenpos[1] + positionOffset;
+							clampPosition(true);
+						}
 					}
 				}
 			}

@@ -60,8 +60,8 @@ function BBox2FromMinMax(n_min, n_max)
 /// @param {Vector2} max
 function Rect2(n_min, n_max) constructor
 {
-	m_min	= n_min;
-	m_max	= n_max;
+	m_min	= new Vector2(n_min.x, n_min.y);
+	m_max	= new Vector2(n_max.y, n_max.y);;
 	
 	static contains = function(x, y)
 	{
@@ -78,4 +78,19 @@ function Rect2(n_min, n_max) constructor
 			m_min.x, m_min.y,
 			m_max.x, m_max.y);
 	}
+	
+	static expand1Self = function(dist)
+	{
+		m_min.x -= dist;
+		m_min.y -= dist;
+		m_max.x += dist;
+		m_max.y += dist;
+		return self;
+	}
+}
+
+/// @function Rect2FromMinSize(min, size)
+function Rect2FromMinSize(n_min, n_size)
+{
+	return new Rect2(n_min, n_min.add(n_size));
 }
