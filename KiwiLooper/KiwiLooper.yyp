@@ -692,6 +692,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"electric4_doortest.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest5_1.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest3_1_stress_v2.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Run Editor.bat","CopyToMask":-1,"filePath":"datafiles",},
   ],
   "MetaData": {
     "IDEVersion": "2022.8.0.34",
