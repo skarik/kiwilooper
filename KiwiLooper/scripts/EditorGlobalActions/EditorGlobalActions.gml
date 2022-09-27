@@ -5,7 +5,10 @@ function EditorGet()
 
 function EditorGlobalDeleteSelection()
 {
-	// TODO:
+	var bRebuildTiles = false;
+	var bRebuildProps = false;
+	var bRebuildSplats = false;
+	
 	for (var i = 0; i < array_length(m_selection); ++i)
 	{
 		var currentSelection = m_selection[i];
@@ -16,19 +19,23 @@ function EditorGlobalDeleteSelection()
 			switch (currentSelection.type)
 			{
 			case kEditorSelection_Tile:
-				// TODO: Remove the given tile mentioned in XYZ.
+				var tileIndex = m_tilemap.GetPositionIndex(currentSelection.object.x, currentSelection.object.y);
+				var tileHeight = m_tilemap.tiles[tileIndex].height;
+				m_tilemap.DeleteTileIndex(tileIndex);
+				m_tilemap.RemoveHeightSlow(tileHeight);
+				bRebuildTiles = true;
 				break;
 				
 			case kEditorSelection_Prop:
 				m_propmap.RemoveProp(currentSelection.object);
 				delete currentSelection.object;
-				MapRebuilPropsOnly();
+				bRebuildProps = true;
 				break;
 				
 			case kEditorSelection_Splat:
 				m_splatmap.RemoveSplat(currentSelection.object);
 				delete currentSelection.object;
-				MapRebuildSplats();
+				bRebuildProps = true;
 				break;
 			}
 		}
@@ -41,6 +48,23 @@ function EditorGlobalDeleteSelection()
 	}
 	
 	m_selection = [];
+	
+	// Update gfx outside of the loop so that we don't overload anything
+	if (bRebuildTiles)
+	{
+		MapRebuildGraphics();
+	}
+	else
+	{
+		if (bRebuildProps)
+		{
+			MapRebuilPropsOnly();
+		}
+		if (bRebuildSplats)
+		{
+			MapRebuildSplats();
+		}
+	}
 }
 
 function EditorGlobalClearSelection()
