@@ -67,24 +67,25 @@ function EditorUIBitsUpdate()
 {
 	var l_mouseX = uPosition - GameCamera.view_x;
 	var l_mouseY = vPosition - GameCamera.view_y;
+	var l_bMouseAvailable = !EditorGizmoGetAnyConsumingMouse();
 	
 	m_toolbar.x = 0;
 	m_toolbar.y = 18;
-	m_toolbar.Step(l_mouseX, l_mouseY);
+	m_toolbar.Step(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
 	m_actionbar.x = 0;
 	m_actionbar.y = 0;
-	m_actionbar.Step(l_mouseX, l_mouseY);
+	m_actionbar.Step(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
-	m_minimenu.Step(l_mouseX, l_mouseY);
+	m_minimenu.Step(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
 	m_statusbar.Step();
 	
 	// Update annotations
-	EditorAnnotationsUpdate(l_mouseX, l_mouseY);
+	EditorAnnotationsUpdate(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
 	// Update windows
-	EditorWindowingUpdate(l_mouseX, l_mouseY);
+	EditorWindowingUpdate(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
 	// Update cursor
 	uiCursor = uiNextCursor;

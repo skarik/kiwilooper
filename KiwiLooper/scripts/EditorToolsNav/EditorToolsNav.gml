@@ -562,7 +562,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 		m_editor.m_statusbar.m_toolHelpText = "Left drag to rotate. Right drag to flat pan (XY). Left + Right drag to camera pan (XYZ)."
 		
 		// Limit the mouse position to inside the window:
-		Screen.limitMouse = true;
+		Screen.limitMouseMode = kLimitMouseMode_Wrap;
 	};
 	Parent_onEnd = onEnd;
 	onEnd = function(trueEnd)
@@ -570,7 +570,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 		Parent_onEnd(trueEnd);
 		
 		// Disable limiting the mouse position to inside the window:
-		Screen.limitMouse = false;
+		Screen.limitMouseMode = kLimitMouseMode_None;
 	};
 	
 	onStep = function()

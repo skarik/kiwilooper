@@ -8,7 +8,7 @@ function AToolbarTop() : AToolbar() constructor
 	static kTooltipShowTime	= 0.25;
 	static kTextPadding		= 1;
 	
-	static Step = function(mouseX, mouseY)
+	static Step = function(mouseX, mouseY, mouseAvailable)
 	{
 		m_state_containsMouse = false;
 		
@@ -38,7 +38,7 @@ function AToolbarTop() : AToolbar() constructor
 			{
 				element.m_state_isDown = (element.m_onCheckDown == null) ? false : element.m_onCheckDown();
 				
-				if (point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize + extra_width - 1, topLeft.y + kButtonSize - 1))
+				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize + extra_width - 1, topLeft.y + kButtonSize - 1))
 				{
 					element.m_state_isHovered = true;
 					element.m_state_hoveredTime += Time.deltaTime;

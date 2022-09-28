@@ -50,6 +50,20 @@ function EditorGizmoSetup()
 	{
 		instance.wants_release = true;
 	};
+	
+	/// @function EditorGizmoGetAnyConsumingMouse()
+	/// @desc Checks if any existing gizmo instance is consuming the mouse.
+	EditorGizmoGetAnyConsumingMouse = function()
+	{
+		for (var instanceIndex = 0; instanceIndex < array_length(m_gizmoInstances); ++instanceIndex)
+		{
+			if (m_gizmoInstances[instanceIndex][1].GetConsumingMouse())
+			{
+				return true;
+			}
+		}
+		return false;
+	};
 
 	with (m_gizmoObject)
 	{

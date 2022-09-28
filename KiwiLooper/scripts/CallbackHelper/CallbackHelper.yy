@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "controlInit",
+  "name": "CallbackHelper",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Control",
-    "path": "folders/Scripts/Core Extended/Control.yy",
+    "name": "Game",
+    "path": "folders/Scripts/Game.yy",
   },
 }

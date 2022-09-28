@@ -1,10 +1,11 @@
-function controlInit() {
 #macro kControlUvStyle_Mouse 0
 #macro kControlUvStyle_FakeMouse 1 
 #macro kControlUvStyle_Unused 2
 
 #macro kControlChoice_Margin 0.70
 
+function controlInit()
+{
 	xAxis = _controlStructCreate();
 	yAxis = _controlStructCreate();
 	zAxis = _controlStructCreate();
@@ -53,6 +54,14 @@ function controlInit() {
 	lastControlType = kControlKB;
 	lastGamepadName = gamepad_get_description(0);
 	lastGamepadType = (string_count("xinput", string_lower(lastGamepadName)) > 0) ? kGamepadTypeXInput : kGamepadTypeGeneric;
-
-
+	
+	mouseWrapCallbackId = Screen.limitMouseWrapCallbacks.Add(method(id,
+		function(offset_x, offset_y)
+		{
+			uPosition += offset_x / Screen.pixelScale;
+			uPositionPrevious += offset_x / Screen.pixelScale;
+			
+			vPosition += offset_y / Screen.pixelScale;
+			vPositionPrevious += offset_y / Screen.pixelScale;
+		}));
 }

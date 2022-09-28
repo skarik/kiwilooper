@@ -1,4 +1,5 @@
-function controlCleanup() {
+function controlCleanup()
+{
 	idelete(xAxis);
 	idelete(yAxis);
 	idelete(zAxis);
@@ -29,5 +30,5 @@ function controlCleanup() {
 	idelete(belt5Button);
 	idelete(belt6Button);
 
-
+	Screen.limitMouseWrapCallbacks.Remove(mouseWrapCallbackId);
 }

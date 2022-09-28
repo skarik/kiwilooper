@@ -32,7 +32,11 @@ offset_x = 0;
 offset_y = 0;
 
 // Is the mouse limited to stay within the window?
-limitMouse = false;
+#macro kLimitMouseMode_Clamp 0
+#macro kLimitMouseMode_Wrap 1
+#macro kLimitMouseMode_None 2
+limitMouseMode = kLimitMouseMode_None;
+limitMouseWrapCallbacks = new ACallbackHelper();
 
 // Hide the cursor
 window_set_cursor(cr_none);

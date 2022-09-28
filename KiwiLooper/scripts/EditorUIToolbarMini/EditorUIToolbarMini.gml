@@ -12,7 +12,7 @@ function AToolbarMini() : AToolbarTop() constructor
 	static cvis = false;
 	
 	static _Parent_Step = Step;
-	static Step = function(mouseX, mouseY)
+	static Step = function(mouseX, mouseY, mouseAvailable)
 	{
 		// Update position
 		if (cvis)
@@ -36,7 +36,7 @@ function AToolbarMini() : AToolbarTop() constructor
 		}
 		
 		// Update step
-		_Parent_Step(mouseX, mouseY);
+		_Parent_Step(mouseX, mouseY, mouseAvailable);
 	}
 	
 	static UpdatePosition = function(center_x, center_y)

@@ -462,7 +462,7 @@ function EditorWindowSignalModalEnd()
 	windowCurrentModal = null;
 }
 
-function EditorWindowingUpdate(mouseX, mouseY)
+function EditorWindowingUpdate(mouseX, mouseY, mouseAvailable)
 {
 	var hovered_window = null;
 	
@@ -484,10 +484,11 @@ function EditorWindowingUpdate(mouseX, mouseY)
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
 		var check_window = windows[iWindow];
-		if ((!check_window.minimized && point_in_rectangle(mouseX, mouseY,
+		if (mouseAvailable &&
+			((!check_window.minimized && point_in_rectangle(mouseX, mouseY,
 				check_window.m_position.x - check_window.kBorderSize, check_window.m_position.y - check_window.kBorderSize - check_window.kTitleHeight,
 				check_window.m_position.x + check_window.m_size.x + check_window.kBorderSize, check_window.m_position.y + check_window.m_size.y + check_window.kBorderSize))
-			|| (check_window.minimized && check_window.MinimizedContains(mouseX, mouseY)))
+			|| (check_window.minimized && check_window.MinimizedContains(mouseX, mouseY))))
 		{
 			check_window.contains_mouse = true;
 			hovered_window = check_window;
@@ -605,56 +606,59 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		}
 	}
 	
-	static RunMouseEvent = function(check_window, mouseX, mouseY, currentButton, event)
+	if (mouseAvailable)
 	{
-		var bMouseInsideClientArea = check_window.contains_mouse && point_in_rectangle(mouseX, mouseY,
-			check_window.m_position.x, check_window.m_position.y,
-			check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y);
+		static RunMouseEvent = function(check_window, mouseX, mouseY, currentButton, event)
+		{
+			var bMouseInsideClientArea = check_window.contains_mouse && point_in_rectangle(mouseX, mouseY,
+				check_window.m_position.x, check_window.m_position.y,
+				check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y);
 				
-		if (!check_window.disabled && check_window.visible)
-			check_window.onMouseEvent(mouseX, mouseY, currentButton, event | (bMouseInsideClientArea ? kEditorToolButtonFlagInside : kEditorToolButtonFlagOutside));
-	}
+			if (!check_window.disabled && check_window.visible)
+				check_window.onMouseEvent(mouseX, mouseY, currentButton, event | (bMouseInsideClientArea ? kEditorToolButtonFlagInside : kEditorToolButtonFlagOutside));
+		}
 	
-	// Poll and forward mouse states:
-	var mouse_buttons = [mb_left, mb_right, mb_middle, /*mouse wheels included*/];
-	for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)
-	{
-		// TODO: only call on the active window?
-		var currentButton = mouse_buttons[iButton];
-		if (mouse_check_button_pressed(currentButton))
+		// Poll and forward mouse states:
+		var mouse_buttons = [mb_left, mb_right, mb_middle, /*mouse wheels included*/];
+		for (var iButton = 0; iButton < array_length(mouse_buttons); ++iButton)
+		{
+			// TODO: only call on the active window?
+			var currentButton = mouse_buttons[iButton];
+			if (mouse_check_button_pressed(currentButton))
+			{
+				for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+				{
+					RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateMake);
+				}
+			}
+			if (mouse_check_button_released(currentButton))
+			{
+				for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+				{
+					RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateBreak);
+				}
+			}
+			if (mouse_check_button(currentButton))
+			{
+				for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
+				{
+					RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
+				}
+			}
+		}
+		if (mouse_wheel_up())
 		{
 			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 			{
-				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateMake);
+				RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelUp, kEditorToolButtonStateMake);
 			}
 		}
-		if (mouse_check_button_released(currentButton))
+		if (mouse_wheel_down())
 		{
 			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 			{
-				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateBreak);
+				RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelDown, kEditorToolButtonStateMake);
 			}
-		}
-		if (mouse_check_button(currentButton))
-		{
-			for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
-			{
-				RunMouseEvent(windows[iWindow], mouseX, mouseY, currentButton, kEditorToolButtonStateHeld);
-			}
-		}
-	}
-	if (mouse_wheel_up())
-	{
-		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
-		{
-			RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelUp, kEditorToolButtonStateMake);
-		}
-	}
-	if (mouse_wheel_down())
-	{
-		for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
-		{
-			RunMouseEvent(windows[iWindow], mouseX, mouseY, kEditorButtonWheelDown, kEditorToolButtonStateMake);
 		}
 	}
 	
@@ -667,7 +671,7 @@ function EditorWindowingUpdate(mouseX, mouseY)
 		
 		if (!check_window.disabled && check_window.visible)
 		{
-			if (check_window.contains_mouse)
+			if (mouseAvailable && check_window.contains_mouse)
 			{
 				check_window.onMouseMove(mouseX, mouseY);
 			}

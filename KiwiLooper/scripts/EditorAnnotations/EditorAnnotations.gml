@@ -44,7 +44,7 @@ function EditorAnnotationsSetup()
 	}
 }
 
-function EditorAnnotationsUpdate(mouseX, mouseY)
+function EditorAnnotationsUpdate(mouseX, mouseY, mouseAvailable)
 {
 	var kSize = 8;
 	var l_bLeftMouseDown = mouse_check_button_pressed(mb_left);
@@ -66,12 +66,13 @@ function EditorAnnotationsUpdate(mouseX, mouseY)
 			annotation.draw_position[1] = annotation.m_position[1];
 		}
 		
-		annotation.mouse_inside = point_in_rectangle(
-			mouseX, mouseY,
-			annotation.draw_position[0] - kSize,
-			annotation.draw_position[1] - kSize,
-			annotation.draw_position[0] + kSize,
-			annotation.draw_position[1] + kSize);
+		annotation.mouse_inside = mouseAvailable 
+			&& point_in_rectangle(
+				mouseX, mouseY,
+				annotation.draw_position[0] - kSize,
+				annotation.draw_position[1] - kSize,
+				annotation.draw_position[0] + kSize,
+				annotation.draw_position[1] + kSize);
 		
 		// Use draw position to check click events
 		annotation.click_state = kEditorToolButtonStateNone;
