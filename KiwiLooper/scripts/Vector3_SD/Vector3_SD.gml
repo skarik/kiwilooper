@@ -222,6 +222,30 @@ function Vector3(n_x, n_y, n_z) constructor
 		return self;
 	}
 	
+	static linearlerp = function(to, t)
+	{
+		return new Vector3(lerp(x, to.x, t), lerp(y, to.y, t), lerp(z, to.z, t));
+	}
+	static linearlerpSelf = function(to, t)
+	{
+		x = lerp(x, to.x, t);
+		y = lerp(y, to.y, t);
+		z = lerp(z, to.z, t);
+		return self;
+	}
+	
+	static anglelerp = function(to, t)
+	{
+		return new Vector3(x + angle_difference(to.x, x) * t, y + angle_difference(to.y, y) * t, z + angle_difference(to.z, z) * t);
+	}
+	static anglelerpSelf = function(to, t)
+	{
+		x += angle_difference(to.x, x) * t;
+		y += angle_difference(to.y, y) * t;
+		z += angle_difference(to.z, z) * t;
+		return self;
+	}
+	
 	static transformAMatrix = function(matrix)
 	{
 		gml_pragma("forceinline");

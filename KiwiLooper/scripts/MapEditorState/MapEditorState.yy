@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Entities And External Maps",
-    "path": "folders/Scripts/Game/Entities And External Maps.yy",
+    "name": "Editor",
+    "path": "folders/Scripts/Game/Editor.yy",
   },
 }

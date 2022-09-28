@@ -43,6 +43,7 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 9, "Smaller Grid", null, EditorToolGridSmaller, null));
 		m_actionbar.labelGridSize = m_actionbar.AddElement(AToolbarElementAsLabel(null, 0, "Current grid size", "Grid: 16", 15));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 2, "Toggle First Person Camera", null, function(){ bFirstPersonMode = !bFirstPersonMode; }, function() { return bFirstPersonMode; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 0, "Center on selection", null, EditorCameraCenterOnSelection, null, function(){ return EditorSelectionGetLast() != null; }));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 11, "Rebuild static lighting", "Toast Lights", null, null));

@@ -1,4 +1,7 @@
-#macro kMapEditorFeature_None			0x0001
+#macro kMapEditorFeature_None				0x0001
+#macro kMapEditorFeature_CameraFirstPerson	0x0002
+
+#macro kMapEditorFeature_Current	kMapEditorFeature_CameraFirstPerson
 
 function MapLoadEditor(filedata, editorSavedState)
 {
@@ -12,9 +15,9 @@ function MapLoadEditor(filedata, editorSavedState)
 	
 	var featureset = buffer_read(buffer, buffer_u32);
 
-	if (featureset <= kMapEditorFeature_None)
+	//if (featureset <= kMapEditorFeature_None) // TODO: Later
 	{
-		editorSavedState.serializeBuffer(buffer, function(scope, variable, buffer, type)
+		editorSavedState.serializeBuffer(featureset, buffer, function(scope, variable, buffer, type)
 			{
 				variable_struct_set(scope, variable, buffer_read(buffer, type));
 			});
@@ -34,9 +37,9 @@ function MapSaveEditor(filedata, editorSavedState)
 	//	u32			feature set
 	//	struct		savedState
 	
-	buffer_write(buffer, buffer_u32, kMapEntityFeature_None);
+	buffer_write(buffer, buffer_u32, kMapEditorFeature_Current);
 	
-	editorSavedState.serializeBuffer(buffer, function(scope, variable, buffer, type)
+	editorSavedState.serializeBuffer(kMapEditorFeature_Current, buffer, function(scope, variable, buffer, type)
 		{
 			buffer_write(buffer, type, variable_struct_get(scope, variable));
 		});

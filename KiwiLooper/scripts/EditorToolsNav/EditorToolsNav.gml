@@ -581,58 +581,105 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 		
 		with (m_editor)
 		{
-			if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
+			// Top-down mode
+			if (!bFirstPersonMode)
 			{
-				m_state.camera.rotation.z -= (uPosition - uPositionPrevious) * 0.2;
-				m_state.camera.rotation.y += (vPosition - vPositionPrevious) * 0.2;
-			}
-			else if (bMouseRight && !bMouseLeft)
-			{
-				m_state.camera.position.x += 
-						   lengthdir_x((vPosition - vPositionPrevious), m_state.camera.rotation.z)
-						 + lengthdir_y((uPosition - uPositionPrevious), m_state.camera.rotation.z);
+				if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
+				{
+					m_state.camera.rotation.z -= (uPosition - uPositionPrevious) * 0.2;
+					m_state.camera.rotation.y += (vPosition - vPositionPrevious) * 0.2;
+				}
+				else if (bMouseRight && !bMouseLeft)
+				{
+					m_state.camera.position.x += 
+								lengthdir_x((vPosition - vPositionPrevious), m_state.camera.rotation.z)
+								+ lengthdir_y((uPosition - uPositionPrevious), m_state.camera.rotation.z);
 				 
-				m_state.camera.position.y += 
-						   lengthdir_y((vPosition - vPositionPrevious), m_state.camera.rotation.z)
-						 - lengthdir_x((uPosition - uPositionPrevious), m_state.camera.rotation.z);
+					m_state.camera.position.y += 
+								lengthdir_y((vPosition - vPositionPrevious), m_state.camera.rotation.z)
+								- lengthdir_x((uPosition - uPositionPrevious), m_state.camera.rotation.z);
+				}
+				else if (bMouseLeft && bMouseRight)
+				{
+					var cameraPos = m_state.camera.position.copy();
+				
+					// Create the forward vector
+					var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
+					var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
+					var cameraSide = cameraDir.cross(cameraTop).normal();
+				
+					// Perform the movement
+					cameraPos.addSelf(
+						cameraSide
+							.multiply(uPosition - uPositionPrevious)
+							.add(
+								cameraTop.multiply(vPosition - vPositionPrevious)
+								)
+						);
+				
+					// Save out result
+					m_state.camera.position.copyFrom(cameraPos);
+				
+					// Explicitly delete temp calc structures
+					delete cameraPos;
+					delete cameraDir;
+					delete cameraSide;
+					delete cameraTop;
+				}
 			}
-			else if (bMouseLeft && bMouseRight)
+			// First person mode
+			else
 			{
-				//cameraZoom += (vPosition - vPositionPrevious) / 500.0;
-				var cameraPos = m_state.camera.position.copy();
-				
-				// Create the forward vector
-				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
-				var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
-				var cameraSide = cameraDir.cross(cameraTop).normal();
-				
-				// Perform the movement
-				cameraPos.addSelf(
-					cameraSide
-						.multiply(uPosition - uPositionPrevious)
-						.add(
-							cameraTop.multiply(vPosition - vPositionPrevious)
-							)
-					);
-				
-				// Save out result
-				m_state.camera.position.copyFrom(cameraPos);
-				
-				// Explicitly delete temp calc structures
-				delete cameraPos;
-				delete cameraDir;
-				delete cameraSide;
-				delete cameraTop;
+				if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
+				{
+					m_state.camera.fp_rotation.z -= (uPosition - uPositionPrevious) * 0.4;
+					m_state.camera.fp_rotation.y += (vPosition - vPositionPrevious) * 0.4;
+				}
+				else if ((bMouseRight && !bMouseLeft) || (bMouseLeft && bMouseRight))
+				{
+					var cameraPos = m_state.camera.position.copy();
+					cameraPos.z = m_state.camera.fp_z;
+					
+					// Create the forward vector
+					var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
+					var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
+					var cameraSide = cameraDir.cross(cameraTop).normal();
+					
+					// Perform the motion
+					if (bMouseRight && !bMouseLeft)
+					{
+						cameraPos.addSelf(
+							cameraSide
+								.multiply(uPositionPrevious - uPosition)
+								.add(
+									cameraTop.multiply(vPositionPrevious - vPosition)
+									)
+							);
+					}
+					else
+					{
+						cameraPos.addSelf(
+							cameraSide
+								.multiply(uPositionPrevious - uPosition)
+								.add(
+									cameraDir.multiply(vPositionPrevious - vPosition)
+									)
+							);
+					}
+					
+					// Save out result
+					m_state.camera.position.x = cameraPos.x;
+					m_state.camera.position.y = cameraPos.y;
+					m_state.camera.fp_z = cameraPos.z;
+					
+					// Explicitly delete temp calc structures
+					delete cameraPos;
+					delete cameraDir;
+					delete cameraSide;
+					delete cameraTop;
+				}
 			}
-			
-			/*if (mouse_wheel_down())
-			{
-				cameraZoom += 0.1;
-			}
-			else if (mouse_wheel_up())
-			{
-				cameraZoom -= 0.1;
-			}*/ // Duplicate action, already hardcoded in the shortcuts.
+			// Zoom is hardcoded in the shortcuts.
 		}
 	}
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
