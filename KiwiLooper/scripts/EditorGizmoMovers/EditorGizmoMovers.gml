@@ -661,17 +661,18 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		{
 			static kRotateInScreenspace = false; // toggle this
 			
-			if (m_dragX)
+			/// @function DoDragRotateOnAxis(axis, screenspace)
+			/// @desc Performs generalized rotation inputs
+			static DoDragRotateOnAxis = function(axis, screenspace)
 			{
-				//xrotation += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
-				//if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
-				if (kRotateInScreenspace)
+				var rotation = 0;
+				if (screenspace)
 				{
 					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
 					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
 					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
 					
-					xrotation = m_dragStart[0] - angle_difference(
+					rotation = m_dragStart[axis] - angle_difference(
 						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
 						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
 				}
@@ -680,73 +681,42 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 					var rayStart = Vector3FromTranslation(o_Camera3D);
 					var rayDirStart = Vector3FromArray(m_dragViewrayStart);
 					var rayDirCurrent = Vector3FromArray(m_editor.viewrayPixel);
-					// project onto the XY plane
-					assert(raycast4_axisplane(kAxisX, x, rayStart, rayDirStart));
+					// project onto the given plane
+					ensure(raycast4_axisplane(axis, select(axis, x, y, z), rayStart, rayDirStart));
 					var l_worldStart = rayStart.add(rayDirStart.multiply(raycast4_get_hit_distance()));
-					assert(raycast4_axisplane(kAxisX, x, rayStart, rayDirCurrent));
+					ensure(raycast4_axisplane(axis, select(axis, x, y, z), rayStart, rayDirCurrent));
 					var l_worldCurrent = rayStart.add(rayDirCurrent.multiply(raycast4_get_hit_distance()));
-				
+					
 					// calculate angle difference in the world
-					xrotation = m_dragStart[0] - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
+					if (axis == kAxisX)
+						rotation = m_dragStart[axis] - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
+					else if (axis == kAxisY)
+						rotation = m_dragStart[axis] - angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
+					else if (axis == kAxisZ)
+						rotation = m_dragStart[axis] - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
 				}
+				
+				if (axis == kAxisX)
+					xrotation = rotation;
+				else if (axis == kAxisY)
+					yrotation = rotation;
+				else if (axis == kAxisZ)
+					zrotation = rotation;
+			}
+			
+			if (m_dragX)
+			{
+				DoDragRotateOnAxis(kAxisX, kRotateInScreenspace);
 				if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
 			}
 			if (m_dragY)
 			{
-				//yrotation += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
-				//if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
-				if (kRotateInScreenspace)
-				{
-					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
-					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
-					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
-					
-					yrotation = m_dragStart[1] - angle_difference(
-						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
-						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
-				}
-				else
-				{
-					var rayStart = Vector3FromTranslation(o_Camera3D);
-					var rayDirStart = Vector3FromArray(m_dragViewrayStart);
-					var rayDirCurrent = Vector3FromArray(m_editor.viewrayPixel);
-					// project onto the XY plane
-					assert(raycast4_axisplane(kAxisY, y, rayStart, rayDirStart));
-					var l_worldStart = rayStart.add(rayDirStart.multiply(raycast4_get_hit_distance()));
-					assert(raycast4_axisplane(kAxisY, y, rayStart, rayDirCurrent));
-					var l_worldCurrent = rayStart.add(rayDirCurrent.multiply(raycast4_get_hit_distance()));
-				
-					// calculate angle difference in the world
-					yrotation = m_dragStart[1] - angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
-				}
+				DoDragRotateOnAxis(kAxisY, kRotateInScreenspace);
 				if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
 			}
 			if (m_dragZ)
 			{
-				if (kRotateInScreenspace)
-				{
-					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
-					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
-					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
-					
-					zrotation = m_dragStart[2] - angle_difference(
-						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
-						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
-				}
-				else
-				{
-					var rayStart = Vector3FromTranslation(o_Camera3D);
-					var rayDirStart = Vector3FromArray(m_dragViewrayStart);
-					var rayDirCurrent = Vector3FromArray(m_editor.viewrayPixel);
-					// project onto the XY plane
-					assert(raycast4_axisplane(kAxisZ, z, rayStart, rayDirStart));
-					var l_worldStart = rayStart.add(rayDirStart.multiply(raycast4_get_hit_distance()));
-					assert(raycast4_axisplane(kAxisZ, z, rayStart, rayDirCurrent));
-					var l_worldCurrent = rayStart.add(rayDirCurrent.multiply(raycast4_get_hit_distance()));
-				
-					// calculate angle difference in the world
-					zrotation = m_dragStart[2] - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
-				}
+				DoDragRotateOnAxis(kAxisZ, kRotateInScreenspace);
 				if (bLocalSnap) zrotation = round_nearest(zrotation, 15);
 			}
 		}
