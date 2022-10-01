@@ -41,6 +41,9 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		}
 		
 		m_editor.toolGridTemporaryDisable = false; // Reset states
+		
+		// Disable limiting the mouse position to inside the window:
+		Screen.limitMouseMode = kLimitMouseMode_None;
 	};
 	
 	m_haveTileSelectionState = false;
@@ -354,6 +357,16 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		
 		m_transformGizmoWasConsumingMouse = m_transformGizmoConsumingMouse;
 		m_transformGizmoConsumingMouse = m_transformGizmo.GetConsumingMouse();
+		
+		// Apply mouse moving limits if we're dragging, reset if now
+		if (m_isDragging)
+		{
+			Screen.limitMouseMode = kLimitMouseMode_Clamp;
+		}
+		else
+		{
+			Screen.limitMouseMode = kLimitMouseMode_None;
+		}
 		
 		// Update like normal click if not using the transform gizmo
 		if (!m_transformGizmo.GetEnabled() || !(m_transformGizmoConsumingMouse || m_transformGizmoWasConsumingMouse))

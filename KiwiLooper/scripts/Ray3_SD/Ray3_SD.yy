@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "EditorGizmoMovers",
+  "name": "Ray3_SD",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Gizmos",
-    "path": "folders/Scripts/Game/Editor/Gizmos.yy",
+    "name": "Math",
+    "path": "folders/Scripts/Game/Math.yy",
   },
 }

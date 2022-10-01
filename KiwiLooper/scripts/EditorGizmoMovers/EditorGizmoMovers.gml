@@ -141,6 +141,10 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ || m_dragC)
 		{
+			// Create reference rays
+			var startRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_dragViewrayStart));
+			var currentRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_editor.viewrayPixel));
+			
 			if (m_dragC)
 			{
 				//TODO: use m_collisionDragOffset
@@ -160,17 +164,29 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 			}
 			else if (m_dragX)
 			{
-				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(1, 0, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				x = axisDrag.point.x + axisDrag.direction.x * (currentResult.a - startResult.a);
 				if (bLocalSnap) x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
 			}
 			else if (m_dragY)
 			{
-				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 1, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				y = axisDrag.point.y + axisDrag.direction.y * (currentResult.a - startResult.a);
 				if (bLocalSnap) y = round_nearest(y - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[1];
 			}
 			else if (m_dragZ)
 			{
-				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 0, 1));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				z = axisDrag.point.z + axisDrag.direction.z * (currentResult.a - startResult.a);
 				if (bLocalSnap) z = round_nearest(z - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[2];
 			}
 		}
@@ -224,8 +240,6 @@ function AEditorGizmoPointMove() : AEditorGizmoBase() constructor
 				}
 				
 				// draw the circle in center
-				
-				// Create the forward vector
 				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
 				var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
 				var cameraSide = cameraDir.cross(cameraTop).normal();
@@ -278,15 +292,19 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 	m_mouseOverX = false;
 	m_mouseOverY = false;
 	m_mouseOverZ = false;
+	m_mouseOverC = false;
 	
 	m_dragX = false;
 	m_dragY = false;
 	m_dragZ = false;
+	m_dragC = false;
 	
 	m_active = false;
 	
 	m_dragStart = [];
 	m_dragViewrayStart = [];
+	m_snapOffset = [0, 0, 0];
+	m_collisionDragOffset = [0, 0, 0];
 	
 	GetConsumingMouse = function()
 	{
@@ -308,6 +326,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		var kAxisLength = 32 * kScreensizeFactor;
 		var kArrowHalfsize = 4 * kScreensizeFactor;
 		var kScreenLength = 500 * kScreensizeFactor;
+		var kCircleRadius = 4 * kScreensizeFactor;
 		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
 		var pixelY = m_editor.vPosition - GameCamera.view_y;
@@ -320,6 +339,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		m_mouseOverX = false;
 		m_mouseOverY = false;
 		m_mouseOverZ = false;
+		m_mouseOverC = false;
 		
 		if (MouseAvailable())
 		{
@@ -327,14 +347,15 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 			var depthX = o_Camera3D.positionToView(x + kAxisLength, y, z)[2];
 			var depthY = o_Camera3D.positionToView(x, y + kAxisLength, z)[2];
 			var depthZ = o_Camera3D.positionToView(x, y, z + kAxisLength)[2];
+			var depthC = o_Camera3D.positionToView(x, y, z)[2];
 		
-			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ]];
+			var check_depthOrder = [[0, depthX], [1, depthY], [2, depthZ], [3, depthC]];
 			if (check_depthOrder[0][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 0, 2);
 			if (check_depthOrder[0][1] > check_depthOrder[1][1]) CE_ArraySwap(check_depthOrder, 0, 1);
 			if (check_depthOrder[1][1] > check_depthOrder[2][1]) CE_ArraySwap(check_depthOrder, 1, 2);
 		
 			// Check collision with each axis.
-			for (var check_index = 0; check_index < 3; ++check_index)
+			for (var check_index = 0; check_index < 4; ++check_index)
 			{
 				var check_orderLookup = check_depthOrder[check_index][0];
 				if (check_orderLookup == 0)
@@ -358,6 +379,11 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 						|| raycast4_box(new Vector3(x - kArrowHalfsize, y - kArrowHalfsize, z - kAxisLength), new Vector3(x + kArrowHalfsize, y + kArrowHalfsize, z - kAxisLength - kArrowHalfsize*2), rayStart, rayDir);
 					if (m_mouseOverZ) break;
 				}
+				if (check_orderLookup == 3)
+				{
+					m_mouseOverC = raycast4_box(new Vector3(x - kCircleRadius, y - kCircleRadius, z - kCircleRadius), new Vector3(x + kCircleRadius, y + kCircleRadius, z + kCircleRadius), rayStart, rayDir);
+					if (m_mouseOverC) break;
+				}
 			}
 		}
 		
@@ -380,8 +406,10 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 				m_dragY = true;
 			else if (m_mouseOverZ)
 				m_dragZ = true;
+			else if (m_mouseOverC)
+				m_dragC = true;
 				
-			if (m_dragX || m_dragY || m_dragZ)
+			if (m_dragX || m_dragY || m_dragZ || m_dragC)
 			{
 				m_dragStart = [x, y, z];
 				m_dragViewrayStart = CE_ArrayClone(m_editor.viewrayPixel);
@@ -389,22 +417,55 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 		}
 		
 		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
-		if (m_dragX || m_dragY || m_dragZ)
+		if (m_dragX || m_dragY || m_dragZ || m_dragC)
 		{
-			if (m_dragX)
+			// Create reference rays
+			var startRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_dragViewrayStart));
+			var currentRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_editor.viewrayPixel));
+			
+			if (m_dragC)
 			{
-				x = m_dragStart[0] + (m_editor.viewrayPixel[0] - m_dragViewrayStart[0]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) x = round_nearest(x, m_editor.toolGridSize);
+				//TODO: use m_collisionDragOffset
+				// Using the camera, raycast against the world
+				var l_currentPosition = m_editor.toolWorldValid ? [m_editor.toolWorldX, m_editor.toolWorldY, m_editor.toolWorldZ] : [m_editor.toolFlatX, m_editor.toolFlatY, 0];
+				
+				x = l_currentPosition[0];
+				y = l_currentPosition[1];
+				z = l_currentPosition[2];
+				
+				if (bLocalSnap)
+				{
+					x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
+					y = round_nearest(y - m_snapOffset[1], m_editor.toolGridSize) + m_snapOffset[1];
+					z = round_nearest(z - m_snapOffset[2], m_editor.toolGridSize) + m_snapOffset[2];
+				}
 			}
-			if (m_dragY)
+			else if (m_dragX)
 			{
-				y = m_dragStart[1] + (m_editor.viewrayPixel[1] - m_dragViewrayStart[1]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) y = round_nearest(y, m_editor.toolGridSize);
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(1, 0, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				x = axisDrag.point.x + axisDrag.direction.x * (currentResult.a - startResult.a);
+				if (bLocalSnap) x = round_nearest(x - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[0];
 			}
-			if (m_dragZ)
+			else if (m_dragY)
 			{
-				z = m_dragStart[2] + (m_editor.viewrayPixel[2] - m_dragViewrayStart[2]) * 1200 * kScreensizeFactor;
-				if (bLocalSnap) z = round_nearest(z, m_editor.toolGridSize);
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 1, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				y = axisDrag.point.y + axisDrag.direction.y * (currentResult.a - startResult.a);
+				if (bLocalSnap) y = round_nearest(y - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[1];
+			}
+			else if (m_dragZ)
+			{
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 0, 1));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				z = axisDrag.point.z + axisDrag.direction.z * (currentResult.a - startResult.a);
+				if (bLocalSnap) z = round_nearest(z - m_snapOffset[0], m_editor.toolGridSize) + m_snapOffset[2];
 			}
 		}
 		
@@ -413,6 +474,7 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 			m_dragX = false;
 			m_dragY = false;
 			m_dragZ = false;
+			m_dragC = false;
 		}
 		
 		// Update the visuals
@@ -446,27 +508,12 @@ function AEditorGizmoAxesMove() : AEditorGizmoBase() constructor
 					MeshbAddBillboardTriangle(m_mesh, zcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0, -1), new Vector3(x,y,z - kAxisLength));
 				}
 				
-				// 2D-axis colors
-				/*
-				var xycolor = c_yellow;
-				MeshbAddQuad(m_mesh, xycolor, new Vector3(kArrowHalfsize * 2, 0, 0), new Vector3(0, kArrowHalfsize * 2, 0), new Vector3(x + 4,y + 4,z));
-				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, 0.707, 0), new Vector3(x + kAxisLength,y + kAxisLength,z));
-				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, -0.707, 0), new Vector3(x + kAxisLength,y - kAxisLength,z));
-				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-0.707, 0.707, 0), new Vector3(x - kAxisLength,y + kAxisLength,z));
-				//MeshbAddBillboardTriangle(m_mesh, xycolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-0.707, -0.707, 0), new Vector3(x - kAxisLength,y - kAxisLength,z));
-				
-				var xzcolor = c_fuchsia;
-				//MeshbAddBillboardTriangle(m_mesh, xzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, 0, 0.707), new Vector3(x + kAxisLength,y,z + kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, xzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0.707, 0, -0.707), new Vector3(x + kAxisLength,y,z - kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, xzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-0.707, 0, 0.707), new Vector3(x - kAxisLength,y,z + kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, xzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(-0.707, 0, -0.707), new Vector3(x - kAxisLength,y,z - kAxisLength));
-				
-				var yzcolor = c_aqua;
-				//MeshbAddBillboardTriangle(m_mesh, yzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0.707, 0.707), new Vector3(x,y + kAxisLength,z + kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, yzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, 0.707, -0.707), new Vector3(x,y + kAxisLength,z - kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, yzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, -0.707, 0.707), new Vector3(x,y - kAxisLength,z + kAxisLength));
-				//MeshbAddBillboardTriangle(m_mesh, yzcolor, kArrowHalfsize, kArrowHalfsize*2, new Vector3(0, -0.707, -0.707), new Vector3(x,y - kAxisLength,z - kAxisLength));
-				*/
+				// draw the circle in center
+				var cameraDir = Vector3FromArray(o_Camera3D.m_viewForward);
+				var cameraTop = Vector3FromArray(o_Camera3D.m_viewUp);
+				var cameraSide = cameraDir.cross(cameraTop).normal();
+				var ccolor = merge_color(c_yellow, c_white, m_dragC ? 1.0 : (m_mouseOverC ? 0.7 : 0.0));
+				MeshbAddArc(m_mesh, ccolor, kBorderExpand, kCircleRadius, 0, 360, 20, cameraSide, cameraTop, new Vector3(x,y,z));
 			}
 			else
 			{
@@ -612,19 +659,70 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		var bLocalSnap = bEnableAngleSnaps;//m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		if (m_dragX || m_dragY || m_dragZ)
 		{
+			static kRotateInScreenspace = false; // toggle this
+			
 			if (m_dragX)
 			{
-				xrotation += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				//xrotation += (m_editor.viewrayPixel[0] - m_editor.viewrayPixelPrevious[0]) * 1200 * kScreensizeFactor;
+				//if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
+				if (kRotateInScreenspace)
+				{
+					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
+					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
+					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
+					
+					xrotation = m_dragStart[0] - angle_difference(
+						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
+						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
+				}
+				else
+				{
+					var rayStart = Vector3FromTranslation(o_Camera3D);
+					var rayDirStart = Vector3FromArray(m_dragViewrayStart);
+					var rayDirCurrent = Vector3FromArray(m_editor.viewrayPixel);
+					// project onto the XY plane
+					assert(raycast4_axisplane(kAxisX, x, rayStart, rayDirStart));
+					var l_worldStart = rayStart.add(rayDirStart.multiply(raycast4_get_hit_distance()));
+					assert(raycast4_axisplane(kAxisX, x, rayStart, rayDirCurrent));
+					var l_worldCurrent = rayStart.add(rayDirCurrent.multiply(raycast4_get_hit_distance()));
+				
+					// calculate angle difference in the world
+					xrotation = m_dragStart[0] - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
+				}
 				if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
 			}
 			if (m_dragY)
 			{
-				yrotation += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				//yrotation += (m_editor.viewrayPixel[1] - m_editor.viewrayPixelPrevious[1]) * 1200 * kScreensizeFactor;
+				//if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
+				if (kRotateInScreenspace)
+				{
+					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
+					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
+					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
+					
+					yrotation = m_dragStart[1] - angle_difference(
+						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
+						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
+				}
+				else
+				{
+					var rayStart = Vector3FromTranslation(o_Camera3D);
+					var rayDirStart = Vector3FromArray(m_dragViewrayStart);
+					var rayDirCurrent = Vector3FromArray(m_editor.viewrayPixel);
+					// project onto the XY plane
+					assert(raycast4_axisplane(kAxisY, y, rayStart, rayDirStart));
+					var l_worldStart = rayStart.add(rayDirStart.multiply(raycast4_get_hit_distance()));
+					assert(raycast4_axisplane(kAxisY, y, rayStart, rayDirCurrent));
+					var l_worldCurrent = rayStart.add(rayDirCurrent.multiply(raycast4_get_hit_distance()));
+				
+					// calculate angle difference in the world
+					yrotation = m_dragStart[1] - angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
+				}
 				if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
 			}
 			if (m_dragZ)
 			{
-				static kRotateInScreenspace = false; // toggle this
 				if (kRotateInScreenspace)
 				{
 					var l_screenCenter = o_Camera3D.positionToView(x, y, z);
