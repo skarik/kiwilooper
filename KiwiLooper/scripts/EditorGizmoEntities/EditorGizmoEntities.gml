@@ -59,6 +59,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			for (var entIndex = 0; entIndex < entCount; ++entIndex)
 			{
 				var ent = instance_find(entType, entIndex);
+				if (ent.object_index != entType) continue; // Skip invalid objects
 				
 				// Generate misc rendering info
 				var entColor = GetEntColor(ent);

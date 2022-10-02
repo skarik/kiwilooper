@@ -32,6 +32,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 			for (var entIndex = 0; entIndex < entCount; ++entIndex)
 			{
 				var ent = instance_find(entType, entIndex);
+				if (ent.object_index != entType) continue; // Skip invalid objects
 				// Check for proxies:
 				if (entTypeIndex == entlistIterationLength())
 				{
@@ -448,6 +449,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			for (var entIndex = 0; entIndex < entCount; ++entIndex)
 			{
 				var ent = instance_find(entType, entIndex);
+				if (ent.object_index != entType) continue; // Skip invalid objects
 				// Check for proxies:
 				if (entTypeIndex == entlistIterationLength())
 				{
