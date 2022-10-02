@@ -999,6 +999,7 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 		{
 			var lastPosition = Vector3FromArray(m_dragStartPosition);
 			var lastCenter = bbox.center.add(lastPosition);
+			//var lastCenter = lastPosition;
 			
 			// Rotate viewray delta into current space
 			var viewrayDelta = new Vector3(m_editor.viewrayPixel[0] - m_dragViewrayStart[0], m_editor.viewrayPixel[1] - m_dragViewrayStart[1], m_editor.viewrayPixel[2] - m_dragViewrayStart[2]);
@@ -1013,26 +1014,28 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 				
 				var xsize = m_dragStart[0] + viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
 				if (bLocalSnap) xsize = round_nearest(xsize, m_editor.toolGridSize / 2); // halved because extents are halved
-				xscale = xsize / max(1, bbox.extents.x);
+				xscale = xsize / max(0.001, bbox.extents.x);
 				lastCenter.addSelf(kX.multiply(m_dragXSign * (xsize - m_dragStart[0])));
 			}
 			if (m_dragY)
 			{
 				var ysize = m_dragStart[1] + viewrayDelta.y * 600 * m_dragYSign * kScreensizeFactor;
 				if (bLocalSnap) ysize = round_nearest(ysize, m_editor.toolGridSize / 2);
-				yscale = ysize / max(1, bbox.extents.y);
+				yscale = ysize / max(0.001, bbox.extents.y);
 				lastCenter.addSelf(kY.multiply(m_dragYSign * (ysize - m_dragStart[1])));
 			}
 			if (m_dragZ)
 			{
 				var zsize = m_dragStart[2] + viewrayDelta.z * 600 * m_dragZSign * kScreensizeFactor;
 				if (bLocalSnap) zsize = round_nearest(zsize, m_editor.toolGridSize / 2);
-				zscale = zsize / max(1, bbox.extents.z);
+				zscale = zsize / max(0.001, bbox.extents.z);
 				lastCenter.addSelf(kZ.multiply(m_dragZSign * (zsize - m_dragStart[2])));
 			}
 			
 			// We have an updated bbox center. We now need to get the corner based on latest scaling
 			lastPosition = lastCenter.subtract(bbox.center.multiplyComponent(new Vector3(xscale, yscale, zscale)));
+			//lastPosition = lastCenter.subtract(bbox.center);
+			//lastPosition = lastCenter;
 			
 			// Output new offset position
 			x = lastPosition.x;
