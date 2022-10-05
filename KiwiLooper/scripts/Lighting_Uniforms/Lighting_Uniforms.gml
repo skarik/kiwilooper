@@ -3,12 +3,14 @@
 #macro kLightingModeForward		0
 #macro kLightingModeDeferred	1
 
+#macro kLightType_SpotAngle		0x01
+
 #macro kLightType_Point			0x00
-#macro kLightType_PointSpot		(kLightType_Point | 0x01)
+#macro kLightType_PointSpot		(kLightType_Point | kLightType_SpotAngle)
 #macro kLightType_Sphere		0x02
-#macro kLightType_SphereSpot	(kLightType_Sphere | 0x01)
+#macro kLightType_SphereSpot	(kLightType_Sphere | kLightType_SpotAngle)
 #macro kLightType_Rect			0x04
-#macro kLightType_RectSpot		(kLightType_Rect | 0x01)
+#macro kLightType_RectSpot		(kLightType_Rect | kLightType_SpotAngle)
 
 ///@function lightInitialize()
 function lightInitialize()
@@ -343,25 +345,55 @@ function lightGatherLights_Deferred()
 	{
 		var light = lights[i];
 		
+		// Position {X, Y, Z, Type}
 		light_position_array[i * 4 + 0] = light.x;
 		light_position_array[i * 4 + 1] = light.y;
 		light_position_array[i * 4 + 2] = light.z;
 		light_position_array[i * 4 + 3] = light.type;
 		
-		light_params_array[i * 4 + 0] = light.intensity * light.brightness; // TODO make this not here
+		// Params {Brightness, Inverse Range, Inner Angle, Outer Angle}
+		light_params_array[i * 4 + 0] = light.intensity * light.brightness; // TODO make this not here? should precalculate
 		light_params_array[i * 4 + 1] = 1.0 / light.range;
 		
+		// Color {R, G, B}
 		light_color_array[i * 4 + 0] = color_get_red(lights[i].color) / 255.0;
 		light_color_array[i * 4 + 1] = color_get_green(lights[i].color) / 255.0;
 		light_color_array[i * 4 + 2] = color_get_blue(lights[i].color) / 255.0;
 		
-		if (light.type == kLightType_Rect)
+		// todo: clean up this conditional and try to simplify branches
+		
+		if (light.type == kLightType_PointSpot)
 		{
+			// Params {Brightness, Inverse Range, Inner Angle, Outer Angle}
+			light_params_array[i * 4 + 2] = light.innerAngleCos;
+			light_params_array[i * 4 + 3] = light.outerAngleCos;
+			
+			// Direction {Forward XYZ, Width}
+			light_direction_array[i * 4 + 0] = light.facingVector.x;
+			light_direction_array[i * 4 + 1] = light.facingVector.y;
+			light_direction_array[i * 4 + 2] = light.facingVector.z;
+			
+			// Other (Up XYZ, Height}
+			light_other_array[i * 4 + 0] = light.upVector.x;
+			light_other_array[i * 4 + 1] = light.upVector.y;
+			light_other_array[i * 4 + 2] = light.upVector.z;
+		}
+		else if (light.type & kLightType_Rect)
+		{
+			if (light.type == kLightType_RectSpot)
+			{
+				// Params {Brightness, Inverse Range, Inner Angle, Outer Angle}
+				light_params_array[i * 4 + 2] = light.innerAngleCos;
+				light_params_array[i * 4 + 3] = light.outerAngleCos;
+			}
+			
+			// Direction {Forward XYZ, Width}
 			light_direction_array[i * 4 + 0] = light.facingVector.x;
 			light_direction_array[i * 4 + 1] = light.facingVector.y;
 			light_direction_array[i * 4 + 2] = light.facingVector.z;
 			light_direction_array[i * 4 + 3] = light.yscale * 0.5; // Half-Width
 			
+			// Other (Up XYZ, Height}
 			light_other_array[i * 4 + 0] = light.upVector.x;
 			light_other_array[i * 4 + 1] = light.upVector.y;
 			light_other_array[i * 4 + 2] = light.upVector.z;

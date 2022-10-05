@@ -13,5 +13,8 @@ entity docs!
 		function onPostLevelLoad()
 			called when level finished loading for gameplay
 
+	// consider
+		function onEditorBuildGizmo(mesh)
+			adds to gizmo mesh?
 
 */

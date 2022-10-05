@@ -410,6 +410,7 @@
     {"id":{"name":"avec2_divide","path":"scripts/avec2_divide/avec2_divide.yy",},"order":1,},
     {"id":{"name":"idelete_delay","path":"scripts/idelete_delay/idelete_delay.yy",},"order":0,},
     {"id":{"name":"spr_metalBoard","path":"sprites/spr_metalBoard/spr_metalBoard.yy",},"order":6,},
+    {"id":{"name":"ob_3DLightDynamic_Spot","path":"objects/ob_3DLightDynamic_Spot/ob_3DLightDynamic_Spot.yy",},"order":6,},
     {"id":{"name":"sh_editorDefaultScissor","path":"shaders/sh_editorDefaultScissor/sh_editorDefaultScissor.yy",},"order":2,},
     {"id":{"name":"o_doodadPowercellDeadbit","path":"objects/o_doodadPowercellDeadbit/o_doodadPowercellDeadbit.yy",},"order":4,},
     {"id":{"name":"ob_3DLightDynamic","path":"objects/ob_3DLightDynamic/ob_3DLightDynamic.yy",},"order":4,},

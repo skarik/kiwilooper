@@ -1,11 +1,14 @@
 ///@desc Deferred surface lighting. Starts off with the ambient lighting.
 
+#define kLightType_SpotAngle		0x01
+
 #define kLightType_Point			0x00
-#define kLightType_PointSpot		(kLightType_Point | 0x01)
+//#define kLightType_PointSpot		(kLightType_Point | kLightType_SpotAngle)
+#define kLightType_PointSpot		0x01
 #define kLightType_Sphere			0x02
-#define kLightType_SphereSpot		(kLightType_Sphere | 0x01)
+#define kLightType_SphereSpot		(kLightType_Sphere | kLightType_SpotAngle)
 #define kLightType_Rect				0x04
-#define kLightType_RectSpot			(kLightType_Rect | 0x01)
+#define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
 
 varying vec4 v_vColour;
 
@@ -123,6 +126,38 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * surface_response;
+			total_response = ceil(total_response * 4.0) / 4.0;
+			
+			// Acculmulate this light's lighting
+			totalLighting = lightColors.rgb * total_response * lightParams.x;
+		}
+		else if (lightType == kLightType_PointSpot)
+		{
+			// Grab light parameters needed
+			vec3 light_forward = lightDirection.xyz;
+			float light_min_angle = lightParams.z;
+			float light_max_angle = lightParams.w;
+			
+			// Calculate needed point-to-light
+			vec3 point_to_light = lightPosition.xyz - pixelPosition;
+			float point_to_light_len = length(point_to_light);
+			vec3 point_to_light_direction = point_to_light / point_to_light_len;
+			
+			// Do distance attentuation
+			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
+			
+			// Now do normal-direction attenuation
+			float directional_attenuation = dot(point_to_light_direction, -light_forward);
+			directional_attenuation = clamp((directional_attenuation - light_max_angle) / (light_min_angle - light_max_angle), 0.0, 1.0);
+			
+			// Do surface blending
+			float surface_response = dot(point_to_light_direction, pixelNormal);
+			
+			//surface_response = clamp(surface_response * 0.5 + 0.5, 0.0, 1.0); // soft backfaces
+			surface_response = clamp(surface_response, 0.0, 1.0);
+			
+			// Get total response
+			float total_response = attenuation * directional_attenuation * surface_response;
 			total_response = ceil(total_response * 4.0) / 4.0;
 			
 			// Acculmulate this light's lighting

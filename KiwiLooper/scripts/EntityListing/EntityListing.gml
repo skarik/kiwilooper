@@ -152,6 +152,22 @@ function _EntityInfoInit()
 				["", kValueTypeScale],
 			],
 		},
+			{
+			name: "light_spot",
+			parent: "light",
+			desc: "Dynamic 3D Spot Light",
+			objectIndex: ob_3DLightDynamic_Spot,
+			proxy: kProxyTypeNone,
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["", kValueTypeRotation],
+				["inner_angle", kValueTypeFloat, 30],
+				["outer_angle", kValueTypeFloat, 45],
+			],
+		},
 
 		// Test Proxies:
 		{
