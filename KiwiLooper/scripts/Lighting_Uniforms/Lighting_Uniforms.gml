@@ -136,7 +136,6 @@ function lightPushUniforms(params)
 	else if (global.lightingMode == kLightingModeDeferred)
 	{
 		show_error("Should not be called - deferred mode should push uniforms per pass", true);
-		//return lightPushUniforms_Deferred(params);
 	}
 }
 
@@ -162,19 +161,6 @@ function lightPushGatherUniforms_Deferred()
 {
 	shader_set_uniform_f(global.gather_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0, 0);
 }
-/*function lightPushUniforms_Deferred(params)
-{
-	shader_set_uniform_i(global.deferred_uniforms.uLightCount, array_length(params.lightlist));
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightPositions, params.positions);
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightParams, params.params);
-	shader_set_uniform_f_array(global.deferred_uniforms.uLightColors, params.colors);
-	
-	shader_set_uniform_f_array(global.deferred_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
-	shader_set_uniform_f(global.deferred_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
-	shader_set_uniform_f(global.deferred_uniforms.uCameraPosition, o_Camera3D.x, o_Camera3D.y, o_Camera3D.z, 1.0);
-	
-	shader_set_uniform_f(global.deferred_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
-}*/
 
 ///@function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
 function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)

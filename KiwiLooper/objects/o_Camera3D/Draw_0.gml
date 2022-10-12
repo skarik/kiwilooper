@@ -26,14 +26,6 @@ surface_set_target(buffer_scene3d);
 	m_viewUp		= forwardAndUp[1].asArray();
 	delete forwardAndUp[0];
 	delete forwardAndUp[1];
-	/*m_viewForward = [
-		lengthdir_x(1.0, zrotation) * lengthdir_x(1.0, yrotation),
-		lengthdir_y(1.0, zrotation) * lengthdir_x(1.0, yrotation),
-		lengthdir_y(1.0, yrotation)];
-	m_viewUp = [
-		lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, yrotation),
-		-lengthdir_x(1.0, zrotation) * lengthdir_y(1.0, xrotation) - lengthdir_y(1.0, zrotation) * lengthdir_y(1.0, yrotation),
-		lengthdir_x(1.0, yrotation) * lengthdir_x(1.0, xrotation)];*/
 	var mat_view = matrix_build_lookat(
 		// from
 		x, y, z,
@@ -44,16 +36,6 @@ surface_set_target(buffer_scene3d);
 		
 	matrix_set(matrix_view, mat_view);
 	matrix_set(matrix_projection, mat_projection);
-	
-	/*var mat_viewprojection = matrix_multiply(mat_view, mat_projection);
-	if (iexists(o_charaRobot))
-	{
-		var test_point = matrix_transform_vertex(mat_viewprojection, o_charaRobot.x, o_charaRobot.y, o_charaRobot.z);
-		//show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + ", " + string(test_point[2]) + "}");
-		test_point[0] = ((test_point[0] / test_point[2]) * 0.5 + 0.5) * GameCamera.width;
-		test_point[1] = ((-test_point[1] / test_point[2]) * 0.5 + 0.5) * GameCamera.height;
-		show_debug_message("{ " + string(test_point[0]) + ", " + string(test_point[1]) + "}");
-	}*/
 	
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
 	m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);

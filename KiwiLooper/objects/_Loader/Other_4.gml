@@ -47,7 +47,6 @@ while (room_exists(t_currentRoom))
 		room_set_viewport(t_currentRoom, 0,
 			true,
 			0, 0, Screen.width / Screen.pixelScale, Screen.height / Screen.pixelScale);
-		//room_set_camera(t_currentRoom, 0, GameCamera.index);
 		// Set window viewport
 		room_set_viewport(t_currentRoom, 1,
 			false,
@@ -59,8 +58,6 @@ while (room_exists(t_currentRoom))
 
 // Update the window
 window_set_size(Screen.width, Screen.height);
-//surface_resize(application_surface, Screen.width, Screen.height);
-//window_set_position(128,128);
 window_set_position((display_get_width() - Screen.width) / 2.0 + Settings.startup_window_xoffset,
 					(display_get_height() - Screen.height) / 2.0 + Settings.startup_window_yoffset); // Center the window
 
