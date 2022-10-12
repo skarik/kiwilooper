@@ -449,7 +449,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					// Update the transform for other objects.
 					if (entpropIsSpecialTransform(property))
 					{
-						EditorGlobalSignalTransformChange(instance, instance_type);
+						EditorGlobalSignalTransformChange(instance, instance_type, property[1]);
 					}
 					else if (property_change_ok)
 					{

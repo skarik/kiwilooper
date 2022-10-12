@@ -150,6 +150,7 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		bHasTranslucency	= variable_instance_exists(n_object, "translucent");
 		
 		bHasEntTransform	= is_struct(n_object.entity.gizmoMesh) ? (variable_struct_exists(n_object.entity.gizmoMesh, "transform") && is_array(n_object.entity.gizmoMesh.transform)) : false;
+		bHasLitOverride		= (is_struct(n_object.entity.gizmoMesh) && variable_struct_exists(n_object.entity.gizmoMesh, "litOverride")) ? true : false;
 	};
 	
 	rendermap = ds_map_create();
@@ -219,7 +220,7 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 			renderInfo.renderer.zrotation = entInstance.zrotation;
 			// Update the rendering properties
 			if (renderInfo.bHasLit)
-				renderInfo.renderer.lit = entInstance.lit;
+				renderInfo.renderer.lit = renderInfo.bHasLitOverride ? entInstance.entity.gizmoMesh.litOverride : entInstance.lit;
 			if (renderInfo.bHasTranslucency)
 				renderInfo.renderer.translucent = entInstance.translucent;
 			// Apply custom transforms
@@ -298,71 +299,93 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				var entOffset		= entGetNormalizedCenterOffset(m_renderEntity, entOrigin);
 					
 				var uvs = sprite_get_uvs(entMesh.sprite, entMesh.index);
+				var color = variable_struct_exists(entMesh, "color") ? entMesh.color : c_white;
 				meshb_BeginEdit(m_mesh);
 				if (entMesh.shape == kGizmoMeshShapeQuadWall)
 				{
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(0, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3(0,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3(0, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
-						new MBVertex((new Vector3(0,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
+						new MBVertex((new Vector3(0, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(0,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(0, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3(0,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
 						]);
 				}
 				else if (entMesh.shape == kGizmoMeshShapeQuadFloor)
 				{
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3(-0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
+						new MBVertex((new Vector3(-0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5, -0.5, 0)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(-0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5,  0.5, 0)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
 						]);
 				}
 				else if (entMesh.shape == kGizmoMeshShapeCube)
 				{
 					// Bottom
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
-						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
-						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
-						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1))
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1)),
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, -1))
 						]);
 					// Top
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
-						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 0, 1))
 						]);
 						
 					// Back (X)
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
-						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
-						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
-						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0))
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(-1, 0, 0))
 						]);
 					// Front (X)
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
-						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
-						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
-						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0))
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(1, 0, 0))
 						]);
 						
 					// Back (Y)
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
-						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
-						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
-						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0))
+						new MBVertex((new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0)),
+						new MBVertex((new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, -1, 0))
 						]);
 					// Front (Y)
 					meshb_AddQuad(m_mesh, [
-						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
-						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
-						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
-						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), c_white, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
+						new MBVertex((new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 1.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(0.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0)),
+						new MBVertex((new Vector3( 0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), color, 1.0, (new Vector2(1.0, 0.0)).biasUVSelf(uvs), new Vector3(0, 1, 0))
 						]);
+				}
+				else if (entMesh.shape == kGizmoMeshWireCube)
+				{
+					var xface_scale = min(1.0 / m_renderInstance.yscale, 1.0 / m_renderInstance.zscale);
+					var yface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.zscale);
+					var zface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.yscale);
+					// Bottom
+					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, yface_scale, entHullsize, new Vector3(0, 1, 0), (new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, yface_scale, entHullsize, new Vector3(0, 1, 0), (new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					// Top
+					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5,  0.5,  0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, yface_scale, entHullsize, new Vector3(0, 1, 0), (new Vector3(-0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, yface_scale, entHullsize, new Vector3(0, 1, 0), (new Vector3( 0.5, -0.5,  0.5)).add(entOffset).multiply(entHullsize), uvs);
+					// Connect
+					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
 				}
 				else
 				{
@@ -390,5 +413,14 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		
 		// Return the newly created info for immediate use
 		return renderInfo;
+	}
+	
+	static RequestUpdate = function(forInstance)
+	{
+		var renderInfo = rendermap[?forInstance];
+		if (is_struct(renderInfo))
+		{
+			renderInfo.renderer.m_updateMesh();
+		}
 	}
 }

@@ -36,6 +36,7 @@
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"24f8a5a7-841c-4a85-b9be-84f2f022d931",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"1cf45c39-d99c-45a2-b159-aef9b7328522",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"9fa97535-c8f5-4b18-8356-f0376b1a7136",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"0fb58487-7471-4497-8da8-f10f634a5b74",},
   ],
   "sequence": {
     "resourceType": "GMSequence",
@@ -47,7 +48,7 @@
     "playbackSpeedType": 0,
     "autoRecord": true,
     "volume": 1.0,
-    "length": 9.0,
+    "length": 10.0,
     "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MessageEventKeyframe>",},
     "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MomentsEventKeyframe>",},
     "tracks": [
@@ -61,6 +62,7 @@
             {"id":"66ba1501-29f7-485c-ba51-e73b7c2db990","Key":6.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"24f8a5a7-841c-4a85-b9be-84f2f022d931","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"e39807b9-28bd-4f05-bf11-72ae05ec6883","Key":7.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"1cf45c39-d99c-45a2-b159-aef9b7328522","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"31350f59-fc39-453b-8b34-5b2592020751","Key":8.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"9fa97535-c8f5-4b18-8356-f0376b1a7136","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"831a5d24-b21e-46c4-9cd7-3293e2178fc4","Key":9.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"0fb58487-7471-4497-8da8-f10f634a5b74","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
           ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"modifiers":[],},
     ],
     "visibleRange": null,

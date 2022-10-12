@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "EditorToolsMakers",
+  "name": "DelayHelpers",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Tools",
-    "path": "folders/Scripts/Game/Editor/Tools.yy",
+    "name": "Game",
+    "path": "folders/Scripts/Game.yy",
   },
 }

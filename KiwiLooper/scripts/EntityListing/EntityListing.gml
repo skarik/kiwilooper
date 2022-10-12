@@ -18,6 +18,7 @@ function _EntityInfoInit()
 	#macro kGizmoMeshShapeQuadWall 0
 	#macro kGizmoMeshShapeCube 1
 	#macro kGizmoMeshShapeQuadFloor 2
+	#macro kGizmoMeshWireCube 3
 	
 	#macro kGizmoMeshTransformTranslateX 0
 	#macro kGizmoMeshTransformTranslateY 1
@@ -364,6 +365,48 @@ function _EntityInfoInit()
 			[
 				["m_targetLively", kValueTypeLively],
 				["triggerOnPlug", kValueTypeBoolean, true],
+			],
+		},
+		
+		// Water
+		{
+			name: "lively_water",
+			parent: "lively_base",
+			objectIndex: o_livelyWater,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 9,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshWireCube,
+				color:	c_crystalblue,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+			},
+			
+			hullsize: 1,
+			
+			properties:
+			[
+				["", kValueTypeScale, new Vector3(16, 16, 1)],
+				["hardEdgeMask", kValueTypeEnum, 0,
+					[
+						["None", 0],
+						["X+", 0x1],
+						["X-", 0x2],
+						["Y+", 0x4],
+						["Y-", 0x8],
+						// there are 16 possible values so dont bother immediately...
+					],
+				],
+				["fluidType", kValueTypeEnum, kFluidTypeWater,
+					[
+						["Water", kFluidTypeWater],
+						["Blood", kFluidTypeBlood],
+					],
+				],
 			],
 		},
 		

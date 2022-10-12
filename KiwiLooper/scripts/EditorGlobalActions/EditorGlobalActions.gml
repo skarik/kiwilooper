@@ -73,21 +73,13 @@ function EditorGlobalClearSelection()
 	m_selectionSingle = false;
 }
 
-function EditorGlobalSignalTransformChange(entity, type, deferMeshBuilds=false)
+// Called when a selected object changes any transform property.
+function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBuilds=false)
 {
 	with (EditorGet())
 	{
-		// Update all gizmos
-		/*var gizmo;
-		gizmo = EditorGizmoFind(AEditorGizmoPointMove);
-		if (is_struct(gizmo))
-		{
-			gizmo.x = entity.x;
-			gizmo.y = entity.y;
-			gizmo.z = entity.z;
-		}*/
 		// Update all tools:
-		var tool = toolStates[kEditorToolTranslate];
+		var tool = toolStates[kEditorToolTranslate, kEditorToolRotate, kEditorToolScale];
 		tool.onSignalTransformChange(entity, type);
 		
 		// TODO: fill with the other gizmos
@@ -100,9 +92,9 @@ function EditorGlobalSignalTransformChange(entity, type, deferMeshBuilds=false)
 			panel.InitUpdateEntityInfoTransform(entity);
 		}
 		
-		// If the incoming ent is a prop, we gotta rebuild prop meshes
 		if (!deferMeshBuilds)
 		{
+			// If the incoming ent is a prop, we gotta rebuild prop meshes
 			if (is_struct(entity)) // assume struct inputs are props
 			{
 				if (type == kEditorSelection_Prop)
@@ -114,17 +106,30 @@ function EditorGlobalSignalTransformChange(entity, type, deferMeshBuilds=false)
 					MapRebuildSplats();
 				}
 			}
+			// otherwise, may need to request rebuilding gizmo meshes
+			else if (iexists(entity))
+			{
+				if (!is_undefined(entity.entity.gizmoMesh) && entity.entity.gizmoMesh.shape == kGizmoMeshWireCube)
+				{
+					if (valueType == kValueTypeScale)
+					{
+						// Find the renderer & update it
+						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
+					}
+				}
+			}
 		}
 	}
 }
 
+// Called when a selected object changes any non-transform property.
 function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMeshBuilds=false)
 {
 	with (EditorGet())
 	{
-		// If the incoming ent is a prop, we gotta rebuild prop meshes
 		if (!deferMeshBuilds)
 		{
+			// If the incoming ent is a prop, we gotta rebuild prop meshes
 			if (is_struct(entity)) // assume struct inputs are props
 			{
 				if (type == kEditorSelection_Prop)
@@ -139,6 +144,11 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 				{
 					MapRebuildSplats();
 				}
+			}
+			// otherwise, may need to request rebuilding gizmo meshes
+			else if (iexists(entity))
+			{
+				
 			}
 		}
 	}

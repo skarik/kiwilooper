@@ -1,7 +1,7 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "ob_lively",
+  "name": "o_livelyWater",
   "spriteId": null,
   "solid": false,
   "visible": true,
@@ -9,8 +9,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "ob_3DObject",
-    "path": "objects/ob_3DObject/ob_3DObject.yy",
+    "name": "ob_lively",
+    "path": "objects/ob_lively/ob_lively.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -27,10 +27,13 @@
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
-  "properties": [],
+  "properties": [
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"hardEdgeMask","varType":1,"value":"0","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],},
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"fluidType","varType":1,"value":"kFluidTypeWater","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],},
+  ],
   "overriddenProperties": [],
   "parent": {
-    "name": "Backend",
-    "path": "folders/Objects/Game/Lively/Backend.yy",
+    "name": "Lively",
+    "path": "folders/Objects/Game/Lively.yy",
   },
 }

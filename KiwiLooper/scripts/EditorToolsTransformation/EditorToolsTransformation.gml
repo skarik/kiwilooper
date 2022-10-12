@@ -269,7 +269,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 				
 				if (bSignalChange)
 				{
-					EditorGlobalSignalTransformChange(target, target_type, true);
+					EditorGlobalSignalTransformChange(target, target_type, kValueTypePosition, true);
 					
 					bSignalAnyPropChange |= (target_type == kEditorSelection_Prop);
 					if (target_type == kEditorSelection_Prop)
@@ -348,8 +348,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			}
 			
 			// Rebuild the splats & props at the end so we don't rebuild it multiple times in the movement loop
-			if (bSignalAnyPropChange)	EditorGlobalSignalTransformChange(signalProp, kEditorSelection_Prop);
-			if (bSignalAnySplatChange)	EditorGlobalSignalTransformChange(signalSplat, kEditorSelection_Splat);
+			if (bSignalAnyPropChange)	EditorGlobalSignalTransformChange(signalProp, kEditorSelection_Prop, kValueTypePosition);
+			if (bSignalAnySplatChange)	EditorGlobalSignalTransformChange(signalSplat, kEditorSelection_Splat, kValueTypePosition);
 			
 			// Update dragging state after everything has been moved
 			m_isDragging = m_transformGizmo.IsDraggingAny();
@@ -485,7 +485,7 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 					
 					if (bSignalChange)
 					{
-						EditorGlobalSignalTransformChange(target, target_type);
+						EditorGlobalSignalTransformChange(target, target_type, kValueTypeRotation);
 					}
 				}
 			}
@@ -676,7 +676,8 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 					
 					if (bSignalChange)
 					{
-						EditorGlobalSignalTransformChange(target, target_type);
+						EditorGlobalSignalTransformChange(target, target_type, kValueTypePosition);
+						EditorGlobalSignalTransformChange(target, target_type, kValueTypeScale);
 					}
 				}
 			}

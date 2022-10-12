@@ -26,4 +26,5 @@ function ensure(condition)
 			show_error("ASSERT FAILED", true);
 		}
 	}
+	return condition;
 }

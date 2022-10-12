@@ -1,17 +1,14 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "ob_lively",
+  "name": "o_livelyWaterRenderer",
   "spriteId": null,
   "solid": false,
   "visible": true,
   "managed": true,
   "spriteMaskId": null,
   "persistent": false,
-  "parentObjectId": {
-    "name": "ob_3DObject",
-    "path": "objects/ob_3DObject/ob_3DObject.yy",
-  },
+  "parentObjectId": null,
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
@@ -30,7 +27,7 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Backend",
-    "path": "folders/Objects/Game/Lively/Backend.yy",
+    "name": "Lively",
+    "path": "folders/Objects/Game/Lively.yy",
   },
 }

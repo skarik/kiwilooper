@@ -16,5 +16,6 @@ entity docs!
 	// consider
 		function onEditorBuildGizmo(mesh)
 			adds to gizmo mesh?
+	// this needs to be inside of the ent
 
 */

@@ -71,10 +71,11 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 				
 				UpdateEntityToMake();
 				
+				var ent = null;
 				if (!m_entityToMakeIsProxy)
 				{
 					// MAKE the item at the gizmo position
-					var ent = inew(m_entityToMake);
+					ent = inew(m_entityToMake);
 					ent.x = m_gizmo.x;
 					ent.y = m_gizmo.y;
 					ent.z = m_gizmo.z;
@@ -87,16 +88,11 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					variable_instance_set_if_not_exists(ent, "zrotation", 0.0);
 					// save ent
 					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
-					
-					// set up editor callbacks
-					EditorEntity_SetupCallback(ent);
-					
-					m_editor.m_entityInstList.Add(ent);
 				}
 				else
 				{
 					// MAKE the item at the gizmo position
-					var ent = inew(m_editor.OProxyClass);
+					ent = inew(m_editor.OProxyClass);
 					ent.x = m_gizmo.x;
 					ent.y = m_gizmo.y;
 					ent.z = m_gizmo.z;
@@ -108,16 +104,34 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.zrotation = 0.0;
 					// save ent
 					ent.entity = m_entityToMake;
-					
+				}
+				
+				if (ensure(iexists(ent)))
+				{
+					// set up default ent values
 					for (var propIndex = 0; propIndex < array_length(ent.entity.properties); ++propIndex)
 					{
 						var property = ent.entity.properties[propIndex];
 						if (entpropHasDefaultValue(property))
 						{
-							variable_instance_set(ent, property[0], property[2]);
+							// Set default for a normal kind of var
+							if (!entpropIsSpecialTransform(property))
+							{
+								variable_instance_set(ent, property[0], property[2]);
+							}
+							// Set default for a transform (only scaling valid so far) (todo: rotation)
+							else
+							{
+								if (property[1] == kValueTypeScale)
+								{
+									ent.xscale = (!is_undefined(property[2].x)) ? property[2].x : ent.xscale;
+									ent.yscale = (!is_undefined(property[2].y)) ? property[2].y : ent.xscale;
+									ent.zscale = (!is_undefined(property[2].z)) ? property[2].z : ent.xscale;
+								}
+							}
 						}
 					}
-					
+				
 					// set up editor callbacks
 					EditorEntity_SetupCallback(ent);
 					
