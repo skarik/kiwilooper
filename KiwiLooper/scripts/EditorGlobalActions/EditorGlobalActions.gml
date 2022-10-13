@@ -79,8 +79,12 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 	with (EditorGet())
 	{
 		// Update all tools:
-		var tool = toolStates[kEditorToolTranslate, kEditorToolRotate, kEditorToolScale];
-		tool.onSignalTransformChange(entity, type);
+		var toolsToUpdate = [kEditorToolTranslate, kEditorToolRotate, kEditorToolScale];
+		for (var updateIndex = 0; updateIndex < array_length(toolsToUpdate); ++updateIndex)
+		{
+			var tool = toolStates[toolsToUpdate[updateIndex]];
+			tool.onSignalTransformChange(entity, type);
+		}
 		
 		// TODO: fill with the other gizmos
 		
