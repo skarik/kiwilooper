@@ -168,22 +168,22 @@ function MeshbAddBillboardUVs(mesh, color, width, height, uvs, normal, position)
 		
 	meshb_AddQuad(mesh, [
 		new MBVertex(
-			position.add(cross_x.multiply(-1.0)).add(cross_y.multiply(-1.0)),
+			position.add(cross_x.multiply(1.0)).add(cross_y.multiply(-1.0)),
 			color, 1.0,
 			(new Vector2(0.0, 0.0)).biasUVSelf(uvs),
 			normal),
 		new MBVertex(
-			position.add(cross_x.multiply(1.0)).add(cross_y.multiply(-1.0)),
+			position.add(cross_x.multiply(-1.0)).add(cross_y.multiply(-1.0)),
 			color, 1.0,
 			(new Vector2(1.0, 0.0)).biasUVSelf(uvs),
 			normal),
 		new MBVertex(
-			position.add(cross_x.multiply(-1.0)).add(cross_y.multiply(1.0)),
+			position.add(cross_x.multiply(1.0)).add(cross_y.multiply(1.0)),
 			color, 1.0,
 			(new Vector2(0.0, 1.0)).biasUVSelf(uvs),
 			normal),
 		new MBVertex(
-			position.add(cross_x.multiply(1.0)).add(cross_y.multiply(1.0)),
+			position.add(cross_x.multiply(-1.0)).add(cross_y.multiply(1.0)),
 			color, 1.0,
 			(new Vector2(1.0, 1.0)).biasUVSelf(uvs),
 			normal),
