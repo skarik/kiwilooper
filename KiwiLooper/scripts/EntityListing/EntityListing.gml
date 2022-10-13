@@ -634,6 +634,11 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 7,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			
+			properties:
+			[
+				["lit", kValueTypeBoolean, false],
+			],
 		},
 		
 		{

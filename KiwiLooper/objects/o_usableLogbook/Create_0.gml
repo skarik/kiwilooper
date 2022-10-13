@@ -38,3 +38,15 @@ m_renderEvent = function()
 {
 	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sprite_index, image_index));
 }
+
+// Update rotation on load
+onPostLevelLoad = function()
+{
+	// todo: fix this terrible hack lmao
+	image_angle = zrotation;
+	if (xscale == 1.0 && yscale == 1.0)
+	{
+		xscale = sprite_width * image_xscale;
+		yscale = sprite_height * image_yscale;
+	}
+}
