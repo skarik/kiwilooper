@@ -26,6 +26,7 @@
     {"id":{"name":"suie_toolsetObject","path":"sprites/suie_toolsetObject/suie_toolsetObject.yy",},"order":3,},
     {"id":{"name":"ssy_effect","path":"sprites/ssy_effect/ssy_effect.yy",},"order":14,},
     {"id":{"name":"audio_register_name","path":"scripts/audio_register_name/audio_register_name.yy",},"order":1,},
+    {"id":{"name":"Material_Checks","path":"scripts/Material_Checks/Material_Checks.yy",},"order":5,},
     {"id":{"name":"sfx_square","path":"sprites/sfx_square/sfx_square.yy",},"order":0,},
     {"id":{"name":"o_livelyDoorPlatform","path":"objects/o_livelyDoorPlatform/o_livelyDoorPlatform.yy",},"order":9,},
     {"id":{"name":"ds_map_create_copy","path":"scripts/ds_map_create_copy/ds_map_create_copy.yy",},"order":12,},

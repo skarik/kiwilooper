@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "Character_SD",
+  "name": "Material_Checks",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Character",
-    "path": "folders/Scripts/Game/Character AI/Character.yy",
+    "name": "Collision",
+    "path": "folders/Scripts/Game/Collision.yy",
   },
 }

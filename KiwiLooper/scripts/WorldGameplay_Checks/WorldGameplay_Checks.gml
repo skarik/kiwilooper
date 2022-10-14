@@ -41,9 +41,9 @@ function World_WaterAtPosition(x, y, z)
 	{
 		var waterBody = instance_find(o_livelyWater, waterIndex);
 		
-		if (x >= waterBody.x - xscale * 0.5 && x <= waterBody.x + xscale * 0.5
-			&& y >= waterBody.y - yscale * 0.5 && y <= waterBody.y + yscale * 0.5
-			&& z >= waterBody.z - zscale * 0.5 && z <= waterBody.z + zscale * 0.5)
+		if (x >= waterBody.x - waterBody.xscale * 0.5 && x <= waterBody.x + waterBody.xscale * 0.5
+			&& y >= waterBody.y - waterBody.yscale * 0.5 && y <= waterBody.y + waterBody.yscale * 0.5
+			&& z >= waterBody.z - waterBody.zscale * 0.5 && z <= waterBody.z + waterBody.zscale * 0.5)
 		{
 			return true;
 		}
@@ -63,10 +63,10 @@ function World_WaterBelowPosition(x, y, z)
 	{
 		var waterBody = instance_find(o_livelyWater, waterIndex);
 		
-		if (x >= waterBody.x - xscale * 0.5 && x <= waterBody.x + xscale * 0.5
-			&& y >= waterBody.y - yscale * 0.5 && y <= waterBody.y + yscale * 0.5)
+		if (x >= waterBody.x - waterBody.xscale * 0.5 && x <= waterBody.x + waterBody.xscale * 0.5
+			&& y >= waterBody.y - waterBody.yscale * 0.5 && y <= waterBody.y + waterBody.yscale * 0.5)
 		{
-			var z_bot = waterBody.z - zscale * 0.5;
+			var z_bot = waterBody.z - waterBody.zscale * 0.5;
 			if (z >= z_bot)
 			{
 				return true;
@@ -89,13 +89,13 @@ function World_WaterBelowDistance(x, y, z)
 	{
 		var waterBody = instance_find(o_livelyWater, waterIndex);
 		
-		if (x >= waterBody.x - xscale * 0.5 && x <= waterBody.x + xscale * 0.5
-			&& y >= waterBody.y - yscale * 0.5 && y <= waterBody.y + yscale * 0.5)
+		if (x >= waterBody.x - waterBody.xscale * 0.5 && x <= waterBody.x + waterBody.xscale * 0.5
+			&& y >= waterBody.y - waterBody.yscale * 0.5 && y <= waterBody.y + waterBody.yscale * 0.5)
 		{
-			var z_bot = waterBody.z - zscale * 0.5;
+			var z_bot = waterBody.z - waterBody.zscale * 0.5;
 			if (z > z_bot)
 			{
-				var z_top = waterBody.z + zscale * 0.5;
+				var z_top = waterBody.z + waterBody.zscale * 0.5;
 				var dist = max(0, z - z_top);
 				if (min_dist == -1 || dist < min_dist)
 				{

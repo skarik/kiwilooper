@@ -285,11 +285,28 @@ function Character_AnimationStep()
 		if ((check >= 1 && checkPrev < 1)
 			|| (check >= 3 && checkPrev < 3))
 		{
-			var sound = sound_play_at(x, y, z, choose("sound/phys/step_metal1.wav", "sound/phys/step_metal2.wav", "sound/phys/step_metal3.wav"));
-				sound.gain = 0.05 * random_range(0.9, 1.1);
-				sound.pitch = 1.2 * random_range(0.9, 1.1);
-				sound.parent = id;
-				
+			var mat = Material_BelowPosition(x, y, z + 2);
+			if (World_WaterBelowPosition(x, y, z + 2)) // hack!
+				mat = kMaterialType_WaterPuddle;
+			
+			if (mat == kMaterialType_Metal) // TODO: try to unify this with general impacts, if needed.
+			{
+				var sound = sound_play_at(x, y, z, choose("sound/phys/step_metal1.wav", "sound/phys/step_metal2.wav", "sound/phys/step_metal3.wav"));
+					sound.gain = 0.05 * random_range(0.9, 1.1);
+					sound.pitch = 1.2 * random_range(0.9, 1.1);
+					sound.parent = id;
+			}
+			else
+			{
+				// todo
+			}
+			
+			// TODO: clean up bloody shoes depending on the material:
+			if (mat == kMaterialType_WaterWaist || mat == kMaterialType_WaterPuddle)
+			{
+				footstepBloody = 0;
+			}
+			
 			if (footstepBloody > 0)
 			{
 				var left = (check >= 1 && checkPrev < 1);
