@@ -394,8 +394,8 @@ function AEditorWindowTileBrowser() : AEditorWindow() constructor
 							break;
 						}
 					}
-					var l_dx = m_position.x + tileinfo.layoutX;
-					var l_dy = m_position.y + tileinfo.layoutY - drag_y;
+					l_dx = m_position.x + tileinfo.layoutX;
+					l_dy = m_position.y + tileinfo.layoutY - drag_y;
 				
 					draw_set_color(sub_color);
 					draw_set_alpha(0.5);

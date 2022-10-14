@@ -61,7 +61,7 @@ function BBox2FromMinMax(n_min, n_max)
 function Rect2(n_min, n_max) constructor
 {
 	m_min	= new Vector2(n_min.x, n_min.y);
-	m_max	= new Vector2(n_max.y, n_max.y);;
+	m_max	= new Vector2(n_max.y, n_max.y);
 	
 	static contains = function(x, y)
 	{

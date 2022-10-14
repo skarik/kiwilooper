@@ -633,7 +633,7 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 					else if (target_type == kEditorSelection_Splat)
 					{
 						var splat = target;
-						var bbox = SplatGetBBox(splat);
+						bbox = SplatGetBBox(splat);
 						//bbox.extents.multiplyComponentSelf(Vector3FromScale(splat));
 					}
 					m_transformGizmo.bbox = bbox;

@@ -1,7 +1,11 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "ob_musicPlayer",
   "spriteId": null,
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": true,
   "parentObjectId": null,
@@ -18,14 +22,14 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"ob_musicPlayer","path":"objects/ob_musicPlayer/ob_musicPlayer.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"ob_musicPlayer","path":"objects/ob_musicPlayer/ob_musicPlayer.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":12,"collisionObjectId":null,"parent":{"name":"ob_musicPlayer","path":"objects/ob_musicPlayer/ob_musicPlayer.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":10,"eventType":7,"collisionObjectId":null,"parent":{"name":"ob_musicPlayer","path":"objects/ob_musicPlayer/ob_musicPlayer.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":11,"eventType":7,"collisionObjectId":null,"parent":{"name":"ob_musicPlayer","path":"objects/ob_musicPlayer/ob_musicPlayer.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":12,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":10,"eventType":7,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":11,"eventType":7,"collisionObjectId":null,},
   ],
   "properties": [
-    {"varType":1,"value":"0","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"m_trackCount","varType":1,"value":"0","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[
         "GMTileSet",
         "GMSprite",
         "GMSound",
@@ -36,15 +40,11 @@
         "GMTimeLine",
         "GMObject",
         "GMRoom",
-      ],"resourceVersion":"1.0","name":"m_trackCount","tags":[],"resourceType":"GMObjectProperty",},
+      ],},
   ],
   "overriddenProperties": [],
   "parent": {
     "name": "Audio",
     "path": "folders/Objects/Backend/Audio.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "ob_musicPlayer",
-  "tags": [],
-  "resourceType": "GMObject",
 }

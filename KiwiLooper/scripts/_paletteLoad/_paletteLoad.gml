@@ -40,9 +40,9 @@ function _paletteLoad(argument0, argument1) {
 	    var _b = (_col >> 16) & 255;
 	    var _g = (_col >> 8) & 255;
 	    var _r = _col & 255;  
-	    var _col = make_color_rgb(_r, _g, _b);
+	    var _final_col = make_color_rgb(_r, _g, _b);
 	
-		palette_color[i] = _col;
+		palette_color[i] = _final_col;
 	}
 	global.pal_color[pal_index] = palette_color;
 
