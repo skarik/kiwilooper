@@ -12,6 +12,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	editing_target = kEditorSelection_None;
 	
 	property_values = [];
+	property_names = [];
 	property_focused = null;
 	property_mouseover = null;
 	property_drag = false;
@@ -118,6 +119,58 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		} // End best corner search
 	}
 	
+	static InitPropertyNames = function()
+	{
+		// Since editing everything is based around key-values, we need to generate string values for each entry now.
+		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
+		{
+			var property = entity_info.properties[iProperty];
+			
+			// Update property names for rendering
+			var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
+			var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
+			var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
+			if (l_bSpecialPosition) property_names[iProperty] = "(position)";
+			else if (l_bSpecialRotation) property_names[iProperty] = "(rotation)";
+			else if (l_bSpecialScale) property_names[iProperty] = "(scale)";
+			else
+			{
+				var name = property[0];
+				
+				// if we have a _ or *_, remove that
+				{
+					var prefix_position = string_pos("_", name);
+					if (prefix_position == 1 || prefix_position == 2)
+					{
+						name = string_copy(name, prefix_position + 1, string_length(name) - prefix_position);
+					}
+				}
+				// separate out camel case
+				{
+					var old_name = name;
+					var old_name_len = string_length(old_name);
+					// start with first character
+					var old_letter = string_char_at(old_name, 1);
+					name = string_upper(old_letter);
+					// loop thru it all
+					for (var iLetter = 2; iLetter <= old_name_len; ++iLetter)
+					{
+						var letter = string_char_at(old_name, iLetter);
+						
+						if (string_upper(letter) == letter && string_lower(old_letter) == old_letter)
+							name += " " + letter;
+						else
+							name += letter;
+						
+						old_letter = letter; // continue on
+					}
+				}
+				
+				property_names[iProperty] = name;
+			}
+		}
+	} // End InitPropertyNames()
+	
 	static InitWithEntityInfo = function(entityInstance, entityInfo)
 	{
 		// Stop editing:
@@ -145,6 +198,8 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		
 		// Update the title now
 		m_title = entityInfo.name + " Properties";
+		// Update property names for display
+		InitPropertyNames();
 	} // End InitWithEntityInfo()
 	
 	static InitUpdateEntityInfoTransform = function(incoming_entity)
@@ -210,6 +265,8 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		
 		// Update the title now
 		m_title = string_replace(sprite_get_name(prop.sprite), "spr_", "") + " Prop-erties";
+		// Update property names for display
+		InitPropertyNames();
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)
@@ -621,17 +678,18 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			var l_textX = m_position.x + kPropertyMargin;
 			var l_textY = m_position.y + l_propY + kPropertyHeight - kPropertyMargin;
 			
-			var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
+			/*var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
 			var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
-			var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);
+			var l_bSpecialScale = (property[0] == "") && (property[1] == kValueTypeScale);*/
 			
-			if (l_bSpecialPosition) draw_text(l_textX, l_textY, "(position)");
+			draw_text(l_textX, l_textY, property_names[iProperty]);
+			/*if (l_bSpecialPosition) draw_text(l_textX, l_textY, "(position)");
 			else if (l_bSpecialRotation) draw_text(l_textX, l_textY, "(rotation)");
 			else if (l_bSpecialScale) draw_text(l_textX, l_textY, "(scale)");
 			else
 			{
 				draw_text(l_textX, l_textY, property[0]);
-			}
+			}*/
 			
 			// draw the property value:
 			l_textX = m_position.x + kPropertyColumn + kPropertyMargin;
