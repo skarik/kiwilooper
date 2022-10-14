@@ -13,6 +13,13 @@ function instanceIsLivelyEffect(instance)
 	return instance.object_index == ob_livelyEffect || object_is_ancestor(instance.object_index, ob_livelyEffect);
 }
 
+/// @function instanceIsUsable(instance)
+/// @param instance {Instance}
+function instanceIsUsable(instance)
+{
+	return object_is_ancestor(instance.object_index, ob_usable);
+}
+
 /// @function livelyIsTriggered(object)
 /// @param object {Instance}
 function livelyIsTriggered(object)
@@ -22,6 +29,7 @@ function livelyIsTriggered(object)
 	{
 		return object.opening || object.openstate >= 0.5;
 	}
+	return false;
 }
 
 /// @function livelyIsDeactivated(object)
@@ -33,6 +41,7 @@ function livelyIsDeactivated(object)
 	{
 		return object.closing || object.openstate < 0.5;
 	}
+	return false;
 }
 
 /// @function livelyTriggerActivate(object, caller)
@@ -48,6 +57,13 @@ function livelyTriggerActivate(object, caller)
 	else if (instanceIsLivelyEffect(object))
 	{
 		object.m_onActivation(caller);
+	}
+	else if (instanceIsUsable(object))
+	{
+		if (object.enabled)
+		{
+			object.m_onActivation(caller);
+		}
 	}
 }
 

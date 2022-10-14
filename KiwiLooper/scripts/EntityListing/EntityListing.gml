@@ -292,6 +292,63 @@ function _EntityInfoInit()
 			
 			hullsize: 32,
 		},
+		{ // HIDDEN CLASS
+			hidden: true,
+			name: "usable_pdoor",
+			parent: "lively_base",
+			desc: "Point-entity door",
+			objectIndex: o_usableDoor,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottomCorner,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeCube,
+				sprite:	spr_metalDoor0,
+				index:	0,
+			},
+			
+			hullsize: 32,
+			
+			properties:
+			[
+				["m_usable", kValueTypeBoolean, true], // Can this door be interacted with
+				["m_locked", kValueTypeBoolean, false], // Is this door locked?
+				["m_targetLively", kValueTypeLively], // Extra object targeted when the door button is pressed
+				["m_useDelay", kValueTypeFloat, 0.3], // Time between using door and door opening
+				["m_toggleDoor", kValueTypeBoolean, false], // Is this door a toggle open/close?
+				["m_singleUse", kValueTypeBoolean, false], // Is this door a single use button
+				["m_delayBeforeClose", kValueTypeFloat, 3.0], // Time before the door closes. Ignored if a toggle door.
+				["m_blockedBy", kValueTypeEnum, kDoorBlockActors_Player, // What is collision blocked by?
+					[
+						["None", kDoorBlockActors_None],
+						["Player", kDoorBlockActors_Player],
+						["Everyone", kDoorBlockActors_Everyone],
+					],
+				],
+				
+				["m_actionOnTrigger", kValueTypeEnum, kDoorActionOnTrigger_Open,
+					[
+						["Open/Close", kDoorActionOnTrigger_Open],
+						["Unlock", kDoorActionOnTrigger_Unlock],
+					],
+				],
+				["m_hasCollision", kValueTypeBoolean, true],
+				["m_moveDirection", kValueTypeEnum, kDoorMoveDirection_Down,
+					[
+						["Down", kDoorMoveDirection_Down],
+						["Side", kDoorMoveDirection_Side],
+						["No motion", kDoorMoveDirection_None],
+					],
+				],
+				["m_startsOpen", kValueTypeBoolean, false],
+				
+				["m_visualShowPad", kValueTypeBoolean, true], // do we show a pad on the front of the door
+				["m_visualShowLock", kValueTypeBoolean, false], // do we show a lock strip on the door
+			],
+		},
 		{
 			name: "lively_exploding_wires",
 			parent: "lively_base",
@@ -468,6 +525,43 @@ function _EntityInfoInit()
 		
 		// Usables:
 		{
+			name: "usable_button",
+			parent: "lively_base",
+			objectIndex: o_usableButton,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoOrigin: kGizmoOriginBottom,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadWall,
+				sprite:	spr_metalPC2,
+				index:	0,
+				transform:
+				[
+					//[kGizmoMeshTransformRotateZ, 90],
+					[kGizmoMeshTransformScaleY, 13.0 / 16], // TODO: base this on the user's selected sprite
+				],
+			},
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["parent", kValueTypeLively],
+				["m_usable", kValueTypeBoolean, true], // Can this button be interacted with
+				["m_locked", kValueTypeBoolean, false], // Is this button locked?
+				["m_targetLively", kValueTypeLively],
+				["m_useDelay", kValueTypeFloat, 0.3], // Time between using button and the trigger
+				["m_isToggle", kValueTypeBoolean, true],
+				["m_singleUse", kValueTypeBoolean, false], // Is this a single use button
+				["m_delayBeforeReset", kValueTypeFloat, 3.0], // Time before the switch resets. Ignored if a toggle switch or single-use.
+				["m_flipState", kValueTypeBoolean, false], // Is the visual state flipped
+			],
+		},
+		{ // HIDDEN CLASS
+			hidden: true, // compatibility class for older levels
 			name: "usable_pc",
 			parent: "lively_base",
 			objectIndex: o_usablePC,

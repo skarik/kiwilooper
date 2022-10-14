@@ -137,7 +137,8 @@ function Character_Step()
 			for (var i = 0; i < interaction_list_count; ++i)
 			{
 				var interactible = interaction_list[|i];
-				ds_priority_add(interaction_priorities, interactible, sqr(x - interactible.x) + sqr(y - interactible.y) + sqr(kInteractionRadius * interactible.m_priority));
+				if (interactible.enabled)
+					ds_priority_add(interaction_priorities, interactible, sqr(x - interactible.x) + sqr(y - interactible.y) + sqr(kInteractionRadius * interactible.m_priority));
 			}
 			ds_list_destroy(interaction_list);
 		
@@ -155,7 +156,7 @@ function Character_Step()
 		{
 			if (iexists(interactionTarget))
 			{
-				interactionTarget.m_onActivation(id);
+				livelyTriggerActivate(interactionTarget, id);
 				// Enable interaction lock & isInteracting disable
 				if (iexists(interactionLock))
 				{
