@@ -28,6 +28,12 @@ function AEntityList() constructor
 		return array_length(entities);
 	};
 	
+	static ReplaceEntity = function(index, newEnt)
+	{
+		gml_pragma("forceinline");
+		entities[index] = newEnt;
+	};
+	
 	static FindIndex = function(ent)
 	{
 		if (!iexists(ent))

@@ -15,10 +15,11 @@ if (!iexists(o_livelyWaterRenderer))
 
 // Delay call fluid renderer mesh update
 executeNextStep(method(id,function()
-{
-	if (!updated)
 	{
-		o_livelyWaterRenderer.update();
-		updated = true;
-	}
-}));
+		if (!updated)
+		{
+			o_livelyWaterRenderer.update();
+			updated = true;
+		}
+	}),
+	id);

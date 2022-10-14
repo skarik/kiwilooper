@@ -1,7 +1,10 @@
 /// @description Execute & delete self
 
-if (fn != null)
+if (context == null || iexists(context) || is_struct(context))
 {
-	fn();
+	if (fn != null)
+	{
+		fn();
+	}
 }
 instance_destroy();

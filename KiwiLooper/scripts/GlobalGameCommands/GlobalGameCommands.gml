@@ -230,59 +230,53 @@ function _Game_LoadMapInternal()
 				}
 				
 				// Change the instance
-				with (entInstance)
 				{
-					instance_change(ent.objectIndex, true);
+					// Make final instance
+					var entReplacement = inew(ent.objectIndex);
+					
+					// Copy over system values
+					entReplacement.entity = entInstance.entity;
+					
+					// Finish replacement & delete old
+					idelete(entInstance);
+					entlist.ReplaceEntity(entIndex, entReplacement);
+					entInstance = entReplacement;
 				}
 				
-				// Update the saved values now, now that the object has been initialized
-				// (TODO: this may be a non-issue, experiment in the future)
-				//for (var propIndex = 0; propIndex < saved_propertyInfo
-				// This will not work, the object's create event is NOT called on the instance_change call.
-				if (array_length(saved_property_info) > 0)
+				// Copy all saved properties over
+				for (var propIndex = 0; propIndex < array_length(saved_property_info); ++propIndex)
 				{
-					var executor = inew(_execute_step);
-					with (executor)
-					{
-						fn = function()
-						{
-							for (var propIndex = 0; propIndex < array_length(saved_property_info); ++propIndex)
-							{
-								var property_name = saved_property_info[propIndex][0];
-								var property_value = saved_property_info[propIndex][1];
+					var property_name = saved_property_info[propIndex][0];
+					var property_value = saved_property_info[propIndex][1];
 								
-								variable_instance_set(target, property_name, property_value);
-							}
+					variable_instance_set(entInstance, property_name, property_value);
+				}
 							
-							// Perform post-level-load 
-							if (variable_instance_exists(target, "onPostLevelLoad"))
-							{
-								target.onPostLevelLoad();
-							}
-						};
-					}
-					executor.target = entInstance;
-					executor.saved_property_info = saved_property_info;
+				// Perform post-level-load
+				if (variable_instance_exists(entInstance, "onPostLevelLoad"))
+				{
+					//entInstance.onPostLevelLoad();
+					executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
 				}
 			}
 			// No proxy, we set the properties directly so we're OK.
 			else
 			{
-				// Perform post-level load
-				var executor = inew(_execute_step);
-				with (executor)
+				// Perform post-level-load 
+				if (variable_instance_exists(entInstance, "onPostLevelLoad"))
 				{
-					fn = function()
-					{
-						// Perform post-level-load 
-						if (variable_instance_exists(target, "onPostLevelLoad"))
-						{
-							target.onPostLevelLoad();
-						}
-					};
+					//entInstance.onPostLevelLoad();
+					executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
 				}
-				executor.target = entInstance;
 			}
+		}
+		
+		// Update the transform heirarchy listing
+		Parenting_BuildHeirarchy(entlist);
+		if (Parenting_NeedsPerStepUpdate())
+		{
+			// Create the parenting updater
+			inew(GameParentingUpdater);
 		}
 	}
 	
