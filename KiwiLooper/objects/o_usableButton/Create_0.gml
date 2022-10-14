@@ -86,6 +86,10 @@ l_isUnlockedForPlayer = function()
 	else
 	{
 		// check player inventory
+		if (iexists(o_playerKiwi))
+		{
+			return o_playerKiwi.m_inventory.keys[m_unlockChannel];
+		}
 		return false;
 	}
 }

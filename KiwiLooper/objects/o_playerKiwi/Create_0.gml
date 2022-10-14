@@ -18,6 +18,11 @@ m_wrench.visible = false;
 m_uiUsables = inew(o_uisPlayerUsables);
 m_uiTally = inew(o_uisTallyMarks);
 
+// Set up progression
+m_inventory = {
+	keys: array_create(100, 0),
+};
+
 // Set up callbacks
 onPostLevelLoad = function()
 {

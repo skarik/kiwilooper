@@ -552,6 +552,7 @@ function _EntityInfoInit()
 				["parent", kValueTypeLively],
 				["m_usable", kValueTypeBoolean, true], // Can this button be interacted with
 				["m_locked", kValueTypeBoolean, false], // Is this button locked?
+				["m_unlockChannel", kValueTypeInteger, 0], // Which key index we unlock with
 				["m_targetLively", kValueTypeLively],
 				["m_useDelay", kValueTypeFloat, 0.3], // Time between using button and the trigger
 				["m_isToggle", kValueTypeBoolean, true],
@@ -696,6 +697,36 @@ function _EntityInfoInit()
 				["lit", kValueTypeBoolean, false],
 				["m_targetLively", kValueTypeLively],
 				["triggerOnPlug", kValueTypeBoolean, true],
+			],
+		},
+		{
+			name: "item_keycard",
+			parent: "lively_base",
+			objectIndex: o_usablePickupKeycard,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 4,
+			gizmoDrawmode: kGizmoDrawmodeHidden,
+			gizmoOrigin: kGizmoOriginCenter,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshShapeQuadFloor,
+				sprite:	object_get_sprite(o_usablePickupKeycard),
+				index:	0,
+				lit:	false,
+				transform:
+				[
+					[kGizmoMeshTransformScaleX, sprite_get_width( object_get_sprite(o_usablePickupKeycard)) / 8],
+					[kGizmoMeshTransformScaleY, sprite_get_height(object_get_sprite(o_usablePickupKeycard)) / 8],
+					[kGizmoMeshTransformTranslateZ, 0.7],
+				],
+			},
+			
+			hullsize: 8,
+			
+			properties:
+			[
+				["m_lockChannel", kValueTypeInteger, 0],
 			],
 		},
 		
