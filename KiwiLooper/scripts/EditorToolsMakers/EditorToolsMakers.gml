@@ -25,10 +25,10 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 		
 		if (m_window == null)
 		{
-			m_window = m_editor.EditorWindowAlloc(AEditorWindowEntSpawn);
+			m_window = EditorWindowAlloc(AEditorWindowEntSpawn);
 		}
 		m_window.Open();
-		m_editor.EditorWindowSetFocus(m_window);
+		EditorWindowSetFocus(m_window);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place position for new selected entity, or drag from entity list. ESC to reset.";
 	}
@@ -39,7 +39,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 			m_gizmo.SetDisabled();
 			m_gizmo.SetInvisible();
 			
-			m_editor.EditorWindowFree(m_window);
+			EditorWindowFree(m_window);
 			m_window = null;
 		}
 		
@@ -211,12 +211,12 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 		// Set up the prop listing when we enter this state
 		if (m_window == null)
 		{
-			m_window = m_editor.EditorWindowAlloc(AEditorWindowPropSpawn);
+			m_window = EditorWindowAlloc(AEditorWindowPropSpawn);
 		}
 		m_window.Open();
 		m_window.InitPropListing();
 		
-		m_editor.EditorWindowSetFocus(m_window);
+		EditorWindowSetFocus(m_window);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place position for new selected prop, or drag from prop list. ESC to reset.";
 	}
@@ -227,7 +227,7 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 			m_gizmo.SetDisabled();
 			m_gizmo.SetInvisible();
 			
-			m_editor.EditorWindowFree(m_window);
+			EditorWindowFree(m_window);
 			m_window = null;
 		}
 		
@@ -324,12 +324,12 @@ function AEditorToolStateMakeSplat() : AEditorToolState() constructor
 		// Set up the prop listing when we enter this state
 		if (m_window == null)
 		{
-			m_window = m_editor.EditorWindowAlloc(AEditorWindowSplatSpawn);
+			m_window = EditorWindowAlloc(AEditorWindowSplatSpawn);
 		}
 		m_window.Open();
 		m_window.InitSplatListing();
 		
-		m_editor.EditorWindowSetFocus(m_window);
+		EditorWindowSetFocus(m_window);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click anywhere to place new splat, or drag from splat list. ESC to reset.";
 	}
@@ -340,7 +340,7 @@ function AEditorToolStateMakeSplat() : AEditorToolState() constructor
 			m_gizmo.SetDisabled();
 			m_gizmo.SetInvisible();
 			
-			m_editor.EditorWindowFree(m_window);
+			EditorWindowFree(m_window);
 			m_window = null;
 		}
 	}

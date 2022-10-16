@@ -10,11 +10,11 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 	{
 		if (m_windowBrowser == null)
 		{
-			m_windowBrowser = m_editor.EditorWindowAlloc(AEditorWindowTileBrowser);
+			m_windowBrowser = EditorWindowAlloc(AEditorWindowTileBrowser);
 		}
 		m_windowBrowser.InitTileListing();
 		m_windowBrowser.Open();
-		m_editor.EditorWindowSetFocus(m_windowBrowser);
+		EditorWindowSetFocus(m_windowBrowser);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";
 		
@@ -61,7 +61,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 			
 			//m_editor.EditorWindowFree(m_window);
 			//m_window = null;
-			m_editor.EditorWindowFree(m_windowBrowser);
+			EditorWindowFree(m_windowBrowser);
 			m_windowBrowser = null;
 		}
 		m_editor.m_minimenu.Hide();

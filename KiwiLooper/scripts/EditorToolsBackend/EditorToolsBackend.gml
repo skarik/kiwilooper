@@ -90,6 +90,15 @@ function EditorToolsSetup()
 		new AEditorToolStateScale(),		// kEditorToolScale
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
+	
+	// Set all the tools' editor
+	for (var i = 0; i < array_length(toolStates); ++i)
+	{
+		if (is_struct(toolStates[i]))
+		{
+			toolStates[i].m_editor = this;
+		}
+	}
 }
 
 function EditorToolsUpdate_CheckShortcuts()

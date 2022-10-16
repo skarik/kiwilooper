@@ -308,45 +308,49 @@ function EditorWindowingSetup()
 		return false;
 	}
 	
-	this.EditorWindowAlloc = EditorWindowAlloc;
-	this.EditorWindowFree = EditorWindowFree;
-	this.EditorWindowSetFocus = EditorWindowSetFocus;
+	// Aliasing issues w/ yyc
+	//this.EditorWindowAlloc = EditorWindowAlloc;
+	//this.EditorWindowFree = EditorWindowFree;
+	//this.EditorWindowSetFocus = EditorWindowSetFocus;
 }
 
 /// @function EditorWindowAlloc(type)
 /// @desc Creates a new instance of the given window and adds it to update queue.
 function EditorWindowAlloc(type)
 {
-	var window = new type();
-	
-	// Store class type for future ref
-	window.classType = type;
-	// Store calling editor
-	window.m_editor = id;
-	
-	// Pull saved position by class
-	for (var i = 0; i < array_length(windowSavedPositions); ++i)
+	with (EditorGet())
 	{
-		if (windowSavedPositions[i][0] == window.classType)
-		{
-			window.m_position.copyFrom(windowSavedPositions[i][1]);
-			window.has_stored_position = true;
-			break;
-		}
-	}
-	// Pull saved sizes by class
-	for (var i = 0; i < array_length(windowSavedPositions); ++i)
-	{
-		if (windowSavedSizes[i][0] == window.classType)
-		{
-			window.m_size.copyFrom(windowSavedSizes[i][1]);
-			window.has_stored_size = true;
-			break;
-		}
-	}
+		var window = new type();
 	
-	array_push(windows, window);
-	return window;
+		// Store class type for future ref
+		window.classType = type;
+		// Store calling editor
+		window.m_editor = id;
+	
+		// Pull saved position by class
+		for (var i = 0; i < array_length(windowSavedPositions); ++i)
+		{
+			if (windowSavedPositions[i][0] == window.classType)
+			{
+				window.m_position.copyFrom(windowSavedPositions[i][1]);
+				window.has_stored_position = true;
+				break;
+			}
+		}
+		// Pull saved sizes by class
+		for (var i = 0; i < array_length(windowSavedPositions); ++i)
+		{
+			if (windowSavedSizes[i][0] == window.classType)
+			{
+				window.m_size.copyFrom(windowSavedSizes[i][1]);
+				window.has_stored_size = true;
+				break;
+			}
+		}
+	
+		array_push(windows, window);
+		return window;
+	}
 }
 
 function EditorWindowSavePositions(window)
@@ -389,38 +393,44 @@ function EditorWindowSavePositions(window)
 /// @desc Requests a deferred deletion of the given window.
 function EditorWindowFree(window)
 {
-	if (is_struct(window))
+	with (EditorGet())
 	{
-		EditorWindowSavePositions(window);
+		if (is_struct(window))
+		{
+			EditorWindowSavePositions(window);
 		
-		// Disable window & request free
-		window.request_free = true;
-		window.disabled = true;
+			// Disable window & request free
+			window.request_free = true;
+			window.disabled = true;
+		}
 	}
 }
 /// @function EditorWindowSetFocus(window)
 /// @desc Sets the window as the main focused one
 function EditorWindowSetFocus(window)
 {
-	// Update which windows have focus or not
-	if (is_struct(windowCurrent) && windowCurrent != window)
+	with (EditorGet())
 	{
-		windowCurrent.focused = false;
-	}
-	// Update the current hovered window now
-	if (is_struct(window))
-	{
-		windowCurrent = window;
-		windowCurrent.focused = true;
-		
-		// Ensure the window is at the end of the windowing list so it draws on top.
-		if (array_length(windows) == 0)
+		// Update which windows have focus or not
+		if (is_struct(windowCurrent) && windowCurrent != window)
 		{
-			windowCurrent = null;
+			windowCurrent.focused = false;
 		}
-		else if (windowCurrent != windows[array_length(windows) - 1])
+		// Update the current hovered window now
+		if (is_struct(window))
 		{
-			CE_ArraySwap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
+			windowCurrent = window;
+			windowCurrent.focused = true;
+		
+			// Ensure the window is at the end of the windowing list so it draws on top.
+			if (array_length(windows) == 0)
+			{
+				windowCurrent = null;
+			}
+			else if (windowCurrent != windows[array_length(windows) - 1])
+			{
+				CE_ArraySwap(windows, array_get_index(windows, windowCurrent), array_length(windows) - 1);
+			}
 		}
 	}
 }
