@@ -54,6 +54,17 @@ function Vector2(n_x, n_y) constructor
 		return self;
 	}
 	
+	/// @function biasUV(normalized_uvs)
+	/// @desc Utility funciton that moves normalized coordinates into range of given GM sprite UVs
+	static biasUV = function(uvs)
+	{
+		return new Vector2(
+			lerp(uvs[0], uvs[2], x),
+			lerp(uvs[1], uvs[3], y)
+			);
+	}
+	/// @function biasUVSelf(normalized_uvs)
+	/// @desc Utility funciton that moves normalized coordinates into range of given GM sprite UVs
 	static biasUVSelf = function(uvs)
 	{
 		x = lerp(uvs[0], uvs[2], x);
@@ -225,4 +236,21 @@ function Vector2FromLengthdir(length, dir)
 function Vector2FromCopy(vector2)
 {
 	return vector2.copy();
+}
+
+/// @function Vector2FromArray(array)
+/// @desc Creates a Vector2 from an input array.
+function Vector2FromArray(array)
+{
+	return new Vector2(array[0], array[1]);
+}
+
+/// @function Vec2(x, y, z) struct;
+/// @param {Real} [n_x]
+/// @param {Real} [n_y]
+/// @desc Makes a lightweight xyz vector
+function Vec2(n_x = 0.0, n_y = 0.0)
+{
+	gml_pragma("forceinline");
+	return {x: n_x, y: n_y};
 }

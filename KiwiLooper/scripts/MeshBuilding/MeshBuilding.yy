@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Game",
-    "path": "folders/Scripts/Game.yy",
+    "name": "Meshes",
+    "path": "folders/Scripts/Game/Meshes.yy",
   },
 }

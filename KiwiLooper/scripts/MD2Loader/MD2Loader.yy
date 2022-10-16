@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "Vector2_SD",
+  "name": "MD2Loader",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Math",
-    "path": "folders/Scripts/Game/Math.yy",
+    "name": "Models",
+    "path": "folders/Scripts/Engine/Models.yy",
   },
 }

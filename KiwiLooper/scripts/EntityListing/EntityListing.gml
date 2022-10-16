@@ -91,6 +91,15 @@ function _EntityInfoInit()
 			],
 		},
 		
+		// Tests:
+		{
+			hidden: false,
+			name: "test_md2",
+			parent: "lively_base",
+			objectIndex: ot_3DModel_MD2,
+			proxy: kProxyTypeNone,
+		},
+		
 		// Lights:
 		{
 			name: "light",

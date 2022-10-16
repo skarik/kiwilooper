@@ -4,12 +4,11 @@
 /// @param {Real} [n_x]
 /// @param {Real} [n_y]
 /// @param {Real} [n_z]
-function Vector3(n_x, n_y, n_z) constructor
+function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 {
-	// Default values
-	x = is_numeric(n_x) ? n_x : 0.0;
-	y = is_numeric(n_y) ? n_y : 0.0;
-	z = is_numeric(n_z) ? n_z : 0.0;
+	x = n_x;
+	y = n_y;
+	z = n_z;
 	
 	// Functions
 	
@@ -293,6 +292,7 @@ function Vector3(n_x, n_y, n_z) constructor
 /// @desc Creates a Vector3 from an input array.
 function Vector3FromArray(array)
 {
+	gml_pragma("forceinline");
 	return new Vector3(array[0], array[1], array[2]);
 }
 
@@ -300,12 +300,14 @@ function Vector3FromArray(array)
 /// @desc Creates a Vector3 from an input structure.
 function Vector3FromTranslation(structure)
 {
+	gml_pragma("forceinline");
 	return new Vector3(structure.x, structure.y, structure.z);
 }
 /// @function Vector3FromScale(structure)
 /// @desc Creates a Vector3 from an input structure.
 function Vector3FromScale(structure)
 {
+	gml_pragma("forceinline");
 	return new Vector3(structure.xscale, structure.yscale, structure.zscale);
 }
 
@@ -360,4 +362,15 @@ function Vector3ForwardAndUpFromAngles(xangle, yangle, zangle)
 			 y_x * x_x
 			)
 	];
+}
+
+/// @function Vec3(x, y, z) struct;
+/// @param {Real} [n_x]
+/// @param {Real} [n_y]
+/// @param {Real} [n_z]
+/// @desc Makes a lightweight xyz vector
+function Vec3(n_x = 0.0, n_y = 0.0, n_z = 0.0)
+{
+	gml_pragma("forceinline");
+	return {x: n_x, y: n_y, z: n_z};
 }
