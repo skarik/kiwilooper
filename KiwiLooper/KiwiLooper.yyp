@@ -66,6 +66,7 @@
     {"id":{"name":"MapEntityList","path":"scripts/MapEntityList/MapEntityList.yy",},"order":1,},
     {"id":{"name":"DamageDealers","path":"scripts/DamageDealers/DamageDealers.yy",},"order":0,},
     {"id":{"name":"EntityListing","path":"scripts/EntityListing/EntityListing.yy",},"order":0,},
+    {"id":{"name":"MDLLoader","path":"scripts/MDLLoader/MDLLoader.yy",},"order":1,},
     {"id":{"name":"ssy_ambientLight","path":"sprites/ssy_ambientLight/ssy_ambientLight.yy",},"order":4,},
     {"id":{"name":"utilDebug","path":"scripts/utilDebug/utilDebug.yy",},"order":10,},
     {"id":{"name":"audio_get_index","path":"scripts/audio_get_index/audio_get_index.yy",},"order":0,},
@@ -431,6 +432,7 @@
     {"id":{"name":"o_audioAmbientPowerstateDuck","path":"objects/o_audioAmbientPowerstateDuck/o_audioAmbientPowerstateDuck.yy",},"order":1,},
     {"id":{"name":"ssy_music","path":"sprites/ssy_music/ssy_music.yy",},"order":20,},
     {"id":{"name":"ob_lively","path":"objects/ob_lively/ob_lively.yy",},"order":0,},
+    {"id":{"name":"MDLPalettes","path":"scripts/MDLPalettes/MDLPalettes.yy",},"order":2,},
     {"id":{"name":"instance_get_top","path":"scripts/instance_get_top/instance_get_top.yy",},"order":4,},
     {"id":{"name":"f_Oxygen12","path":"fonts/f_Oxygen12/f_Oxygen12.yy",},"order":2,},
     {"id":{"name":"fmusic_wants_volume_sync","path":"scripts/fmusic_wants_volume_sync/fmusic_wants_volume_sync.yy",},"order":7,},
@@ -716,6 +718,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"default cube.md2","CopyToMask":3035426170322551022,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"boss1.md2","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"shambler.mdl","CopyToMask":-1,"filePath":"datafiles/models",},
   ],
   "MetaData": {
     "IDEVersion": "2022.9.1.51",

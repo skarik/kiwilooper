@@ -3,9 +3,12 @@
 var uvs = sprite_get_uvs(sfx_square, 0); // use a white texture for testing
 
 // load in the model
-var parser = new AMD2FileParser();
+/*var parser = new AMD2FileParser();
 //parser.OpenFile("models/default cube.md2");
 parser.OpenFile("models/boss1.md2"); // quake 2 boss 1 lmaoooo
+*/
+var parser = new AMDLFileParser();
+parser.OpenFile("models/shambler.mdl");
 // decompress the model
 if (!parser.ReadFrames())
 {

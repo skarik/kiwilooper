@@ -271,14 +271,11 @@ function AMD2FileParser() constructor
 						var compressed_st_index = m_loader.m_tris[tri].st[tri_index];
 						
 						// 
-						//var vert = Vector3FromArray(compressed_frame.verts[compressed_vertex_index].v);
-						//vert.multiplyComponentSelf(compressed_frame.scale).addSelf(compressed_frame.translate);
-						//m_frames[frame].vertices[out_vert_index] = vert;
 						var vert = [compressed_frame.verts[compressed_vertex_index].v[0], compressed_frame.verts[compressed_vertex_index].v[1], compressed_frame.verts[compressed_vertex_index].v[2]];
 						vert[0] = vert[0] * compressed_frame.scale[0] + compressed_frame.translate[0];
 						vert[1] = vert[1] * compressed_frame.scale[1] + compressed_frame.translate[1];
 						vert[2] = vert[2] * compressed_frame.scale[2] + compressed_frame.translate[2];
-						m_frames[frame].vertices[out_vert_index] = vert;//Vector3FromArray(vert);//new Vector3(vert[0], vert[1], vert[2]);
+						m_frames[frame].vertices[out_vert_index] = vert;
 						
 						//
 						var normal = FileMD2LookupNormal(compressed_frame.verts[compressed_vertex_index].normalIndex); // masterpiece line
