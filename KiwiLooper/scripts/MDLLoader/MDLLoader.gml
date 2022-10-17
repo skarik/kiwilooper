@@ -268,16 +268,55 @@ function AFileMDLReader() constructor
 	}
 }
 
+#macro kFileLoadStateNotLoaded	0
+#macro kFileLoadStateSuccess	1
+#macro kFileLoadStateFailed		-1
+
+function AFileLoadStateTracker(load_call) constructor
+{
+	m_call = load_call;
+	m_loadstate = kFileLoadStateNotLoaded;
+	static Load = function()
+	{
+		if (m_loadstate == kFileLoadStateNotLoaded)
+		{
+			m_loadstate = m_call() ? kFileLoadStateSuccess : kFileLoadStateFailed;
+		}
+		return m_loadstate == kFileLoadStateSuccess;
+	}
+}
+
 function AMDLFileParser() constructor
 {
 	m_loader = new AFileMDLReader();
 	m_frames = [];
+	m_textures = [];
+	
+	// Loaders used for tracking which parts have already been read in
+	m_lsSkins = null;
+	m_lsTexcoords =null; 
+	m_lsTris = null;
+	m_lsFrames = null;
+	static _SetupLoaders = function()
+	{
+		m_lsSkins = new AFileLoadStateTracker(method(m_loader, m_loader.ReadSkins));
+		m_lsTexcoords = new AFileLoadStateTracker(method(m_loader, m_loader.ReadTexcoords));
+		m_lsTris = new AFileLoadStateTracker(method(m_loader, m_loader.ReadTris));
+		m_lsFrames = new AFileLoadStateTracker(method(m_loader, m_loader.ReadFrames));
+	}
+	_SetupLoaders();
 	
 	/// @function GetFrames()
 	static GetFrames = function()
 	{
 		gml_pragma("forceinline");
 		return m_frames;
+	}
+	/// @function GetTextures()
+	static GetTextures = function()
+	{
+		gml_pragma("forceinline");
+		return m_textures;
 	}
 	
 	/// @function OpenFile(filepath)
@@ -302,6 +341,7 @@ function AMDLFileParser() constructor
 	static CloseFile = function()
 	{
 		m_loader.CloseFile();
+		_SetupLoaders();
 	}
 	
 	/// @function ReadFrames()
@@ -309,8 +349,7 @@ function AMDLFileParser() constructor
 	/// @returns {Boolean} success at populating data
 	static ReadFrames = function()
 	{
-		m_loader.ReadSkins(); // again only do this once
-		if (m_loader.ReadTexcoords() && m_loader.ReadTris() && m_loader.ReadFrames()) // todo: ensure these are read only once
+		if (m_lsSkins.Load() && m_lsTexcoords.Load() && m_lsTris.Load() && m_lsFrames.Load())
 		{
 			m_frames = array_create(m_loader.m_header.num_frames);
 			for (var frame = 0; frame < m_loader.m_header.num_frames; ++frame)
@@ -344,7 +383,11 @@ function AMDLFileParser() constructor
 						
 							//
 							var st = m_loader.m_texcoords[compressed_vertex_index];
-							var texCoord = [st.s / m_loader.m_header.skinwidth, st.t / m_loader.m_header.skinheight];
+							var texCoord = [(st.s + 0.5) / m_loader.m_header.skinwidth, (st.t + 0.5) / m_loader.m_header.skinheight];
+							if (!m_loader.m_tris[tri].facesfront && st.onseam) // Fix backface seams
+							{
+								texCoord[0] += 0.5;
+							}
 							m_frames[frame].texcoords[out_vert_index] = texCoord;
 						}
 					}
@@ -368,5 +411,44 @@ function AMDLFileParser() constructor
 	/// @returns {Boolean} success at populating data
 	static ReadTextures = function()
 	{
+		if (m_lsSkins.Load())
+		{
+			// We have the texture, let's convert to RGB
+			var compressed_skin = m_loader.m_skins[0];
+			
+			if (compressed_skin.group == 0)
+			{
+				var temp_canvas = surface_create(m_loader.m_header.skinwidth, m_loader.m_header.skinheight);
+				surface_set_target(temp_canvas);
+				gpu_set_blendenable(false);
+				
+				draw_clear_alpha(c_white, 0.0);
+				for (var dy = 0; dy < m_loader.m_header.skinheight; ++dy)
+				{
+					for (var dx = 0; dx < m_loader.m_header.skinwidth; ++dx)
+					{
+						var flat_index = dx + dy * m_loader.m_header.skinwidth ;
+						var rgb = FileMDLLookupColorQuake(compressed_skin.data[flat_index]);
+						
+						draw_set_color(make_color_rgb(rgb[0], rgb[1], rgb[2])); 
+						draw_point(dx, dy);
+					}
+				}
+				
+				gpu_set_blendenable(true);
+				surface_reset_target();
+			
+				m_textures[0] = sprite_create_from_surface(temp_canvas, 0, 0, m_loader.m_header.skinwidth,  m_loader.m_header.skinheight, false, false, 0, 0);
+			
+				surface_free(temp_canvas);
+			}
+			else
+			{
+				show_error("unsupported animated skin " + string(0), true);
+			}
+			
+			return true;
+		}
+		return false;
 	}
 }

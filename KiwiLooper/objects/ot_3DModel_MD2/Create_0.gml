@@ -1,6 +1,7 @@
 /// @description Load mesh & set up render
 
 var uvs = sprite_get_uvs(sfx_square, 0); // use a white texture for testing
+m_texture = sprite_get_texture(sfx_square, 0);
 
 // load in the model
 /*var parser = new AMD2FileParser();
@@ -10,11 +11,18 @@ parser.OpenFile("models/boss1.md2"); // quake 2 boss 1 lmaoooo
 var parser = new AMDLFileParser();
 parser.OpenFile("models/shambler.mdl");
 // decompress the model
-if (!parser.ReadFrames())
+if (!parser.ReadFrames() || !parser.ReadTextures())
 {
 	show_error("beansed it", true);
 }
 parser.CloseFile();
+
+// pull the texture
+if (array_length(parser.GetTextures()) > 0)
+{
+	uvs = sprite_get_uvs(parser.GetTextures()[0], 0);
+	m_texture = sprite_get_texture(parser.GetTextures()[0], 0);
+}
 
 // create a render mesh
 var frame = parser.GetFrames()[0];
@@ -38,5 +46,5 @@ delete parser;
 // set up rendering
 m_renderEvent = function()
 {
-	vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+	vertex_submit(m_mesh, pr_trianglelist, m_texture);
 }
