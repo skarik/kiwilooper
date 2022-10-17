@@ -24,3 +24,26 @@ function buffer_read_byte_array(buffer, length)
 	}
 	return str;
 }
+
+/// @function buffer_read_byte_array_as_terminated_string(buffer, length)
+/// @desc Reads a byte array. Will not ensure encoding sticks.
+function buffer_read_byte_array_as_terminated_string(buffer, length)
+{
+	var str = "";
+	var i;
+	for (i = 0; i < length; ++i)
+	{
+		var ch = buffer_read(buffer, buffer_u8);
+		if (ch == 0) {
+			++i
+			break;
+		}
+		str += chr(ch);
+	}
+	while (i < length)
+	{
+		++i;
+		buffer_read(buffer, buffer_u8);
+	}
+	return str;
+}

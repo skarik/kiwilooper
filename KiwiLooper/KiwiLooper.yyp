@@ -719,6 +719,11 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"default cube.md2","CopyToMask":3035426170322551022,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"boss1.md2","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"shambler.mdl","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_skin.pcx","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner.md2","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_pain.pcx","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_pain.png","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_skin.png","CopyToMask":-1,"filePath":"datafiles/models",},
   ],
   "MetaData": {
     "IDEVersion": "2022.9.1.51",

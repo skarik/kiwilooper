@@ -199,7 +199,7 @@ function AFileMDLReader() constructor
 					m_frames[frame].bboxmax[1] = buffer_read(m_blob, buffer_u8);
 					m_frames[frame].bboxmax[2] = buffer_read(m_blob, buffer_u8);
 					/*m_frames[frame].bboxmax[3] =*/ buffer_read(m_blob, buffer_u8);
-					m_frames[frame].name = buffer_read_byte_array(m_blob, 16);
+					m_frames[frame].name = buffer_read_byte_array_as_terminated_string(m_blob, 16);
 					m_frames[frame].verts = array_create(m_header.num_verts);
 					for (var i = 0; i < m_header.num_verts; ++i)
 					{
@@ -248,7 +248,7 @@ function AFileMDLReader() constructor
 						m_frames[frame].frames[subframe].bboxmax[1] = buffer_read(m_blob, buffer_u8);
 						m_frames[frame].frames[subframe].bboxmax[2] = buffer_read(m_blob, buffer_u8);
 						/*m_frames[frame].bboxmax[3] =*/ buffer_read(m_blob, buffer_u8);
-						m_frames[frame].frames[subframe].name = buffer_read_byte_array(m_blob, 16);
+						m_frames[frame].frames[subframe].name = buffer_read_byte_array_as_terminated_string(m_blob, 16);
 						m_frames[frame].frames[subframe].verts = array_create(m_header.num_verts);
 						for (var i = 0; i < m_header.num_verts; ++i)
 						{

@@ -89,7 +89,7 @@ function AFileMD2Reader() constructor
 			m_skins = array_create(m_header.num_skins);
 			for (var i = 0; i < m_header.num_skins; ++i)
 			{
-				m_skins[i] = buffer_read_byte_array(m_blob, 64);
+				m_skins[i] = buffer_read_byte_array_as_terminated_string(m_blob, 64);
 			}
 			return true;
 		}
@@ -172,7 +172,7 @@ function AFileMD2Reader() constructor
 					m_frames[frame].translate[0] = buffer_read(m_blob, buffer_f32);
 					m_frames[frame].translate[1] = buffer_read(m_blob, buffer_f32);
 					m_frames[frame].translate[2] = buffer_read(m_blob, buffer_f32);
-				m_frames[frame].name = buffer_read_byte_array(m_blob, 16);
+				m_frames[frame].name = buffer_read_byte_array_as_terminated_string(m_blob, 16);
 				m_frames[frame].verts = array_create(m_header.num_vertices);
 					/*{
 					scale: new Vector3(buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32)),
@@ -213,12 +213,19 @@ function AMD2FileParser() constructor
 {
 	m_loader = new AFileMD2Reader();
 	m_frames = [];
+	m_textures = [];
 	
 	/// @function GetFrames()
 	static GetFrames = function()
 	{
 		gml_pragma("forceinline");
 		return m_frames;
+	}
+	/// @function GetTextures()
+	static GetTextures = function()
+	{
+		gml_pragma("forceinline");
+		return m_textures;
 	}
 	
 	/// @function OpenFile(filepath)
@@ -278,12 +285,12 @@ function AMD2FileParser() constructor
 						m_frames[frame].vertices[out_vert_index] = vert;
 						
 						//
-						var normal = FileMD2LookupNormal(compressed_frame.verts[compressed_vertex_index].normalIndex); // masterpiece line
+						var normal = FileMD2LookupNormal(compressed_frame.verts[compressed_vertex_index].normalIndex);
 						m_frames[frame].normals[out_vert_index] = normal;
 						
 						//
 						var st = m_loader.m_st[compressed_st_index];
-						var texCoord = [st[0] / m_loader.m_header.skinwidth, st[1] / m_loader.m_header.skinheight];
+						var texCoord = [real(st[0]) / m_loader.m_header.skinwidth, real(st[1]) / m_loader.m_header.skinheight];
 						m_frames[frame].texcoords[out_vert_index] = texCoord;
 					}
 				}
@@ -298,6 +305,17 @@ function AMD2FileParser() constructor
 	/// @returns {Boolean} success at populating data
 	static ReadTextures = function()
 	{
+		if (m_loader.ReadSkins())
+		{
+			// Skins in MD2 are just file names - which makes loading pretty much trivial
+			for (var i = 0; i < m_loader.m_header.num_skins; ++i)
+			{
+				// TODO error handle missing files
+				m_textures[i] = sprite_add(m_loader.m_skins[i], 1, false, false, 0, 0);
+			}
+			return true;
+		}
+		return false;
 	}
 }
 
