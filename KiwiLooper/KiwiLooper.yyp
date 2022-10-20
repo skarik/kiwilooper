@@ -304,6 +304,7 @@
     {"id":{"name":"o_Camera3D","path":"objects/o_Camera3D/o_Camera3D.yy",},"order":0,},
     {"id":{"name":"ssettingGetMin","path":"scripts/ssettingGetMin/ssettingGetMin.yy",},"order":2,},
     {"id":{"name":"motion2d_to","path":"scripts/motion2d_to/motion2d_to.yy",},"order":14,},
+    {"id":{"name":"ResourceManaging","path":"scripts/ResourceManaging/ResourceManaging.yy",},"order":0,},
     {"id":{"name":"spr_metalTable0","path":"sprites/spr_metalTable0/spr_metalTable0.yy",},"order":3,},
     {"id":{"name":"dcmdParsing","path":"scripts/dcmdParsing/dcmdParsing.yy",},"order":0,},
     {"id":{"name":"Audio","path":"objects/Audio/Audio.yy",},"order":0,},
@@ -628,6 +629,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"editor","folderPath":"folders/Sprites/ui/editor.yy","order":11,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Tile Sets","folderPath":"folders/Tile Sets.yy","order":74,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Timelines","folderPath":"folders/Timelines.yy","order":68,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Resources","folderPath":"folders/Scripts/Engine/Resources.yy","order":4,},
   ],
   "AudioGroups": [
     {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
@@ -724,6 +726,8 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_pain.pcx","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_pain.png","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_skin.png","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwibod.png","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.md2","CopyToMask":-1,"filePath":"datafiles/models",},
   ],
   "MetaData": {
     "IDEVersion": "2022.9.1.51",

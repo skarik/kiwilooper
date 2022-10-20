@@ -311,7 +311,12 @@ function AMD2FileParser() constructor
 			for (var i = 0; i < m_loader.m_header.num_skins; ++i)
 			{
 				// TODO error handle missing files
-				m_textures[i] = sprite_add(m_loader.m_skins[i], 1, false, false, 0, 0);
+				//m_textures[i] = sprite_add(m_loader.m_skins[i], 1, false, false, 0, 0);
+				var loaded_texture = ResourceLoadTexture(m_loader.m_skins[i], m_loader.m_header.skinwidth, m_loader.m_header.skinheight);
+				if (!is_undefined(loaded_texture))
+				{
+					m_textures[i] = loaded_texture.sprite;
+				}
 			}
 			return true;
 		}

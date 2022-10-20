@@ -3,13 +3,15 @@
 var uvs = sprite_get_uvs(sfx_square, 0); // use a white texture for testing
 m_texture = sprite_get_texture(sfx_square, 0);
 
+/*
 // load in the model
 var parser = new AMD2FileParser();
 //parser.OpenFile("models/default cube.md2");
 //parser.OpenFile("models/boss1.md2"); // quake 2 boss 1 lmaoooo
-parser.OpenFile("models/gunner.md2");
-/*var parser = new AMDLFileParser();
-parser.OpenFile("models/shambler.mdl");*/
+//parser.OpenFile("models/gunner.md2");
+parser.OpenFile("models/kiwi.md2");
+//var parser = new AMDLFileParser();
+//parser.OpenFile("models/shambler.mdl");
 // decompress the model
 if (!parser.ReadFrames() || !parser.ReadTextures())
 {
@@ -48,6 +50,12 @@ for (var iframe = 0; iframe < frameCount; ++iframe)
 
 // and we're done w/ parser
 delete parser;
+*/
+
+mesh_frame = [];
+var mesh_resource = ResourceLoadModel("models/kiwi.md2");
+mesh_frame = mesh_resource.frames;
+m_texture = sprite_get_texture(mesh_resource.textures[0], 0);
 
 // set up rendering
 m_renderEvent = function()
