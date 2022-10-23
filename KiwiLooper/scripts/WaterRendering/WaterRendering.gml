@@ -273,10 +273,12 @@ function WaterRenderer_RenderBodies()
 		"uInsideBaseColor",
 		"uPositionParams",
 		"uTime",
+		"uWaterSheetUVs",
 	]);
 	static water_samplers = shaderGetSamplers(sh_unlitWater,
 	[
 		"textureEdgemask",
+		"textureWaterSheet",
 	]);
 	static water_mask_uniforms = shaderGetUniforms(sh_unlitWater_Mask, ["uDrawColor"]);
 	static water_edgefind_uniforms = shaderGetUniforms(sh_unlitWater_EdgeFind, ["uPositionParams"]);
@@ -335,8 +337,9 @@ function WaterRenderer_RenderBodies()
 	
 	drawShaderSet(sh_unlitWater);
 	
-	gpu_set_blendmode_ext(bm_dest_color, bm_src_color);
+	//gpu_set_blendmode_ext(bm_dest_color, bm_src_color);
 	//gpu_set_blendmode_ext(bm_src_alpha, bm_src_color);
+	gpu_set_blendmode(bm_normal);
 	gpu_set_ztestenable(true);
 	gpu_set_zwriteenable(true);
 	//gpu_set_zfunc(cmpfunc_notequal);
@@ -345,6 +348,10 @@ function WaterRenderer_RenderBodies()
 	shader_set_uniform_f(water_uniforms.uInsideEdgeColor, 28.0 / 255, 170.0 / 255, 170.0 / 255, 1.0);
 	shader_set_uniform_f(water_uniforms.uInsideBaseColor, 28.0 / 255, 170.0 / 255, 170.0 / 255, 0.3);
 	shader_set_uniform_f(water_uniforms.uTime, Time.time);
+	
+	var waterSheetUvs = sprite_get_uvs(sfx_waterSheets, 0);
+	shader_set_uniform_f(water_uniforms.uWaterSheetUVs, waterSheetUvs[0], waterSheetUvs[1], waterSheetUvs[2], waterSheetUvs[3]);
+	texture_set_stage(water_samplers.textureWaterSheet, sprite_get_texture(sfx_waterSheets, 0));
 	
 	// Now submit each body's mesh w/ special shader
 	for (var bodyIndex = 0; bodyIndex < array_length(bodies); ++bodyIndex)

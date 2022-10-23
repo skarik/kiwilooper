@@ -241,6 +241,7 @@
     {"id":{"name":"sfx_glare0","path":"sprites/sfx_glare0/sfx_glare0.yy",},"order":0,},
     {"id":{"name":"Collision4_Responses","path":"scripts/Collision4_Responses/Collision4_Responses.yy",},"order":1,},
     {"id":{"name":"_controlParseCheckType","path":"scripts/_controlParseCheckType/_controlParseCheckType.yy",},"order":0,},
+    {"id":{"name":"sfx_waterSheets","path":"sprites/sfx_waterSheets/sfx_waterSheets.yy",},"order":1,},
     {"id":{"name":"spr_kiwiStand","path":"sprites/spr_kiwiStand/spr_kiwiStand.yy",},"order":0,},
     {"id":{"name":"sui_portraitKiwi","path":"sprites/sui_portraitKiwi/sui_portraitKiwi.yy",},"order":8,},
     {"id":{"name":"_Loader","path":"objects/_Loader/_Loader.yy",},"order":4,},

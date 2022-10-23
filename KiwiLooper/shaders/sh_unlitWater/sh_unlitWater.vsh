@@ -9,7 +9,6 @@ attribute vec2 in_TextureCoord;              // (u,v)
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 varying vec3 v_vWorldPosition;
-//uniform vec4 uBlendColor;
 
 void main()
 {
