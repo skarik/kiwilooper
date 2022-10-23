@@ -113,7 +113,7 @@ function Vector2(n_x, n_y) constructor
 		return new Vector2(-x, -y);
 	}
 	
-	static lerp = function(right, t)
+	static linearlerp = function(right, t)
 	{
 		if (t <= 0)
 			return new Vector2(x, y);

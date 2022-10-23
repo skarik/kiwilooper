@@ -3,14 +3,21 @@
 
 event_inherited();
 
+WaterRenderer_Init();
 
-update = function()
+update = function() 
 {
-	// yay.
+	// TODO: defer this call until we're done updating everything? Should be fine on instantiation, since the waters are already delayed start.
+	WaterRenderer_UpdateBodies();
+	
+	// Mark all the water's as updated now.
 	with (o_livelyWater)
 	{
 		updated = true;
-		
-		// todo, obvs
 	}
+}
+
+m_renderEvent = function()
+{
+	WaterRenderer_RenderBodies();
 }

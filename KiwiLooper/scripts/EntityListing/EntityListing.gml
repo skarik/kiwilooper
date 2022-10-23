@@ -460,10 +460,10 @@ function _EntityInfoInit()
 				["hardEdgeMask", kValueTypeEnum, 0,
 					[
 						["None", 0],
-						["X+", 0x1],
-						["X-", 0x2],
-						["Y+", 0x4],
-						["Y-", 0x8],
+						["X+", kFluidEdgeX1],
+						["X-", kFluidEdgeX0],
+						["Y+", kFluidEdgeY1],
+						["Y-", kFluidEdgeY0],
 						// there are 16 possible values so dont bother immediately...
 					],
 				],

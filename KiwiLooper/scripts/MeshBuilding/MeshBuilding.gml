@@ -20,14 +20,19 @@ function MBVertex(n_position, n_color, n_alpha, n_uv, n_normal) constructor
 
 function meshb_CreateVertexFormat()
 {
-	vertex_format_begin();
+	static format = null;
+	if (format == null)
 	{
-		vertex_format_add_position_3d();
-		vertex_format_add_color();
-		vertex_format_add_texcoord();
-		vertex_format_add_normal();
+		vertex_format_begin();
+		{
+			vertex_format_add_position_3d();
+			vertex_format_add_color();
+			vertex_format_add_texcoord();
+			vertex_format_add_normal();
+		}
+		format = vertex_format_end();
 	}
-	return vertex_format_end();
+	return format;
 }
 
 /// @function meshb_Begin()

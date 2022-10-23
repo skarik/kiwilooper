@@ -1,11 +1,10 @@
 {
-  "type": 1,
-  "parent": {
-    "name": "Shaders",
-    "path": "folders/Shaders.yy",
-  },
+  "resourceType": "GMShader",
   "resourceVersion": "1.0",
   "name": "sh_unlitBillboard",
-  "tags": [],
-  "resourceType": "GMShader",
+  "type": 1,
+  "parent": {
+    "name": "Unlit Forward",
+    "path": "folders/Shaders/Unlit Forward.yy",
+  },
 }

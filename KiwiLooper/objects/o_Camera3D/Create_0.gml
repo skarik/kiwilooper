@@ -19,6 +19,10 @@ depth = -10;
 m_viewprojection = matrix_build_identity();
 m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
 
+// TODO: fix this properly
+m_matrixView = matrix_build_identity();
+m_matrixProjection = matrix_build_identity();
+
 m_viewForward = [1, 0, 0];
 m_viewUp = [0, 0, 1];
 

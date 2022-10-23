@@ -9,17 +9,31 @@ function BBox3(n_center, n_extents) constructor
 	
 	static getMin = function()
 	{
+		gml_pragma("forceinline");
 		return center.subtract(extents);
 	}
 	static getMax = function()
 	{
+		gml_pragma("forceinline");
 		return center.add(extents);
+	}
+	
+	static overlaps = function(right)
+	{
+		gml_pragma("forceinline");
+		return (center.x - extents.x <= right.center.x + right.extents.x
+			&& center.x + extents.x >= right.center.x - right.extents.x
+			&& center.y - extents.y <= right.center.y + right.extents.y
+			&& center.y + extents.y >= right.center.y - right.extents.y
+			&& center.z - extents.z <= right.center.z + right.extents.z
+			&& center.z + extents.z >= right.center.z - right.extents.z);
 	}
 }
 
 /// @function BBox3FromMinMax(min, max)
 function BBox3FromMinMax(n_min, n_max)
 {
+	gml_pragma("forceinline");
 	return new BBox3(n_min.add(n_max).multiply(0.5), n_max.subtract(n_min).multiply(0.5));
 }
 
@@ -33,14 +47,17 @@ function BBox2(n_center, n_extents) constructor
 	
 	static getMin = function()
 	{
+		gml_pragma("forceinline");
 		return center.subtract(extents);
 	}
 	static getMax = function()
 	{
+		gml_pragma("forceinline");
 		return center.add(extents);
 	}
 	static contains = function(x, y)
 	{
+		gml_pragma("forceinline");
 		return point_in_rectangle(
 			x, y,
 			n_center.x - n_extents.x, n_center.y - n_extents.y,
@@ -51,6 +68,7 @@ function BBox2(n_center, n_extents) constructor
 /// @function BBox2FromMinMax(min, max)
 function BBox2FromMinMax(n_min, n_max)
 {
+	gml_pragma("forceinline");
 	return new BBox2(n_min.add(n_max).multiply(0.5), n_max.subtract(n_min).multiply(0.5));
 }
 
@@ -65,6 +83,7 @@ function Rect2(n_min, n_max) constructor
 	
 	static contains = function(x, y)
 	{
+		gml_pragma("forceinline");
 		return point_in_rectangle(
 			x, y,
 			m_min.x, m_min.y,
@@ -73,6 +92,7 @@ function Rect2(n_min, n_max) constructor
 	
 	static contains2 = function(vec)
 	{
+		gml_pragma("forceinline");
 		return point_in_rectangle(
 			vec.x, vec.y,
 			m_min.x, m_min.y,
@@ -81,6 +101,7 @@ function Rect2(n_min, n_max) constructor
 	
 	static expand1Self = function(dist)
 	{
+		gml_pragma("forceinline");
 		m_min.x -= dist;
 		m_min.y -= dist;
 		m_max.x += dist;
@@ -92,5 +113,6 @@ function Rect2(n_min, n_max) constructor
 /// @function Rect2FromMinSize(min, size)
 function Rect2FromMinSize(n_min, n_size)
 {
+	gml_pragma("forceinline");
 	return new Rect2(n_min, n_min.add(n_size));
 }

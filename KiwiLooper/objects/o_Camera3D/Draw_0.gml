@@ -40,6 +40,9 @@ surface_set_target(buffer_scene3d);
 	m_viewprojection = matrix_multiply(mat_view, mat_projection);
 	m_viewprojectionInverse = CE_MatrixClone(m_viewprojection);
 	CE_MatrixInverse(m_viewprojectionInverse);
+	
+	m_matrixView = mat_view;
+	m_matrixProjection = mat_projection;
 
 	// enable depth testing
 	gpu_set_ztestenable(true);
