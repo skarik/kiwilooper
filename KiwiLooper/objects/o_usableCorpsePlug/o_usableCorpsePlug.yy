@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_usableCorpsePlug",
   "spriteId": {
     "name": "spr_metalPlug",
     "path": "sprites/spr_metalPlug/spr_metalPlug.yy",
@@ -26,16 +29,12 @@
   "physicsShapePoints": [],
   "eventList": [],
   "properties": [
-    {"varType":5,"value":"noone","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],"resourceVersion":"1.0","name":"m_targetLively","tags":[],"resourceType":"GMObjectProperty",},
-    {"varType":3,"value":"True","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],"resourceVersion":"1.0","name":"triggerOnPlug","tags":[],"resourceType":"GMObjectProperty",},
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"m_targetLively","varType":5,"value":"noone","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],},
+    {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"triggerOnPlug","varType":3,"value":"True","rangeEnabled":false,"rangeMin":0.0,"rangeMax":10.0,"listItems":[],"multiselect":false,"filters":[],},
   ],
   "overriddenProperties": [],
   "parent": {
     "name": "Lively Usables",
     "path": "folders/Objects/Game/Lively Usables.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_usableCorpsePlug",
-  "tags": [],
-  "resourceType": "GMObject",
 }

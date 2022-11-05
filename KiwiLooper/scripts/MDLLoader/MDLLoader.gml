@@ -438,7 +438,10 @@ function AMDLFileParser() constructor
 				gpu_set_blendenable(true);
 				surface_reset_target();
 			
-				m_textures[0] = sprite_create_from_surface(temp_canvas, 0, 0, m_loader.m_header.skinwidth,  m_loader.m_header.skinheight, false, false, 0, 0);
+				static mdl_texture_count = 0;
+				var new_sprite = sprite_create_from_surface(temp_canvas, 0, 0, m_loader.m_header.skinwidth,  m_loader.m_header.skinheight, false, false, 0, 0);
+				m_textures[0] = ResourceAddTexture("MDLTEX"+string(mdl_texture_count++), new_sprite);
+				ResourceAddReference(loaded_texture); // Add ref until we're done with it.
 			
 				surface_free(temp_canvas);
 			}

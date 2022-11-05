@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_playerFootstepSplatter",
   "spriteId": {
     "name": "sfx_splatterBloodstep0",
     "path": "sprites/sfx_splatterBloodstep0/sfx_splatterBloodstep0.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -30,8 +34,4 @@
     "name": "Doodads",
     "path": "folders/Objects/Game/Doodads.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_playerFootstepSplatter",
-  "tags": [],
-  "resourceType": "GMObject",
 }

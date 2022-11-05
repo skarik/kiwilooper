@@ -1,12 +1,11 @@
 {
+  "resourceType": "GMScript",
+  "resourceVersion": "1.0",
+  "name": "PlayerControl_SD",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
     "name": "Character",
     "path": "folders/Scripts/Game/Character AI/Character.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "PlayerControl_SD",
-  "tags": [],
-  "resourceType": "GMScript",
 }

@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMTileSet",
+  "resourceVersion": "1.0",
+  "name": "tileset_lab0",
   "spriteId": {
     "name": "stl_lab0",
     "path": "sprites/stl_lab0/stl_lab0.yy",
@@ -291,8 +294,4 @@
     "name": "Tile Sets",
     "path": "folders/Tile Sets.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "tileset_lab0",
-  "tags": [],
-  "resourceType": "GMTileSet",
 }

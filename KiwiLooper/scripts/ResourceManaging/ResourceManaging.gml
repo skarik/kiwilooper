@@ -34,6 +34,9 @@ function ResourceGetType(filepath)
 	return kResourceTypeInvalid;
 }
 
+// Define macros for common resource information
+#macro INTERNAL_ResourceHousekeeping references: 0, last_used: Time.time
+
 function ResourceLoadModel(filepath)
 {
 	var filepath_indexer = string_lower(filepath);
@@ -94,7 +97,7 @@ function ResourceLoadModel(filepath)
 		var mesh_frames = array_create(frameCount);
 		
 		// create render meshes from the data
-		var uvs = sprite_get_uvs(mesh_textures[0], 0);
+		var uvs = sprite_get_uvs(mesh_textures[0].sprite, 0);
 		for (var iframe = 0; iframe < frameCount; ++iframe)
 		{
 			var frame = parser.GetFrames()[iframe];
@@ -122,6 +125,8 @@ function ResourceLoadModel(filepath)
 		var new_model_resource = {
 			frames: mesh_frames,
 			textures: mesh_textures,
+			INTERNAL_ResourceHousekeeping,
+			type: resourceType,
 		};
 		
 		// Save into model listing
@@ -153,7 +158,9 @@ function ResourceLoadTexture(filepath, target_width, target_height)
 	{
 		var new_texture_resource = {
 			sprite:	new_sprite,
-			texture: sprite_get_texture(new_sprite, 0),
+			texture_ptr: sprite_get_texture(new_sprite, 0),
+			INTERNAL_ResourceHousekeeping,
+			type: kResourceTypePNG,
 		};
 	
 		// Save into texture listing
@@ -163,4 +170,50 @@ function ResourceLoadTexture(filepath, target_width, target_height)
 	}
 	
 	return undefined;
+}
+
+function ResourceAddTexture(filepath_indentifier, target_sprite)
+{
+	var filepath_indexer = string_lower(filepath_indentifier);
+	
+	// Check if there's a name conflict
+	var existing_resource = global.resourceMap[?filepath_indexer];
+	if (!is_undefined(existing_resource))
+	{
+		show_error("Name collision in the resource system.", false);
+	}
+	
+	// Save the texture as a sprite
+	{
+		var new_texture_resource = {
+			sprite:	target_sprite,
+			texture_ptr: sprite_get_texture(target_sprite, 0),
+			INTERNAL_ResourceHousekeeping,
+			type: kResourceTypePNG,
+		};
+	
+		// Save into texture listing
+		global.resourceMap[?filepath_indexer] = new_texture_resource;
+		
+		return new_texture_resource;
+	}
+}
+
+///@function ResourceAddReference(resource)
+///@desc Incremenets refcount of resource. Remember to pair properly with ResourceRemoveReference!
+function ResourceAddReference(resource)
+{
+	resource.references += 1;
+	resource.last_used = Time.time;
+}
+///@function ResourceRemoveReference(resource)
+///@desc Decrements refcount of resource.
+function ResourceRemoveReference(resource)
+{
+	resource.references -= 1;
+	// Update the "no longer used" time to NOW.
+	if (resource.references <= 0)
+	{
+		resource.last_used = Time.time;
+	}
 }

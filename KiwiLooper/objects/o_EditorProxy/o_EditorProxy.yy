@@ -1,7 +1,11 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_EditorProxy",
   "spriteId": null,
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": null,
@@ -24,8 +28,4 @@
     "name": "Tests",
     "path": "folders/Objects/Editor/Tests.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_EditorProxy",
-  "tags": [],
-  "resourceType": "GMObject",
 }

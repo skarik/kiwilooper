@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_effectPowerOverlay",
   "spriteId": {
     "name": "sfx_metalPowerOverlay",
     "path": "sprites/sfx_metalPowerOverlay/sfx_metalPowerOverlay.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,8 +28,8 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_effectPowerOverlay","path":"objects/o_effectPowerOverlay/o_effectPowerOverlay.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_effectPowerOverlay","path":"objects/o_effectPowerOverlay/o_effectPowerOverlay.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -33,8 +37,4 @@
     "name": "Effects",
     "path": "folders/Objects/Game/Effects.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_effectPowerOverlay",
-  "tags": [],
-  "resourceType": "GMObject",
 }

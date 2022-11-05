@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_fxKiwiWrench",
   "spriteId": {
     "name": "spr_kiwiAttackAttachment",
     "path": "sprites/spr_kiwiAttackAttachment/spr_kiwiAttackAttachment.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,7 +28,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_fxKiwiWrench","path":"objects/o_fxKiwiWrench/o_fxKiwiWrench.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -32,8 +36,4 @@
     "name": "Kiwi FX",
     "path": "folders/Objects/Game/Character/Kiwi FX.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_fxKiwiWrench",
-  "tags": [],
-  "resourceType": "GMObject",
 }

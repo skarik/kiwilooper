@@ -1,7 +1,11 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "_dummy",
   "spriteId": null,
   "solid": false,
   "visible": false,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": null,
@@ -24,8 +28,4 @@
     "name": "Backend",
     "path": "folders/Objects/Backend.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "_dummy",
-  "tags": [],
-  "resourceType": "GMObject",
 }

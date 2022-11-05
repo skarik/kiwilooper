@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_oilSplatter",
   "spriteId": {
     "name": "sfx_splatterOil0",
     "path": "sprites/sfx_splatterOil0/sfx_splatterOil0.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -30,8 +34,4 @@
     "name": "Doodads",
     "path": "folders/Objects/Game/Doodads.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_oilSplatter",
-  "tags": [],
-  "resourceType": "GMObject",
 }

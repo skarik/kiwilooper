@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "debugOut",
+  "name": "debugOutputTools",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

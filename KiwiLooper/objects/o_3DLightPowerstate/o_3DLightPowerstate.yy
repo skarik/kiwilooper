@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_3DLightPowerstate",
   "spriteId": {
     "name": "ssy_light48",
     "path": "sprites/ssy_light48/ssy_light48.yy",
@@ -25,18 +28,14 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [
-    {"propertyId":{"name":"intensity","path":"objects/ob_3DLight/ob_3DLight.yy",},"objectId":{"name":"ob_3DLight","path":"objects/ob_3DLight/ob_3DLight.yy",},"value":"0","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"intensity","path":"objects/ob_3DLight/ob_3DLight.yy",},"objectId":{"name":"ob_3DLight","path":"objects/ob_3DLight/ob_3DLight.yy",},"value":"0",},
   ],
   "parent": {
     "name": "Lighting",
     "path": "folders/Objects/Game/Lighting.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_3DLightPowerstate",
-  "tags": [],
-  "resourceType": "GMObject",
 }

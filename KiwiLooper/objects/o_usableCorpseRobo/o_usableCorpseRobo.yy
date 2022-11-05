@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_usableCorpseRobo",
   "spriteId": {
     "name": "spr_roboDead",
     "path": "sprites/spr_roboDead/spr_roboDead.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": {
     "name": "sco_10x10_center",
     "path": "sprites/sco_10x10_center/sco_10x10_center.yy",
@@ -33,8 +37,4 @@
     "name": "Lively Usables",
     "path": "folders/Objects/Game/Lively Usables.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_usableCorpseRobo",
-  "tags": [],
-  "resourceType": "GMObject",
 }

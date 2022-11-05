@@ -1,8 +1,12 @@
 {
+  "resourceType": "GMFont",
+  "resourceVersion": "1.0",
+  "name": "f_DeValencia20",
   "hinting": 0,
   "glyphOperations": 4,
   "interpreter": 0,
   "pointRounding": 1,
+  "applyKerning": 0,
   "fontName": "De Valencia",
   "styleName": "Regular",
   "size": 20.0,
@@ -20,6 +24,7 @@
     "path": "texturegroups/Default",
   },
   "ascenderOffset": 1,
+  "ascender": 0,
   "glyphs": {
     "32": {"x":2,"y":2,"w":11,"h":33,"character":32,"shift":11,"offset":0,},
     "33": {"x":251,"y":37,"w":1,"h":33,"character":33,"shift":12,"offset":6,},
@@ -130,8 +135,4 @@
     "name": "Fonts",
     "path": "folders/Fonts.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "f_DeValencia20",
-  "tags": [],
-  "resourceType": "GMFont",
 }

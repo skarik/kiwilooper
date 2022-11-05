@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_audioAmbientPowerstateDuck",
   "spriteId": {
     "name": "ssy_ambientAudio",
     "path": "sprites/ssy_ambientAudio/ssy_ambientAudio.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,8 +28,8 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_audioAmbientPowerstateDuck","path":"objects/o_audioAmbientPowerstateDuck/o_audioAmbientPowerstateDuck.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_audioAmbientPowerstateDuck","path":"objects/o_audioAmbientPowerstateDuck/o_audioAmbientPowerstateDuck.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -33,8 +37,4 @@
     "name": "Effect Audio",
     "path": "folders/Objects/Game/Effect Audio.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_audioAmbientPowerstateDuck",
-  "tags": [],
-  "resourceType": "GMObject",
 }

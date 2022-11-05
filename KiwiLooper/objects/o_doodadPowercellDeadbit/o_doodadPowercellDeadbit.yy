@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_doodadPowercellDeadbit",
   "spriteId": {
     "name": "spr_powercellCorpse",
     "path": "sprites/spr_powercellCorpse/spr_powercellCorpse.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,7 +28,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_doodadPowercellDeadbit","path":"objects/o_doodadPowercellDeadbit/o_doodadPowercellDeadbit.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -32,8 +36,4 @@
     "name": "Doodads",
     "path": "folders/Objects/Game/Doodads.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_doodadPowercellDeadbit",
-  "tags": [],
-  "resourceType": "GMObject",
 }

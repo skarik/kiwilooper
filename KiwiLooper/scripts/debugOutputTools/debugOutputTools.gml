@@ -1,6 +1,5 @@
-function debugOut(argument0)
+function debugOut(str)
 {
-	var str = argument0;
 	var source = id;
 	with (Debug)
 	{
@@ -13,6 +12,16 @@ function debugOut(argument0)
 		// todo, use debug_get_callstack(2)[1]
     
 	    debug_line[debug_line_count] = "[" + object_get_name(source.object_index) + "] " + str;
-	    debug_line_count++   
+	    debug_line_count++
 	}
+}
+
+#macro kLogOutput 0
+#macro kLogWarning 1
+#macro kLogError 2
+
+/// @function debugLog(type, str)
+function debugLog(type, str)
+{
+	debugOut(str); // todo: unify everything for easier debugging later
 }

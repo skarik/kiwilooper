@@ -1,10 +1,14 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "o_uiwExitText",
   "spriteId": {
     "name": "ssy_effect",
     "path": "sprites/ssy_effect/ssy_effect.yy",
   },
   "solid": false,
   "visible": true,
+  "managed": true,
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
@@ -24,7 +28,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_uiwExitText","path":"objects/o_uiwExitText/o_uiwExitText.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -32,8 +36,4 @@
     "name": "UI World",
     "path": "folders/Objects/Game/UI World.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "o_uiwExitText",
-  "tags": [],
-  "resourceType": "GMObject",
 }

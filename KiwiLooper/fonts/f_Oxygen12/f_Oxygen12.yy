@@ -1,8 +1,12 @@
 {
+  "resourceType": "GMFont",
+  "resourceVersion": "1.0",
+  "name": "f_Oxygen12",
   "hinting": 1,
   "glyphOperations": 4,
   "interpreter": 0,
   "pointRounding": 0,
+  "applyKerning": 0,
   "fontName": "Oxygen Mono",
   "styleName": "Regular",
   "size": 12.0,
@@ -20,6 +24,7 @@
     "path": "texturegroups/Default",
   },
   "ascenderOffset": 0,
+  "ascender": 0,
   "glyphs": {
     "32": {"x":2,"y":2,"w":10,"h":22,"character":32,"shift":10,"offset":0,},
     "33": {"x":123,"y":50,"w":2,"h":22,"character":33,"shift":10,"offset":4,},
@@ -131,8 +136,4 @@
     "name": "Fonts",
     "path": "folders/Fonts.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "f_Oxygen12",
-  "tags": [],
-  "resourceType": "GMFont",
 }

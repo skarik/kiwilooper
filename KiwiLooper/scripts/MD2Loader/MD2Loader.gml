@@ -305,6 +305,7 @@ function AMD2FileParser() constructor
 	/// @returns {Boolean} success at populating data
 	static ReadTextures = function()
 	{
+		// TODO: ensure we're only reading once, so we don't have dangling texture references.
 		if (m_loader.ReadSkins())
 		{
 			// Skins in MD2 are just file names - which makes loading pretty much trivial
@@ -315,7 +316,8 @@ function AMD2FileParser() constructor
 				var loaded_texture = ResourceLoadTexture(m_loader.m_skins[i], m_loader.m_header.skinwidth, m_loader.m_header.skinheight);
 				if (!is_undefined(loaded_texture))
 				{
-					m_textures[i] = loaded_texture.sprite;
+					m_textures[i] = loaded_texture;
+					ResourceAddReference(loaded_texture); // Add ref until we're done with it.
 				}
 			}
 			return true;
