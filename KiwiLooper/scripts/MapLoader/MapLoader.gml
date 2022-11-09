@@ -3,6 +3,7 @@
 #macro kMapHeaderWord_Entities	0x0004
 #macro kMapHeaderWord_Splats	0x0008
 #macro kMapHeaderWord_Editor	0x0010
+#macro kMapHeaderWord_Ai		0x0020
 
 function MapFreeFiledata(filedata)
 {
@@ -35,6 +36,12 @@ function MapFreeFiledata(filedata)
 		buffer_delete(filedata.blob_editor);
 		filedata.blob_editor = null;
 	}
+	
+	if (filedata.blob_ai != null)
+	{
+		buffer_delete(filedata.blob_ai);
+		filedata.blob_ai = null;
+	}
 }
 
 function AMapFiledata() constructor
@@ -44,6 +51,7 @@ function AMapFiledata() constructor
 	blob_entities = null;
 	blob_splats = null;
 	blob_editor = null;
+	blob_ai = null;
 }
 
 function MapLoadFiledata(filepath)
@@ -121,6 +129,10 @@ function MapLoadFiledata(filepath)
 			filedata.blob_editor = blob;
 			break;
 			
+		case kMapHeaderWord_Ai:
+			filedata.blob_ai = blob;
+			break;
+			
 		default:
 			assert(false); // Should never get here
 		}
@@ -175,7 +187,8 @@ function MapSaveFiledata(filepath, filedata)
 		+ GetSize(filedata.blob_props)
 		+ GetSize(filedata.blob_entities)
 		+ GetSize(filedata.blob_splats)
-		+ GetSize(filedata.blob_editor);
+		+ GetSize(filedata.blob_editor)
+		+ GetSize(filedata.blob_ai); // !!!!!!!!!!!!!REMINDER: UPDATE THIS WHEN THE NUMBER OF BLOBS ARE CHANGED
 	
 	// Create a slow temp buffer for writing
 	var outbuffer = buffer_create(total_size, buffer_fixed, 1);
@@ -200,6 +213,10 @@ function MapSaveFiledata(filepath, filedata)
 	if (filedata.blob_editor != null)
 	{
 		WriteBlob(outbuffer, filedata.blob_editor, kMapHeaderWord_Editor);
+	}
+	if (filedata.blob_ai != null)
+	{
+		WriteBlob(outbuffer, filedata.blob_ai, kMapHeaderWord_Ai);
 	}
 	
 	// Save the information

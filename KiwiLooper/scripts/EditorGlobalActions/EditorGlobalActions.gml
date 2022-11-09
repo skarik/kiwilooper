@@ -291,3 +291,40 @@ function EditorGlobalTestMap()
 	// Go to the new map
 	Game_LoadMap(temp_mapname, true);
 }
+
+//=============================================================================
+
+function EditorGlobalRebuildAI()
+{
+	var ai_map = EditorGet().m_aimap;
+	var entityInstanceList = EditorGet().m_entityInstList;
+	
+	// Let's roll.
+	
+	// Clear out all the nodes in the map
+	ai_map.nodes = array_create(0);
+	
+	// Loop through all the ents and create nodes
+	for (var entIndex = 0; entIndex < entityInstanceList.GetEntityCount(); ++entIndex)
+	{
+		var instance = entityInstanceList.GetEntity(entIndex);
+		var ent = instance.entity;
+		
+		if (ent.name == "ai_node")
+		{
+			var node = new AAiNode();
+			node.position.copyFrom(instance);
+			node.rotation.x = instance.xrotation;
+			node.rotation.y = instance.yrotation;
+			node.rotation.z = instance.zrotation;
+			
+			array_push(ai_map.nodes, node);
+		}
+	}
+	
+	// Rebuild the node map now that we've set it up with a bunch of unconnected nodes:
+	AiRebuildPathing(ai_map);
+	
+	// And we're okay now!
+	ai_map.bNeedsRebuild = false;
+}

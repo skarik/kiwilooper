@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Game",
-    "path": "folders/Scripts/Game.yy",
+    "name": "Prop, Splats, Tiles",
+    "path": "folders/Scripts/Game/Prop, Splats, Tiles.yy",
   },
 }

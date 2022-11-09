@@ -521,7 +521,7 @@ function _EntityInfoInit()
 			objectIndex: o_livelyRoomState,
 			
 			gizmoSprite: suie_gizmoEnts,
-			gizmoIndex: 4,
+			gizmoIndex: 12,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			
 			hullsize: 8,
@@ -530,6 +530,35 @@ function _EntityInfoInit()
 			[
 				["", kValueTypePosition],
 			],
+		},
+		
+		// AI stuff:
+		{
+			name: "ai_node",
+			parent: "",
+			objectIndex: _dummy,
+			proxy: kProxyTypeDefault,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 10,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshWireCube,
+				color:	c_yellow,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+			},
+			
+			hullsize: 16,
+			
+			properties:
+			[
+				["", kValueTypePosition],
+				["", kValueTypeRotation],
+				["", kValueTypeScale],
+			]
 		},
 		
 		// Usables:

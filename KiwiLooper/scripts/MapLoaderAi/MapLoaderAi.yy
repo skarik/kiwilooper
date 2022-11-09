@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "SplatInformation",
+  "name": "MapLoaderAi",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Prop, Splats, Tiles",
-    "path": "folders/Scripts/Game/Prop, Splats, Tiles.yy",
+    "name": "Loader",
+    "path": "folders/Scripts/Game/Entities And External Maps/Loader.yy",
   },
 }

@@ -105,3 +105,4 @@ EditorClipboardSetup();
 EditorTileMapSetup();
 EditorPropAndSplatSetup();
 m_entityInstList = new AEntityList();
+m_aimap = new AMapAiInfo();
