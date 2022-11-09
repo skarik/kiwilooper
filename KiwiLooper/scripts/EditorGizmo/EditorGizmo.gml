@@ -72,6 +72,8 @@ function EditorGizmoSetup()
 		m_entRenderObjects = other.EditorGizmoGet(AEditorGizmoEntityRenderObjects);
 		m_testMouse = other.EditorGizmoGet(AEditorGizmoSelectBox3D);
 		m_grid = other.EditorGizmoGet(AEditorGizmoGrid);
+		
+		m_aiMapRender = other.EditorGizmoGet(AEditorGizmoAiMap);
 	}
 	
 	m_gizmoObject.m_renderEvent = function()
@@ -94,14 +96,23 @@ function EditorGizmoUpdate()
 {
 	with (m_gizmoObject)
 	{
-		// Nothing right now.
-		
+		// Update test mouse position to know working position
 		m_testMouse.SetVisible();
 		m_testMouse.SetEnabled();
 		m_testMouse.m_color = merge_color(c_gray, c_blue, 0.25);
 		m_testMouse.m_alpha = 0.5;
 		m_testMouse.m_min.set(other.toolWorldX - 4, other.toolWorldY - 4, other.toolWorldZ - 4);
-		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4);
+		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4); // TODO: Maybe remove this on world or make optional? is personally distracting
+		
+		// Toggle based on view options
+		if (other.m_state.view.showmask & kEditorViewMask_NodeLinks)
+		{	// todo: maybe make this per-view (if we ever make this per-view editor lmao)
+			m_aiMapRender.SetVisible();
+		}
+		else
+		{
+			m_aiMapRender.SetInvisible();
+		}
 		
 		// Grid update:
 		

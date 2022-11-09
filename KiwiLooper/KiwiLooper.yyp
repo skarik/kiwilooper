@@ -50,6 +50,7 @@
     {"id":{"name":"instance_get_bottom","path":"scripts/instance_get_bottom/instance_get_bottom.yy",},"order":1,},
     {"id":{"name":"EditorPropMap","path":"scripts/EditorPropMap/EditorPropMap.yy",},"order":10,},
     {"id":{"name":"settingsStartupSave","path":"scripts/settingsStartupSave/settingsStartupSave.yy",},"order":18,},
+    {"id":{"name":"EditorGizmoAI","path":"scripts/EditorGizmoAI/EditorGizmoAI.yy",},"order":6,},
     {"id":{"name":"controlSettingGet","path":"scripts/controlSettingGet/controlSettingGet.yy",},"order":1,},
     {"id":{"name":"spr_roboWalk","path":"sprites/spr_roboWalk/spr_roboWalk.yy",},"order":4,},
     {"id":{"name":"quintInOut","path":"scripts/quintInOut/quintInOut.yy",},"order":6,},

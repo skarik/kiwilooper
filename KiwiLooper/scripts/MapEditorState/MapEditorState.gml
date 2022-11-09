@@ -1,3 +1,10 @@
+#macro kEditorViewMode_Lit		0
+#macro kEditorViewMode_Textured	1
+
+#macro kEditorViewMask_GizmoIcons	0x0001
+#macro kEditorViewMask_NodeLinks	0x0002
+
+
 /// @function AMapEditorState() constructor
 function AMapEditorState() constructor
 {
@@ -11,6 +18,10 @@ function AMapEditorState() constructor
 		fp_z: 0,
 	};
 	
+	view = {
+		mode: kEditorViewMode_Lit,
+		showmask: kEditorViewMask_GizmoIcons | kEditorViewMask_NodeLinks,
+	};
 	
 	static serializeBuffer = function(version, buffer, io_ser)
 	{

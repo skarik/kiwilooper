@@ -6,8 +6,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 	y = 0;
 	z = 0;
 	
-	m_mesh = meshb_Begin();
-	meshb_End(m_mesh);
+	m_mesh = meshb_CreateEmptyMesh();
 	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
@@ -40,7 +39,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 		// Add all non-proxy entities:
 		for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient;
+			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
 			entTypeInfo = entlistIterationGet(entTypeIndex);
 			entType			= entTypeInfo.objectIndex;
 			entSprite		= entTypeInfo.gizmoSprite;
@@ -48,6 +47,9 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			entGizmoType	= entTypeInfo.gizmoDrawmode;
 			entHullsize		= entTypeInfo.hullsize;
 			entOrient		= entTypeInfo.gizmoOrigin;
+			entProxyType	= entTypeInfo.proxy;
+			
+			if (entProxyType != kProxyTypeNone) continue; // Skip proxies
 			
 			// Get sprite info for this type
 			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
@@ -85,7 +87,7 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			var ent = instance_find(m_editor.OProxyClass, entIndex);
 			
 			// Get all the ent info now.
-			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient;
+			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
 			entTypeInfo = ent.entity;
 			entType			= entTypeInfo.objectIndex;
 			entSprite		= entTypeInfo.gizmoSprite;
@@ -93,6 +95,9 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 			entGizmoType	= entTypeInfo.gizmoDrawmode;
 			entHullsize		= entTypeInfo.hullsize;
 			entOrient		= entTypeInfo.gizmoOrigin;
+			entProxyType	= entTypeInfo.proxy;
+			
+			if (entProxyType == kProxyTypeNone) continue; // Skip non-proxies
 			
 			// Get sprite info for this type
 			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;

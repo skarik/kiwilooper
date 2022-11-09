@@ -151,11 +151,26 @@ function AAiNode() constructor
 	}
 }
 
+/// @function AiRebuildPathing(ai_map)
 function AiRebuildPathing(ai_map)
 {
-	// Loop through every node & walk a tree?
-	
-	// nah, loop thru every node, do collision super-cool-like prolly
+	for (var i_startNode = 0; i_startNode < array_length(ai_map.nodes); ++i_startNode)
+	{
+		for (var i_endNode = 0; i_endNode < array_length(ai_map.nodes); ++i_endNode)
+		{
+			if (i_startNode == i_endNode) continue;
+			
+			var node_start = ai_map.nodes[i_startNode];
+			var node_target = ai_map.nodes[i_endNode];
+			
+			var pathResult = AiCanPathNodes(node_start, node_target);
+			if (pathResult)
+			{
+				var new_connection = node_start.addConnection(node_target);
+				// TODO: set up connection specifics
+			}
+		}
+	}
 }
 
 /// @function AiCanPathNodes(start_node, end_node)
@@ -164,7 +179,11 @@ function AiCanPathNodes(start_node, end_node)
 {
 	var pathResult = {bPathable: false, bGroundMovement: false, bGroundFall: false};
 	
-	// TODO: raytrace paths
+	if (!raycast4_tilemap(start_node.position, start_node.position.subtract(end_node.position).normal()))
+	{
+		pathResult.bPathable = true;
+		// TODO: check floor distance along the path
+	}
 	
 	return pathResult;
 }
