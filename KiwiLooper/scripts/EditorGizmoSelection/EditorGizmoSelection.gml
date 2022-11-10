@@ -519,7 +519,7 @@ function AEditorGizmoMultiSelectBox3D() : AEditorGizmoSelectBox3D() constructor
 				{
 					m_min = m_mins[i];
 					m_max = m_maxes[i];
-					if (is_undefined(m_trses[i]))
+					if (is_undefined(m_trses[i]) || !is_array(m_trses[i]))
 					{
 						AddCube(kBorderExpand);
 					}
