@@ -12,7 +12,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 	{
 		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient, entProxyType;
 			if (entTypeIndex != entlistIterationLength())
 			{
 				entTypeInfo		= entlistIterationGet(entTypeIndex);
@@ -20,6 +20,10 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 				entHhsz			= entTypeInfo.hullsize * 0.5;
 				entGizmoType	= entTypeInfo.gizmoDrawmode;
 				entOrient		= entTypeInfo.gizmoOrigin;
+				entProxyType	= entTypeInfo.proxy;
+				
+				// Skip proxies:
+				if (entProxyType != kProxyTypeNone) continue;
 			}
 			// Check for proxies:
 			else
@@ -429,7 +433,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Run through the ent table
 		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient;
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient, entProxyType;
 			if (entTypeIndex != entlistIterationLength())
 			{
 				entTypeInfo		= entlistIterationGet(entTypeIndex);
@@ -437,6 +441,10 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				entHhsz			= entTypeInfo.hullsize * 0.5;
 				entGizmoType	= entTypeInfo.gizmoDrawmode;
 				entOrient		= entTypeInfo.gizmoOrigin;
+				entProxyType	= entTypeInfo.proxy;
+				
+				// Skip proxies:
+				if (entProxyType != kProxyTypeNone) continue;
 			}
 			// Check for proxies:
 			else
