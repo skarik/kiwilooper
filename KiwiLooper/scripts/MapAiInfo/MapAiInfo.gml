@@ -40,8 +40,8 @@ function AMapAiInfo() constructor
 				for (var iConnection = 0; iConnection < array_length(flat_connections); ++iConnection)
 				{
 					buffer_write(buffer, buffer_s16, flat_connections[iConnection].index);
-					buffer_write(buffer, buffer_s8, flat_connections[iConnection].connection.size);
-					buffer_write(buffer, buffer_bool, flat_connections[iConnection].connection.dynamic);
+					buffer_write(buffer, buffer_s8, flat_connections[iConnection].source.size);
+					buffer_write(buffer, buffer_bool, flat_connections[iConnection].source.dynamic);
 					buffer_write(buffer, buffer_bool, false); // Reserved
 					buffer_write(buffer, buffer_bool, false); // Reserved
 					buffer_write(buffer, buffer_bool, false); // Reserved
@@ -151,8 +151,8 @@ function AAiNode() constructor
 	}
 }
 
-/// @function AiRebuildPathing(ai_map)
-function AiRebuildPathing(ai_map)
+/// @function AiRebuildPathing(ai_map, tasker)
+function AiRebuildPathing(ai_map, tasker=null)
 {
 	for (var i_startNode = 0; i_startNode < array_length(ai_map.nodes); ++i_startNode)
 	{
@@ -163,13 +163,32 @@ function AiRebuildPathing(ai_map)
 			var node_start = ai_map.nodes[i_startNode];
 			var node_target = ai_map.nodes[i_endNode];
 			
-			var pathResult = AiCanPathNodes(node_start, node_target);
-			if (pathResult)
+			if (is_struct(tasker))
 			{
-				var new_connection = node_start.addConnection(node_target);
-				// TODO: set up connection specifics
+				tasker.addTask(method(
+					{
+						m_node_start: node_start,
+						m_node_target: node_target,
+					},
+					function(){
+						_AiRebuildPathing_Internal(m_node_start, m_node_target);
+					}
+					));
+			}
+			else
+			{
+				_AiRebuildPathing_Internal(node_start, node_target);
 			}
 		}
+	}
+}
+function _AiRebuildPathing_Internal(node_start, node_target)
+{
+	var pathResult = AiCanPathNodes(node_start, node_target);
+	if (pathResult.bPathable)
+	{
+		var new_connection = node_start.addConnection(node_target);
+		// TODO: set up connection specifics
 	}
 }
 
@@ -179,9 +198,15 @@ function AiCanPathNodes(start_node, end_node)
 {
 	var pathResult = {bPathable: false, bGroundMovement: false, bGroundFall: false};
 	
-	if (!raycast4_tilemap(start_node.position, start_node.position.subtract(end_node.position).normal()))
+	var cast_delta = end_node.position.subtract(start_node.position);
+	var cast_delta_len = cast_delta.magnitude();
+	var cast_delta_dir = cast_delta.divide(cast_delta_len);
+	
+	var bWasHit = raycast4_tilemap(start_node.position, cast_delta_dir);
+	if (!bWasHit || (bWasHit && raycast4_get_hit_distance() >= cast_delta_len))
 	{
 		pathResult.bPathable = true;
+	
 		// TODO: check floor distance along the path
 	}
 	

@@ -106,3 +106,7 @@ EditorTileMapSetup();
 EditorPropAndSplatSetup();
 m_entityInstList = new AEntityList();
 m_aimap = new AMapAiInfo();
+
+
+m_taskRebuildAi = null;
+m_taskRebuildLighting = null;

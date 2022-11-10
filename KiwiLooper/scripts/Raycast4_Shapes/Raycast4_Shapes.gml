@@ -105,6 +105,14 @@ function raycast4_box_rotated(boxCenter, boxExtents, preRotation, frontfaces, ra
 	return l_result;
 }
 
+function _raycast4_inside_box(point, minAB, maxAB)
+{
+	gml_pragma("forceinline");
+	
+	return point.x >= minAB.x && point.y >= minAB.y && point.z >= minAB.z
+		&& point.x <= maxAB.x && point.y <= maxAB.y && point.z <= maxAB.z
+}
+
 /// @function raycast4_tilemap(rayOrigin, rayDir)
 /// @desc Performs a raycast against the total tilemap, using AABB collision.
 /// @param {Vector3} rayOrigin
@@ -129,18 +137,23 @@ function raycast4_tilemap(rayOrigin, rayDir)
 			return false;
 		}
 		
-		var l_hitTileset = raycast4_box(l_tilesetMin, l_tilesetMax, rayOrigin, rayDir);
-		
-		if (!l_hitTileset)
+		var l_insideTileset = _raycast4_inside_box(rayOrigin, l_tilesetMin, l_tilesetMax);
+		if (!l_insideTileset)
 		{
-			return false;
+			var l_hitTileset = raycast4_box(l_tilesetMin, l_tilesetMax, rayOrigin, rayDir);
+		
+			if (!l_hitTileset)
+			{
+				return false;
+			}
 		}
 		
-		var l_hitDistanceFront = raycast4_get_hit_distance(); // Save the hit distance so we have a place to start divvying the tiles.
+		var l_hitDistanceFront = l_insideTileset ? 0.0 : raycast4_get_hit_distance(); // Save the hit distance so we have a place to start divvying the tiles.
 		
 		// Check collision with the backside of the box
 		var l_hitTilesetBack = raycast4_box_backside(l_tilesetMin, l_tilesetMax, rayOrigin, rayDir);
-		assert(l_hitTilesetBack);
+		assert(l_hitTilesetBack); // can happen in coplanar cases. TODO: handle properly
+		if (!l_hitTilesetBack) return false;
 		
 		var l_hitDistanceBack = raycast4_get_hit_distance(); // Save hit distance here so we have a place to end the tile divvy.
 		assert(l_hitDistanceFront != l_hitDistanceBack); // remove when ready
@@ -160,7 +173,7 @@ function raycast4_tilemap(rayOrigin, rayDir)
 		// Now loop through every tile, trying to find the minimum distance. We can do a sqr xyz first.
 		var l_minimumDistance = l_hitDistanceBack;//l_hitDistanceBack - l_hitDistanceFront;
 		var l_minimumNormal = global._raycast4_hitnormal;
-		var l_minimumDistanceSqr = sqr(l_minimumDistance);
+		//var l_minimumDistanceSqr = sqr(l_minimumDistance);
 		var l_hasHit = false;
 		
 		for (var ix = l_tileMin.x; ix <= l_tileMax.x; ++ix)

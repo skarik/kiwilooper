@@ -180,6 +180,7 @@ function EditorGlobalSaveMap_Work(filepath)
 	MapSaveEntities(filedata, EditorGet().m_entityInstList);
 	MapSaveSplats(filedata, EditorGet().m_splatmap);
 	MapSaveEditor(filedata, EditorGet().m_state);
+	MapSaveAi(filedata, EditorGet().m_aimap);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -212,6 +213,7 @@ function EditorGlobalLoadMap_Work(filepath)
 	MapLoadEntities(filedata, EditorGet().m_entityInstList);
 	MapLoadSplats(filedata, EditorGet().m_splatmap);
 	MapLoadEditor(filedata, EditorGet().m_state);
+	MapLoadAi(filedata, EditorGet().m_aimap);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
@@ -262,6 +264,9 @@ function EditorGlobalNukeMap_Work()
 		// Clear the splats
 		m_splatmap.Clear();
 		
+		// Clear the ai map
+		m_aimap = new AMapAiInfo();
+		
 		
 		// Now rebuild everything
 		// TODO: Is there a beter way to do this
@@ -296,6 +301,16 @@ function EditorGlobalTestMap()
 
 function EditorGlobalRebuildAI()
 {
+	// Stop any existing ai building task
+	var existing_task = EditorGet().m_taskRebuildAi;
+	if (is_struct(existing_task))
+	{
+		if (!existing_task.isDone())
+		{
+			existing_task.stop();
+		}
+	}
+	
 	var ai_map = EditorGet().m_aimap;
 	var entityInstanceList = EditorGet().m_entityInstList;
 	
@@ -322,9 +337,26 @@ function EditorGlobalRebuildAI()
 		}
 	}
 	
+	var tasker = new ATaskRunner(); // Next step can be super slow, so we need to make a tasker
+	tasker
+		.addTask(method(ai_map,
+			function() {
+				// Immediately mark the ai map as invalid (it should be at this point, but we do so anyways.
+				bNeedsRebuild = true; 
+			}));
+		
 	// Rebuild the node map now that we've set it up with a bunch of unconnected nodes:
-	AiRebuildPathing(ai_map);
+	AiRebuildPathing(ai_map, tasker);
 	
-	// And we're okay now!
-	ai_map.bNeedsRebuild = false;
+	tasker
+		.addTask(method(ai_map,
+			function() {
+				// And we're okay now at the end of it!
+				bNeedsRebuild = false; 
+			}))
+		 // Run the task with 2ms limits to keep the UI responsive
+		.execute(2000);
+		
+	// Save the task in case we need to cancel
+	EditorGet().m_taskRebuildAi = tasker;
 }
