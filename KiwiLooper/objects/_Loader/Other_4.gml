@@ -62,10 +62,10 @@ window_set_position((display_get_width() - Screen.width) / 2.0 + Settings.startu
 					(display_get_height() - Screen.height) / 2.0 + Settings.startup_window_yoffset); // Center the window
 
 // Output some debug info
-debugOut("working_directory: " + working_directory);
-debugOut("program_directory: " + program_directory);
-debugOut("temp_directory: " + temp_directory);
-debugOut("default depth buffer state: " + (surface_get_depth_disable() ? "off" : "on"));
+debugLog(kLogOutput, "working_directory: " + working_directory);
+debugLog(kLogOutput, "program_directory: " + program_directory);
+debugLog(kLogOutput, "temp_directory: " + temp_directory);
+debugLog(kLogOutput, "default depth buffer state: " + (surface_get_depth_disable() ? "off" : "on"));
 
 // Finish and go to next room:
 

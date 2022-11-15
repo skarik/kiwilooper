@@ -70,7 +70,6 @@
     {"id":{"name":"EntityListing","path":"scripts/EntityListing/EntityListing.yy",},"order":0,},
     {"id":{"name":"MDLLoader","path":"scripts/MDLLoader/MDLLoader.yy",},"order":1,},
     {"id":{"name":"ssy_ambientLight","path":"sprites/ssy_ambientLight/ssy_ambientLight.yy",},"order":4,},
-    {"id":{"name":"utilDebug","path":"scripts/utilDebug/utilDebug.yy",},"order":10,},
     {"id":{"name":"audio_get_index","path":"scripts/audio_get_index/audio_get_index.yy",},"order":0,},
     {"id":{"name":"tileset_lab0","path":"tilesets/tileset_lab0/tileset_lab0.yy",},"order":0,},
     {"id":{"name":"smoothstep","path":"scripts/smoothstep/smoothstep.yy",},"order":8,},

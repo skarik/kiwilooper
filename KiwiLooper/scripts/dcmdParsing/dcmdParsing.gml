@@ -54,7 +54,7 @@ function dcmdParse(argument0, argument1)
 		else if (l_commandSplit[0] == "dolive")
 			return dcmdParseDoLive(l_parserMode, l_commandSplit);*/
 	
-		debugOut("Invalid command \"" + l_commandSplit[0] + "\"");
+		debugLog(kLogWarning, "Invalid command \"" + l_commandSplit[0] + "\"");
 	}
 
 	// Fallthru case:

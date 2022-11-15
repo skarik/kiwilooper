@@ -57,7 +57,7 @@ if (focused)
 	// Is command submitted?
 	if (keyboard_check_pressed(vk_enter))
 	{
-		debugOut("debug>" + command);
+		debugLog(kLogOutput, "debug>" + command);
 		dcmdParse(kCmdlineParserModeWork, command);
 		command = "";
 	}

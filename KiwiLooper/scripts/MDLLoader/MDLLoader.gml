@@ -80,7 +80,7 @@ function AFileMDLReader() constructor
 		if (m_header.ident != 1330660425 ||
 			m_header.version != 6)
 		{
-			debugOut("Invalid file");
+			debugLog(kLogError, "Invalid file");
 			return false;
 		}
 		
@@ -112,7 +112,7 @@ function AFileMDLReader() constructor
 					m_skins[i].nm = buffer_read(m_blob, buffer_s32);
 					if (m_skins[i].nm < 0)
 					{
-						debugOut("corrupted skin section");
+						debugLog(kLogError, "corrupted skin section");
 					}
 					m_skins[i].time = array_create(m_skins[i].nm);
 					for (var subskin = 0; subskin < m_skins[i].nm; ++subskin)
@@ -217,7 +217,7 @@ function AFileMDLReader() constructor
 					m_frames[frame].nm = buffer_read(m_blob, buffer_s32);
 					if (m_frames[frame].nm < 0)
 					{
-						debugOut("corrupted frame section");
+						debugLog(kLogError, "corrupted frame section");
 						return false;
 					}
 					m_frames[frame].bboxmin[0] = buffer_read(m_blob, buffer_u8);
@@ -325,12 +325,12 @@ function AMDLFileParser() constructor
 	{
 		if (!m_loader.OpenFile(filepath))
 		{
-			debugOut("Could not find file \"" + filepath + "\"");
+			debugLog(kLogError, "Could not find file \"" + filepath + "\"");
 			return false;
 		}
 		if (!m_loader.ReadHeader())
 		{
-			debugOut("File header malformed");
+			debugLog(kLogError, "File header malformed");
 			m_loader.CloseFile();
 			return false;
 		}
@@ -394,7 +394,7 @@ function AMDLFileParser() constructor
 				}
 				else
 				{
-					debugMessage("working with group frame " + string(frame) + " with " + string(compressed_frame.nm) + " subframes");
+					debugLog(kLogOutput, "working with group frame " + string(frame) + " with " + string(compressed_frame.nm) + " subframes");
 					for (var subframe = 0; subframe < compressed_frame.nm; ++subframe)
 					{
 						show_error("unsupported group frame " + string(frame), true);

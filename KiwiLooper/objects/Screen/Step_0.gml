@@ -3,7 +3,7 @@
 var screenshot_requested = false;
 if (keyboard_check_pressed(vk_f5))
 {
-	debugOut("screenshot requested");
+	debugLog(kLogOutput, "screenshot requested");
 	screenshot_requested = true;
 }
 
@@ -32,7 +32,7 @@ if ((screenshot_requested || screenshot_auto_enabled) && surface_exists(t_captur
 		surface_save(t_capturedSurface, dir + "/" + filename);
         screenshot_count += 1;
 		
-		debugOut("screenshot " + string(screenshot_count) + " taken to " + filename);
+		debugLog(kLogOutput, "screenshot " + string(screenshot_count) + " taken to " + filename);
     }
 }
 

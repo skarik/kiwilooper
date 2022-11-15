@@ -74,7 +74,7 @@ function AFileMD2Reader() constructor
 		if (m_header.ident != 844121161 ||
 			m_header.version != 8)
 		{
-			debugOut("Invalid file");
+			debugLog(kLogError, "Invalid file");
 			return false;
 		}
 		
@@ -232,14 +232,15 @@ function AMD2FileParser() constructor
 	/// @desc Attempts to open & read the given file as a MD2 model
 	static OpenFile = function(filepath)
 	{
+		debugLog(kLogWarning, "Note: MD2 loadstate is not tracked, be careful when loading");
 		if (!m_loader.OpenFile(filepath))
 		{
-			debugOut("Could not find file \"" + filepath + "\"");
+			debugLog(kLogError, "Could not find file \"" + filepath + "\"");
 			return false;
 		}
 		if (!m_loader.ReadHeader())
 		{
-			debugOut("File header malformed");
+			debugLog(kLogError, "File header malformed");
 			m_loader.CloseFile();
 			return false;
 		}

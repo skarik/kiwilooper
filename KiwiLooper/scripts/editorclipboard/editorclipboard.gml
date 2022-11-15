@@ -98,7 +98,7 @@ function EditorClipboardSelectionPaste()
 	// Check that there's even anything to paste...
 	if (array_length(clipboard) > 0)
 	{
-		debugMessage("Beginning pasting " + string(array_length(clipboard)) + " objects");
+		debugLog(kLogVerbose, "Beginning pasting " + string(array_length(clipboard)) + " objects");
 		
 		// Generate the center position first for offset
 		var clipboardCenter = new Vector3(0, 0, 0);

@@ -20,7 +20,7 @@ if (m_trackIntroToLoop[m_trackMasterId] != null)
 	
 	if (intro_length < 0.0)
 	{
-		debugOut("Intro length is smaller than looped variant. Issues here.");
+		debugLog(kLogWarning, "Intro length is smaller than looped variant. Issues here.");
 		m_trackMasterId = null; // Skip this shit.
 		exit;
 	}
@@ -52,7 +52,7 @@ if (m_trackIntroToLoop[m_trackMasterId] != null)
 			// Not a perfect fit. Need to do more complicated maths to sync.
 			else
 			{
-				debugOut("Intro sync: Imperfect sync currently unsupported.");
+				debugLog(kLogWarning, "Intro sync: Imperfect sync currently unsupported.");
 			}
 		}
 	}
@@ -100,7 +100,7 @@ else
 		// Not a perfect fit. Need to do more complicated maths to sync.
 		else
 		{
-			debugOut("Normal sync: Imperfect sync currently unsupported.");
+			debugLog(kLogWarning, "Normal sync: Imperfect sync currently unsupported.");
 		}
 	}
 	
