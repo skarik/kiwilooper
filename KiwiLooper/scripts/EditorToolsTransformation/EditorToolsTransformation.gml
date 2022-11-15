@@ -250,6 +250,11 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					else if (selection.type == kEditorSelection_Tile || selection.type == kEditorSelection_TileFace)
 						continue; // Skip the world stuff for now
 				}
+				// Not a struct, must be an instance:
+				else if (!iexists(selection))
+				{
+					continue; // Skip invalid selections
+				}
 				
 				// Apply the offset based on the drag position offset
 				var startPosition = m_previousTargetsStart[selectIndex];
@@ -422,6 +427,11 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 					bValidSelection = false;
 				}
 			}
+			// Not a struct, must be an instance:
+			else if (!iexists(m_editor.m_selection[0]))
+			{
+				bValidSelection = false; // Skip invalid selections
+			}
 		}
 		
 		if (bValidSelection)
@@ -555,6 +565,11 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 				{
 					bValidSelection = false;
 				}
+			}
+			// Not a struct, must be an instance:
+			else if (!iexists(m_editor.m_selection[0]))
+			{
+				bValidSelection = false; // Skip invalid selections
 			}
 		}
 		

@@ -250,6 +250,8 @@ function EditorGlobalNukeMap()
 
 function EditorGlobalNukeMap_Work()
 {
+	EditorGlobalClearSelection(); // Clear selection so not holding onto anything that's getting nuked.
+	
 	with (EditorGet())
 	{
 		// Go through the tiles
