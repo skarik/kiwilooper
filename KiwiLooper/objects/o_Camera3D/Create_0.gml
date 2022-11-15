@@ -56,8 +56,8 @@ viewToRay = function(n_x, n_y)
 {
 	// w-coordinate divide is not handled in matrix_transform_vertex
 	
-	var view_x = ((n_x / GameCamera.width) - 0.5) * 2;
-	var view_y = -((n_y / GameCamera.height) - 0.5) * 2;
+	var view_x = (GameCamera.width <= 0) ? 0.0 : ((n_x / GameCamera.width) - 0.5) * 2;
+	var view_y = (GameCamera.height <= 0) ? 0.0 : -((n_y / GameCamera.height) - 0.5) * 2;
 	
 	var input_point = new Vector4(view_x, view_y, 1.0, 1.0);
 	input_point.transformAMatrixSelf(m_viewprojectionInverse);

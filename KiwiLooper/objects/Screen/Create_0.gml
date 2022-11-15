@@ -98,6 +98,10 @@ WindowOnResize = function()
 		Screen.height = window_get_height();
 	}
 	
+	// Force limits in case of minimized
+	Screen.width = max(Screen.pixelScale, Screen.width);
+	Screen.height = max(Screen.pixelScale, Screen.height);
+	
 	// Save current window size for future updates
 	Screen.savedwidth = window_get_width();
 	Screen.savedheight = window_get_height();
