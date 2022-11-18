@@ -9,7 +9,7 @@ if (image_alpha > 1.0)
 {
 	controlUpdate(false);
 	
-	if (abs(yAxis.value) > 0.5 && sign(yAxis.value) * sign(yAxis.previous) < 0.5)
+	if (abs(yAxis.value) > 0.5 && sign(yAxis.value) * sign(yAxis.previous) < 0.5) // will not work on some controller todo
 	{
 		m_menuSelection += sign(yAxis.value);
 		m_menuSelection = clamp(m_menuSelection, 1, 2); // clamp to selection count

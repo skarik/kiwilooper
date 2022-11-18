@@ -59,6 +59,7 @@ function Character_Create()
 	
 	// Attack state
 	attackTimer = 0.0;
+	isDefending = false;
 	
 	// Death state
 	deathTimer = 0.0;
@@ -190,7 +191,7 @@ function Character_Step()
 		// Update on-ground shock death
 		{
 			if ((((z + 64) % 16 > 8) // Quick hack to let us start falling first
-				|| (onGround && z == shadowInstance.z))
+				|| (onGround && iexists(shadowInstance) && z == shadowInstance.z))
 				&& World_ShockAtPosition(x, y, z))
 			{
 				if (!isDead)
