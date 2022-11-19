@@ -19,6 +19,8 @@ function BMSMeshUpdate()
 	BMSMenuMeshAddTimers(meshMenuBits, surfaceMenu);
 	// set up menu
 	BMSMenuMeshAddMoveMenu(meshMenuBits, surfaceMenu);
+	// set up targeting stuff
+	BMSMenuMeshAddTargeting(meshMenuBits, surfaceMenu);
 
 	meshb_End(meshMenuBits);
 }
@@ -159,4 +161,84 @@ function BMSMenuMeshAddMoveMenu(mesh, surface)
 		],
 		Vector3FromTranslation(battlePlayer.m_character).add(new Vector3(0, 0, 32)).subtract(cross_x.multiply(0.5)).subtract(cross_y.multiply(0.5)).add(cross_x.multiply(1.0))
 	);
+}
+
+function BMSMenuMeshAddTargeting(mesh, surface)
+{
+	if (battleMachine.getCurrentState() != ABMSStateBattleMenu
+		&& battleMachine.getCurrentState() != ABMSStateBattleTargetSelect
+		&& battleMachine.getCurrentState() != ABMSStatePlayerMoving)
+		return; // TODO
+	if (is_undefined(battlePlayer) || !iexists(battlePlayer.m_character)) return; // TODO
+	
+	var tex_w = surface_get_width(surface);
+	var tex_h = surface_get_height(surface);
+	
+	var dx = 32;
+	var dy = 80;
+	var dy2 = 80 + 40;
+	
+	// build the circles we gonna draw with
+	surface_set_target(surface);
+	
+	draw_set_color(c_blue);
+	draw_circle(dx + 20, dy + 20, 18, true);
+	
+	draw_set_color(c_red);
+	draw_circle(dx + 20, dy2 + 20, 18, true);
+	
+	surface_reset_target();
+	
+	
+	// draw circles over each target
+	var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
+	var cross_x = frontface_direction.cross(new Vector3(0, 0, 1));
+	var cross_y = frontface_direction.cross(cross_x);
+	cross_x.normalize().multiplySelf(-40 * 0.6);
+	cross_y.normalize().multiplySelf(40 * 0.6);
+	
+	for (var iActor = 0; iActor < array_length(actors); ++iActor)
+	{
+		var actor = actors[iActor];
+		if (!iexists(actor.m_character)) continue;
+		if (actor == battlePlayer) continue;
+		
+		var bCanHit = false;
+		if (point_distance(actor.m_character.x, actor.m_character.y, battlePlayer.m_character.x, battlePlayer.m_character.y) < 20)
+		{
+			bCanHit = true;
+		}
+		
+		MeshbAddQuadUVs(
+			mesh, c_white, 1.0,
+			cross_x,
+			cross_y,
+			[
+				(dx) / tex_w,
+				((bCanHit ? dy : dy2) + 0) / tex_h,
+				(dx + 40) / tex_w,
+				((bCanHit ? dy : dy2) + 40) / tex_h
+			],
+			Vector3FromTranslation(actor.m_character).add(new Vector3(0, 0, 16)).subtract(cross_x.multiply(0.5)).subtract(cross_y.multiply(0.5)).add(frontface_direction.multiply(-100))
+		);
+		
+		if (battleMachine.getCurrentState() == ABMSStateBattleTargetSelect)
+		{
+			if (iActor == actionTargetChoice)
+			{
+				MeshbAddQuadUVs(
+					mesh, c_white, 1.0,
+					cross_x.multiply(0.7),
+					cross_y.multiply(0.7),
+					[
+						(dx) / tex_w,
+						(dy) / tex_h,
+						(dx + 40) / tex_w,
+						(dy + 40) / tex_h
+					],
+					Vector3FromTranslation(actor.m_character).add(new Vector3(0, 0, 16)).subtract(cross_x.multiply(0.5)).subtract(cross_y.multiply(0.5)).add(frontface_direction.multiply(-100))
+				);
+			}
+		}
+	}
 }

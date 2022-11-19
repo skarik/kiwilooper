@@ -17,6 +17,8 @@ function AStateMachine() constructor
 	states = [];
 	current_state = null;
 	
+	current_context = null;
+	
 	static run = function(param)
 	{
 		if (current_state != null)
@@ -27,6 +29,7 @@ function AStateMachine() constructor
 	
 	static runContext = function(context, param)
 	{
+		current_context = context;
 		if (current_state != null)
 		{
 			method(context, states[current_state].instance.onRun)(param);
@@ -74,7 +77,10 @@ function AStateMachine() constructor
 		// Call ending on current state
 		if (current_state != null)
 		{
-			states[current_state].instance.onEnd();
+			if (current_context == null)
+				states[current_state].instance.onEnd();
+			else
+				method(current_context, states[current_state].instance.onEnd)();
 		}
 		
 		// Find new state
@@ -91,7 +97,10 @@ function AStateMachine() constructor
 		// Call begin on new state
 		if (current_state != null)
 		{
-			states[current_state].instance.onBegin();
+			if (current_context == null)
+				states[current_state].instance.onBegin();
+			else
+				method(current_context, states[current_state].instance.onBegin)();
 		}
 		
 		return self;

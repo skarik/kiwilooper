@@ -10,6 +10,7 @@ function BMSInit()
 	battleMachine
 		.addState(ABMSStateWaiting)
 		.addState(ABMSStateBattleMenu)
+		.addState(ABMSStateBattleTargetSelect)
 		.addState(ABMSStatePlayerMoving)
 		.transitionTo(ABMSStateWaiting);
 	
@@ -17,6 +18,7 @@ function BMSInit()
 	battlePlayer = undefined;
 	
 	actionMenuChoice = 0;
+	actionTargetChoice = 0;
 	movingTimescale = 0.0;
 	
 	// clear inputs on all actors
@@ -68,38 +70,6 @@ function BMSStep()
 	}
 }
 
-function ABMSStateWaiting() : AState() constructor
-{
-	static onRun = function(param)
-	{
-		// Tick down all the actor times
-		var nextActionableActor = BMSStepTickAndGetNext(Time.deltaTime);
-	
-		// If in wait-mode, we need to step thru all the behaviors we're doing
-		if (is_undefined(nextActionableActor))
-		{
-			BMSStepBehaviors(Time.deltaTime);
-		}
-		// We need to do an action, so we have to stop things now
-		else if (!is_undefined(nextActionableActor))
-		{
-			battleTarget = nextActionableActor;
-			if (battleTarget.m_character.isPlayer)
-			{
-				battlePlayer = battleTarget;
-				return battleMachine.transitionTo(ABMSStateBattleMenu); // Pause step, grab inputs from player
-			}
-			else
-			{
-				// START AI ACTION AND RESET ITS TIMER
-				//battleTarget.m_timeUntilNextAction = 1.0; // TODO
-			}
-		}
-	}
-	
-	static onBegin = function() {}
-	static onEnd = function() {}
-}
 
 function BMSStepTickAndGetNext(deltaTime)
 {
@@ -121,103 +91,37 @@ function BMSStepTickAndGetNext(deltaTime)
 	return nextActionableActor;
 }
 
-function BMSStepBehaviors(deltaTime)
+function ABMSStateWaiting() : AState() constructor
 {
-	// step all the actions of all the characters
-	for (var iActor = 0; iActor < array_length(actors); ++iActor)
+	static onRun = function(param)
 	{
-		var actor = actors[iActor];
-		
-		if (!iexists(actor.m_character)) continue;
-		
-		// TODO LMAO
-		
-		// reset states at end of the timer
-		if (actor.m_character.object_index == o_playerKiwi)
-		{
-			if (actor.m_timeUntilNextAction <= 0.0)
-			{
-				actor.m_character.isDefending = false;
-				_controlStructUpdate(actor.m_character.atkButton, 0.0);
-			}
-		}
-		
-		// basically start with copy paste from AI but with more delays
-		if (actor.m_character.object_index == o_charaRobot)
-		{
-			var chara = actor.m_character;
-			var ai = chara.m_ai;
-			
-			var xAxis_next = chara.xAxis.value;
-			var yAxis_next = chara.yAxis.value;
-			var atkButton_next = chara.atkButton.value;
+		// Tick down all the actor times
+		var nextActionableActor = BMSStepTickAndGetNext(Time.deltaTime);
 	
-			// wait
-			if (ai.state == 0)
+		// If in wait-mode, we need to step thru all the behaviors we're doing
+		if (is_undefined(nextActionableActor))
+		{
+			BMSStepBehaviors(Time.deltaTime);
+		}
+		// We need to do an action, so we have to stop things now
+		else if (!is_undefined(nextActionableActor))
+		{
+			battleTarget = nextActionableActor;
+			if (iexists(battleTarget.m_character) && battleTarget.m_character.isPlayer)
 			{
-				xAxis_next = 0.0;
-				yAxis_next = 0.0;
-				
-				if (actor.m_timeUntilNextAction <= 0.0)
-				{
-					actor.m_timeUntilNextAction = 3.0;
-					ai.state = 1;
-				}
+				battlePlayer = battleTarget;
+				return battleMachine.transitionTo(ABMSStateBattleMenu); // Pause step, grab inputs from player
 			}
-			// move to
-			else if (ai.state == 1)
+			else
 			{
-				var kApproachToDistance = 17;
-				
-				ai.updateTargetVisibility();
-				
-				var deltaToTarget = new Vector2(ai.targetPosition.x - chara.x, ai.targetPosition.y - chara.y);
-				var distanceToTargetSqr = deltaToTarget.sqrMagnitude();
-
-				// todo: pathfinding
-				var motionDelta = deltaToTarget.normal();
-				xAxis_next = motionDelta.x;
-				yAxis_next = motionDelta.y;
-				
-				// got close enough
-				if (distanceToTargetSqr < sqr(kApproachToDistance))
-				{
-					ai.state = 2; //attack
-					actor.m_timeUntilNextAction = 1.0;
-				}
-				// timed out
-				else if (actor.m_timeUntilNextAction <= 0.0)
-				{
-					ai.state = 0; //wait
-					actor.m_timeUntilNextAction = 2.0;
-				}
+				// START AI ACTION AND RESET ITS TIMER
+				//battleTarget.m_timeUntilNextAction = 1.0; // TODO
 			}
-			// attack
-			else if (ai.state == 2)
-			{
-				if (atkButton_next == 0.0)
-				{
-					// Press attack
-					atkButton_next = 1.0;
-					// Lay off motion axes
-					xAxis_next = 0.0;
-					yAxis_next = 0.0;
-				}
-				else
-				{
-					// Release attack
-					atkButton_next = 0.0;
-					
-					ai.state = 0; //wait
-					actor.m_timeUntilNextAction = 4.0;
-				}
-			}
-			
-			_controlStructUpdate(chara.xAxis, xAxis_next);
-			_controlStructUpdate(chara.yAxis, yAxis_next);
-			_controlStructUpdate(chara.atkButton, atkButton_next);
 		}
 	}
+	
+	static onBegin = function() {}
+	static onEnd = function() {}
 }
 
 function ABMSStateBattleMenu() : AState() constructor
@@ -265,13 +169,7 @@ function ABMSStateBattleMenu() : AState() constructor
 			}
 			else if (actionMenuChoice == 2)
 			{
-				battleTarget.m_timeUntilNextAction = 1.0; // TODO
-				
-				// we need to do an attack action? or bring up further menu? for now we just do an attack action
-				var player = instance_find(o_playerKiwi, 0);
-				_controlStructUpdate(player.atkButton, 1.0);
-				
-				return battleMachine.transitionTo(ABMSStateWaiting);
+				return battleMachine.transitionTo(ABMSStateBattleTargetSelect);
 			}
 			else if (actionMenuChoice == 3)
 			{
@@ -290,6 +188,100 @@ function ABMSStateBattleMenu() : AState() constructor
 	static onEnd = function()
 	{
 		Time.scale = 1.0;
+	}
+}
+
+function ABMSStateBattleTargetSelect() : AState() constructor
+{
+	static onBegin = function()
+	{
+		Time.scale = 0.0;
+		
+		// Find the closest actor to the battle actor
+		{
+			var min_dist = 10000;
+			var min_actor_index = null;
+		
+			for (var iActor = 0; iActor < array_length(actors); ++iActor)
+			{
+				var actor = actors[iActor];
+				if (!iexists(actor.m_character) || actor.m_character.isDead) continue;
+			
+				if (actor == battlePlayer) continue;
+			
+				var dist = point_distance(actor.m_character.x, actor.m_character.y, battlePlayer.m_character.x, battlePlayer.m_character.y);
+				if (dist < min_dist || min_actor_index == null)
+				{
+					min_dist = dist;
+					min_actor_index = iActor;
+				}
+			}
+		
+			// Closest enemy is the default
+			actionTargetChoice = (min_actor_index == null) ? 0 : min_actor_index;
+		}
+	}
+	static onEnd = function()
+	{
+		Time.scale = 1.0;
+	}
+	
+	static onRun = function(param)
+	{
+		// helper
+		var stepActionTargetChoice = function(dir)
+		{
+			var next = actionTargetChoice;
+				
+			do
+			{
+				next += dir;
+				
+				if (next >= array_length(actors))
+					next = 0;
+				else if (next < 0)
+					next = array_length(actors - 1);
+			}
+			until (actors[next] != battlePlayer
+				&& iexists(actors[next].m_character)
+				&& !actors[next].m_character.isDead);
+			
+			actionTargetChoice = next;
+		}
+		
+		// change selection
+		if (abs(xAxis.value) > 0.707 && (sign(xAxis.value) != sign(xAxis.previous) || abs(xAxis.previous) < 0.707))
+		{
+			stepActionTargetChoice(sign(xAxis));
+		}
+		if (abs(yAxis.value) > 0.707 && (sign(yAxis.value) != sign(yAxis.previous) || abs(yAxis.previous) < 0.707))
+		{
+			stepActionTargetChoice(sign(yAxis));
+		}
+		
+		// cancel pressed, let's remove
+		if (journalButton.pressed)
+		{
+			return battleMachine.transitionTo(ABMSStateBattleMenu);
+		}
+		
+		// atck pressed, let's attack
+		if (atkButton.pressed || useButton.pressed)
+		{
+			sound_play("sound/door/glitch1.wav");
+			
+			battlePlayer.m_timeUntilNextAction = 1.0; // TODO
+				
+			// face the target
+			battlePlayer.m_character.facingDirection = point_direction(
+				battlePlayer.m_character.x, battlePlayer.m_character.y,
+				actors[actionTargetChoice].m_character.x, actors[actionTargetChoice].m_character.y
+				);
+			//  for now we just do an attack action using player mvt
+			_controlStructUpdate(battlePlayer.m_character.atkButton, 1.0);
+				
+			return battleMachine.transitionTo(ABMSStateWaiting);
+		}
 	}
 }
 
@@ -353,7 +345,7 @@ function ABMSStatePlayerMoving() : AState() constructor
 			bInterruptMoving = true;
 		}
 		// TODO: if the player gets hurt, we probably want to stop this action too (but let it go immediately????)
-		if (player.lastDamaged)
+		if (battlePlayer.m_character.lastDamaged)
 		{
 			bInterruptMoving = true;
 		}

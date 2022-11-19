@@ -265,6 +265,7 @@
     {"id":{"name":"instance_nearest_notme","path":"scripts/instance_nearest_notme/instance_nearest_notme.yy",},"order":5,},
     {"id":{"name":"avec2_dot","path":"scripts/avec2_dot/avec2_dot.yy",},"order":2,},
     {"id":{"name":"controlAnyKey","path":"scripts/controlAnyKey/controlAnyKey.yy",},"order":3,},
+    {"id":{"name":"BattleManagerBehaviors","path":"scripts/BattleManagerBehaviors/BattleManagerBehaviors.yy",},"order":26,},
     {"id":{"name":"MapEditorState","path":"scripts/MapEditorState/MapEditorState.yy",},"order":13,},
     {"id":{"name":"MD2Loader","path":"scripts/MD2Loader/MD2Loader.yy",},"order":0,},
     {"id":{"name":"rm_EditorTest","path":"rooms/rm_EditorTest/rm_EditorTest.yy",},"order":9,},
