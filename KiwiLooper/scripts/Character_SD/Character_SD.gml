@@ -22,6 +22,7 @@ function Character_Create()
 	hp_previous = 1;
 	hp_max = 1;
 	isDead = false;
+	lastDamaged = false;
 	lastDamageType = kDamageTypeUnarmed;
 	footstepBloody = 0;
 	shadowInstance = inew(o_characterShadow);
@@ -77,6 +78,7 @@ function Character_BeginStep()
 	// Has HP dropped? If so, let's do some EFFECTS.
 	if (hp < hp_previous)
 	{
+		lastDamaged = true;
 		// TODO: Do blood effects
 		
 		// Are we dying here?
@@ -92,6 +94,10 @@ function Character_BeginStep()
 				isDead = true;
 			}
 		}
+	}
+	else
+	{
+		lastDamaged = false;
 	}
 	// Update previous values
 	hp_previous = hp;

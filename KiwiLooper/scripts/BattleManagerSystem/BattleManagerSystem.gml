@@ -4,17 +4,19 @@ function ABMSCharacter(character) constructor
 	m_timeUntilNextAction = 0.0;
 }
 
-#macro kBattleStepWaiting 0
-#macro kBattleStepBattleMenu 1
-#macro kBattleStepMoving 2
-
 function BMSInit()
 {
-	battleStep = kBattleStepWaiting;
+	battleMachine = new AStateMachine();
+	battleMachine
+		.addState(ABMSStateWaiting)
+		.addState(ABMSStateBattleMenu)
+		.addState(ABMSStatePlayerMoving)
+		.transitionTo(ABMSStateWaiting);
+	
 	battleTarget = undefined;
+	battlePlayer = undefined;
 	
 	actionMenuChoice = 0;
-	
 	movingTimescale = 0.0;
 	
 	// clear inputs on all actors
@@ -30,26 +32,13 @@ function BMSInit()
 
 function BMSStep()
 {
-	var player = o_playerKiwi;
-	if (player.isDead)
-	{
-		battleStep = kBattleStepWaiting;
-		Time.scale = 1.0;
-	}
+	controlUpdate(false);
 	
-	if (battleStep == kBattleStepWaiting)
-	{
-		BMSStepWaiting();
-	}
-	else if (battleStep == kBattleStepBattleMenu)
-	{
-		// TODO
-		BMSStepGrabInput();
-	}
-	else if (battleStep == kBattleStepMoving)
-	{
-		BMSStepMoving();
-	}
+	// Run the fucking statemachine
+	battleMachine.runContext(id, Time.deltaTime);
+	
+	// update mesh
+	BMSMeshUpdate();
 	
 	// check for quit
 	var bCanQuit = true;
@@ -62,6 +51,16 @@ function BMSStep()
 			bCanQuit = false;
 		}
 	}
+	
+	var player = o_playerKiwi; // TODO: Check all player objects
+	if (player.isDead)
+	{
+		battleMachine.transitionTo(ABMSStateWaiting);
+		Time.scale = 1.0;
+		
+		bCanQuit = true; // override quit if dead lmao
+	}
+	
 	if (bCanQuit)
 	{
 		Time.scale = 1.0;
@@ -69,32 +68,37 @@ function BMSStep()
 	}
 }
 
-function BMSStepWaiting()
+function ABMSStateWaiting() : AState() constructor
 {
-	// Tick down all the actor times
-	var nextActionableActor = BMSStepTickAndGetNext(Time.deltaTime);
+	static onRun = function(param)
+	{
+		// Tick down all the actor times
+		var nextActionableActor = BMSStepTickAndGetNext(Time.deltaTime);
 	
-	// If in wait-mode, we need to step thru all the behaviors we're doing
-	if (is_undefined(nextActionableActor))
-	{
-		BMSStepBehaviors(Time.deltaTime);
-	}
-	// We need to do an action, so we have to stop things now
-	else if (!is_undefined(nextActionableActor))
-	{
-		battleTarget = nextActionableActor;
-		if (battleTarget.m_character.isPlayer)
+		// If in wait-mode, we need to step thru all the behaviors we're doing
+		if (is_undefined(nextActionableActor))
 		{
-			battleStep = kBattleStepBattleMenu; // Pause step, grab inputs from player
-			// TODO: on-change w/ states?
-			actionMenuChoice = 0;
+			BMSStepBehaviors(Time.deltaTime);
 		}
-		else
+		// We need to do an action, so we have to stop things now
+		else if (!is_undefined(nextActionableActor))
 		{
-			// START AI ACTION AND RESET ITS TIMER
-			//battleTarget.m_timeUntilNextAction = 1.0; // TODO
+			battleTarget = nextActionableActor;
+			if (battleTarget.m_character.isPlayer)
+			{
+				battlePlayer = battleTarget;
+				return battleMachine.transitionTo(ABMSStateBattleMenu); // Pause step, grab inputs from player
+			}
+			else
+			{
+				// START AI ACTION AND RESET ITS TIMER
+				//battleTarget.m_timeUntilNextAction = 1.0; // TODO
+			}
 		}
 	}
+	
+	static onBegin = function() {}
+	static onEnd = function() {}
 }
 
 function BMSStepTickAndGetNext(deltaTime)
@@ -216,262 +220,149 @@ function BMSStepBehaviors(deltaTime)
 	}
 }
 
-function BMSStepGrabInput()
+function ABMSStateBattleMenu() : AState() constructor
 {
-	Time.scale = 0.0; // let's just stop everything for a hot minute
-	
-	// menu input
-	
-	// check yaxis to go thru the menu
-	
-	if (abs(yAxis.value) > 0.707 && (sign(yAxis.value) != sign(yAxis.previous) || abs(yAxis.previous) < 0.707))
+	static onBegin = function()
 	{
-		actionMenuChoice += sign(yAxis.value);
-		actionMenuChoice = clamp(actionMenuChoice, 0, 3);
-		
-		// Play glitch sound
-		sound_play("sound/door/button1.wav");
-	}
-	
-	if (atkButton.pressed)
-	{
-		sound_play("sound/door/glitch1.wav");
-		
-		if (actionMenuChoice == 0)
-		{
-			movingTimescale = 0.0;
-			battleStep = kBattleStepMoving;
-			Time.scale = 1.0;
-		}
-		else if (actionMenuChoice == 1)
-		{
-			battleTarget.m_timeUntilNextAction = 1.0; // TODO
-			battleStep = kBattleStepWaiting;
-			Time.scale = 1.0;
-			
-			//battleTarget.m_character.isDefending = true;
-			var player = instance_find(o_playerKiwi, 0);
-			player.isDefending = true;
-		}
-		else if (actionMenuChoice == 2)
-		{
-			battleTarget.m_timeUntilNextAction = 1.0; // TODO
-			battleStep = kBattleStepWaiting;
-			Time.scale = 1.0;
-			
-			// we need to do an attack action? or bring up further menu? for now we just do an attack action
-			var player = instance_find(o_playerKiwi, 0);
-			_controlStructUpdate(player.atkButton, 1.0);
-		}
-		else if (actionMenuChoice == 3)
-		{
-			battleTarget.m_timeUntilNextAction = 1.0; // TODO
-			battleStep = kBattleStepWaiting;
-			Time.scale = 1.0;
-		}
-		
-		// if 0, then it's move&wait concurrently
-		// if 1, then it's action+wait
-		// if 2, then it's action+wait
-		// if 3, then it's wait
-	}
-}
-
-function BMSStepMoving()
-{
-	var kRampUpTime = 0.5;
-	var kRampDownTime = 0.25;
-	// when character moves, ramp up time to full time
-	
-	if (abs(xAxis.value) > 0.5 || abs(yAxis.value) > 0.5)
-	{
-		movingTimescale += Time.unscaledDeltaTime / kRampUpTime;
-	}
-	else
-	{
-		movingTimescale -= Time.unscaledDeltaTime / kRampDownTime;
-	}
-	movingTimescale = saturate(movingTimescale);
-	
-	// copy the inputs to the player
-	var player = instance_find(o_playerKiwi, 0);
-	controlForward(player.xAxis, xAxis);
-	controlForward(player.yAxis, yAxis);
-	
-	// but if there's a character that's got some actions, then we want to possibly still do shit
-	
-	
-	// Set timescale
-	Time.scale = movingTimescale;
-	// Update everynyan now
-	//BMSStepWaiting();
-	var next_actor = BMSStepTickAndGetNext(Time.deltaTime);
-	if (!is_undefined(next_actor))
-	{
-		// Ask AI to just keep going
-	}
-	BMSStepBehaviors(Time.deltaTime);
-	
-	var bInterruptMoving = false;
-	
-	
-	// Check for interrupts
-	if (useButton.pressed || atkButton.pressed)
-	{
-		bInterruptMoving = true;
-	}
-	// TODO: if the player gets hurt, we probably want to stop this action too
-	
-	
-	// If interrupt, go back to menu
-	if (bInterruptMoving)
-	{
-		player.xAxis.value = 0.0;
-		player.yAxis.value = 0.0;
-		
-		// go back to prev state
-		battleStep = kBattleStepBattleMenu;
+		Time.scale = 0.0;
 		actionMenuChoice = 0;
 	}
-}
-
-
-function BMSMeshAddGrid(mesh)
-{
-	// Find player and build floor grid around them
 	
-	var player = instance_find(o_playerKiwi, 0);
-	var tex_uvs = sprite_get_uvs(sfx_square, 0);
-	
-	
-	var playerPosition = new Vector3(round(player.x / 16) * 16, round(player.y / 16) * 16, player.z + 1);
-	
-	var gridXNormal = new Vector3(1, 0, 0);
-	var gridYNormal = new Vector3(0, 1, 0);
-	var kGridDist = 128;
-	var kGridSpace = 16;
-		
-	for (var i = 0; i <= 4; ++i)
+	static onRun = function(param)
 	{
-		MeshbAddLine3(mesh, c_white, 0.25,
-			0.5, kGridDist, gridXNormal, playerPosition.subtract(gridXNormal.multiply(kGridDist * 0.5)).add(gridYNormal.multiply(kGridSpace * i)), tex_uvs);
-		MeshbAddLine3(mesh, c_white, 0.25,
-			0.5, kGridDist, gridXNormal, playerPosition.subtract(gridXNormal.multiply(kGridDist * 0.5)).add(gridYNormal.multiply(kGridSpace * -i)), tex_uvs);
+		Time.scale = 0.0; // let's just stop everything for a hot minute
+	
+		// menu input
+	
+		// check yaxis to go thru the menu
+	
+		if (abs(yAxis.value) > 0.707 && (sign(yAxis.value) != sign(yAxis.previous) || abs(yAxis.previous) < 0.707))
+		{
+			actionMenuChoice += sign(yAxis.value);
+			actionMenuChoice = clamp(actionMenuChoice, 0, 3);
 		
-		MeshbAddLine3(mesh, c_white, 0.25,
-			0.5, kGridDist, gridYNormal, playerPosition.subtract(gridYNormal.multiply(kGridDist * 0.5)).add(gridXNormal.multiply(kGridSpace * i)), tex_uvs);
-		MeshbAddLine3(mesh, c_white, 0.25,
-			0.5, kGridDist, gridYNormal, playerPosition.subtract(gridYNormal.multiply(kGridDist * 0.5)).add(gridXNormal.multiply(kGridSpace * -i)), tex_uvs);
-	}
-}
-
-
-function BMSMenuMeshAddTimers(mesh, surface)
-{
-	var tex_w = surface_get_width(surface);
-	var tex_h = surface_get_height(surface);
+			// Play glitch sound
+			sound_play("sound/door/button1.wav");
+		}
 	
-	// add all the timer UIs
-	surface_set_target(surface);
-	
-	draw_set_color(c_yellow);
-	draw_set_halign(fa_left);
-	draw_set_valign(fa_top);
-	draw_set_font(f_Oxygen7);
-	
-	for (var iActor = 0; iActor < array_length(actors); ++iActor)
-	{
-		var actor = actors[iActor];
-		if (!iexists(actor.m_character)) continue;
+		if (atkButton.pressed || useButton.pressed)
+		{
+			sound_play("sound/door/glitch1.wav");
 		
-		draw_text(0, iActor * 16, string(max(0.00, actor.m_timeUntilNextAction)));
-	}
-	surface_reset_target();
-	
-	// add all the timer meshes
-	
-	var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
-	var cross_x = frontface_direction.cross(new Vector3(0, 0, 1));
-	var cross_y = frontface_direction.cross(cross_x);
-	cross_x.normalize().multiplySelf(-32 * 0.6);
-	cross_y.normalize().multiplySelf(16 * 0.6);
-	
-	for (var iActor = 0; iActor < array_length(actors); ++iActor)
-	{
-		var actor = actors[iActor];
-		if (!iexists(actor.m_character)) continue;
-		
-		MeshbAddQuadUVs(
-			mesh, c_white, 1.0,
-			cross_x,
-			cross_y,
-			[
-				0,
-				(iActor * 16) / tex_h,
-				31 / tex_w,
-				(iActor * 16 + 16) / tex_h
-			],
-			Vector3FromTranslation(actor.m_character).add(new Vector3(0, 0, 32)).subtract(cross_x.multiply(0.5)).subtract(cross_y.multiply(0.5))
-		);
+			if (actionMenuChoice == 0)
+			{
+				return battleMachine.transitionTo(ABMSStatePlayerMoving);
+			}
+			else if (actionMenuChoice == 1)
+			{
+				battleTarget.m_timeUntilNextAction = 1.0; // TODO
 			
+				//battleTarget.m_character.isDefending = true;
+				var player = instance_find(o_playerKiwi, 0);
+				player.isDefending = true;
+				
+				return battleMachine.transitionTo(ABMSStateWaiting);
+			}
+			else if (actionMenuChoice == 2)
+			{
+				battleTarget.m_timeUntilNextAction = 1.0; // TODO
+				
+				// we need to do an attack action? or bring up further menu? for now we just do an attack action
+				var player = instance_find(o_playerKiwi, 0);
+				_controlStructUpdate(player.atkButton, 1.0);
+				
+				return battleMachine.transitionTo(ABMSStateWaiting);
+			}
+			else if (actionMenuChoice == 3)
+			{
+				battleTarget.m_timeUntilNextAction = 1.0; // TODO
+				
+				return battleMachine.transitionTo(ABMSStateWaiting);
+			}
+		
+			// if 0, then it's move&wait concurrently
+			// if 1, then it's action+wait
+			// if 2, then it's action+wait
+			// if 3, then it's wait
+		}
+	}
+	
+	static onEnd = function()
+	{
+		Time.scale = 1.0;
 	}
 }
 
-function BMSMenuMeshAddMoveMenu(mesh, surface)
+function ABMSStatePlayerMoving() : AState() constructor
 {
-	var player = instance_find(o_playerKiwi, 0);
+	static onBegin = function()
+	{
+		Time.scale = 0.0;
+		movingTimescale = 0.0;
+	}
+	static onEnd = function()
+	{
+		// Stop the moving
+		_controlStructUpdate(battlePlayer.m_character.xAxis, 0.0);
+		_controlStructUpdate(battlePlayer.m_character.yAxis, 0.0);
+		
+		Time.scale = 1.0;
+	}
 	
-	if (battleStep != kBattleStepBattleMenu) return; // TODO
-	if (is_undefined(battleTarget) || !iexists(battleTarget.m_character)) return; // TODO
-	// todo player
+	static onRun = function(param)
+	{
+		var kRampUpTime = 0.5;
+		var kRampDownTime = 0.25;
+		// when character moves, ramp up time to full time
 	
-	var tex_w = surface_get_width(surface);
-	var tex_h = surface_get_height(surface);
+		if (abs(xAxis.value) > 0.5 || abs(yAxis.value) > 0.5)
+		{
+			movingTimescale += Time.unscaledDeltaTime / kRampUpTime;
+		}
+		else
+		{
+			movingTimescale -= Time.unscaledDeltaTime / kRampDownTime;
+		}
+		movingTimescale = saturate(movingTimescale);
 	
-	// build the menu ui
-	surface_set_target(surface);
+		// copy the inputs to the player
+		//var player = instance_find(o_playerKiwi, 0);
+		controlForward(battlePlayer.m_character.xAxis, xAxis);
+		controlForward(battlePlayer.m_character.yAxis, yAxis);
 	
-	var dx = 32;
-	var dy = 0;
-	draw_set_color(c_navy);
-	draw_set_alpha(0.5);
-	draw_rectangle(dx, dy, dx + 80, dy + 80, false);
-	draw_set_color(c_blue);
-	draw_set_alpha(1.0);
-	draw_rectangle(dx + 1, dy + 1, dx + 80 - 2, dy + 80 - 2, true);
+		// but if there's a character that's got some actions, then we want to possibly still do shit
 	
-	// draw menu options
-	draw_set_color(c_aqua);
-	draw_set_halign(fa_left);
-	draw_set_valign(fa_top);
-	draw_set_font(f_Oxygen10);
-	draw_text(dx + 10, dy + 2 +  0, "[MOVE]");
-	draw_text(dx + 10, dy + 2 + 20, "[BRACE]");
-	draw_text(dx + 10, dy + 2 + 40, "[HURT]");
-	draw_text(dx + 10, dy + 2 + 60, "[WAIT]");
 	
-	draw_set_color(c_white);
-	draw_text(dx + 0, dy + 2 + 20 * actionMenuChoice, ">>");
+		// Set timescale
+		Time.scale = movingTimescale;
+		// Update everynyan now
+		//BMSStepWaiting();
+		var next_actor = BMSStepTickAndGetNext(Time.deltaTime);
+		if (!is_undefined(next_actor))
+		{
+			// Ask AI to just keep going
+		}
+		BMSStepBehaviors(Time.deltaTime);
 	
-	surface_reset_target();
+		var bInterruptMoving = false;
 	
-	// draw menu mesh
-	var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
-	var cross_x = frontface_direction.cross(new Vector3(0, 0, 1));
-	var cross_y = frontface_direction.cross(cross_x);
-	cross_x.normalize().multiplySelf(-80 * 0.6);
-	cross_y.normalize().multiplySelf(80 * 0.6);
 	
-	MeshbAddQuadUVs(
-		mesh, c_white, 1.0,
-		cross_x,
-		cross_y,
-		[
-			(dx) / tex_w,
-			(dy) / tex_h,
-			(dx + 80) / tex_w,
-			(dy + 80) / tex_h
-		],
-		Vector3FromTranslation(player).add(new Vector3(0, 0, 32)).subtract(cross_x.multiply(0.5)).subtract(cross_y.multiply(0.5)).add(cross_x.multiply(1.0))
-	);
+		// Check for interrupts
+		if (atkButton.pressed || useButton.pressed)
+		{
+			bInterruptMoving = true;
+		}
+		// TODO: if the player gets hurt, we probably want to stop this action too (but let it go immediately????)
+		if (player.lastDamaged)
+		{
+			bInterruptMoving = true;
+		}
+	
+		// If interrupt, go back to menu
+		if (bInterruptMoving)
+		{
+			// go back to prev state
+			return battleMachine.transitionTo(ABMSStateBattleMenu);
+		}
+	}
 }
