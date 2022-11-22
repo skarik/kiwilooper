@@ -1,6 +1,6 @@
 function EditorGet()
 {
-	return instance_find(ot_EditorTest, 0);
+	return instance_find(o_EditorLevel, 0);
 }
 
 function EditorGlobalDeleteSelection()

@@ -23,6 +23,10 @@ function AMapEditorState() constructor
 		showmask: kEditorViewMask_GizmoIcons | kEditorViewMask_NodeLinks,
 	};
 	
+	map = {
+		solids: array_create(0),
+	};
+	
 	static serializeBuffer = function(version, buffer, io_ser)
 	{
 		if (version >= kMapEditorFeature_None)

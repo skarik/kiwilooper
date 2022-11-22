@@ -11,7 +11,7 @@ function g_dcmdInitialize()
 	global.dcmd_Commands = [
 		{
 			command:	"editor",
-			func:		function(args){ room_goto(rm_EditorTest); _Loader.bRoomIsSet = true; return 0; },
+			func:		function(args){ room_goto(rm_EditorLevel); _Loader.bRoomIsSet = true; return 0; },
 			autocomp:	kDefaultAutoComplete,
 		},
 	];

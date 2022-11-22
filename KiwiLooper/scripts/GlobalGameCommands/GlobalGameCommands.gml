@@ -324,5 +324,5 @@ function Game_LoadEditor(fromTestSession)
 	global.game_loadingMap = "";
 	
 	// Return to the editor, the state of it should stay saved
-	room_goto(rm_EditorTest);
+	room_goto(rm_EditorLevel);
 }
