@@ -71,6 +71,39 @@ function AMapSolid() constructor
 		
 		return triangles;
 	}
+	
+	static ReadFromBuffer = function(buffer)
+	{
+		// faces[]
+		var face_count = buffer_read(buffer, buffer_u8);
+		faces = array_create(face_count);
+		for (var faceIndex = 0; faceIndex < face_count; ++faceIndex)
+		{
+			faces[faceIndex] = (new AMapSolidFace()).ReadFromBuffer(buffer);
+		}
+		// vertices[]
+		var vertex_count = buffer_read(buffer, buffer_u8);
+		vertices = array_create(vertex_count);
+		for (var vertexIndex = 0; vertexIndex < vertex_count; ++vertexIndex)
+		{
+			vertices[vertexIndex] = (new AMapSolidVertex()).SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
+		}
+	}
+	static WriteToBuffer = function(buffer)
+	{
+		// faces[]
+		buffer_write(buffer, buffer_u8, array_length(faces));
+		for (var faceIndex = 0; faceIndex < array_length(faces); ++faceIndex)
+		{
+			faces[faceIndex].WriteToBuffer(buffer);
+		}
+		// vertices[]
+		buffer_write(buffer, buffer_u8, array_length(vertices));
+		for (var vertexIndex = 0; vertexIndex < array_length(vertices); ++vertexIndex)
+		{
+			vertices[vertexIndex].SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
+		}
+	}
 }
 
 function AMapSolidFace() constructor
@@ -78,6 +111,38 @@ function AMapSolidFace() constructor
 	indicies = [];
 	uvinfo = new AMapSolidFaceUVInfo();
 	texture = new AMapSolidFaceTexture();
+	
+	static ReadFromBuffer = function(buffer)
+	{
+		// Index array
+		var index_count = buffer_read(buffer, buffer_u8);
+		indicies = array_create(index_count);
+		for (var indexIndex = 0; indexIndex < index_count; ++indexIndex)
+		{
+			indicies[indexIndex] = real(buffer_read(buffer, buffer_u8));
+		}
+		
+		// uvinfo
+		uvinfo.SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
+		
+		// texture
+		texture.SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
+	}
+	static WriteToBuffer = function(buffer)
+	{
+		// Index array
+		buffer_write(buffer, buffer_u8, array_length(indicies));
+		for (var indexIndex = 0; indexIndex < array_length(indicies); ++indexIndex)
+		{
+			buffer_write(buffer, buffer_u8, indicies[indexIndex]);
+		}
+		
+		// uvinfo
+		uvinfo.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
+		
+		// texture
+		texture.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
+	}
 }
 
 #macro kTextureTypeSprite 0
@@ -85,9 +150,31 @@ function AMapSolidFace() constructor
 
 function AMapSolidFaceTexture() constructor
 {
-	source = stl_lab0;
 	type = kTextureTypeSpriteTileset;
+	source = stl_lab0;
 	index = 0;
+	
+	static Equals = function(otherTexture)
+	{
+		return
+			type == otherTexture.type
+			&& source == otherTexture.source
+			&& index == otherTexture.index;
+	}
+	
+	static SerializeBuffer = function(buffer, ioMode, io_ser)
+	{
+		io_ser(self, "type", buffer, buffer_u8);
+		if (type == kTextureTypeSprite || type == kTextureTypeSpriteTileset)
+		{
+			io_ser(self, "source", buffer, buffer_u64);
+			io_ser(self, "index", buffer, buffer_u16);
+		}
+		else
+		{
+			debugLog(kLogError, "Invalid AMapSolidFaceTexture type \"" + string(type) + "\"");
+		}
+	}
 }
 
 #macro kSolidMappingWorld 0		// Specific case of Normal, where normal is locked to nearest axes
@@ -101,9 +188,29 @@ function AMapSolidFaceUVInfo() constructor
 	scale = new Vector2(1.0, 1.0);
 	offset = new Vector2(0, 0);
 	rotation = 0.0;
+	
+	static SerializeBuffer = function(buffer, ioMode, io_ser)
+	{
+		io_ser(self, "mapping", buffer, buffer_u8);
+		io_ser(normal, "x", buffer, buffer_f64);
+		io_ser(normal, "y", buffer, buffer_f64);
+		io_ser(normal, "z", buffer, buffer_f64);
+		io_ser(scale, "x", buffer, buffer_f64);
+		io_ser(scale, "y", buffer, buffer_f64);
+		io_ser(offset, "x", buffer, buffer_f64);
+		io_ser(offset, "y", buffer, buffer_f64);
+		io_ser(self, "rotation", buffer, buffer_f64);
+	}
 }
 
 function AMapSolidVertex() constructor
 {
 	position = new Vector3(0, 0, 0);
+	
+	static SerializeBuffer = function(buffer, ioMode, io_ser)
+	{
+		io_ser(position, "x", buffer, buffer_f64);
+		io_ser(position, "y", buffer, buffer_f64);
+		io_ser(position, "z", buffer, buffer_f64);
+	}
 }
