@@ -88,6 +88,7 @@ function AMapSolid() constructor
 		{
 			vertices[vertexIndex] = (new AMapSolidVertex()).SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
 		}
+		return self;
 	}
 	static WriteToBuffer = function(buffer)
 	{
@@ -103,6 +104,7 @@ function AMapSolid() constructor
 		{
 			vertices[vertexIndex].SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
 		}
+		return self;
 	}
 }
 
@@ -127,6 +129,8 @@ function AMapSolidFace() constructor
 		
 		// texture
 		texture.SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
+		
+		return self;
 	}
 	static WriteToBuffer = function(buffer)
 	{
@@ -142,6 +146,8 @@ function AMapSolidFace() constructor
 		
 		// texture
 		texture.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
+		
+		return self;
 	}
 }
 
@@ -174,6 +180,7 @@ function AMapSolidFaceTexture() constructor
 		{
 			debugLog(kLogError, "Invalid AMapSolidFaceTexture type \"" + string(type) + "\"");
 		}
+		return self;
 	}
 }
 
@@ -200,6 +207,7 @@ function AMapSolidFaceUVInfo() constructor
 		io_ser(offset, "x", buffer, buffer_f64);
 		io_ser(offset, "y", buffer, buffer_f64);
 		io_ser(self, "rotation", buffer, buffer_f64);
+		return self;
 	}
 }
 
@@ -212,5 +220,6 @@ function AMapSolidVertex() constructor
 		io_ser(position, "x", buffer, buffer_f64);
 		io_ser(position, "y", buffer, buffer_f64);
 		io_ser(position, "z", buffer, buffer_f64);
+		return self;
 	}
 }

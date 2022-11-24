@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "BBox_SD",
+  "name": "Plane3_SD",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

@@ -99,6 +99,24 @@ function meshb_AddQuad(mesh, quadArray)
 	meshb_PushVertex(mesh, vert3);
 }
 
+function meshb_AddTri(mesh, triArray)
+{
+	meshb_PushVertex(mesh, triArray[0]);
+	meshb_PushVertex(mesh, triArray[1]);
+	meshb_PushVertex(mesh, triArray[2]);
+}
+
+function meshb_AddTris(mesh, triArray)
+{
+	var vert_count = array_length(triArray);
+	for (var i = 0; i < vert_count; i += 3)
+	{
+		meshb_PushVertex(mesh, triArray[i + 0]);
+		meshb_PushVertex(mesh, triArray[i + 1]);
+		meshb_PushVertex(mesh, triArray[i + 2]);
+	}
+}
+
 function meshb_CreateEmptyMesh()
 {
 	var mesh = meshb_Begin();
