@@ -158,7 +158,7 @@ function AMapSolidFaceTexture() constructor
 {
 	type = kTextureTypeSpriteTileset;
 	source = stl_lab0;
-	index = 0;
+	index = 1;
 	
 	static Equals = function(otherTexture)
 	{
@@ -166,6 +166,44 @@ function AMapSolidFaceTexture() constructor
 			type == otherTexture.type
 			&& source == otherTexture.source
 			&& index == otherTexture.index;
+	}
+	
+	static GetTextureSize = function()
+	{
+		gml_pragma("forceinline");
+		if (type == kTextureTypeSpriteTileset)
+		{
+			return [16, 16];
+		}
+		else if (type == kTextureTypeSprite)
+		{
+			return [sprite_get_width(source), sprite_get_height(source)];
+		}
+		else
+		{
+			debugLog(kLogError, "Invalid AMapSolidFaceTexture type \"" + string(type) + "\"");
+			return [16, 16];
+		}
+	}
+	static GetTextureUVs = function()
+	{
+		if (type == kTextureTypeSprite)
+		{
+			return sprite_get_uvs(source, index);
+		}
+		else if (type == kTextureTypeSpriteTileset)
+		{
+			var uv_source = sprite_get_uvs(source, 0);
+			
+			var div_x = int64(index) % 16;
+			var div_y = floor(index / 16);
+			
+			return [
+				lerp(uv_source[0], uv_source[2], div_x / 16),
+				lerp(uv_source[1], uv_source[3], div_y / 16),
+				lerp(uv_source[0], uv_source[2], (div_x + 1) / 16),
+				lerp(uv_source[1], uv_source[3], (div_y + 1) / 16)];
+		}
 	}
 	
 	static SerializeBuffer = function(buffer, ioMode, io_ser)
@@ -195,6 +233,20 @@ function AMapSolidFaceUVInfo() constructor
 	scale = new Vector2(1.0, 1.0);
 	offset = new Vector2(0, 0);
 	rotation = 0.0;
+	
+	static TransformPoint = function(io_coord, solidTexture)
+	{
+		var tex_size = solidTexture.GetTextureSize();
+		
+		io_coord.x /= tex_size[0];
+		io_coord.y /= tex_size[1];
+		
+		io_coord.addSelf(offset).multiplyComponentSelf(scale).rotateSelf(rotation);
+		
+		// Bias to the UVs? Or do we want to do this in the shader?
+		// Let's just...do this in the shader, methinks
+		//uvPoint.biasUVSelf(face_tex_uvs);
+	}
 	
 	static SerializeBuffer = function(buffer, ioMode, io_ser)
 	{

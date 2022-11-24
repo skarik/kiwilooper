@@ -35,23 +35,23 @@ function meshb_CreateVertexFormat()
 	return format;
 }
 
-/// @function meshb_Begin()
+/// @function meshb_Begin(vertex_format)
 /// @desc Create a mesh instance that can now be edited from here.
 /// @returns Mesh handle
-function meshb_Begin()
+function meshb_Begin(vertex_format=null)
 {
 	var l_mesh = vertex_create_buffer();
-	meshb_BeginEdit(l_mesh);
+	meshb_BeginEdit(l_mesh, vertex_format);
 	
 	return l_mesh;
 }
 
-/// @function meshb_BeginEdit(mesh)
+/// @function meshb_BeginEdit(mesh, vertex_format)
 /// @desc Begin editing a mesh.
-function meshb_BeginEdit(mesh)
+function meshb_BeginEdit(mesh, vertex_format=null)
 {
 	static m_vformat = meshb_CreateVertexFormat();
-	vertex_begin(mesh, m_vformat);
+	vertex_begin(mesh, vertex_format == null ? m_vformat : vertex_format);
 }
 
 /// @function meshb_End(mesh)
@@ -80,9 +80,10 @@ function meshB_Cleanup(mesh)
 	vertex_delete_buffer(mesh);
 }
 
-// quad layout:
-// 0 1
-// 2 3
+/// @desc
+///		quad layout:
+///		0 1
+///		2 3
 function meshb_AddQuad(mesh, quadArray)
 {
 	var vert0 = quadArray[0];

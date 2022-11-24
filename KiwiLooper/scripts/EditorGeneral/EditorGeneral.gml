@@ -46,7 +46,7 @@ function EditorLevel_Init()
 		EditorSolidsRendererFree();
 		EditorSolidsRendererCreate();
 		
-		
+		// Rebuild props now
 		MapRebuilPropsOnly();
 	
 		// Now that we have collision, recreate the splats
@@ -149,12 +149,45 @@ function EditorSolidsRendererFree()
 		idelete(solidsRenderer);
 	}
 }
+
+
+function MapGeometry_CreateVertexFormat()
+{
+	static format = null;
+	if (format == null)
+	{
+		vertex_format_begin();
+		{
+			vertex_format_add_position_3d();
+			vertex_format_add_color();
+			vertex_format_add_texcoord();
+			vertex_format_add_normal();
+			vertex_format_add_custom(vertex_type_float4, vertex_usage_texcoord); // per-prim Atlas Info
+		}
+		format = vertex_format_end();
+	}
+	return format;
+}
+/// @function MapGeometry_PushVertex(mesh, vertex)
+/// @desc Appends a vertex to the given mesh. Must be under edit.
+/// @param {Handle} Mesh to edit
+/// @param {MBVertex} Data to add
+function MapGeometry_PushVertex(mesh, vertex)
+{
+	vertex_position_3d(mesh, vertex.position.x, vertex.position.y, vertex.position.z);
+	vertex_color(mesh, vertex.color, vertex.alpha);
+	vertex_texcoord(mesh, vertex.uv.x, vertex.uv.y);
+	vertex_normal(mesh, vertex.normal.x, vertex.normal.y, vertex.normal.z);
+	vertex_float4(mesh, vertex.atlas[0], vertex.atlas[1], vertex.atlas[2], vertex.atlas[3]);
+}
+
+
 function EditorSolidsRendererCreate()
 {
 	solidsRenderer = inew(ob_3DObject);
 	solidsRenderer.lit = true; // TODO
 	
-	var mesh = meshb_Begin();
+	var mesh = meshb_Begin(MapGeometry_CreateVertexFormat());
 	for (var solidIndex = 0; solidIndex < array_length(m_state.map.solids); ++solidIndex)
 	{
 		var mapSolid = m_state.map.solids[solidIndex];
@@ -163,8 +196,9 @@ function EditorSolidsRendererCreate()
 			var face = mapSolid.faces[faceIndex];
 			var triangleList = mapSolid.TriangulateFace(faceIndex, false);
 			
+			var atlasInfo = face.texture.GetTextureUVs();
 			// Get the atlas UVs used for this face
-			var face_tex_uvs = sprite_get_uvs(face.texture.source, face.texture.index); // TODO: also account for different face.texture.type's
+			//var face_tex_uvs = sprite_get_uvs(face.texture.source, face.texture.index); // TODO: also account for different face.texture.type's
 			
 			// Now grab the vertices
 			var faceMesh = array_create(array_length(triangleList) * 3);
@@ -189,9 +223,11 @@ function EditorSolidsRendererCreate()
 					
 					// Get UVs
 					var uvPoint = facePlane.flattenPoint(solidVertex.position);
-					uvPoint.addSelf(face.uvinfo.offset).multiplyComponentSelf(face.uvinfo.scale).rotateSelf(face.uvinfo.rotation);
+					/*uvPoint.addSelf(face.uvinfo.offset).multiplyComponentSelf(face.uvinfo.scale).rotateSelf(face.uvinfo.rotation);
 					// Bias to the UVs
-					uvPoint.biasUVSelf(face_tex_uvs);
+					uvPoint.biasUVSelf(face_tex_uvs);*/
+					face.uvinfo.TransformPoint(uvPoint, face.texture);
+					
 					meshVert.uv.x = uvPoint.x;
 					meshVert.uv.y = uvPoint.y;
 					
@@ -201,15 +237,23 @@ function EditorSolidsRendererCreate()
 				
 				// Calculate normal for this triangle
 				var faceNormal = TriangleGetNormal([Vector3FromTranslation(faceMesh[0].position), Vector3FromTranslation(faceMesh[1].position), Vector3FromTranslation(faceMesh[2].position)]);
+				
+				// Write normals + uvs
 				for (var i = 0; i < 3; ++i)
 				{
 					faceMesh[triangleIndex * 3 + i].normal.x = faceNormal.x;
 					faceMesh[triangleIndex * 3 + i].normal.y = faceNormal.y;
 					faceMesh[triangleIndex * 3 + i].normal.z = faceNormal.z;
+					
+					faceMesh[triangleIndex * 3 + i].atlas = atlasInfo;
 				}
 			}
 			// Now that everything fixed up, add the tri
-			meshb_AddTris(mesh, faceMesh);
+			//meshb_AddTris(mesh, faceMesh);
+			for (var i = 0; i < array_length(faceMesh); ++i)
+			{
+				MapGeometry_PushVertex(mesh, faceMesh[i]);
+			}
 		}
 	}
 	
