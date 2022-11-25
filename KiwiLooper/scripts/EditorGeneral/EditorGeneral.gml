@@ -196,9 +196,8 @@ function EditorSolidsRendererCreate()
 			var face = mapSolid.faces[faceIndex];
 			var triangleList = mapSolid.TriangulateFace(faceIndex, false);
 			
-			var atlasInfo = face.texture.GetTextureUVs();
 			// Get the atlas UVs used for this face
-			//var face_tex_uvs = sprite_get_uvs(face.texture.source, face.texture.index); // TODO: also account for different face.texture.type's
+			var atlasInfo = face.texture.GetTextureUVs();
 			
 			// Now grab the vertices
 			var faceMesh = array_create(array_length(triangleList) * 3);
@@ -223,9 +222,6 @@ function EditorSolidsRendererCreate()
 					
 					// Get UVs
 					var uvPoint = facePlane.flattenPoint(solidVertex.position);
-					/*uvPoint.addSelf(face.uvinfo.offset).multiplyComponentSelf(face.uvinfo.scale).rotateSelf(face.uvinfo.rotation);
-					// Bias to the UVs
-					uvPoint.biasUVSelf(face_tex_uvs);*/
 					face.uvinfo.TransformPoint(uvPoint, face.texture);
 					
 					meshVert.uv.x = uvPoint.x;

@@ -282,6 +282,19 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 		return [x, y, z];
 	}
 	
+	static asXY = function()
+	{
+		return new Vector2(x, y);
+	}
+	static asXZ = function()
+	{
+		return new Vector2(x, z);
+	}
+	static asYZ = function()
+	{
+		return new Vector2(y, z);
+	}
+	
 	static toString = function()
 	{
 		return "<" + string(x) + ", " + string(y) + ", " + string(z) + ">";

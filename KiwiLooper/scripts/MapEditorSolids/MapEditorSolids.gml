@@ -22,6 +22,25 @@ function AMapSolid() constructor
 		return BBox3FromMinMax(min_pos, max_pos);
 	}
 	
+	static GetFaceBBox = function(faceIndex)
+	{
+		var min_pos = vertices[faces[faceIndex].indicies[0]].position.copy();
+		var max_pos = vertices[faces[faceIndex].indicies[0]].position.copy();
+		
+		for (var i = 1; i < array_length(faces[faceIndex].indicies); ++i)
+		{
+			min_pos.x = min(min_pos.x, vertices[faces[faceIndex].indicies[i]].position.x);
+			min_pos.y = min(min_pos.y, vertices[faces[faceIndex].indicies[i]].position.y);
+			min_pos.z = min(min_pos.z, vertices[faces[faceIndex].indicies[i]].position.z);
+			
+			max_pos.x = max(max_pos.x, vertices[faces[faceIndex].indicies[i]].position.x);
+			max_pos.y = max(max_pos.y, vertices[faces[faceIndex].indicies[i]].position.y);
+			max_pos.z = max(max_pos.z, vertices[faces[faceIndex].indicies[i]].position.z);
+		}
+		
+		return BBox3FromMinMax(min_pos, max_pos);
+	}
+	
 	static TriangulateFace = function(faceIndex, triangleFan)
 	{
 		var triangles = [];

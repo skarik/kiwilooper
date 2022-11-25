@@ -1,4 +1,4 @@
-#macro kPickerHitMaskTilemap	0x01
+#macro kPickerHitMaskTilemap	0x01 // Works on solids as well
 #macro kPickerHitMaskEntity		0x02
 #macro kPickerHitMaskProp		0x04
 #macro kPickerHitMaskSplat		0x08
@@ -118,6 +118,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 	// Run against the terrain
 	if (hitMask & kPickerHitMaskTilemap)
 	{
+		// Cast against tilemap first
 		if (raycast4_tilemap(rayStart, rayDir))
 		{
 			var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
@@ -137,6 +138,37 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 				ds_priority_add(l_priorityHits, [EditorSelectionWrapTile(EditorGet().m_tilemap.tiles[tile_index]), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
 			}
 		}
+		
+		// Cast against solids second
+		{
+			for (var solidIndex = 0; solidIndex < array_length(EditorGet().m_state.map.solids); ++solidIndex)
+			{
+				var mapSolid = EditorGet().m_state.map.solids[solidIndex];
+				
+				var solidBBox = mapSolid.GetBBox();
+				// Create an AABB for the solid to see if we even hit
+				if (raycast4_box2(solidBBox, rayStart, rayDir))
+				{
+					// Let's cast against each face now
+					for (var faceIndex = 0; faceIndex < array_length(mapSolid.faces); ++faceIndex)
+					{
+						var face = mapSolid.faces[faceIndex];
+						// Create an array of positions
+						var face_positions = array_create(array_length(face.indicies));
+						for (var indexIndex = 0; indexIndex < array_length(face.indicies); ++indexIndex)
+						{
+							face_positions[indexIndex] = mapSolid.vertices[face.indicies[indexIndex]].position;
+						}
+						
+						// Now cast against it
+						if (raycast4_polygon(face_positions, rayStart, rayDir))
+						{
+							ds_priority_add(l_priorityHits, [EditorSelectionWrapPrimitive(mapSolid, faceIndex), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+						}
+					}
+				}
+			}
+		} // End solids
 	}
 		
 	// Pull the priority to a list
@@ -268,7 +300,6 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 						m_showSelectGizmo.m_maxes[iSelection] = splatBBox.getMax();
 						m_showSelectGizmo.m_trses[iSelection] = matrix_multiply(splatRotation, splatTranslation);
 					}
-					// todo: tiles
 					else if (selection.type == kEditorSelection_Tile)
 					{
 						var tile = selection.object;
@@ -276,6 +307,30 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 						// todo
 						m_showSelectGizmo.m_mins[iSelection]  = new Vector3(tile.x * 16,		 tile.y * 16,	   -16)				.add(new Vector3(-0.5, -0.5, -0.5));
 						m_showSelectGizmo.m_maxes[iSelection] = new Vector3(tile.x * 16 + 16, tile.y * 16 + 16, tile.height * 16).add(new Vector3( 0.5,  0.5,  0.5));
+						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
+					}
+					else if (selection.type == kEditorSelection_Primitive)
+					{
+						var primitive = selection.object.primitive;
+						
+						// get the bbox
+						var primBBox = primitive.GetBBox();
+						var primBBoxFace = primitive.GetFaceBBox(selection.object.face);
+						// todo: handle solid rotations
+						
+						/*m_showSelectGizmo.m_mins[iSelection]  = primBBox.getMin();
+						m_showSelectGizmo.m_maxes[iSelection] = primBBox.getMax();
+						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();*/
+						
+						m_showSelectGizmo.m_mins[iSelection]  = primBBoxFace.getMin();
+						m_showSelectGizmo.m_maxes[iSelection] = primBBoxFace.getMax();
+						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
+					}
+					// Invalid object type fallthru:
+					else
+					{
+						m_showSelectGizmo.m_mins[iSelection]  = new Vector3(-16, -16, -16);
+						m_showSelectGizmo.m_maxes[iSelection] = new Vector3(16, 16, 16);
 						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
 					}
 				}

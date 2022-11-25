@@ -43,16 +43,27 @@ function EditorSelectionWrapSplat( splat )
 	selection.object = splat;
 	return selection;
 }
+function EditorSelectionWrapPrimitive( mapSolid, faceIndex )
+{
+	var selection = new AEditorSelection();
+	selection.type = kEditorSelection_Primitive;
+	selection.object = {
+		primitive:	mapSolid,
+		face:		faceIndex,
+		};
+	return selection;
+}
 
 function EditorSelectionWrap( ent, type )
 {
 	switch (type)
 	{
-	case kEditorSelection_None:		return ent;
-	case kEditorSelection_Prop:		return EditorSelectionWrapProp(ent);
-	case kEditorSelection_Tile:		return EditorSelectionWrapTile(ent);
-	case kEditorSelection_TileFace:	return EditorSelectionWrapTileFace(ent.tile, ent.normal);
-	case kEditorSelection_Splat:	return EditorSelectionWrapSplat(ent);
+	case kEditorSelection_None:			return ent;
+	case kEditorSelection_Prop:			return EditorSelectionWrapProp(ent);
+	case kEditorSelection_Tile:			return EditorSelectionWrapTile(ent);
+	case kEditorSelection_TileFace:		return EditorSelectionWrapTileFace(ent.tile, ent.normal);
+	case kEditorSelection_Splat:		return EditorSelectionWrapSplat(ent);
+	case kEditorSelection_Primitive:	return EditorSelectionWrapPrimitive(ent.primitive, ent.face);
 	}
 	return null;
 }
