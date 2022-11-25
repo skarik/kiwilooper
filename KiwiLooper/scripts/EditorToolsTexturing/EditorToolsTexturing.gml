@@ -264,7 +264,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		
 		var hitObjects = [];
 		var hitDists = [];
-		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists, kPickerHitMaskTilemap);
+		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists, kPickerHitMaskTilemap, true);
 		if (hitCount > 0)
 		{
 			if (!bTransitiveCheck)

@@ -224,6 +224,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 			
 			var bSignalAnyPropChange = false;
 			var bSignalAnySplatChange = false;
+			//var bSignalAnyPrimitiveChange = false;
 			var signalProp = null;
 			var signalSplat = null;
 			
@@ -249,6 +250,8 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					}
 					else if (selection.type == kEditorSelection_Tile || selection.type == kEditorSelection_TileFace)
 						continue; // Skip the world stuff for now
+					else if (selection.type == kEditorSelection_Primitive)
+						continue; // Skip primitives as well for now
 				}
 				// Not a struct, must be an instance:
 				else if (!iexists(selection))
@@ -282,6 +285,65 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					bSignalAnySplatChange |= (target_type == kEditorSelection_Splat);
 					if (target_type == kEditorSelection_Splat)
 						signalSplat = target;
+						
+					//bSignalAnyPrimitiveChange |= (target_type == kEditorSelection_Primitive);
+				}
+			}
+			
+			// Run through the drag logic with primitives
+			for (var selectIndex = 0; selectIndex < array_length(m_editor.m_selection); ++selectIndex)
+			{
+				var selection = m_editor.m_selection[selectIndex];
+				if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
+					continue;
+					
+				var target = selection.object.primitive;
+				var target_face = selection.object.face;
+				// Get current position of our selection
+				var target_position = EditorSelectionGetPosition(selection);
+				
+				// Apply the offset based on the drag position offset
+				var startPosition = m_previousTargetsStart[selectIndex];
+				
+				var next_x = startPosition.x + delta_x;
+				var next_y = startPosition.y + delta_y;
+				var next_z = startPosition.z + delta_z;
+				
+				var bSignalChange = 
+						target_position.x != next_x
+					|| target_position.y != next_y
+					|| target_position.z != next_z;
+					
+				if (bSignalChange)
+				{
+					var delta_x = next_x - target_position.x;
+					var delta_y = next_y - target_position.y;
+					var delta_z = next_z - target_position.z;
+					
+					// Let's apply the change to the target.
+					if (target_face == null)
+					{
+						// Move the entire prim
+						for (var vertIndex = 0; vertIndex < array_length(target.vertices); ++vertIndex)
+						{
+							target.vertices[vertIndex].position.x += delta_x;
+							target.vertices[vertIndex].position.y += delta_y;
+							target.vertices[vertIndex].position.z += delta_z;
+						}
+					}
+					else
+					{
+						// Move only the single face
+						// TODO: If more than one face selected, remove the doubles.
+						for (var vertIndex = 0; vertIndex < array_length(target_face.indicies); ++vertIndex)
+						{
+							target.vertices[target_face.indicies[vertIndex]].position.x += delta_x;
+							target.vertices[target_face.indicies[vertIndex]].position.y += delta_y;
+							target.vertices[target_face.indicies[vertIndex]].position.z += delta_z;
+						}
+					}
+					
+					EditorGlobalSignalTransformChange(target, kEditorSelection_Primitive, kValueTypePosition, true);
 				}
 			}
 			
@@ -422,7 +484,8 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Tile
-					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace
+					|| m_editor.m_selection[0].type == kEditorSelection_Primitive)
 				{
 					bValidSelection = false;
 				}
@@ -561,7 +624,8 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 			if (is_struct(m_editor.m_selection[0]))
 			{
 				if (m_editor.m_selection[0].type == kEditorSelection_Tile
-					|| m_editor.m_selection[0].type == kEditorSelection_TileFace)
+					|| m_editor.m_selection[0].type == kEditorSelection_TileFace
+					|| m_editor.m_selection[0].type == kEditorSelection_Primitive)
 				{
 					bValidSelection = false;
 				}
@@ -589,6 +653,10 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 				{
 					target = m_editor.m_selection[0].object;
 					target_type = kEditorSelection_Splat;
+				}
+				else if (selection.type == kEditorSelection_Primitive)
+				{
+					// TODO.
 				}
 			}
 			var bCanRotate = is_struct(target) ? variable_struct_exists(target, "xrotation") : variable_instance_exists(target, "xrotation");

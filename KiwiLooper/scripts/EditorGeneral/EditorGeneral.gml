@@ -134,11 +134,23 @@ function EditorLevel_Init()
 
 	m_taskRebuildAi = null;
 	m_taskRebuildLighting = null;
+	
+	m_wantRebuildSolids = false;
 }
 
 function EditorLevel_Cleanup()
 {
 	EditorSolidsRendererFree(); // TODO: Other
+}
+
+
+function EditorSolidsUpdate()
+{
+	if (m_wantRebuildSolids)
+	{
+		m_wantRebuildSolids = false;
+		MapRebuildSolidsOnly();
+	}
 }
 
 function EditorSolidsRendererFree()

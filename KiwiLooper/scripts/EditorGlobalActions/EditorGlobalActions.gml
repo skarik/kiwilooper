@@ -119,6 +119,10 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 				{
 					MapRebuildSplats();
 				}
+				else if (type == kEditorSelection_Primitive)
+				{
+					MapRebuildSolidsOnly();
+				}
 			}
 			// otherwise, may need to request rebuilding gizmo meshes
 			else if (iexists(entity))
@@ -130,6 +134,16 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 						// Find the renderer & update it
 						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
 					}
+				}
+			}
+		}
+		else
+		{
+			if (is_struct(entity)) // assume struct inputs are props
+			{
+				if (type == kEditorSelection_Primitive)
+				{
+					m_wantRebuildSolids = true;
 				}
 			}
 		}

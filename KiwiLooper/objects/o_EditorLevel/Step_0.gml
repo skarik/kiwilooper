@@ -10,4 +10,6 @@ EditorSelectionUpdate();
 
 EditorToolsUpdate();
 
+EditorSolidsUpdate();
+
 EditorEntities_RunCallbacks();

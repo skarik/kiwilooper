@@ -228,7 +228,7 @@ function EditorToolsUpdate()
 		var pickerObjects = [];
 		var pickerDistances = [];
 		var pickerNormals = [];
-		var pickerCount = EditorPickerCast(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel), pickerObjects, pickerDistances, pickerNormals, kPickerHitMaskTilemap | kPickerHitMaskProp, m_selection);
+		var pickerCount = EditorPickerCast(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel), pickerObjects, pickerDistances, pickerNormals, kPickerHitMaskTilemap | kPickerHitMaskProp, false, m_selection);
 		if (pickerCount > 0)
 		{
 			toolWorldX = viewRayPos[0] + viewrayPixel[0] * pickerDistances[0];

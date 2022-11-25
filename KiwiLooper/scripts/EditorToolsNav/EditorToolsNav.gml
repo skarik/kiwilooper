@@ -2,8 +2,8 @@
 #macro kPickerHitMaskEntity		0x02
 #macro kPickerHitMaskProp		0x04
 #macro kPickerHitMaskSplat		0x08
-///@function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask, ignoreList)
-function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask=0xFF, ignoreList=[])
+///@function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask, hitSubobjects, ignoreList)
+function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask=0xFF, hitSubobjects=false, ignoreList=[])
 {
 	var l_priorityHits = ds_priority_create();
 		
@@ -163,7 +163,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 						// Now cast against it
 						if (raycast4_polygon(face_positions, rayStart, rayDir))
 						{
-							ds_priority_add(l_priorityHits, [EditorSelectionWrapPrimitive(mapSolid, faceIndex), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+							ds_priority_add(l_priorityHits, [EditorSelectionWrapPrimitive(mapSolid, hitSubobjects ? faceIndex : null), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
 						}
 					}
 				}
@@ -187,8 +187,8 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 	return l_priorityHitCount;
 }
 
-///@function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask)
-function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask=0xFF)
+///@function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask, hitSubobjects)
+function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask=0xFF, hitSubobjects=false)
 {
 	var droppedNormals = [];
 	return EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, droppedNormals, hitMask);
@@ -313,18 +313,27 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 					{
 						var primitive = selection.object.primitive;
 						
-						// get the bbox
-						var primBBox = primitive.GetBBox();
-						var primBBoxFace = primitive.GetFaceBBox(selection.object.face);
+						if (selection.object.face == null)
+						{
+							var primBBox = primitive.GetBBox();
+							
+							m_showSelectGizmo.m_mins[iSelection]  = primBBox.getMin();
+							m_showSelectGizmo.m_maxes[iSelection] = primBBox.getMax();
+							m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity()
+						}
+						else
+						{
+							var primBBoxFace = primitive.GetFaceBBox(selection.object.face);
+							primBBoxFace.extents.x += 1;
+							primBBoxFace.extents.y += 1;
+							primBBoxFace.extents.z += 1;
+							
+							m_showSelectGizmo.m_mins[iSelection]  = primBBoxFace.getMin();
+							m_showSelectGizmo.m_maxes[iSelection] = primBBoxFace.getMax();
+							m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
+						}
+						
 						// todo: handle solid rotations
-						
-						/*m_showSelectGizmo.m_mins[iSelection]  = primBBox.getMin();
-						m_showSelectGizmo.m_maxes[iSelection] = primBBox.getMax();
-						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();*/
-						
-						m_showSelectGizmo.m_mins[iSelection]  = primBBoxFace.getMin();
-						m_showSelectGizmo.m_maxes[iSelection] = primBBoxFace.getMax();
-						m_showSelectGizmo.m_trses[iSelection] = matrix_build_identity();
 					}
 					// Invalid object type fallthru:
 					else

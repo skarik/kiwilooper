@@ -3,6 +3,14 @@ function AMapSolid() constructor
 	faces = [];
 	vertices = [];
 	
+	// Working-time only transformations
+	/*position = new Vector3();
+	
+	static ApplyTransformation = function()
+	{
+		// 
+	}*/
+	
 	static GetBBox = function()
 	{
 		var min_pos = vertices[0].position.copy();
