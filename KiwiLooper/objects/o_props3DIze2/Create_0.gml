@@ -21,7 +21,7 @@ BuildMesh = function()
 		var element_height = sprite_get_height(prop.sprite);
 
 		// Default is they make a quad on the ground
-		switch (element_sprite)
+		switch (prop.sprite)
 		{
 			// Standing quads
 		case spr_metalBoard:

@@ -37,6 +37,16 @@ function EditorGlobalDeleteSelection()
 				delete currentSelection.object;
 				bRebuildProps = true;
 				break;
+				
+			case kEditorSelection_Primitive:
+				var solidIndex = array_get_index(m_state.map.solids, currentSelection.object.primitive);
+				if (solidIndex != null)
+				{
+					delete currentSelection.object.primitive;
+					array_delete(m_state.map.solids, solidIndex, 1);
+					bRebuildTiles = true;
+				}
+				break;
 			}
 		}
 		// Is it an object selection?
@@ -269,6 +279,8 @@ function EditorGlobalNukeMap_Work()
 		// Clear the ai map
 		m_aimap = new AMapAiInfo();
 		
+		// Clear solids
+		m_state.map.solids = [];
 		
 		// Now rebuild everything
 		// TODO: Is there a beter way to do this
