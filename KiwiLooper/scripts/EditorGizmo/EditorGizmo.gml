@@ -101,8 +101,8 @@ function EditorGizmoUpdate()
 		m_testMouse.SetEnabled();
 		m_testMouse.m_color = merge_color(c_gray, c_blue, 0.25);
 		m_testMouse.m_alpha = 0.5;
-		m_testMouse.m_min.set(other.toolWorldX - 4, other.toolWorldY - 4, other.toolWorldZ - 4);
-		m_testMouse.m_max.set(other.toolWorldX + 4, other.toolWorldY + 4, other.toolWorldZ + 4); // TODO: Maybe remove this on world or make optional? is personally distracting
+		m_testMouse.m_min.set(other.toolWorldX - 1, other.toolWorldY - 1, other.toolWorldZ - 1);
+		m_testMouse.m_max.set(other.toolWorldX + 1, other.toolWorldY + 1, other.toolWorldZ + 1); // TODO: Maybe remove this on world or make optional? is personally distracting
 		
 		// Toggle based on view options
 		if (other.m_state.view.showmask & kEditorViewMask_NodeLinks)

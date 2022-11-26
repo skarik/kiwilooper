@@ -11,7 +11,8 @@
 #macro kEditorToolRotate		10
 #macro kEditorToolScale			11
 #macro kEditorToolMakeSolids	12
-#macro kEditorTool_MAX			13
+#macro kEditorToolTextureSolids	13
+#macro kEditorTool_MAX			14
 
 #macro kEditorToolButtonStateNone	0x01
 #macro kEditorToolButtonStateMake	0x02
@@ -90,6 +91,7 @@ function EditorToolsSetup()
 		new AEditorToolStateRotate(),		// kEditorToolRotate
 		new AEditorToolStateScale(),		// kEditorToolScale
 		new AEditorToolStateMakeSolids(),	// kEditorToolMakeSolids
+		new AEditorToolStateTextureSolids(),// kEditorToolTextureSolids
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
 	
@@ -235,6 +237,7 @@ function EditorToolsUpdate()
 			toolWorldY = viewRayPos[1] + viewrayPixel[1] * pickerDistances[0];
 			toolWorldZ = viewRayPos[2] + viewrayPixel[2] * pickerDistances[0];
 			toolWorldNormal.copyFrom(pickerNormals[0]);
+			toolWorldNormal.normalize(); // For safety
 			toolWorldValid = true;
 		}
 		else

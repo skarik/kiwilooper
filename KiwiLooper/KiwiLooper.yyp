@@ -219,6 +219,7 @@
     {"id":{"name":"spr_metalLocker0","path":"sprites/spr_metalLocker0/spr_metalLocker0.yy",},"order":7,},
     {"id":{"name":"duiStepAlphaGlobal","path":"scripts/duiStepAlphaGlobal/duiStepAlphaGlobal.yy",},"order":2,},
     {"id":{"name":"settingsLoad","path":"scripts/settingsLoad/settingsLoad.yy",},"order":14,},
+    {"id":{"name":"EditorToolsTexturing2","path":"scripts/EditorToolsTexturing2/EditorToolsTexturing2.yy",},"order":6,},
     {"id":{"name":"string_rtrim","path":"scripts/string_rtrim/string_rtrim.yy",},"order":6,},
     {"id":{"name":"ssy_aiSafe","path":"sprites/ssy_aiSafe/ssy_aiSafe.yy",},"order":1,},
     {"id":{"name":"EntDoc","path":"scripts/EntDoc/EntDoc.yy",},"order":9,},

@@ -233,7 +233,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 		var rayDir = Vector3FromArray(o_Camera3D.viewToRay(pixelX, pixelY));
 		
 		// Do picker collision with the map
-		/*if (raycast4_tilemap(rayStart, rayDir))
+		if (raycast4_tilemap(rayStart, rayDir))
 		{
 			var hitBlockX = rayStart.x + rayDir.x * raycast4_get_hit_distance();
 			var hitBlockY = rayStart.y + rayDir.y * raycast4_get_hit_distance();
@@ -260,25 +260,7 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 					return EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
 				}
 			}
-		}*/
-		
-		var hitObjects = [];
-		var hitDists = [];
-		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists, kPickerHitMaskTilemap, true);
-		if (hitCount > 0)
-		{
-			if (!bTransitiveCheck)
-			{
-				// Update selection!
-				m_editor.m_selection[array_length(m_editor.m_selection)] = hitObjects[0];//EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
-				m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
-			}
-			else
-			{
-				return hitObjects[0];//EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
-			}
 		}
-		
 		return null;
 	};
 	

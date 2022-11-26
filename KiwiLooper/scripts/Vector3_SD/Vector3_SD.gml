@@ -217,7 +217,7 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 	{
 		x = -x;
 		y = -y;
-		z = -y;
+		z = -z;
 		return self;
 	}
 	

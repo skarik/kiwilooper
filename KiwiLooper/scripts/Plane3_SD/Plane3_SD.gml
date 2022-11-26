@@ -20,17 +20,32 @@ function Plane3(n_normal, n_offset) constructor
 	}
 	
 	static flattenPoint = function(coplanar_point)
-	{
-		var side = n.cross(abs(n.x > 0.99) ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0)).normal();
-		var up = n.cross(side).normal();
+	{	
+		var side = n.cross((abs(n.z) > 0.95) ? new Vector3(0, -1, 0) : new Vector3(0, 0, 1)).normalize();
+		var up   = n.cross(side.negate()).negate().normalize();
+		
+		return new Vector2(side.dot(coplanar_point), up.dot(coplanar_point));
+		
+		// This shall remain here as a testement to...something
+		/*
+		//var side = n.cross(abs(n.x > 0.99) ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0)).normal();
+		//var up = n.cross(side).normal();
+		//var up = n.cross((abs(n.x) > 0.95) ? new Vector3(0, 0, 1) : new Vector3(1, 0, 0)).negateSelf().normalize();
+		//var side = n.cross(up).normalize();
+		var side = n.cross((abs(n.z) > 0.95) ? new Vector3(0, -1, 0) : new Vector3(0, 0, 1)).normalize();
+		var up = n.cross(side).normalize();
+		
 		var matrix = CE_MatrixCreate(
 			side.x, up.x, n.x, 0.0,
 			side.y, up.y, n.y, 0.0,
 			side.z, up.z, n.z, 0.0,
-			0.0, 0.0, -d, 1.0);
-		CE_MatrixInverse(matrix);
+			0.0, 0.0, -d, 1.0);	
+		//CE_MatrixInverse(matrix);
+		CE_MatrixTranspose(matrix);
+		
 		// IT'S TIME FOR YOUR POINT FLATTENING
 		var flattened = coplanar_point.transformAMatrix(matrix);
 		return new Vector2(flattened.x, flattened.y);
+		*/
 	}
 }

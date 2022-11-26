@@ -335,11 +335,11 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 					{
 						// Move only the single face
 						// TODO: If more than one face selected, remove the doubles.
-						for (var vertIndex = 0; vertIndex < array_length(target_face.indicies); ++vertIndex)
+						for (var vertIndex = 0; vertIndex < array_length(target.faces[target_face].indicies); ++vertIndex)
 						{
-							target.vertices[target_face.indicies[vertIndex]].position.x += delta_x;
-							target.vertices[target_face.indicies[vertIndex]].position.y += delta_y;
-							target.vertices[target_face.indicies[vertIndex]].position.z += delta_z;
+							target.vertices[target.faces[target_face].indicies[vertIndex]].position.x += delta_x;
+							target.vertices[target.faces[target_face].indicies[vertIndex]].position.y += delta_y;
+							target.vertices[target.faces[target_face].indicies[vertIndex]].position.z += delta_z;
 						}
 					}
 					

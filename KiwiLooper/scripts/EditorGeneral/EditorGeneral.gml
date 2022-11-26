@@ -131,10 +131,10 @@ function EditorLevel_Init()
 	m_entityInstList = new AEntityList();
 	m_aimap = new AMapAiInfo();
 
-
 	m_taskRebuildAi = null;
 	m_taskRebuildLighting = null;
-	
+
+	// TODO: combine with [m_solidUpdateRequestList]
 	m_wantRebuildSolids = false;
 }
 
@@ -196,6 +196,8 @@ function MapGeometry_PushVertex(mesh, vertex)
 
 function EditorSolidsRendererCreate()
 {
+	// TODO: Batch solids into 4-solid groups (or just about that)
+	
 	solidsRenderer = inew(ob_3DObject);
 	solidsRenderer.lit = true; // TODO
 	
@@ -211,14 +213,14 @@ function EditorSolidsRendererCreate()
 			// Get the atlas UVs used for this face
 			var atlasInfo = face.texture.GetTextureUVs();
 			
+			// Create a plane for calculating UVs
+			var facePlane = new Plane3(face.uvinfo.normal, new Vector3(0, 0, 0));
+			
 			// Now grab the vertices
 			var faceMesh = array_create(array_length(triangleList) * 3);
 			for (var triangleIndex = 0; triangleIndex < array_length(triangleList); ++triangleIndex)
 			{
 				var triIndices = triangleList[triangleIndex];
-				
-				// Create a plane for calculating UVs
-				var facePlane = new Plane3(face.uvinfo.normal, new Vector3(0, 0, 0));
 				
 				// Set up the positions & uvs
 				for (var triCorner = 0; triCorner < 3; ++triCorner)

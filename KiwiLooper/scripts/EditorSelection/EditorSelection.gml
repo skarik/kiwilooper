@@ -7,6 +7,8 @@
 #macro kEditorSelection_VoxelFace		6 // unused
 #macro kEditorSelection_Primitive		7
 #macro kEditorSelection_PrimitiveFace	8 // subset of Primitive. Only used in specific cases.
+#macro kEditorSelection_PrimitiveEdge	9
+#macro kEditorSelection_PrimitiveVertex	10
 
 function AEditorSelection() constructor
 {

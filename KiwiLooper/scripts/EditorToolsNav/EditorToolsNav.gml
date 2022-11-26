@@ -191,7 +191,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 function EditorPickerCast2(rayStart, rayDir, outHitObjects, outHitDistances, hitMask=0xFF, hitSubobjects=false)
 {
 	var droppedNormals = [];
-	return EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, droppedNormals, hitMask);
+	return EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, droppedNormals, hitMask, hitSubobjects);
 }
 
 /// @function AEditorToolStateSelect() constructor
