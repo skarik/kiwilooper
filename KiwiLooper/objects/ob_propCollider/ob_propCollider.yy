@@ -30,7 +30,7 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Tileset 3D",
-    "path": "folders/Objects/Game/Tileset 3D.yy",
+    "name": "Static World Rendering (Props, Tiles, Geo)",
+    "path": "folders/Objects/Game/Static World Rendering (Props, Tiles, Geo).yy",
   },
 }

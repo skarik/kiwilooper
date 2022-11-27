@@ -3,6 +3,7 @@
 function _collision4_init()
 {
 	global.tiles_main = null;
+	global.geometry_main = null;
 }
 gml_pragma("global", "_collision4_init()");
 
@@ -20,6 +21,21 @@ function _collision4_get_tilemap()
 	}
 	return null;
 }
+// get the current geometry
+function _collision4_get_geometry()
+{
+	gml_pragma("forceinline");
+	if (iexists(global.geometry_main))
+	{
+		return global.geometry_main;
+	}
+	else if (iexists(o_geometry3DIze))
+	{
+		return o_geometry3DIze;
+	}
+	return null;
+}
+
 
 /// @function collision4_get_highest(check_x, check_y, check_z)
 function collision4_get_highest(check_x, check_y, check_z)

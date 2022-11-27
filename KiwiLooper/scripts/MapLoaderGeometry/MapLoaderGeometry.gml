@@ -1,5 +1,7 @@
 #macro kMapGeometryFeature_None				0x0001
-#macro kMapGeometryFeature_TriangleTree		0x0002
+#macro kMapGeometryFeature_PolygonTree		0x0002
+#macro kMapGeometryFeature_Portals			0x0004
+#macro kMapGeometryFeature_PVSGroups		0x0008
 
 #macro kMapGeometryFeature_Current	kMapGeometryFeature_None
 

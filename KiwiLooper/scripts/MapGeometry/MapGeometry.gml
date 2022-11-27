@@ -5,7 +5,10 @@ function AMapGeometry() constructor
 	// AMapGeometryTriangle[]
 	triangles = [];
 	// TODO
-	triangle_tree = null;
+	polygons = [];
+	polygon_tree = null;
+	portals = [];
+	visible_sets = [];
 	
 	static serializeBuffer = function(version, buffer, ioMode, io_ser)
 	{
@@ -24,6 +27,8 @@ function AMapGeometry() constructor
 			}
 			for (var materialIndex = 0; materialIndex < material_count; ++materialIndex)
 			{
+				if (ioMode == kIoRead) 
+					materials[materialIndex] = new AMapSolidFaceTexture();
 				materials[materialIndex].SerializeBuffer(buffer, ioMode, io_ser);
 			}
 			
@@ -40,11 +45,13 @@ function AMapGeometry() constructor
 			}
 			for (var triangleIndex = 0; triangleIndex < triangle_count; ++triangleIndex)
 			{
+				if (ioMode == kIoRead) 
+					triangles[triangleIndex] = new AMapGeometryTriangle();
 				triangles[triangleIndex].SerializeBuffer(buffer, ioMode, io_ser);
 			}
 		}
 		
-		if (version >= kMapGeometryFeature_TriangleTree)
+		if (version >= kMapGeometryFeature_PolygonTree)
 		{
 			// TODO
 		}

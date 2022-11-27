@@ -33,7 +33,7 @@
     {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"lit","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
   ],
   "parent": {
-    "name": "Tileset 3D",
-    "path": "folders/Objects/Game/Tileset 3D.yy",
+    "name": "Static World Rendering (Props, Tiles, Geo)",
+    "path": "folders/Objects/Game/Static World Rendering (Props, Tiles, Geo).yy",
   },
 }

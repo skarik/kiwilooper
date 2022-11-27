@@ -3,14 +3,6 @@ function AMapSolid() constructor
 	faces = [];
 	vertices = [];
 	
-	// Working-time only transformations
-	/*position = new Vector3();
-	
-	static ApplyTransformation = function()
-	{
-		// 
-	}*/
-	
 	static GetBBox = function()
 	{
 		var min_pos = vertices[0].position.copy();
@@ -187,12 +179,29 @@ function AMapSolidFaceTexture() constructor
 	source = stl_lab0;
 	index = 1;
 	
+	uid = null;
+	
 	static Equals = function(otherTexture)
 	{
 		return
 			type == otherTexture.type
 			&& source == otherTexture.source
 			&& index == otherTexture.index;
+	}
+	
+	static BuildUID = function()
+	{
+		gml_pragma("forceinline");
+		if (type == kTextureTypeSpriteTileset || type == kTextureTypeSprite)
+		{
+			uid = string(type) + sprite_get_name(source) + string(index);
+		}
+		return uid;
+	}
+	static GetUID = function()
+	{
+		gml_pragma("forceinline");
+		return uid;
 	}
 	
 	static GetTextureSize = function()

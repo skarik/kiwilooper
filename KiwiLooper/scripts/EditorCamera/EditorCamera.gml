@@ -2,13 +2,12 @@ function EditorCameraSetup()
 {
 	zstart = z;
 	
-	bFirstPersonMode = false;
 	firstPersonBlend = 0.0;
 }
 function EditorCameraUpdate()
 {
 	// Do blending between modes
-	if (!bFirstPersonMode)
+	if (m_state.camera.mode == 0)
 	{
 		firstPersonBlend = max(0.0, firstPersonBlend - Time.deltaTime * 5.0);
 	}
@@ -18,7 +17,7 @@ function EditorCameraUpdate()
 	}
 	
 	// Do initial FP setup
-	if (bFirstPersonMode && !m_state.camera.fp_ready)
+	if (m_state.camera.mode == 1 && !m_state.camera.fp_ready)
 	{
 		m_state.camera.fp_ready = true;
 		m_state.camera.fp_rotation.z = m_state.camera.rotation.z;

@@ -136,28 +136,67 @@ function _Game_LoadMapInternal()
 		return;
 	}
 	
-	// Load in tiles
+	
+	// Load in tiles to check the map version
+	var bHasTilemap = false;
+	var tilemap = new ATilemap();
 	{
-		var tilemap = new ATilemap();
 		MapLoadTilemap(filedata, tilemap);
 		
-		tilemap.BuildLayers(null);
+		// Do we have a tilemap?
+		bHasTilemap = array_length(tilemap.tiles) > 0;
 	}
 	
-	// Load in props
+	if (bHasTilemap)
 	{
-		var propmap = new APropMap();
-		MapLoadProps(filedata, propmap);
+		// Load in tiles
+		{
+			tilemap.BuildLayers(null);
+		}
 		
-		propmap.RebuildPropLayer(null);
-	}
+		// Load in props
+		{
+			var propmap = new APropMap();
+			MapLoadProps(filedata, propmap);
+		
+			propmap.RebuildPropLayer(null);
+		}
 	
-	// W/ props & ents ready, start 3d-ify chain
-	if (!iexists(o_tileset3DIze) || !iexists(global.tiles_main)) ///global.tiles_main is defined in collision, should be cleaned up
+		// W/ props & ents ready, start 3d-ify chain
+		if (!iexists(o_tileset3DIze) || !iexists(global.tiles_main)) ///global.tiles_main is defined in collision, should be cleaned up
+		{
+			// Create the 3d-ify chain
+			global.tiles_main = null;
+			inew(o_tileset3DIze);
+		}
+	}
+	else
 	{
-		// Create the 3d-ify chain
+		// Load in geometry
+		{
+			var geometry = new AMapGeometry();
+			MapLoadGeometry(filedata, geometry);
+			
+			// Create manager with the geometry
+			var geo_render = inew(o_geometry3DIze);
+			geo_render.SetGeometry(geometry);
+			geo_render.Initialize();
+		}
+		
+		// Load in props
+		{
+			var propmap = new APropMap();
+			MapLoadProps(filedata, propmap);
+			
+			// Create the prop renderer with the propmap
+			var props = inew(o_props3DIze2);
+			props.SetMap(propmap);
+			props.BuildMesh();
+		}
+		
+		// Set up collision info
 		global.tiles_main = null;
-		inew(o_tileset3DIze);
+		global.geometry_main = instance_find(o_geometry3DIze, 0);
 	}
 	
 	// Load in ents:
@@ -297,9 +336,12 @@ function _Game_LoadMapInternal()
 ///@function function Game_LoadEditor(fromTestSession)
 function Game_LoadEditor(fromTestSession)
 {
-	// Destroy all props first
+	// Destroy world renderers
 	idelete(o_tileset3DIze);
 	idelete(o_props3DIze);
+	// Destroy world renderers v2
+	idelete(o_geometry3DIze);
+	idelete(o_props3DIze2);
 	// Destroy all splatters for good measure
 	idelete(ob_splatter);
 	// Destroy all effects

@@ -1,8 +1,10 @@
-#macro kMapEditorFeature_None				0x0001
-#macro kMapEditorFeature_CameraFirstPerson	0x0002
-#macro kMapEditorFeature_Solids				0x0004
+#macro kMapEditorFeature_None					0x0001
+#macro kMapEditorFeature_CameraFirstPerson		0x0002
+#macro kMapEditorFeature_Solids					0x0004
+#macro kMapEditorFeature_DirtyFlagsAndCamToggle	0x0005
+#macro kMapEditorFeature_ViewModeInfo			0x0007
 
-#macro kMapEditorFeature_Current	kMapEditorFeature_Solids
+#macro kMapEditorFeature_Current	kMapEditorFeature_DirtyFlagsAndCamToggle
 
 function MapLoadEditor(filedata, editorSavedState)
 {

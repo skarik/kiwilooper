@@ -38,18 +38,19 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 6, "Redo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 5, "Undo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", EditorGlobalTestMap, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", EditorGlobalTestMap, null, function(){ return m_state.map.geometry_valid; }));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid", null, EditorToolGridToggle, function(){ return toolGrid; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 8, "Larger Grid", null, EditorToolGridLarger, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 9, "Smaller Grid", null, EditorToolGridSmaller, null));
 		m_actionbar.labelGridSize = m_actionbar.AddElement(AToolbarElementAsLabel(null, 0, "Current grid size", "Grid: 16", 15));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 2, "Toggle First Person Camera", null, function(){ bFirstPersonMode = !bFirstPersonMode; }, function() { return bFirstPersonMode; }));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 2, "Toggle First Person Camera", null, function(){ m_state.camera.mode = !m_state.camera.mode; }, function() { return m_state.camera.mode; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetExtra, 0, "Center on selection", null, EditorCameraCenterOnSelection, null, function(){ return EditorSelectionGetLast() != null; }));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 11, "Rebuild static lighting", "Toast Lights", null, null));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 12, "Rebuild navigation information", "Cook AI", EditorGlobalRebuildAI, null)); // TODO: make a ui popup in case this takes forever
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 15, "Rebuild geometry information", "Compile", EditorGlobalCompileGeo, null, function(){ return !m_state.map.geometry_valid; })); // TODO: make a ui popup in case this takes forever
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 11, "Rebuild static lighting", "Toast Lights", EditorGlobalRebuildLights, null, function(){ return m_state.map.geometry_valid; }));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 12, "Rebuild navigation information", "Cook AI", EditorGlobalRebuildAI, null, function(){ return m_state.map.geometry_valid; })); // TODO: make a ui popup in case this takes forever
 	}
 	
 	// Create status bar

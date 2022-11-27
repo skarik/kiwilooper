@@ -1,7 +1,7 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "o_props3DIze2",
+  "name": "o_geometry3DIze",
   "spriteId": null,
   "solid": false,
   "visible": true,

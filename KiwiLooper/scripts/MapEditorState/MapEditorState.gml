@@ -16,6 +16,8 @@ function AMapEditorState() constructor
 		fp_ready: false,
 		fp_rotation: new Vector3(0, 0, 0),
 		fp_z: 0,
+		
+		mode: 0, // 0 for topdown, 1 for fps
 	};
 	
 	view = {
@@ -25,6 +27,10 @@ function AMapEditorState() constructor
 	
 	map = {
 		solids: array_create(0),
+		
+		geometry_valid:	false,
+		ai_valid:		false,
+		lighting_valid:	false,
 	};
 	
 	static serializeBuffer = function(version, buffer, ioMode, io_ser)
@@ -68,6 +74,15 @@ function AMapEditorState() constructor
 					map.solids[solidIndex].WriteToBuffer(buffer);
 				}
 			}
+		}
+		
+		if (version >= kMapEditorFeature_DirtyFlagsAndCamToggle)
+		{
+			io_ser(camera, "mode", buffer, buffer_u8);
+			
+			io_ser(map, "geometry_valid", buffer, buffer_bool);
+			io_ser(map, "ai_valid", buffer, buffer_bool);
+			io_ser(map, "lighting_valid", buffer, buffer_bool);
 		}
 	}
 }

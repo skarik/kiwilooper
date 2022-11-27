@@ -46,6 +46,7 @@ function EditorGlobalDeleteSelection()
 					array_delete(m_state.map.solids, solidIndex, 1);
 					bRebuildTiles = true;
 				}
+				EditorGlobalMarkDirtyGeometry();
 				break;
 			}
 		}
@@ -121,6 +122,7 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 				}
 				else if (type == kEditorSelection_Primitive)
 				{
+					EditorGlobalMarkDirtyGeometry();
 					MapRebuildSolidsOnly();
 				}
 			}
@@ -143,6 +145,7 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 			{
 				if (type == kEditorSelection_Primitive)
 				{
+					EditorGlobalMarkDirtyGeometry();
 					m_wantRebuildSolids = true;
 				}
 			}
@@ -184,6 +187,34 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 
 //=============================================================================
 
+function EditorGlobalMarkDirtyGeometry()
+{
+	with (EditorGet())
+	{
+		m_state.map.geometry_valid = false;
+		m_state.map.ai_valid = false;
+		m_state.map.lighting_valid = false;
+	}
+}
+
+function EditorGlobalMarkDirtyAi()
+{
+	with (EditorGet())
+	{
+		m_state.map.ai_valid = false;
+	}
+}
+
+function EditorGlobalMarkDirtyLighting()
+{
+	with (EditorGet())
+	{
+		m_state.map.lighting_valid = false;
+	}
+}
+
+//=============================================================================
+
 function EditorGlobalSaveMap()
 {
 	var default_name = "untitled.kmf";
@@ -205,6 +236,7 @@ function EditorGlobalSaveMap_Work(filepath)
 	MapSaveSplats(filedata, EditorGet().m_splatmap);
 	MapSaveEditor(filedata, EditorGet().m_state);
 	MapSaveAi(filedata, EditorGet().m_aimap);
+	MapSaveGeometry(filedata, EditorGet().m_mapgeometry);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -238,6 +270,7 @@ function EditorGlobalLoadMap_Work(filepath)
 	MapLoadSplats(filedata, EditorGet().m_splatmap);
 	MapLoadEditor(filedata, EditorGet().m_state);
 	MapLoadAi(filedata, EditorGet().m_aimap);
+	MapLoadGeometry(filedata, EditorGet().m_mapgeometry);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
@@ -387,4 +420,16 @@ function EditorGlobalRebuildAI()
 		
 	// Save the task in case we need to cancel
 	EditorGet().m_taskRebuildAi = tasker;
+}
+
+function EditorGlobalRebuildLights()
+{
+	// TODO
+}
+
+function EditorGlobalCompileGeo()
+{
+	// TODO
+	EditorGet().m_mapgeometry = MapGeo_BuildAll(EditorGet().m_state.map);
+	EditorGet().m_state.map.geometry_valid = true;
 }

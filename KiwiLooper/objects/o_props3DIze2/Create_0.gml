@@ -1,10 +1,7 @@
 /// @description Build all props into a single mesh
 
-var all_layers = layer_get_all();
-
 m_propmap = null;
 m_mesh = meshb_CreateEmptyMesh();
-
 
 SetMap = function(propmap)
 {
@@ -232,7 +229,7 @@ BuildMesh = function()
 	}
 	
 	// Naively roll through the prop map and build mesh for all of em
-	for (var propIndex = 0; propIndex < EditorGet().m_propmap.GetPropCount(); ++propIndex)
+	for (var propIndex = 0; propIndex < m_propmap.GetPropCount(); ++propIndex)
 	{
 		var prop = m_propmap.GetProp(propIndex);
 		buildProp(prop);

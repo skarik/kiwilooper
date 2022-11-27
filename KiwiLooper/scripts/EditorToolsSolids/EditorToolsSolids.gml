@@ -188,9 +188,13 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 				newSolid.faces[4].indicies = [1, 2, 6, 5];
 				newSolid.faces[5].indicies = [3, 0, 4, 7];
 				
+				// TODO: fix the normals on all the faces
+				
 				array_push(map.solids, newSolid);
 				
 				m_editor.MapRebuildSolidsOnly();
+				
+				EditorGlobalMarkDirtyGeometry();
 				
 				// TODO
 				
