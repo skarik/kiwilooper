@@ -401,7 +401,7 @@ function raycast4_polygon(points, rayOrigin, rayDir)
 	
 	// Otherwise, we're at the right spot
 	global._raycast4_hitdistance = distance;
-	global._raycast4_hitnormal.copyFrom(normal);
+	global._raycast4_hitnormal = normal.copy(); // TODO
 
 	return true;
 }

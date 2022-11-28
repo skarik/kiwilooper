@@ -34,7 +34,13 @@ function mvtcCollision()
 
 function mvtcZMotion()
 {
-	var highest_z = collision4_get_highest(x, y, z);
+	//var highest_z = collision4_get_highest(x, y, z);
+	// instead, raycast down
+	var highest_z = z;
+	if (collision4_rectanglecast2(new Vector3(x, y, z + 16), sprite_get_width(mask_index), sprite_get_height(mask_index), new Vector3(0, 0, -1), kHitmaskAll))
+	{
+		highest_z = (z + 16) - raycast4_get_hit_distance();
+	}
 	
 	// Do simple Z collision now
 	if (z < highest_z)
