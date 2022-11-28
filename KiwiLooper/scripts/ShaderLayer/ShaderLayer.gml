@@ -3,6 +3,7 @@
 function _drawShaderInit()
 {
 	global._draw_shaderLayerCurrentShader = null;
+	global._draw_shaderLayerStoredShader = null;
 }
 gml_pragma("global", "_drawShaderInit()");
 
@@ -59,4 +60,13 @@ function drawShaderUnset(shader)
 		show_error("Incorrect shader passed into shader unset.", false);
 	}
 	shader_reset();
+}
+
+function drawShaderStore()
+{
+	global._draw_shaderLayerStoredShader = drawShaderGet();
+}
+function drawShaderUnstore()
+{
+	drawShaderSet(global._draw_shaderLayerStoredShader);
 }

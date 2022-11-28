@@ -29,7 +29,8 @@ function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, hi
 		hit_normals = [];
 		if (collision4_raycast(rayOrigins[i], rectDir, unused_objects, hit_distances, hit_normals, hitMask, false, []))
 		{
-			if (!bHasHit || (hitDistance < hit_distances[0]))
+			//debugRay3(rayOrigins[i], rectDir.multiply(hit_distances[0]), c_red);
+			if (!bHasHit || (hit_distances[0] < hitDistance))
 			{
 				bHasHit = true;
 				hitDistance = hit_distances[0];

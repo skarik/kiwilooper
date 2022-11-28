@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "debugPoint",
+  "name": "debugShapes3D",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

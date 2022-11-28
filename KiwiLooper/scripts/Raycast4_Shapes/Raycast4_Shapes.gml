@@ -336,7 +336,13 @@ function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
 		return false;
 		
 	// get final distance
-	global._raycast4_hitdistance = edge2.dot(qvec) * inv_det;
+	var distance = edge2.dot(qvec) * inv_det;
+	if (distance < KINDA_SMALL_NUMBER) // make sure we're pointing AT the triangle
+	{
+		return false;
+	}
+	
+	global._raycast4_hitdistance = distance;
 	
 	return true;
 }
