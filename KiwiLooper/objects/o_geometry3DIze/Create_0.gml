@@ -3,9 +3,28 @@
 m_geometry = null;
 m_mesh = null;
 
+m_triangleBBoxes = [];
+
 SetGeometry = function(geometry)
 {
 	m_geometry = geometry;
+	
+	for (var i = 0; i < array_length(m_geometry.triangles); ++i)
+	{
+		var triangle = m_geometry.triangles[i];
+		
+		var triMin = new Vector3(
+			min(triangle.vertices[0].position.x, triangle.vertices[1].position.x, triangle.vertices[2].position.x),
+			min(triangle.vertices[0].position.y, triangle.vertices[1].position.y, triangle.vertices[2].position.y),
+			min(triangle.vertices[0].position.z, triangle.vertices[1].position.z, triangle.vertices[2].position.z));
+		var triMax = new Vector3(
+			max(triangle.vertices[0].position.x, triangle.vertices[1].position.x, triangle.vertices[2].position.x),
+			max(triangle.vertices[0].position.y, triangle.vertices[1].position.y, triangle.vertices[2].position.y),
+			max(triangle.vertices[0].position.z, triangle.vertices[1].position.z, triangle.vertices[2].position.z));
+		var triBBox = BBox3FromMinMax(triMin, triMax);
+		
+		m_triangleBBoxes[i] = triBBox;
+	}
 }
 
 Initialize = function()

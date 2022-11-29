@@ -1,6 +1,6 @@
 #macro COLLISION4_SHOW_RAYS	false
 
-function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, hitMask)
+function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, rectDist, hitMask)
 {
 	// for now, let's just cast corners
 	
@@ -27,7 +27,7 @@ function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, hi
 		unused_objects = [];
 		hit_distances = [];
 		hit_normals = [];
-		if (collision4_raycast(rayOrigins[i], rectDir, unused_objects, hit_distances, hit_normals, hitMask, false, []))
+		if (collision4_raycast(rayOrigins[i], rectDir, rectDist, unused_objects, hit_distances, hit_normals, hitMask, false, []))
 		{
 			if (COLLISION4_SHOW_RAYS)
 			{
@@ -105,7 +105,7 @@ function collision4_bbox2cast(bbox, bboxDir, bboxDist, hitMask)
 		unused_objects = [];
 		hit_distances = [];
 		hit_normals = [];
-		if (collision4_raycast(rayOrigins[i], bboxDir, unused_objects, hit_distances, hit_normals, hitMask, false, []))
+		if (collision4_raycast(rayOrigins[i], bboxDir, bboxDist, unused_objects, hit_distances, hit_normals, hitMask, false, []))
 		{
 			hit_distances[0] -= rayOffsets[i];
 			

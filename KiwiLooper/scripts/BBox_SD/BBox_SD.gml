@@ -28,6 +28,14 @@ function BBox3(n_center, n_extents) constructor
 			&& center.z - extents.z <= right.center.z + right.extents.z
 			&& center.z + extents.z >= right.center.z - right.extents.z);
 	}
+	
+	static contains = function(right)
+	{
+		gml_pragma("forceinline");
+		return (abs(right.x - center.x) < extents.x
+			&& abs(right.y - center.y) < extents.y
+			&& abs(right.z - center.z) < extents.z);
+	}
 }
 
 /// @function BBox3FromMinMax(min, max)

@@ -6,7 +6,7 @@
 
 #macro kHitmaskAll			0xFF
 
-function collision4_raycast(rayOrigin, rayDir, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
+function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
 {
 	var l_priorityHits;
 	if (bCollectAllHits)
@@ -37,6 +37,7 @@ function collision4_raycast(rayOrigin, rayDir, outHitObjects, outHitDistances, o
 					true,
 					rayOrigin, rayDir))
 				{
+					if (rayDist < 0 || raycast4_get_hit_distance() < rayDist)
 					//if (!array_contains_pred(ignoreList, prop, EditorSelectionEqual)) // todo
 					{
 						l_priorityHits.add([prop, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
@@ -53,11 +54,29 @@ function collision4_raycast(rayOrigin, rayDir, outHitObjects, outHitDistances, o
 		var geometry = (geometryInstance != null) ? geometryInstance.m_geometry : undefined;
 		if (!is_undefined(geometry))
 		{
+			// create AABB for the ray
+			/*var rayMin = new Vector3(
+				min(rayOrigin.x, rayOrigin.x + rayDir.x * rayDist),
+				min(rayOrigin.y, rayOrigin.y + rayDir.y * rayDist),
+				min(rayOrigin.z, rayOrigin.z + rayDir.z * rayDist));
+			var rayMax = new Vector3(
+				max(rayOrigin.x, rayOrigin.x + rayDir.x * rayDist),
+				max(rayOrigin.y, rayOrigin.y + rayDir.y * rayDist),
+				max(rayOrigin.z, rayOrigin.z + rayDir.z * rayDist));*/
+			var rayBBox = new BBox3(
+				new Vector3(rayOrigin.x + rayDir.x * rayDist, rayOrigin.y + rayDir.y * rayDist, rayOrigin.z + rayDir.z * rayDist),
+				new Vector3(abs(rayDir.x * rayDist), abs(rayDir.y * rayDist), abs(rayDir.z * rayDist))
+				);
+			
 			// Loop through all the triangles for now
 			for (var triIndex = 0; triIndex < array_length(geometry.triangles); ++triIndex)
 			{
 				var triangle = geometry.triangles[triIndex];
 				
+				// Check the stored triangle bbox
+				if (!geometryInstance.m_triangleBBoxes[triIndex].overlaps(rayBBox))
+					continue;
+					
 				if (raycast4_triangle(
 					[triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position],
 					rayOrigin,

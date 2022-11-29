@@ -314,7 +314,7 @@ function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
 	// no this is longer, not cheaper
 	*/
 	
-	var pvec = rayDir.cross(edge2);
+	/*var pvec = rayDir.cross(edge2);
 	var det = edge1.dot(pvec);
 	
 	if (cullback ? (det < KINDA_SMALL_NUMBER) : (abs(det) < KINDA_SMALL_NUMBER))
@@ -339,6 +339,41 @@ function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
 	var distance = edge2.dot(qvec) * inv_det;
 	if (distance < KINDA_SMALL_NUMBER) // make sure we're pointing AT the triangle
 	{
+		return false;
+	}
+	
+	global._raycast4_hitdistance = distance;
+	
+	return true;*/
+	
+	// Face normal
+	var normal = edge1.cross(edge2);
+	
+	var pvec = rayDir.cross(edge2);
+	var det = edge1.dot(pvec);
+	
+	// Backfacing or nearly parallel?
+	if (normal.dot(rayDir) >= 0 || abs(det) < KINDA_SMALL_NUMBER)
+		return false;
+		
+	var tvec = rayOrigin.subtract(points[0]).divideSelf(det);
+	var qvec = tvec.cross(edge1);
+	
+	// Get the t-value now
+	var distance = edge2.dot(qvec);
+	// Collided behind the ray?
+	if (distance < KINDA_SMALL_NUMBER) 
+	{
+		return false;
+	}
+	
+	var b_x = tvec.dot(pvec);
+	var b_y = qvec.dot(rayDir);
+	var b_z = b_x + b_y;
+	
+	// Intersected outside triangle?
+	if (b_x < 0.0 || b_y > 1.0 || b_z > 1.0)
+	{	
 		return false;
 	}
 	
