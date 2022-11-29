@@ -36,3 +36,23 @@ if (convention_mode || demo_mode)
 
 // Game debugging values
 lively_show_explode_wire_target = true;
+
+
+Show = function()
+{
+	if (!on)
+	{
+		// Enable & create debug menu
+		on = true;
+		visible = true;
+		if (!iexists(o_debugMenu)) {
+			inew(o_debugMenu);	
+		}
+	}
+}
+Hide = function()
+{
+	// Disable debug menu
+	on = false;
+	visible = false;
+}

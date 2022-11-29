@@ -4,8 +4,10 @@ function mvtcCollision()
 	motionHitWall = false;
 
 	// Do X collision
-	if (abs(xspeed) > 0.0)
+	/*if (abs(xspeed) > 0.0)
 	{
+		// TODO: replace collision4_meeting with a shapecast
+		
 		if (collision4_meeting(x + xspeed * Time.deltaTime, y, z))
 		{
 			// Move into contact
@@ -20,6 +22,8 @@ function mvtcCollision()
 	// Do Y collision
 	if (abs(yspeed) > 0.0)
 	{
+		// TODO: replace collision4_meeting with a shapecast
+		
 		if (collision4_meeting(x, y + yspeed * Time.deltaTime, z))
 		{
 			// Move into contact
@@ -29,7 +33,45 @@ function mvtcCollision()
 			// Mark we hit a wall
 			motionHitWall = true;
 		}
+	}*/
+	
+	// Create a vector of our speed
+	var mspeed = new Vector3(xspeed, yspeed, 0);
+	var mspeed_len = mspeed.magnitude();
+	if (mspeed_len > 0.0)
+	{
+		var kBoxHeight = 10;
+		var bbox = new BBox3(
+			new Vector3(x, y, z + kBoxHeight * 0.5),
+			new Vector3(sprite_get_width(mask_index) * 0.5, sprite_get_height(mask_index) * 0.5, kBoxHeight * 0.5)
+			);
+		
+		// Do combined XY collision
+		if (collision4_bbox2cast(bbox, mspeed.divide(mspeed_len), mspeed_len * Time.deltaTime, kHitmaskAll))
+		{
+			// Is the hit we're recording actually in-range?
+			if (raycast4_get_hit_distance() < mspeed_len * Time.deltaTime)
+			{
+				// Move into contact
+				mspeed.divideSelf(mspeed_len).multiplySelf(raycast4_get_hit_distance());
+				
+				// Mark we hit a wall
+				motionHitWall = true;
+			}
+		}
 	}
+	
+	// Write the separated speeds back out.
+	xspeed = mspeed.x;
+	yspeed = mspeed.y;
+	
+	/*
+		var kBoxHeight = 10;
+		var bbox = new BBox3(new Vector3(x, y, z + kBoxHeight * 0.5), new Vector3(sprite_get_width(mask_index) * 0.5, sprite_get_height(mask_index) * 0.5, kBoxHeight * 0.5));
+		
+		bbox.center.y = y + yspeed * Time.deltaTime;
+		if (collision4_bbox2(bbox, kHitmaskAll))
+		*/
 }
 
 function mvtcZMotion()

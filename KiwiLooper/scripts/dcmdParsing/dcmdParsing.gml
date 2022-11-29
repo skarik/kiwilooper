@@ -14,6 +14,11 @@ function g_dcmdInitialize()
 			func:		function(args){ room_goto(rm_EditorLevel); _Loader.bRoomIsSet = true; return 0; },
 			autocomp:	kDefaultAutoComplete,
 		},
+		{
+			command:	"speedtest",
+			func:		function(args){ room_goto(rm_EditorLevel); _Loader.bRoomIsSet = true; Speedtest_Run(); return 0; },
+			autocomp:	kDefaultAutoComplete,
+		},
 	];
 }
 

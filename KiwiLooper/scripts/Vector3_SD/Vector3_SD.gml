@@ -279,6 +279,7 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 	
 	static asArray = function()
 	{
+		gml_pragma("forceinline");
 		return [x, y, z];
 	}
 	
