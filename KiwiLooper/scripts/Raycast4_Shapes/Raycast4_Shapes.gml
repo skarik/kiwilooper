@@ -274,6 +274,34 @@ function raycast4_axisplane(axis, offset, rayOrigin, rayDir)
 	return (l_d >= 0.0);
 }
 
+/// @function raycast4_plane(plane, rayOrigin, rayDir)
+/// @desc Performs a raycast on the given plane.
+function raycast4_plane(plane, rayOrigin, rayDir)
+{
+	var nd = rayDir.dot(plane.n);
+	var pn = rayOrigin.dot(plane.n);
+	
+	// nd must be negative, and not 0
+	// if nd is positive, the ray and plane normals
+	// point in the same direction. No intersection.
+	if (nd >= 0.0)
+	{
+		return false;
+	}
+	
+	var t = (plane.d - pn) / nd;
+	
+	// t must be positive
+	if (t >= 0.0)
+	{
+		global._raycast4_hitdistance = t;
+		global._raycast4_hitnormal = plane.n.copy();
+		return true;
+	}
+
+	return false;
+}
+
 /// @function raycast4_triangle(points, rayOrigin, rayDir, cullback)
 /// @desc Performs a raycast against the given triangle
 /// @param {Vector3[3]} points

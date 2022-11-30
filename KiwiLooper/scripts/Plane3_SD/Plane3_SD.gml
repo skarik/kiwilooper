@@ -48,4 +48,11 @@ function Plane3(n_normal, n_offset) constructor
 		return new Vector2(flattened.x, flattened.y);
 		*/
 	}
+	
+	static copy = function()
+	{
+		var new_plane = new Plane3(n, new Vector3(0, 0, 0));
+		new_plane.d = d;
+		return new_plane;
+	}
 }

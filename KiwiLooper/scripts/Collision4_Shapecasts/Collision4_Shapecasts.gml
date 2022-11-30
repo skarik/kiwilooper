@@ -1,4 +1,4 @@
-#macro COLLISION4_SHOW_RAYS	false
+#macro COLLISION4_SHOW_RAYS	true
 
 function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, rectDist, hitMask)
 {
@@ -29,7 +29,7 @@ function collision4_rectanglecast2(rectOrigin, rectSizeX, rectSizeY, rectDir, re
 		hit_normals = [];
 		if (collision4_raycast(rayOrigins[i], rectDir, rectDist, unused_objects, hit_distances, hit_normals, hitMask, false, []))
 		{
-			if (COLLISION4_SHOW_RAYS)
+			if (COLLISION4_SHOW_RAYS && 0)
 			{
 				debugRay3(rayOrigins[i], rectDir.multiply(hit_distances[0]), c_red);
 			}
@@ -94,7 +94,7 @@ function collision4_bbox2cast(bbox, bboxDir, bboxDist, hitMask)
 				&& (bboxDirUnscaledSign.y == 0 || bboxDirUnscaledSign.y == -raySigns[i][1])
 				&& (bboxDirUnscaledSign.z == 0 || bboxDirUnscaledSign.z == -raySigns[i][2]))
 			{
-				rayOffsets[i] = 2.0 / bboxDirUnscaled.getElement(hitAxisWall); // Get distance to the closest plane
+				rayOffsets[i] = 2.0 / abs(bboxDirUnscaled.getElement(hitAxisWall)); // Get distance to the closest plane
 			}
 		}
 	}
@@ -105,20 +105,29 @@ function collision4_bbox2cast(bbox, bboxDir, bboxDist, hitMask)
 		unused_objects = [];
 		hit_distances = [];
 		hit_normals = [];
-		if (collision4_raycast(rayOrigins[i], bboxDir, bboxDist, unused_objects, hit_distances, hit_normals, hitMask, false, []))
+		if (collision4_raycast(rayOrigins[i], bboxDir, bboxDist + rayOffsets[i], unused_objects, hit_distances, hit_normals, hitMask, false, []))
 		{
-			hit_distances[0] -= rayOffsets[i];
+			//hit_distances[0] -= rayOffsets[i];
 			
 			if (COLLISION4_SHOW_RAYS)
 			{
-				debugRay3(rayOrigins[i], bboxDir.multiply(hit_distances[0]), c_red);
+				debugRay3(rayOrigins[i], bboxDir.multiply(hit_distances[0]), c_orange);
 			}
+			
+			hit_distances[0] -= rayOffsets[i];
 			
 			if (!bHasHit || (hit_distances[0] < hitDistance))
 			{
 				bHasHit = true;
 				hitDistance = hit_distances[0];
 				hitNormal.copyFrom(hit_normals[0]);
+			}
+		}
+		else
+		{
+			if (COLLISION4_SHOW_RAYS)
+			{
+				debugRay3(rayOrigins[i], bboxDir.multiply(bboxDist + rayOffsets[i]), c_yellow);
 			}
 		}
 	}
@@ -131,10 +140,38 @@ function collision4_bbox2cast(bbox, bboxDir, bboxDist, hitMask)
 	return bHasHit;
 }
 
-function collision4_bbox2_test(bbox, hitMask)
+
+function collision4_bbox3(bbox, hitMask)
+{
+	var bHasHit = false;
+	var hitDistance = undefined;
+	var hitNormal = new Vector3(0, 0, 0);
+		
+	var unused_objects, hit_distances, hit_normals;
+	unused_objects = [];
+	hit_distances = [];
+	hit_normals = [];
+	if (collision4_bbox3_test2(bbox, unused_objects, hit_distances, hit_normals, hitMask, false, []))
+	{
+		if (!bHasHit || (hit_distances[0] < hitDistance))
+		{
+			bHasHit = true;
+			hitDistance = hit_distances[0];
+			hitNormal.copyFrom(hit_normals[0]);
+		}
+	}
+	
+	if (bHasHit)
+	{
+		global._raycast4_hitdistance = hitDistance;
+		global._raycast4_hitnormal = hitNormal;
+	}
+	return bHasHit;
+}
+
+/*function collision4_bbox2_test(bbox, hitMask)
 {
 	//
-	
 	if (hitMask & kHitmaskGeometry)
 	{
 		var geometryInstance = _collision4_get_geometry();
@@ -151,11 +188,11 @@ function collision4_bbox2_test(bbox, hitMask)
 					bbox))
 				{
 					//if (!array_contains_pred()
-					/*{
-						global._raycast4_hitnormal = new Vector3();
-						global._raycast4_hitnormal.copyFrom(triangle.vertices[0].normal);
-						l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
-					}*/
+					//{
+					//	global._raycast4_hitnormal = new Vector3();
+					//	global._raycast4_hitnormal.copyFrom(triangle.vertices[0].normal);
+					//	l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+					//}
 					return true;
 				}
 			}
@@ -163,4 +200,4 @@ function collision4_bbox2_test(bbox, hitMask)
 	}
 	
 	return false;
-}
+}*/

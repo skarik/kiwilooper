@@ -36,6 +36,22 @@ function BBox3(n_center, n_extents) constructor
 			&& abs(right.y - center.y) < extents.y
 			&& abs(right.z - center.z) < extents.z);
 	}
+	
+	static distanceToPlane = function(plane)
+	{
+		// Project the half extents of the AABB onto the plane normal
+		var length = 
+			extents.x * abs(plane.n.x)
+			+ extents.y * abs(plane.n.y)
+			+ extents.z * abs(plane.n.z);
+	
+		// Find the distance from the center of the AABB to the plane
+		var distance = plane.n.dot(center) + plane.d;
+		global._mathresult_sign = sign(distance);
+		// Intersection occurs if the distance falls within the projected side
+		return abs(distance) - length;
+		// Intersection if returns < 0.0
+	}
 }
 
 /// @function BBox3FromMinMax(min, max)

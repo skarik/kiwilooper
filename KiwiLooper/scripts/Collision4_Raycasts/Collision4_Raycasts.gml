@@ -14,6 +14,8 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 	else
 		l_priorityHits = new ASinglePriorityMin();
 		
+	// TODO: add ignore list
+		
 	// TODO: can probably speed things up with a AABB/Geometry tree
 	if (hitMask & kHitmaskProps)
 	{
@@ -37,8 +39,7 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 					true,
 					rayOrigin, rayDir))
 				{
-					if (rayDist < 0 || raycast4_get_hit_distance() < rayDist)
-					//if (!array_contains_pred(ignoreList, prop, EditorSelectionEqual)) // todo
+					if (rayDist < 0 || raycast4_get_hit_distance() <= rayDist)
 					{
 						l_priorityHits.add([prop, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
 					}
@@ -55,14 +56,6 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 		if (!is_undefined(geometry))
 		{
 			// create AABB for the ray
-			/*var rayMin = new Vector3(
-				min(rayOrigin.x, rayOrigin.x + rayDir.x * rayDist),
-				min(rayOrigin.y, rayOrigin.y + rayDir.y * rayDist),
-				min(rayOrigin.z, rayOrigin.z + rayDir.z * rayDist));
-			var rayMax = new Vector3(
-				max(rayOrigin.x, rayOrigin.x + rayDir.x * rayDist),
-				max(rayOrigin.y, rayOrigin.y + rayDir.y * rayDist),
-				max(rayOrigin.z, rayOrigin.z + rayDir.z * rayDist));*/
 			var rayBBox = new BBox3(
 				new Vector3(rayOrigin.x + rayDir.x * rayDist, rayOrigin.y + rayDir.y * rayDist, rayOrigin.z + rayDir.z * rayDist),
 				new Vector3(abs(rayDir.x * rayDist), abs(rayDir.y * rayDist), abs(rayDir.z * rayDist))
@@ -83,7 +76,7 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 					rayDir,
 					false))
 				{
-					//if (!array_contains_pred()
+					if (rayDist < 0 || raycast4_get_hit_distance() <= rayDist)
 					{
 						global._raycast4_hitnormal = new Vector3();
 						global._raycast4_hitnormal.copyFrom(triangle.vertices[0].normal);
@@ -112,6 +105,86 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 			area_z_max = max(area_z_max, area_z);
 		}
 		ds_list_clear(results);*/
+	}
+	
+	// Pull the priority to a list
+	// TODO: someday make this less slow because we hit this all the time
+	var l_priorityHitCount = l_priorityHits.size();
+	for (var i = 0; i < l_priorityHitCount; ++i)
+	{
+		var minp = l_priorityHits.getMinimum();
+		array_push(outHitObjects, minp[0]);
+		array_push(outHitDistances, minp[1]);
+		array_push(outHitNormals, minp[2]);
+		l_priorityHits.deleteMinimum();
+	}
+	l_priorityHits.cleanup();
+	delete l_priorityHits;
+	
+	return l_priorityHitCount;
+}
+
+function collision4_bbox3_test2(bbox, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
+{
+	var l_priorityHits;
+	if (bCollectAllHits)
+		l_priorityHits = new APriorityWrapper();
+	else
+		l_priorityHits = new ASinglePriorityMin();
+	
+	// TODO: can probably speed things up with a AABB/Geometry tree
+	if (hitMask & kHitmaskProps)
+	{
+		var propInstance = instance_find(o_props3DIze2, 0);
+		var propmap = iexists(propInstance) ? propInstance.m_propmap : undefined;
+		if (is_struct(propmap))
+		{
+			for (var propIndex = 0; propIndex < propmap.GetPropCount(); ++propIndex)
+			{
+				var prop = propmap.GetProp(propIndex);
+			
+				// Get the prop BBox & transform it into the world
+				var propBBox = PropGetBBox(prop.sprite);
+				var propRotation = matrix_build_rotation(prop);
+			
+				// Add the center to the bbox so we have a place to work from
+				propBBox.center.addSelf(Vector3FromTranslation(prop));
+				
+				if (bbox3_box_rotated(
+					bbox,
+					propBBox,
+					propRotation))
+				{
+					l_priorityHits.add([prop, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+				}
+			}
+		}
+	}
+	
+	// TODO: definitely don't do EVERY triangle, that's slow. Speed up later
+	if (hitMask & kHitmaskGeometry)
+	{
+		var geometryInstance = _collision4_get_geometry();
+		var geometry = (geometryInstance != null) ? geometryInstance.m_geometry : undefined;
+		if (!is_undefined(geometry))
+		{
+			// Loop through all the triangles for now
+			for (var triIndex = 0; triIndex < array_length(geometry.triangles); ++triIndex)
+			{
+				var triangle = geometry.triangles[triIndex];
+				
+				// Check the stored triangle bbox
+				if (!geometryInstance.m_triangleBBoxes[triIndex].overlaps(bbox))
+					continue;
+					
+				if (bbox3_triangle_distance(
+					bbox,
+					[triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]))
+				{
+					l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+				}
+			}
+		}
 	}
 	
 	// Pull the priority to a list

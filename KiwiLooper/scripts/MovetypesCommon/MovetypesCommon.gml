@@ -42,22 +42,58 @@ function mvtcCollision()
 	{
 		var kBoxHeight = 10;
 		var bbox = new BBox3(
-			new Vector3(x, y, z + kBoxHeight * 0.5),
-			new Vector3(sprite_get_width(mask_index) * 0.5, sprite_get_height(mask_index) * 0.5, kBoxHeight * 0.5)
+			new Vector3(x, y, z + kBoxHeight * 0.5 + 1),
+			new Vector3(sprite_get_width(mask_index) * 0.5 + 1, sprite_get_height(mask_index) * 0.5 + 1, kBoxHeight * 0.5)
 			);
 		
 		// Do combined XY collision
-		if (collision4_bbox2cast(bbox, mspeed.divide(mspeed_len), mspeed_len * Time.deltaTime, kHitmaskAll))
+		/*if (collision4_bbox2cast(bbox, mspeed.divide(mspeed_len), mspeed_len * Time.deltaTime, kHitmaskAll))
 		{
 			// Is the hit we're recording actually in-range?
 			if (raycast4_get_hit_distance() < mspeed_len * Time.deltaTime)
 			{
-				// Move into contact
-				mspeed.divideSelf(mspeed_len).multiplySelf(raycast4_get_hit_distance());
+				if (raycast4_get_hit_distance() >= 0.0)
+				{
+					// Move into contact
+					mspeed.divideSelf(mspeed_len).multiplySelf(raycast4_get_hit_distance() / Time.deltaTime);
+				}
+				else
+				{
+					// Move backwards into contact
+					mspeed.divideSelf(mspeed_len).multiplySelf(raycast4_get_hit_distance());
+					// Apply the contact
+					x += mspeed.x;
+					y += mspeed.y;
+					
+					// Zero out the speed now that we done with it
+					mspeed.multiply(0.0);
+				}
 				
 				// Mark we hit a wall
 				motionHitWall = true;
 			}
+		}*/
+		bbox.center.addSelf(mspeed.multiply(Time.deltaTime));
+		if (collision4_bbox3(bbox, kHitmaskAll))
+		{
+			// Push back based on the normal, flattened
+			var flatNormal = raycast4_get_hit_normal().copy();
+			flatNormal.z = 0.0;
+			
+			// Flatten the speed to tangent against the wall
+			{
+				var upVector = new Vector3(0, 0, 1);
+				var tangentBase = flatNormal.cross(upVector).normalize();
+				
+				mspeed.copyFrom(tangentBase.multiply(tangentBase.dot(mspeed)));
+			}
+			//mspeed.multiplySelf(0.0);
+			
+			x += abs(raycast4_get_hit_distance()) * flatNormal.x;
+			y += abs(raycast4_get_hit_distance()) * flatNormal.y;
+			
+			// Mark we hit a wall
+			motionHitWall = true;
 		}
 	}
 	
@@ -79,10 +115,12 @@ function mvtcZMotion()
 	//var highest_z = collision4_get_highest(x, y, z);
 	// instead, raycast down
 	var highest_z = z;
-	if (collision4_rectanglecast2(new Vector3(x, y, z + 16), sprite_get_width(mask_index), sprite_get_height(mask_index), new Vector3(0, 0, -1), kHitmaskAll))
+	if (collision4_rectanglecast2(new Vector3(x, y, z + 16), sprite_get_width(mask_index) - 1, sprite_get_height(mask_index) - 1, new Vector3(0, 0, -1), kHitmaskAll))
 	{
 		highest_z = (z + 16) - raycast4_get_hit_distance();
 	}
+	/*var highest_z = 0;
+	z = 0;*/
 	
 	// Do simple Z collision now
 	if (z < highest_z)

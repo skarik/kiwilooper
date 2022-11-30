@@ -13,11 +13,13 @@ function bbox3_triangle(points, bbox)
 		offset.add(points[2]).multiplyComponent(multiplier),
 		];
 	
-	var quick_test = _bbox3_triangle_trivial_vertex_tests(test_points);
+	/*var quick_test = _bbox3_triangle_trivial_vertex_tests(test_points);
 	if (quick_test == -1)
 		return _bbox3_triangle_polygon_intersects_cube(test_points, 1);
 	else
-		return quick_test;
+		return quick_test;*/
+	
+	return _bbox3_triangle_polygon_intersects_cube(test_points, 0);
 }
 
 function _bbox3_triangle_trivial_vertex_tests(points)
@@ -117,7 +119,11 @@ function _bbox3_triangle_test_against_parallel_planes(mask, outcode, posbit, neg
 	return outcode;
 }
 
-
+function InClosedInterval(a, n, b)
+{
+	gml_pragma("forceinline");
+	return (n - a) * (n - b) <= 0.0;
+}
 
 function _bbox3_triangle_polygon_intersects_cube(points, already_know_vertices_are_outside_cube)
 {
@@ -125,7 +131,7 @@ function _bbox3_triangle_polygon_intersects_cube(points, already_know_vertices_a
 	if (!already_know_vertices_are_outside_cube)
 	{
 		for (var i = 0; i < 3; ++i)
-			if (_bbox3_triangle_segment_intersects_cube(points[i], points[(i+1)%3]))
+			if (_bbox3_triangle_segment_intersects_cube(points[i], points[(i + 1) % 3]))
 				return true;
 	}
 	
@@ -162,8 +168,8 @@ function _bbox3_triangle_polygon_intersects_cube(points, already_know_vertices_a
 	// (Note that the denominator is guaranteed to be nonzero, since polynormal is nonzero and best_diagonal was chosen to have the largest magnitude dot-product with polynormal)
 	var t = normal.dot(points[0]) / (normal.x * best_diagonal[0] + normal.y * best_diagonal[1] + normal.z * best_diagonal[2]);
 
-	// t is in the closed interval?
-	if ((t + 0.5) * (t - 0.5) <= 0.0)
+	// t is not in the closed interval?
+	if (!InClosedInterval(-0.5, t, 0.5))
 		return 0; // intersection point is not in cube
 
 	var p = [
@@ -194,8 +200,8 @@ function _bbox3_triangle_segment_intersects_cube(point0, point1)
 	// Also test the three cube faces on the v0-ward side of the cube:	if v1 is outside any of their planes then there is no intersection.
 	for (var i = 0; i < 3; ++i)
 	{
-		if (point0.getElement(i) * edgevec_sign(i) >  0.5) return false;
-		if (point1.getElement(i) * edgevec_sign(i) < -0.5) return false;
+		if (point0.getElement(i) * edgevec_sign[i] >  0.5) return false;
+		if (point1.getElement(i) * edgevec_sign[i] < -0.5) return false;
 	}
 	
 	// Okay, that's the six easy faces of the rhombic dodecahedron out of the way. Six more to go.
@@ -212,7 +218,7 @@ function _bbox3_triangle_segment_intersects_cube(point0, point1)
 			  edge[iplus2] * point0.getElement(iplus1)
 			- edge[iplus1] * point0.getElement(iplus2);
 			
-		rhomb_normal_dot_cubedge  = 0.5 *
+		rhomb_normal_dot_cubedge = 0.5 *
 			(edge[iplus2] * edgevec_sign[iplus1] +
 			 edge[iplus1] * edgevec_sign[iplus2]);
 			 
@@ -227,18 +233,8 @@ function _bbox3_triangle_segment_intersects_cube(point0, point1)
 function _bbox3_triangle_polygon_contains_point_3d(points, normal, point)
 {
 	// Determine which axis to ignore (the one in which the polygon normal is largest)
-	
-	var abs_normal = [
-		abs(normal.x),
-		abs(normal.y),
-		abs(normal.z),
-		];
-		
 	var xaxis, yaxis;
-	var zaxis = 
-		(abs(abs_normal[0]) > abs(abs_normal[1])) 
-			? ((abs(abs_normal[0]) > abs(abs_normal[2])) ? kAxisX : kAxisZ)
-			: ((abs(abs_normal[1]) > abs(abs_normal[2])) ? kAxisY : kAxisZ);
+	var zaxis = vec3_largest_axis(normal);
 			
 	if (normal.getElement(zaxis) < 0)
 	{
@@ -262,7 +258,8 @@ function _bbox3_triangle_polygon_contains_point_3d(points, normal, point)
 		{
 			if (_bbox3_triangle_seg_contains_point(v[yaxis], w[yaxis], point[yaxis]))
 			{
-				if (xdirection * (point[xaxis]-v[xaxis])*(w[yaxis]-v[yaxis]) <= xdirection * (point[yaxis]-v[yaxis])*(w[xaxis]-v[xaxis]))
+				if (xdirection * (point[xaxis] - v[xaxis]) * (w[yaxis] - v[yaxis]) <=
+					xdirection * (point[yaxis] - v[yaxis]) * (w[xaxis] - v[xaxis]))
 					count += xdirection;
 			}
 			else
@@ -272,11 +269,117 @@ function _bbox3_triangle_polygon_contains_point_3d(points, normal, point)
 			}
 		}
 	}
-	return count;
+	return count > 0;
 }
 
-function _bbox3_triangle_seg_contains_point(a, b, x)
+function _bbox3_triangle_seg_contains_point(a, b, n)
 {
 	gml_pragma("forceinline");
-	return (b > x) - (a > x);
+	return (b > n) - (a > n);
+}
+
+function vec3_largest_axis(vector3)
+{
+	gml_pragma("forceinline");
+	return (abs(vector3.x) > abs(vector3.y)) 
+			? ((abs(vector3.x) > abs(vector3.z)) ? kAxisX : kAxisZ)
+			: ((abs(vector3.y) > abs(vector3.z)) ? kAxisY : kAxisZ);
+}
+
+
+function bbox3cast_plane(bbox, bboxDir, plane)
+{
+	// Take the dir, and get the width of the bbox on that dir:
+	
+	// The max size of a bbox will always be between the front & back of the largest plane
+	var bboxDirUnscaled = new Vector3(bboxDir.x / bbox.extents.x, bboxDir.y / bbox.extents.y, bboxDir.z / bbox.extents.z);
+	var bboxLargestAxis = vec3_largest_axis(bboxDirUnscaled);
+	// Get the effective width of the bbox on each axis
+	//var bboxRayLength = bboxDirUnscaled.invert();
+	var bboxFlatLength = 1.0 / abs(bboxDirUnscaled.getElement(bboxLargestAxis));
+	
+	// Our plane is now that big, so we just just collision against the plane now
+	var test_plane = plane.copy();
+	test_plane.d -= bboxFlatLength * 2.0;
+	if (raycast4_plane(test_plane, bbox.center, bboxDir))
+	{
+		global._raycast4_hitdistance -= bboxFlatLength * 2.0; // Congrats, I guess.
+		return true;
+	}
+	
+	return false;
+}
+
+// Alternatively: bbox3triangle
+
+// following based on https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp
+
+// Let's do:
+// check if box collides with triangle, then check distance from plane to bbox
+function bbox3_triangle_distance(bbox, points)
+{
+	if (bbox3_triangle(points, bbox))
+	{
+		// make plane from the verticies
+		var normal = TriangleGetNormal(points);
+		var plane = new Plane3(normal, new Vector3(points[0].x, points[0].y, points[0].z));
+		
+		global._raycast4_hitdistance = bbox.distanceToPlane(plane);
+		global._raycast4_hitnormal = normal;
+		
+		return true;
+	}
+	return false;
+}
+
+function bbox3_box_rotated(bbox, rotatedBbox, preRotation)
+{
+	// Lets just check the bbox against each plane of the rotated BBox, and take the max distance
+	
+	// Let's make the planes of our bbox, then rotate em, then translate em
+	// All the plane centers are in the center of the rotated BBox
+	// We need the three normals for the rotated bbox
+	var normalX = (new Vector3(1, 0, 0)).transformAMatrix(preRotation);
+	var normalY = (new Vector3(0, 1, 0)).transformAMatrix(preRotation);
+	var normalZ = (new Vector3(0, 0, 1)).transformAMatrix(preRotation);
+	
+	// Let's make our three planes now
+	var planeX = new Plane3(normalX, rotatedBbox.center);
+	var planeY = new Plane3(normalY, rotatedBbox.center);
+	var planeZ = new Plane3(normalZ, rotatedBbox.center);
+	
+	// Take distance across each axis
+	var distanceX = bbox.distanceToPlane(planeX) - rotatedBbox.extents.x;
+	var signX = global._mathresult_sign;
+	var distanceY = bbox.distanceToPlane(planeY) - rotatedBbox.extents.y;
+	var signY = global._mathresult_sign;
+	var distanceZ = bbox.distanceToPlane(planeZ) - rotatedBbox.extents.z;
+	var signZ = global._mathresult_sign;
+	
+	// If any axis fails the test, then no collision
+	if (distanceX > 0.0 || distanceY > 0.0 || distanceZ > 0.0)
+		return false;
+	
+	// Now find maximum distance
+	var distance;
+	if (distanceX > distanceY && distanceX > distanceZ)
+	{
+		distance = distanceX;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeX.n.multiply(signX);
+	}
+	else if (distanceY > distanceX && distanceY > distanceZ)
+	{
+		distance = distanceY;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeY.n.multiply(signY);
+	}
+	else
+	{
+		distance = distanceZ;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeZ.n.multiply(signZ);
+	}
+	
+	return true;
 }
