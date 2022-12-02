@@ -45,6 +45,7 @@ function mvtcCollision()
 			new Vector3(x, y, z + kBoxHeight * 0.5 + 1),
 			new Vector3(sprite_get_width(mask_index) * 0.5 + 1, sprite_get_height(mask_index) * 0.5 + 1, kBoxHeight * 0.5)
 			);
+		var bboxOriginal = bbox.copy();
 		
 		// Do combined XY collision
 		/*if (collision4_bbox2cast(bbox, mspeed.divide(mspeed_len), mspeed_len * Time.deltaTime, kHitmaskAll))
@@ -74,7 +75,7 @@ function mvtcCollision()
 			}
 		}*/
 		bbox.center.addSelf(mspeed.multiply(Time.deltaTime));
-		if (collision4_bbox3(bbox, kHitmaskAll))
+		if (collision4_bbox3(bbox, bboxOriginal, kHitmaskAll))
 		{
 			// Push back based on the normal, flattened
 			var flatNormal = raycast4_get_hit_normal().copy();
@@ -91,6 +92,7 @@ function mvtcCollision()
 			
 			x += abs(raycast4_get_hit_distance()) * flatNormal.x;
 			y += abs(raycast4_get_hit_distance()) * flatNormal.y;
+			// Assume our current position ISN'T inside of the wall
 			
 			// Mark we hit a wall
 			motionHitWall = true;
@@ -114,13 +116,13 @@ function mvtcZMotion()
 {
 	//var highest_z = collision4_get_highest(x, y, z);
 	// instead, raycast down
-	var highest_z = z;
+	/*var highest_z = z;
 	if (collision4_rectanglecast2(new Vector3(x, y, z + 16), sprite_get_width(mask_index) - 1, sprite_get_height(mask_index) - 1, new Vector3(0, 0, -1), kHitmaskAll))
 	{
 		highest_z = (z + 16) - raycast4_get_hit_distance();
-	}
-	/*var highest_z = 0;
-	z = 0;*/
+	}*/
+	var highest_z = 0;
+	z = 0;
 	
 	// Do simple Z collision now
 	if (z < highest_z)

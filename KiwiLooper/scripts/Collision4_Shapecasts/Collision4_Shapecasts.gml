@@ -141,7 +141,7 @@ function collision4_bbox2cast(bbox, bboxDir, bboxDist, hitMask)
 }
 
 
-function collision4_bbox3(bbox, hitMask)
+function collision4_bbox3(bbox, bboxFrom, hitMask)
 {
 	var bHasHit = false;
 	var hitDistance = undefined;
@@ -151,7 +151,7 @@ function collision4_bbox3(bbox, hitMask)
 	unused_objects = [];
 	hit_distances = [];
 	hit_normals = [];
-	if (collision4_bbox3_test2(bbox, unused_objects, hit_distances, hit_normals, hitMask, false, []))
+	if (collision4_bbox3_test2(bbox, bboxFrom, unused_objects, hit_distances, hit_normals, hitMask, false, []))
 	{
 		if (!bHasHit || (hit_distances[0] < hitDistance))
 		{

@@ -52,6 +52,12 @@ function BBox3(n_center, n_extents) constructor
 		return abs(distance) - length;
 		// Intersection if returns < 0.0
 	}
+	
+	static copy = function()
+	{
+		gml_pragma("forceinline");
+		return new BBox3(center.copy(), extents.copy());
+	}
 }
 
 /// @function BBox3FromMinMax(min, max)

@@ -124,7 +124,7 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 	return l_priorityHitCount;
 }
 
-function collision4_bbox3_test2(bbox, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
+function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
 {
 	var l_priorityHits;
 	if (bCollectAllHits)
@@ -181,7 +181,86 @@ function collision4_bbox3_test2(bbox, outHitObjects, outHitDistances, outHitNorm
 					bbox,
 					[triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]))
 				{
-					l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+					
+					
+					/*debugRay3(
+						new Vector3((triangle.vertices[0].position.x + triangle.vertices[1].position.x + triangle.vertices[2].position.x) / 3.0,
+									(triangle.vertices[0].position.y + triangle.vertices[1].position.y + triangle.vertices[2].position.y) / 3.0,
+									(triangle.vertices[0].position.z + triangle.vertices[1].position.z + triangle.vertices[2].position.z) / 3.0),
+						TriangleGetNormal([triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]).multiply(global._raycast4_hitdepth * 3.0),
+						c_aqua);*/
+					/*debugRay3(
+						new Vector3((triangle.vertices[0].position.x + triangle.vertices[1].position.x + triangle.vertices[2].position.x) / 3.0,
+									(triangle.vertices[0].position.y + triangle.vertices[1].position.y + triangle.vertices[2].position.y) / 3.0,
+									(triangle.vertices[0].position.z + triangle.vertices[1].position.z + triangle.vertices[2].position.z) / 3.0),
+						TriangleGetNormal([triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]).multiply(20),
+						c_aqua);*/
+						
+					// TODO: Cache triangle centers & triangle collision normals
+						
+					var triangle_normal = TriangleGetNormal([triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]);
+					var triangle_center =
+						new Vector3((triangle.vertices[0].position.x + triangle.vertices[1].position.x + triangle.vertices[2].position.x) / 3.0,
+									(triangle.vertices[0].position.y + triangle.vertices[1].position.y + triangle.vertices[2].position.y) / 3.0,
+									(triangle.vertices[0].position.z + triangle.vertices[1].position.z + triangle.vertices[2].position.z) / 3.0);
+					
+					var delta_center = bbox.center.subtract(triangle_center);
+					var delta_direction = delta_center.normal();
+						
+					// so best choice is to count how many bbox vertices are in front of the triangle.
+					// given that, find the closest edge
+					// that edge should be the normal we push off against 
+					
+					var closestEdgeNormal;
+					var closestEdgeDot = -1.0;
+					
+					for (var i = 0; i < 3; ++i)
+					{
+						var edge = new Vector3(
+							triangle.vertices[(i + 1) % 3].position.x - triangle.vertices[i + 0].position.x,
+							triangle.vertices[(i + 1) % 3].position.y - triangle.vertices[i + 0].position.y,
+							triangle.vertices[(i + 1) % 3].position.z - triangle.vertices[i + 0].position.z
+							);
+							
+						var edgeNormal = triangle_normal.cross(edge).normalize();
+						var edgeDot = edgeNormal.dot(delta_center);
+						
+						if (edgeDot > closestEdgeDot)
+						{
+							closestEdgeDot = edgeDot;
+							closestEdgeNormal = edgeNormal;
+						}
+					}
+					
+					// Ensure the triangle can face the bbox
+					var triangle_plane = new Plane3(triangle_normal, Vector3FromTranslation(triangle.vertices[0].position));
+					var plane_distance = bboxFrom.distanceToPlane(triangle_plane);
+					
+					//if (triangle_normal.dot(delta_center) > 0.0) // fails past corner
+					//if (cloestEdgeDot < triangle_normal.dot(delta_center)) // no
+					//if (forward_facing_corner_count == 8 // wait, there's an easier way
+					if (plane_distance >= 0.0)
+					{
+						debugRay3(triangle_center.add(triangle_normal), raycast4_get_hit_normal().multiply(20), 
+							(global._raycast4_hitdepth >= 6) ? c_aqua : (
+							(global._raycast4_hitdepth >= 4) ? c_lime : (
+							(global._raycast4_hitdepth >= 3) ? c_yellow : (
+							(global._raycast4_hitdepth >= 2) ? c_orange : (
+							(global._raycast4_hitdepth >= 1) ? c_red : c_black))))
+							);
+					
+						l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], abs(raycast4_get_hit_distance()) - triangle_normal.dot(delta_center) /*- global._raycast4_hitdepth*/);
+					}
+					else
+					{
+						debugRay3(triangle_center.add(triangle_normal), closestEdgeNormal.multiply(20), c_fuchsia);
+						
+						l_priorityHits.add([triangle, raycast4_get_hit_distance(), closestEdgeNormal], abs(raycast4_get_hit_distance()) - triangle_normal.dot(delta_center) /*- global._raycast4_hitdepth*/);
+					}
+					/*else
+					{
+						debugRay3(triangle_center.add(triangle_normal), triangle_normal, c_white);
+					}*/
 				}
 			}
 		}

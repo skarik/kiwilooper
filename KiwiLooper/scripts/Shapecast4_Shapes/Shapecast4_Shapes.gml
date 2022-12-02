@@ -17,7 +17,10 @@ function bbox3_triangle(points, bbox)
 	if (quick_test == -1)
 		return _bbox3_triangle_polygon_intersects_cube(test_points, 1);
 	else
-		return quick_test;*/
+	{
+		global._raycast4_hitdepth = 12;
+		return quick_test;
+	}*/
 	
 	return _bbox3_triangle_polygon_intersects_cube(test_points, 0);
 }
@@ -131,8 +134,13 @@ function _bbox3_triangle_polygon_intersects_cube(points, already_know_vertices_a
 	if (!already_know_vertices_are_outside_cube)
 	{
 		for (var i = 0; i < 3; ++i)
+		{
 			if (_bbox3_triangle_segment_intersects_cube(points[i], points[(i + 1) % 3]))
+			{
+				global._raycast4_hitdepth = 6;
 				return true;
+			}
+		}
 	}
 	
 	// If the polygon normal is zero and none of its edges intersect the cube, then it doesn't intersect the cube
@@ -170,7 +178,7 @@ function _bbox3_triangle_polygon_intersects_cube(points, already_know_vertices_a
 
 	// t is not in the closed interval?
 	if (!InClosedInterval(-0.5, t, 0.5))
-		return 0; // intersection point is not in cube
+		return false; // intersection point is not in cube
 
 	var p = [
 		best_diagonal[0] * t,
@@ -269,6 +277,7 @@ function _bbox3_triangle_polygon_contains_point_3d(points, normal, point)
 			}
 		}
 	}
+	global._raycast4_hitdepth = count;
 	return count > 0;
 }
 
@@ -326,6 +335,11 @@ function bbox3_triangle_distance(bbox, points)
 		
 		global._raycast4_hitdistance = bbox.distanceToPlane(plane);
 		global._raycast4_hitnormal = normal;
+		
+		/*if (global._raycast4_hitdepth < 6)
+		{
+			global._raycast4_hitnormal = normal.cross(bbox.center.subtract(points[0]));
+		}*/
 		
 		return true;
 	}
