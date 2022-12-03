@@ -6,6 +6,8 @@
 
 #macro kHitmaskAll			0xFF
 
+#macro COLLISION4_SHOW_TRIANGLE_BBOX_RESPONSE 0
+
 function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDistances, outHitNormals, hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
 {
 	var l_priorityHits;
@@ -233,7 +235,7 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 					}
 					
 					// Ensure the triangle can face the bbox
-					var triangle_plane = new Plane3(triangle_normal, Vector3FromTranslation(triangle.vertices[0].position));
+					var triangle_plane = Plane3FromNormalOffset(triangle_normal, Vector3FromTranslation(triangle.vertices[0].position));
 					var plane_distance = bboxFrom.distanceToPlane(triangle_plane);
 					
 					//if (triangle_normal.dot(delta_center) > 0.0) // fails past corner
@@ -241,19 +243,25 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 					//if (forward_facing_corner_count == 8 // wait, there's an easier way
 					if (plane_distance >= 0.0)
 					{
-						debugRay3(triangle_center.add(triangle_normal), raycast4_get_hit_normal().multiply(20), 
-							(global._raycast4_hitdepth >= 6) ? c_aqua : (
-							(global._raycast4_hitdepth >= 4) ? c_lime : (
-							(global._raycast4_hitdepth >= 3) ? c_yellow : (
-							(global._raycast4_hitdepth >= 2) ? c_orange : (
-							(global._raycast4_hitdepth >= 1) ? c_red : c_black))))
-							);
+						if (COLLISION4_SHOW_TRIANGLE_BBOX_RESPONSE)
+						{
+							debugRay3(triangle_center.add(triangle_normal), raycast4_get_hit_normal().multiply(20), 
+								(global._raycast4_hitdepth >= 6) ? c_aqua : (
+								(global._raycast4_hitdepth >= 4) ? c_lime : (
+								(global._raycast4_hitdepth >= 3) ? c_yellow : (
+								(global._raycast4_hitdepth >= 2) ? c_orange : (
+								(global._raycast4_hitdepth >= 1) ? c_red : c_black))))
+								);
+						}
 					
 						l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], abs(raycast4_get_hit_distance()) - triangle_normal.dot(delta_center) /*- global._raycast4_hitdepth*/);
 					}
 					else
 					{
-						debugRay3(triangle_center.add(triangle_normal), closestEdgeNormal.multiply(20), c_fuchsia);
+						if (COLLISION4_SHOW_TRIANGLE_BBOX_RESPONSE)
+						{
+							debugRay3(triangle_center.add(triangle_normal), closestEdgeNormal.multiply(20), c_fuchsia);
+						}
 						
 						l_priorityHits.add([triangle, raycast4_get_hit_distance(), closestEdgeNormal], abs(raycast4_get_hit_distance()) - triangle_normal.dot(delta_center) /*- global._raycast4_hitdepth*/);
 					}
@@ -261,6 +269,107 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 					{
 						debugRay3(triangle_center.add(triangle_normal), triangle_normal, c_white);
 					}*/
+				}
+			}
+		}
+	}
+	
+	// Pull the priority to a list
+	// TODO: someday make this less slow because we hit this all the time
+	var l_priorityHitCount = l_priorityHits.size();
+	for (var i = 0; i < l_priorityHitCount; ++i)
+	{
+		var minp = l_priorityHits.getMinimum();
+		array_push(outHitObjects, minp[0]);
+		array_push(outHitDistances, minp[1]);
+		array_push(outHitNormals, minp[2]);
+		l_priorityHits.deleteMinimum();
+	}
+	l_priorityHits.cleanup();
+	delete l_priorityHits;
+	
+	return l_priorityHitCount;
+}
+
+function collision4_rectflat3_test(
+	rayOrigin, rayDir, rayDistance,
+	plane0, plane0_width, plane1, plane1_width,
+	outHitObjects, outHitDistances, outHitNormals,
+	hitMask=kHitmaskAll, bCollectAllHits=false, ignoreList=[])
+{
+	var l_priorityHits;
+	if (bCollectAllHits)
+		l_priorityHits = new APriorityWrapper();
+	else
+		l_priorityHits = new ASinglePriorityMin();
+		
+	// set up a test bbox for hell of things
+	var test_bbox = new BBox3(rayOrigin.add(rayDir.multiply(rayDistance)), new Vector3(plane0_width, plane1_width, rayDistance));
+	var root_bbox = new BBox3(rayOrigin, new Vector3(plane0_width, plane1_width, 0));
+	
+	// TODO: can probably speed things up with a AABB/Geometry tree
+	if (hitMask & kHitmaskProps)
+	{
+		var propInstance = instance_find(o_props3DIze2, 0);
+		var propmap = iexists(propInstance) ? propInstance.m_propmap : undefined;
+		if (is_struct(propmap))
+		{
+			for (var propIndex = 0; propIndex < propmap.GetPropCount(); ++propIndex)
+			{
+				var prop = propmap.GetProp(propIndex);
+			
+				// Get the prop BBox & transform it into the world
+				var propBBox = PropGetBBox(prop.sprite);
+				var propRotation = matrix_build_rotation(prop);
+			
+				// Add the center to the bbox so we have a place to work from
+				propBBox.center.addSelf(Vector3FromTranslation(prop));
+				
+				if (rectflat3_box_rotated(
+					rayOrigin, rayDistance,
+					plane0, plane0_width, plane1, plane1_width,
+					propBBox,
+					propRotation))
+				{
+					l_priorityHits.add([prop, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+				}
+			}
+		}
+	}
+	
+	if (hitMask & kHitmaskGeometry)
+	{
+		var geometryInstance = _collision4_get_geometry();
+		var geometry = (geometryInstance != null) ? geometryInstance.m_geometry : undefined;
+		if (!is_undefined(geometry))
+		{
+			// Loop through all the triangles for now
+			for (var triIndex = 0; triIndex < array_length(geometry.triangles); ++triIndex)
+			{
+				var triangle = geometry.triangles[triIndex];
+				
+				// Check the stored triangle bbox
+				if (!geometryInstance.m_triangleBBoxes[triIndex].overlaps(test_bbox))
+					continue;
+					
+				if (rectflat3_triangle_distance(
+					rayOrigin, rayDistance,
+					plane0, plane0_width, plane1, plane1_width,
+					[triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]))
+				{
+					// Ensure the triangle can face the bbox
+					var triangle_normal = TriangleGetNormal([triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]);
+					var triangle_plane = Plane3FromNormalOffset(triangle_normal, Vector3FromTranslation(triangle.vertices[0].position));
+					var plane_distance = root_bbox.distanceToPlane(triangle_plane);
+					
+					if (plane_distance >= 0.0)
+					{
+						l_priorityHits.add([triangle, raycast4_get_hit_distance(), raycast4_get_hit_normal()], abs(raycast4_get_hit_distance()));
+					}
+					else
+					{
+						// TODO
+					}
 				}
 			}
 		}

@@ -1,10 +1,12 @@
 // Structure Definition for BBox2 and BBox3 (and Rect2)
 /// @function BBox3(center, extents) struct;
 /// @param {Vector3} center
-/// @param {Vector3} extents
+/// @param {Vector3} half-extents
 function BBox3(n_center, n_extents) constructor
 {
+	// Center of the box
 	center	= n_center;
+	// Half extents
 	extents	= n_extents;
 	
 	static getMin = function()
@@ -39,6 +41,8 @@ function BBox3(n_center, n_extents) constructor
 	
 	static distanceToPlane = function(plane)
 	{
+		gml_pragma("forceinline");
+		
 		// Project the half extents of the AABB onto the plane normal
 		var length = 
 			extents.x * abs(plane.n.x)
@@ -51,6 +55,23 @@ function BBox3(n_center, n_extents) constructor
 		// Intersection occurs if the distance falls within the projected side
 		return abs(distance) - length;
 		// Intersection if returns < 0.0
+	}
+	
+	static outsideOfPlane = function(plane)
+	{
+		gml_pragma("forceinline");
+		
+		// Project the half extents of the AABB onto the plane normal
+		var length = 
+			extents.x * abs(plane.n.x)
+			+ extents.y * abs(plane.n.y)
+			+ extents.z * abs(plane.n.z);
+		
+		// Find the distance from the center of the AABB to the plane
+		var distance = plane.n.dot(center) + plane.d;
+		
+		// If box's centerpoint is behind the plane further than its extent, then the box is outside of the plane
+		return (distance < -length);
 	}
 	
 	static copy = function()

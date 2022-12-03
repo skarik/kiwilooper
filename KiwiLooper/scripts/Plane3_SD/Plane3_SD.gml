@@ -3,10 +3,10 @@
 /// @function Plane3(normal, offset) struct;
 /// @param {Vector3} normal
 /// @param {Vector3} offset
-function Plane3(n_normal, n_offset) constructor
+function Plane3() constructor
 {
-	n = new Vector3(n_normal.x, n_normal.y, n_normal.z);
-	d = n_offset.dot(n.negate());
+	n = new Vector3(0, 0, 1);
+	d = 0.0;
 	
 	static nearestPoint = function(point)
 	{
@@ -51,8 +51,19 @@ function Plane3(n_normal, n_offset) constructor
 	
 	static copy = function()
 	{
-		var new_plane = new Plane3(n, new Vector3(0, 0, 0));
+		gml_pragma("forceinline");
+		var new_plane = new Plane3();
+		new_plane.n.copyFrom(n);
 		new_plane.d = d;
 		return new_plane;
 	}
+}
+
+function Plane3FromNormalOffset(n_normal, n_offset)
+{
+	gml_pragma("forceinline");
+	var new_plane = new Plane3();
+	new_plane.n.copyFrom(n_normal);
+	new_plane.d = n_offset.dot(new_plane.n.negate());
+	return new_plane;
 }

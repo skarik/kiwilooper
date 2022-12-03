@@ -331,7 +331,7 @@ function bbox3_triangle_distance(bbox, points)
 	{
 		// make plane from the verticies
 		var normal = TriangleGetNormal(points);
-		var plane = new Plane3(normal, new Vector3(points[0].x, points[0].y, points[0].z));
+		var plane = Plane3FromNormalOffset(normal, new Vector3(points[0].x, points[0].y, points[0].z));
 		
 		global._raycast4_hitdistance = bbox.distanceToPlane(plane);
 		global._raycast4_hitnormal = normal;
@@ -358,9 +358,9 @@ function bbox3_box_rotated(bbox, rotatedBbox, preRotation)
 	var normalZ = (new Vector3(0, 0, 1)).transformAMatrix(preRotation);
 	
 	// Let's make our three planes now
-	var planeX = new Plane3(normalX, rotatedBbox.center);
-	var planeY = new Plane3(normalY, rotatedBbox.center);
-	var planeZ = new Plane3(normalZ, rotatedBbox.center);
+	var planeX = Plane3FromNormalOffset(normalX, rotatedBbox.center);
+	var planeY = Plane3FromNormalOffset(normalY, rotatedBbox.center);
+	var planeZ = Plane3FromNormalOffset(normalZ, rotatedBbox.center);
 	
 	// Take distance across each axis
 	var distanceX = bbox.distanceToPlane(planeX) - rotatedBbox.extents.x;
@@ -396,4 +396,274 @@ function bbox3_box_rotated(bbox, rotatedBbox, preRotation)
 	}
 	
 	return true;
+}
+
+function plane3_triangle(points, plane)
+{
+	var sign0 = sign(plane.n.dot(points[0]));
+	var sign1 = sign(plane.n.dot(points[1]));
+	var sign2 = sign(plane.n.dot(points[2]));
+	
+	// If any of the signs don't match the side, then we're colliding with plane
+	return (sign0 != sign1) || (sign0 != sign2);
+}
+
+function rectflat3_triangle(rayOrigin, rayDistance, plane0, plane0_width, plane1, plane1_width, points)
+{
+	// Let's make our edges first
+	var edges = [
+		new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z),
+		new Vector3(points[2].x - points[1].x, points[2].y - points[1].y, points[2].z - points[1].z),
+		new Vector3(points[0].x - points[2].x, points[0].y - points[2].y, points[0].z - points[2].z),
+		];
+		
+	// Grab our rect corners
+	var rect0Offset = plane0.n.multiply(plane0_width);
+	var rect1Offset = plane1.n.multiply(plane1_width);
+	var rectCorners = [
+			rayOrigin     .add(rect0Offset)     .add(rect1Offset),
+			rayOrigin.subtract(rect0Offset)     .add(rect1Offset),
+			rayOrigin     .add(rect0Offset).subtract(rect1Offset),
+			rayOrigin.subtract(rect0Offset).subtract(rect1Offset),
+		];
+		
+	// Set up the test axes
+	var shoot_dir = plane0.n.cross(plane1.n);
+	var axes = [
+		// Compute the 6 extra axes
+		/*plane0.n.cross(edges[0]),
+		plane0.n.cross(edges[1]),
+		plane0.n.cross(edges[2]),
+		plane1.n.cross(edges[0]),
+		plane1.n.cross(edges[1]),
+		plane1.n.cross(edges[2]),*/
+		/*plane0.n.cross(plane1.n),*/
+		shoot_dir.cross(edges[0]),
+		shoot_dir.cross(edges[1]),
+		shoot_dir.cross(edges[2]),
+		// Now our planes
+		plane0.n,
+		plane1.n,
+		// And our normal
+		/*TriangleGetNormal(points),*/
+		];
+		
+	// Now check every axis
+	for (var i = 0; i < array_length(axes); ++i)
+	{
+		// Project our triangle onto the given axis
+		var tri_project0 = axes[i].dot(points[0]);
+		var tri_project1 = axes[i].dot(points[1]);
+		var tri_project2 = axes[i].dot(points[2]);
+		var tri_p_min = min(tri_project0, tri_project1, tri_project2);
+		var tri_p_max = max(tri_project0, tri_project1, tri_project2);
+		
+		// Project our rect onto the given axis
+		var quad_project0 = axes[i].dot(rectCorners[0]);
+		var quad_project1 = axes[i].dot(rectCorners[1]);
+		var quad_project2 = axes[i].dot(rectCorners[2]);
+		var quad_project3 = axes[i].dot(rectCorners[3]);
+		var quad_p_min = min(quad_project0, quad_project1, quad_project2, quad_project3);
+		var quad_p_max = max(quad_project0, quad_project1, quad_project2, quad_project3);
+		
+		// Check if there's separation
+		var bHasOverlap = (tri_p_min <= quad_p_max && quad_p_min <= tri_p_max);
+		if (!bHasOverlap)
+		{
+			return false; // Found a separating axis, does not collide
+		}
+	}
+	
+	return true; // Collided.
+}
+
+function rectflat3_triangle_distance(rayOrigin, rayDistance, plane0, plane0_width, plane1, plane1_width, points)
+{
+	if (rectflat3_triangle(rayOrigin, rayDistance, plane0, plane0_width, plane1, plane1_width, points))
+	{
+		// make plane from the verticies
+		var normal = TriangleGetNormal(points);
+		var plane = Plane3FromNormalOffset(normal, new Vector3(points[0].x, points[0].y, points[0].z));
+		
+		// make a flatbox to test distance
+		var flatbox = new BBox3(rayOrigin, new Vector3(plane0_width, plane1_width, 0.0));
+		
+		global._raycast4_hitdistance = flatbox.distanceToPlane(plane);
+		global._raycast4_hitnormal = normal;
+		
+		return true;
+	}
+	return false;
+}
+
+function rectflat3_box_rotated(rayOrigin, rayDistance, plane0, plane0_width, plane1, plane1_width, rotatedBbox, preRotation)
+{
+	// Lets just check the bbox against each plane of the rotated BBox, and take the max distance
+	
+	// Let's make the planes of our bbox, then rotate em, then translate em
+	// All the plane centers are in the center of the rotated BBox
+	// We need the three normals for the rotated bbox
+	/*var normalX = (new Vector3(1, 0, 0)).transformAMatrix(preRotation);
+	var normalY = (new Vector3(0, 1, 0)).transformAMatrix(preRotation);
+	var normalZ = (new Vector3(0, 0, 1)).transformAMatrix(preRotation);
+	
+	// Let's make our three planes now
+	var planeX = Plane3FromNormalOffset(normalX, rotatedBbox.center);
+	var planeY = Plane3FromNormalOffset(normalY, rotatedBbox.center);
+	var planeZ = Plane3FromNormalOffset(normalZ, rotatedBbox.center);
+	
+	// Take distance across each axis
+	var distanceX = bbox.distanceToPlane(planeX) - rotatedBbox.extents.x;
+	var signX = global._mathresult_sign;
+	var distanceY = bbox.distanceToPlane(planeY) - rotatedBbox.extents.y;
+	var signY = global._mathresult_sign;
+	var distanceZ = bbox.distanceToPlane(planeZ) - rotatedBbox.extents.z;
+	var signZ = global._mathresult_sign;
+	
+	// If any axis fails the test, then no collision
+	if (distanceX > 0.0 || distanceY > 0.0 || distanceZ > 0.0)
+		return false;
+	
+	// Now find maximum distance
+	var distance;
+	if (distanceX > distanceY && distanceX > distanceZ)
+	{
+		distance = distanceX;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeX.n.multiply(signX);
+	}
+	else if (distanceY > distanceX && distanceY > distanceZ)
+	{
+		distance = distanceY;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeY.n.multiply(signY);
+	}
+	else
+	{
+		distance = distanceZ;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeZ.n.multiply(signZ);
+	}
+	
+	return true;*/
+	
+	// Grab our rect corners
+	var rect0Offset = plane0.n.multiply(plane0_width);
+	var rect1Offset = plane1.n.multiply(plane1_width);
+	var rectCorners = [
+			rayOrigin     .add(rect0Offset)     .add(rect1Offset),
+			rayOrigin.subtract(rect0Offset)     .add(rect1Offset),
+			rayOrigin     .add(rect0Offset).subtract(rect1Offset),
+			rayOrigin.subtract(rect0Offset).subtract(rect1Offset),
+		];
+	
+	// we want to flatten the rotated box onto plane0 and plane1
+	// let's just get our rotated corners for now
+	var normalX = (new Vector3(1, 0, 0)).transformAMatrix(preRotation);
+	var normalY = (new Vector3(0, 1, 0)).transformAMatrix(preRotation);
+	var normalZ = (new Vector3(0, 0, 1)).transformAMatrix(preRotation);
+	var sizeX = normalX.multiply(rotatedBbox.extents.x);
+	var sizeY = normalY.multiply(rotatedBbox.extents.y);
+	var sizeZ = normalZ.multiply(rotatedBbox.extents.z);
+	var rotatedCorners = [
+			rotatedBbox.center     .add(sizeX)     .add(sizeY)     .add(sizeZ),
+			rotatedBbox.center.subtract(sizeX)     .add(sizeY)     .add(sizeZ),
+			rotatedBbox.center     .add(sizeX).subtract(sizeY)     .add(sizeZ),
+			rotatedBbox.center.subtract(sizeX).subtract(sizeY)     .add(sizeZ),
+			rotatedBbox.center     .add(sizeX)     .add(sizeY).subtract(sizeZ),
+			rotatedBbox.center.subtract(sizeX)     .add(sizeY).subtract(sizeZ),
+			rotatedBbox.center     .add(sizeX).subtract(sizeY).subtract(sizeZ),
+			rotatedBbox.center.subtract(sizeX).subtract(sizeY).subtract(sizeZ),
+		];
+		
+	// Set up the test axes
+	var shoot_dir = plane0.n.cross(plane1.n);
+	var axes = [
+		// Compute the 6 extra axes
+		/*plane0.n.cross(edges[0]),
+		plane0.n.cross(edges[1]),
+		plane0.n.cross(edges[2]),
+		plane1.n.cross(edges[0]),
+		plane1.n.cross(edges[1]),
+		plane1.n.cross(edges[2]),*/
+		/*plane0.n.cross(plane1.n),*/
+		// Now our planes
+		plane0.n,
+		plane1.n,
+		// And our normal
+		shoot_dir.cross(normalX),
+		shoot_dir.cross(normalY),
+		shoot_dir.cross(normalZ),
+		/*TriangleGetNormal(points),*/
+		];
+		
+	// Now check every axis
+	for (var i = 0; i < array_length(axes); ++i)
+	{
+		// Project our box onto the given axis
+		var bbox_p_min = axes[i].dot(rotatedCorners[0]);
+		var bbox_p_max = bbox_p_min;
+		for (var j = 1; j < 8; ++j)
+		{
+			var bbox_project = axes[i].dot(rotatedCorners[j]);
+			bbox_p_min = min(bbox_p_min, bbox_project);
+			bbox_p_max = max(bbox_p_max, bbox_project);
+		}
+		
+		// Project our rect onto the given axis
+		var quad_project0 = axes[i].dot(rectCorners[0]);
+		var quad_project1 = axes[i].dot(rectCorners[1]);
+		var quad_project2 = axes[i].dot(rectCorners[2]);
+		var quad_project3 = axes[i].dot(rectCorners[3]);
+		var quad_p_min = min(quad_project0, quad_project1, quad_project2, quad_project3);
+		var quad_p_max = max(quad_project0, quad_project1, quad_project2, quad_project3);
+		
+		// Check if there's separation
+		var bHasOverlap = (bbox_p_min <= quad_p_max && quad_p_min <= bbox_p_max);
+		if (!bHasOverlap)
+		{
+			return false; // Found a separating axis, does not collide
+		}
+	}
+	
+	// TODO: following can be optimized by projecting onto the rect's shootray
+	
+	// create a test box
+	var bbox = new BBox3(rayOrigin, new Vector3(plane0_width, plane1_width, 0.0));
+	
+	// Let's make our three planes now
+	var planeX = Plane3FromNormalOffset(normalX, rotatedBbox.center);
+	var planeY = Plane3FromNormalOffset(normalY, rotatedBbox.center);
+	var planeZ = Plane3FromNormalOffset(normalZ, rotatedBbox.center);
+	
+	// Take distance across each axis
+	var distanceX = bbox.distanceToPlane(planeX) - rotatedBbox.extents.x;
+	var signX = global._mathresult_sign;
+	var distanceY = bbox.distanceToPlane(planeY) - rotatedBbox.extents.y;
+	var signY = global._mathresult_sign;
+	var distanceZ = bbox.distanceToPlane(planeZ) - rotatedBbox.extents.z;
+	var signZ = global._mathresult_sign;
+	
+	// Now find maximum distance
+	var distance;
+	if (distanceX > distanceY && distanceX > distanceZ)
+	{
+		distance = distanceX;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeX.n.multiply(signX);
+	}
+	else if (distanceY > distanceX && distanceY > distanceZ)
+	{
+		distance = distanceY;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeY.n.multiply(signY);
+	}
+	else
+	{
+		distance = distanceZ;
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = planeZ.n.multiply(signZ);
+	}
+	
+	return true; // Collided.
 }

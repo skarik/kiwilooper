@@ -184,7 +184,7 @@ function EditorSolidsRendererCreate()
 			var atlasInfo = face.texture.GetTextureUVs();
 			
 			// Create a plane for calculating UVs
-			var facePlane = new Plane3(face.uvinfo.normal, new Vector3(0, 0, 0));
+			var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
 			
 			// Now grab the vertices
 			var faceMesh = array_create(array_length(triangleList) * 3);

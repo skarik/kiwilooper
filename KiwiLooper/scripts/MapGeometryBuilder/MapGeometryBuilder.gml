@@ -65,7 +65,7 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 		var triangleList = mapSolid.TriangulateFace(faceIndex, false);
 			
 		// Create a plane for calculating UVs
-		var facePlane = new Plane3(face.uvinfo.normal, new Vector3(0, 0, 0));
+		var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
 			
 		// Now grab the vertices
 		for (var triangleIndex = 0; triangleIndex < array_length(triangleList); ++triangleIndex)

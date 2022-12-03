@@ -394,6 +394,7 @@
     {"id":{"name":"o_usableLogbook","path":"objects/o_usableLogbook/o_usableLogbook.yy",},"order":6,},
     {"id":{"name":"paletteInit","path":"scripts/paletteInit/paletteInit.yy",},"order":4,},
     {"id":{"name":"controlUpdate","path":"scripts/controlUpdate/controlUpdate.yy",},"order":7,},
+    {"id":{"name":"Frustum3_SD","path":"scripts/Frustum3_SD/Frustum3_SD.yy",},"order":7,},
     {"id":{"name":"sh_editorLineEdge","path":"shaders/sh_editorLineEdge/sh_editorLineEdge.yy",},"order":0,},
     {"id":{"name":"settingsSave","path":"scripts/settingsSave/settingsSave.yy",},"order":15,},
     {"id":{"name":"singleton_this","path":"scripts/singleton_this/singleton_this.yy",},"order":0,},

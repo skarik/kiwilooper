@@ -312,68 +312,6 @@ function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
 	var edge1 = new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z);
 	var edge2 = new Vector3(points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z);
 	
-	/*var normal = edge1.cross(edge2);
-	if (normal.sqrMagnitude() < KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER) // Degenerate triangle
-		return false;
-		
-	var w0 = rayOrigin.subtract(points[0]);
-	var offsetToTriangle = -normal.dot(w0);
-	var rayDirProjection = normal.dot(rayDir);
-	
-	if (abs(rayDirProjection) < KINDA_SMALL_NUMBER) // Ray is parallel, miss by default
-		return false;
-	
-	var planeProjection = offsetToTriangle / rayDirProjection;
-	if (planeProjection < 0.0) // Ray points away from triangle
-		return false;
-		
-	// Point on plane:
-	var pointOnPlane = rayOrigin.add(rayDir.multiply(planeProjection));
-	
-	// Check if hit-point inside plane
-	var uu = edge1.dot(edge1);
-	var uv = edge1.dot(edge2);
-	var vv = edge2.dot(edge2);
-	var edgeHit = pointOnPlane.subtract(points[0]);
-	var wu = edgeHit.dot(edge1);
-	var wv = edgeHit.dot(edge2);
-	
-	var D = uv * uv - uu * vv;
-	// no this is longer, not cheaper
-	*/
-	
-	/*var pvec = rayDir.cross(edge2);
-	var det = edge1.dot(pvec);
-	
-	if (cullback ? (det < KINDA_SMALL_NUMBER) : (abs(det) < KINDA_SMALL_NUMBER))
-		return false;
-	
-	var inv_det = 1.0 / det;
-	var tvec = rayOrigin.subtract(points[0]);
-		
-	// check U is in range
-	var u = tvec.dot(pvec) * inv_det;
-	if (u < 0.0 || u > 1.0)
-		return false;
-			
-	var qvec = tvec.cross(edge1);
-		
-	// check V is in range
-	var v = rayDir.dot(qvec) * inv_det;
-	if (v < 0.0 || u+v > 1.0)
-		return false;
-		
-	// get final distance
-	var distance = edge2.dot(qvec) * inv_det;
-	if (distance < KINDA_SMALL_NUMBER) // make sure we're pointing AT the triangle
-	{
-		return false;
-	}
-	
-	global._raycast4_hitdistance = distance;
-	
-	return true;*/
-	
 	// Face normal
 	var normal = edge1.cross(edge2);
 	

@@ -41,9 +41,10 @@ function mvtcCollision()
 	if (mspeed_len > 0.0)
 	{
 		var kBoxHeight = 10;
+		var kFloorOffset = 8;
 		var bbox = new BBox3(
-			new Vector3(x, y, z + kBoxHeight * 0.5 + 1),
-			new Vector3(sprite_get_width(mask_index) * 0.5 + 1, sprite_get_height(mask_index) * 0.5 + 1, kBoxHeight * 0.5)
+			new Vector3(x, y, z + kBoxHeight * 0.5 + kFloorOffset),
+			new Vector3(sprite_get_width(mask_index) * 0.5  + 0.5, sprite_get_height(mask_index) * 0.5 + 0.5, kBoxHeight * 0.5 - kFloorOffset * 0.5)
 			);
 		var bboxOriginal = bbox.copy();
 		
@@ -116,13 +117,21 @@ function mvtcZMotion()
 {
 	//var highest_z = collision4_get_highest(x, y, z);
 	// instead, raycast down
-	/*var highest_z = z;
-	if (collision4_rectanglecast2(new Vector3(x, y, z + 16), sprite_get_width(mask_index) - 1, sprite_get_height(mask_index) - 1, new Vector3(0, 0, -1), kHitmaskAll))
+	var highest_z = z;
+	if (collision4_rectanglecast2(
+		new Vector3(x, y, z + 16),
+		sprite_get_width(mask_index), sprite_get_height(mask_index),
+		new Vector3(0, 0, -1),
+		1024,
+		kHitmaskAll))
 	{
 		highest_z = (z + 16) - raycast4_get_hit_distance();
-	}*/
-	var highest_z = 0;
-	z = 0;
+		debugLog(kLogVerbose, string(highest_z));
+	}
+	// our rectangle casts are always gonna be 4 planes
+	
+	/*var highest_z = 0;
+	z = 0;*/
 	
 	// Do simple Z collision now
 	if (z < highest_z)
@@ -148,14 +157,17 @@ function mvtcZMotion()
 	}
 	
 	// Do Z motion collision:
-	if (z + zspeed * Time.deltaTime <= highest_z)
+	if (abs(zspeed) > 0.0)
 	{
-		// Stop motion
-		zspeed = 0;
-		// Seek to floor
-		z = highest_z;
-		// Now on ground
-		onGround = true;
+		if (z + zspeed * Time.deltaTime <= highest_z)
+		{
+			// Stop motion
+			zspeed = 0;
+			// Seek to floor
+			z = highest_z;
+			// Now on ground
+			onGround = true;
+		}
 	}
 	
 	// Do actual motion
