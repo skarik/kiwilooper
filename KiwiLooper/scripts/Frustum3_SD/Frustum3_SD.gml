@@ -1,3 +1,5 @@
+// @function Frustum3() constructor
+// @desc A simple frustum class. Can be used to test visibility.
 function Frustum3() constructor
 {
 	plane = [
@@ -9,6 +11,8 @@ function Frustum3() constructor
 		new Plane3(),
 	];
 	
+	/// @function pointInside(point)
+	/// @param {Vector3} point
 	static pointInside = function(point)
 	{
 		gml_pragma("forceinline");
@@ -24,6 +28,9 @@ function Frustum3() constructor
 		return true;
 	}
 	
+	/// @function bboxInside(bbox)
+	/// @param {BBox3} bbox
+	/// @desc Returns if any part of the bbox is inside the frustum.
 	static bboxInside = function(bbox)
 	{
 		gml_pragma("forceinline");

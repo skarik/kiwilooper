@@ -59,11 +59,11 @@ m_renderEvent = function()
 {
 	if (m_mesh != null)
 	{
-		var last_shader = drawShaderGet();
+		drawShaderStore();
 		drawShaderSet(sh_editorSolidsDebug);
 	
 			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
 	
-		drawShaderSet(last_shader);
+		drawShaderUnstore();
 	}
 }

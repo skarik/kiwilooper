@@ -1,3 +1,5 @@
+/// @function Speedtest_Run()
+/// @desc Runs all speedtests. Called by command.
 function Speedtest_Run()
 {
 	// Test sign vs custom sign
@@ -44,11 +46,14 @@ function Speedtest_Run()
 	Debug.Show();
 }
 
-
+/// @function Speedtest_Start()
+/// @desc Sets up a marker to measure time between.
 function Speedtest_Start()
 {
 	global._speedtest_start = get_timer();
 }
+/// @function Speedtest_Stop()
+/// @desc Sets up ending marker to measure time between and returns that measurement in milliseconds.
 function Speedtest_Stop()
 {
 	var ending_time = get_timer();
@@ -56,6 +61,11 @@ function Speedtest_Stop()
 	
 	return delta / 1000.0;
 }
+
+/// @function Speedtest_TestCall(identifier, call)
+/// @param {String} identifier
+/// @param {Function} call
+/// @desc Times the call and prints the resulting time.
 function Speedtest_TestCall(identifier, call)
 {
 	Speedtest_Start();

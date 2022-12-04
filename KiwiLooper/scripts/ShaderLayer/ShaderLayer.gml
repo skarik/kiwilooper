@@ -62,10 +62,14 @@ function drawShaderUnset(shader)
 	shader_reset();
 }
 
+/// @function drawShaderStore()
+/// @desc Stores the current shader for use later.
 function drawShaderStore()
 {
 	global._draw_shaderLayerStoredShader = drawShaderGet();
 }
+/// @function drawShaderUnstore()
+/// @desc Restores the saved shader for use.
 function drawShaderUnstore()
 {
 	drawShaderSet(global._draw_shaderLayerStoredShader);

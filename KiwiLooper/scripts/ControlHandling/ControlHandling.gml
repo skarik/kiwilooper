@@ -1,9 +1,114 @@
+#macro kControlUvStyle_Mouse 0
+#macro kControlUvStyle_FakeMouse 1 
+#macro kControlUvStyle_Unused 2
+
+#macro kControlChoice_Margin 0.70
+
+function controlInit()
+{
+	xAxis = _controlStructCreate();
+	yAxis = _controlStructCreate();
+	zAxis = _controlStructCreate();
+	uAxis = _controlStructCreate();
+	vAxis = _controlStructCreate();
+	wAxis = _controlStructCreate();
+
+	itemUseButton = _controlStructCreate();
+	atkButton = _controlStructCreate();
+	useButton = _controlStructCreate();
+	dodgeButton = _controlStructCreate();
+	keyItemUseButton = _controlStructCreate();
+	runeButton = _controlStructCreate();
+	journalButton = _controlStructCreate();
+	yButton = _controlStructCreate();
+	itemPrevButton = _controlStructCreate();
+	itemNextButton = _controlStructCreate();
+	itemUnequipButton = _controlStructCreate();
+	itemsButton = _controlStructCreate();
+	selectButton = _controlStructCreate();
+	actUiButton = _controlStructCreate();
+	cancelButton = _controlStructCreate();
+	prevUiButton = _controlStructCreate();
+	nextUiButton = _controlStructCreate();
+
+	belt1Button = _controlStructCreate();
+	belt2Button = _controlStructCreate();
+	belt3Button = _controlStructCreate();
+	belt4Button = _controlStructCreate();
+	belt5Button = _controlStructCreate();
+	belt6Button = _controlStructCreate();
+
+	uPosition = GameCamera.width / 2;
+	vPosition = GameCamera.height / 2;
+	uPositionPrevious = uPosition;
+	vPositionPrevious = vPosition;
+
+	windowMouseXPrevious = 0.0;
+	windowMouseYPrevious = 0.0;
+
+	uPositionScreen = GameCamera.width / 2;
+	vPositionScreen = GameCamera.height / 2;
+
+	uvPositionStyle = kControlUvStyle_Mouse;
+
+	lastControlType = kControlKB;
+	lastGamepadName = gamepad_get_description(0);
+	lastGamepadType = (string_count("xinput", string_lower(lastGamepadName)) > 0) ? kGamepadTypeXInput : kGamepadTypeGeneric;
+	
+	mouseWrapCallbackId = Screen.limitMouseWrapCallbacks.Add(method(id,
+		function(offset_x, offset_y)
+		{
+			uPosition += offset_x / Screen.pixelScale;
+			uPositionPrevious += offset_x / Screen.pixelScale;
+			
+			vPosition += offset_y / Screen.pixelScale;
+			vPositionPrevious += offset_y / Screen.pixelScale;
+		}));
+}
+
+
+function controlCleanup()
+{
+	_controlStructFree(xAxis);
+	_controlStructFree(yAxis);
+	_controlStructFree(zAxis);
+	_controlStructFree(uAxis);
+	_controlStructFree(vAxis);
+	_controlStructFree(wAxis);
+	_controlStructFree(itemUseButton);
+	_controlStructFree(atkButton);
+	_controlStructFree(useButton);
+	_controlStructFree(dodgeButton);
+	_controlStructFree(keyItemUseButton);
+	_controlStructFree(runeButton);
+	_controlStructFree(journalButton);
+	_controlStructFree(yButton);
+	_controlStructFree(itemNextButton);
+	_controlStructFree(itemPrevButton);
+	_controlStructFree(itemUnequipButton);
+	_controlStructFree(itemsButton);
+	_controlStructFree(selectButton);
+	_controlStructFree(actUiButton);
+	_controlStructFree(cancelButton);
+	_controlStructFree(prevUiButton);
+	_controlStructFree(nextUiButton);
+	_controlStructFree(belt1Button);
+	_controlStructFree(belt2Button);
+	_controlStructFree(belt3Button);
+	_controlStructFree(belt4Button);
+	_controlStructFree(belt5Button);
+	_controlStructFree(belt6Button);
+
+	Screen.limitMouseWrapCallbacks.Remove(mouseWrapCallbackId);
+}
+
+
 /// @func controlUpdate(clearInputs)
 /// @description Update inputs.
 /// @param clear_input {boolean} If true, clears all input.
-function controlUpdate(argument0)
+function controlUpdate(clear_input)
 {
-	if (argument0 == false && !(Debug.on && iexists(o_debugCmdline) && o_debugCmdline.focused))
+	if (clear_input == false && !(Debug.on && iexists(o_debugCmdline) && o_debugCmdline.focused))
 	{
 		//_controlStructUpdate(xAxis, -keyboard_check(ord("A")) + keyboard_check(ord("D")) + deadzone_bias(gamepad_axis_value(0, gp_axislh)));
 		//_controlStructUpdate(yAxis, -keyboard_check(ord("W")) + keyboard_check(ord("S")) + deadzone_bias(gamepad_axis_value(0, gp_axislv)));
@@ -156,6 +261,56 @@ function controlUpdate(argument0)
 		_controlStructUpdate(belt5Button, 0.0);
 		_controlStructUpdate(belt6Button, 0.0);
 	}
+}
 
 
+/// @function controlZero(clear_all)
+/// @description Zero out inputs
+/// @param clear_all {boolean} If true, re-inits entire state.
+function controlZero(clear_all)
+{
+	if (clear_all == false)
+	{
+		xAxis.value = 0.0;
+		yAxis.value = 0.0;
+		zAxis.value = 0.0;
+	
+		uAxis.value = 0.0;
+		vAxis.value = 0.0;
+		wAxis.value = 0.0;
+
+		itemUseButton.value = 0.0;
+		atkButton.value = 0.0;
+		useButton.value = 0.0;
+		dodgeButton.value = 0.0;
+		keyItemUseButton.value = 0.0;
+		runeButton.value = 0.0;
+		journalButton.value = 0.0;
+		yButton.value = 0.0;
+		itemPrevButton.value = 0.0;
+		itemNextButton.value = 0.0;
+		itemUnequipButton.value = 0.0;
+		itemsButton.value = 0.0;
+		selectButton.value = 0.0;
+		actUiButton.value = 0.0;
+		cancelButton.value = 0.0;
+		prevUiButton.value = 0.0;
+		nextUiButton.value = 0.0;
+	
+		belt1Button.value = 0.0;
+		belt2Button.value = 0.0;
+		belt3Button.value = 0.0;
+		belt4Button.value = 0.0;
+		belt5Button.value = 0.0;
+		belt6Button.value = 0.0;
+	}
+	else
+	{
+		var l_uvPositionStyle = uvPositionStyle;
+	
+		controlCleanup();
+		controlInit();
+	
+		uvPositionStyle = l_uvPositionStyle;
+	}
 }

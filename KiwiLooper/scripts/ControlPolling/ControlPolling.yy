@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "_controlStructCreate",
+  "name": "ControlPolling",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

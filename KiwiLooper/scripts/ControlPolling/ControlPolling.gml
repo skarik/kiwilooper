@@ -1,9 +1,33 @@
+/// @function _controlParseCheckType(DO NOT USE)
+/// @desc If input is actual, sets last control type to input.
+/// @param input {real} Input value
+/// @param type {enum} Type of input given
+function _controlParseCheckType(input_in, control_type)
+{
+	if (abs(input_in) > 0.1)
+		lastControlType = control_type;
+	
+	return input_in;
+}
+
+function deadzone_bias(val)
+{
+	var deadzone = 0.22;
+	var deadzone_top = 0.1;
+	var bias = 0.4;
+	return biasStep(
+		clamp(
+			(abs(val) - deadzone) / ((1.0 - deadzone) / (1.0 - deadzone_top)),
+			0.0, 1.0 ),
+		bias) * sign(val);
+}
+
 /// @function controlParseAndPoll(control)
 /// @desc Polls the given input array and returns input from -1.0 to 1.0.
 /// @param control {array} Input array structure
-function controlParseAndPoll(argument0) {
-	var control = argument0;
-	var control_length = array_length_1d(control);
+function controlParseAndPoll(control)
+{
+	var control_length = array_length(control);
 	var value = 0.0;
 
 	for (var i = 0; i < control_length; i += 2)
@@ -55,6 +79,5 @@ function controlParseAndPoll(argument0) {
 	}
 
 	return value;
-
-
 }
+

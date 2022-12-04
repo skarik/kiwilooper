@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "controlAnyKey",
+  "name": "ControlEtc",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

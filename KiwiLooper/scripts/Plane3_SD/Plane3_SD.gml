@@ -1,13 +1,14 @@
 // Structure Definition for Plane3 
 
-/// @function Plane3(normal, offset) struct;
-/// @param {Vector3} normal
-/// @param {Vector3} offset
+/// @function Plane3() struct;
 function Plane3() constructor
 {
 	n = new Vector3(0, 0, 1);
 	d = 0.0;
 	
+	/// @function nearestPoint(point)
+	/// @param {Vector3} point
+	/// @desc Finds the closest point on the plane to the given point.
 	static nearestPoint = function(point)
 	{
 		// Offset from center
@@ -19,36 +20,21 @@ function Plane3() constructor
 		return d_center.subtract(n.multiply(t));
 	}
 	
+	/// @function flattenPoint(point)
+	/// @param {Vector3} point
+	/// @desc Flattens a point we assume is coplanar into 2D coordinates based on inferred Side and Up vectors
+	//		Will work with points that are not coplanar.
 	static flattenPoint = function(coplanar_point)
 	{	
 		var side = n.cross((abs(n.z) > 0.95) ? new Vector3(0, -1, 0) : new Vector3(0, 0, 1)).normalize();
 		var up   = n.cross(side.negate()).negate().normalize();
 		
-		return new Vector2(side.dot(coplanar_point), up.dot(coplanar_point));
-		
-		// This shall remain here as a testement to...something
-		/*
-		//var side = n.cross(abs(n.x > 0.99) ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0)).normal();
-		//var up = n.cross(side).normal();
-		//var up = n.cross((abs(n.x) > 0.95) ? new Vector3(0, 0, 1) : new Vector3(1, 0, 0)).negateSelf().normalize();
-		//var side = n.cross(up).normalize();
-		var side = n.cross((abs(n.z) > 0.95) ? new Vector3(0, -1, 0) : new Vector3(0, 0, 1)).normalize();
-		var up = n.cross(side).normalize();
-		
-		var matrix = CE_MatrixCreate(
-			side.x, up.x, n.x, 0.0,
-			side.y, up.y, n.y, 0.0,
-			side.z, up.z, n.z, 0.0,
-			0.0, 0.0, -d, 1.0);	
-		//CE_MatrixInverse(matrix);
-		CE_MatrixTranspose(matrix);
-		
 		// IT'S TIME FOR YOUR POINT FLATTENING
-		var flattened = coplanar_point.transformAMatrix(matrix);
-		return new Vector2(flattened.x, flattened.y);
-		*/
+		return new Vector2(side.dot(coplanar_point), up.dot(coplanar_point));
 	}
 	
+	/// @function copy()
+	/// @desc Returns a deep copy of the current plane (copies normal vector as well)
 	static copy = function()
 	{
 		gml_pragma("forceinline");
@@ -59,6 +45,9 @@ function Plane3() constructor
 	}
 }
 
+/// @function Plane3FromNormalOffset(normal, offset)
+/// @param {Vector3} normal
+/// @param {Vector3} offset
 function Plane3FromNormalOffset(n_normal, n_offset)
 {
 	gml_pragma("forceinline");

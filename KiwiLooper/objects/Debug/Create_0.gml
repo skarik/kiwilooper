@@ -37,7 +37,8 @@ if (convention_mode || demo_mode)
 // Game debugging values
 lively_show_explode_wire_target = true;
 
-
+/// @function Show()
+/// @desc Show the debug UI
 Show = function()
 {
 	if (!on)
@@ -50,9 +51,14 @@ Show = function()
 		}
 	}
 }
+/// @function Hide()
+/// @desc Hide the debug UI
 Hide = function()
 {
-	// Disable debug menu
-	on = false;
-	visible = false;
+	if (on)
+	{
+		// Disable debug menu
+		on = false;
+		visible = false;
+	}
 }

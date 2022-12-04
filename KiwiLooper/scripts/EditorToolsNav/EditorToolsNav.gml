@@ -656,7 +656,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 		with (m_editor)
 		{
 			// Top-down mode
-			if (m_state.camera.mode == 0)
+			if (m_state.camera.mode == kEditorCameraModeTopDown)
 			{
 				if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
 				{
@@ -702,7 +702,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 				}
 			}
 			// First person mode
-			else if (m_state.camera.mode == 1)
+			else if (m_state.camera.mode == kEditorCameraModeFirstPerson)
 			{
 				if ((bMouseLeft && !bMouseRight) || (bMouseMiddle && !bMouseLeft && !bMouseRight))
 				{

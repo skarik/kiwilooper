@@ -17,7 +17,7 @@ function AMapEditorState() constructor
 		fp_rotation: new Vector3(0, 0, 0),
 		fp_z: 0,
 		
-		mode: 0, // 0 for topdown, 1 for fps
+		mode: kEditorCameraModeTopDown, // 0 for topdown, 1 for fps
 	};
 	
 	view = {

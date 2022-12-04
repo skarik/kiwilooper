@@ -8,6 +8,4 @@ function controlAnyKey()
 		return true;
 	}
 	return false;
-
-
 }
