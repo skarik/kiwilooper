@@ -772,6 +772,6 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest8_solids3_sub2.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
-    "IDEVersion": "2022.9.1.51",
+    "IDEVersion": "2022.0.0.19",
   },
 }
