@@ -10,7 +10,9 @@
 #macro kEditorToolTranslate		9
 #macro kEditorToolRotate		10
 #macro kEditorToolScale			11
-#macro kEditorTool_MAX			12
+#macro kEditorToolMakeSolids	12
+#macro kEditorToolTextureSolids	13
+#macro kEditorTool_MAX			14
 
 #macro kEditorToolButtonStateNone	0x01
 #macro kEditorToolButtonStateMake	0x02
@@ -88,6 +90,8 @@ function EditorToolsSetup()
 		new AEditorToolStateTranslate(),	// kEditorToolTranslate
 		new AEditorToolStateRotate(),		// kEditorToolRotate
 		new AEditorToolStateScale(),		// kEditorToolScale
+		new AEditorToolStateMakeSolids(),	// kEditorToolMakeSolids
+		new AEditorToolStateTextureSolids(),// kEditorToolTextureSolids
 		];
 	assert(array_length(toolStates) == kEditorTool_MAX);
 	
@@ -226,13 +230,14 @@ function EditorToolsUpdate()
 		var pickerObjects = [];
 		var pickerDistances = [];
 		var pickerNormals = [];
-		var pickerCount = EditorPickerCast(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel), pickerObjects, pickerDistances, pickerNormals, kPickerHitMaskTilemap | kPickerHitMaskProp, m_selection);
+		var pickerCount = EditorPickerCast(Vector3FromArray(viewRayPos), Vector3FromArray(viewrayPixel), pickerObjects, pickerDistances, pickerNormals, kPickerHitMaskTilemap | kPickerHitMaskProp, false, m_selection);
 		if (pickerCount > 0)
 		{
 			toolWorldX = viewRayPos[0] + viewrayPixel[0] * pickerDistances[0];
 			toolWorldY = viewRayPos[1] + viewrayPixel[1] * pickerDistances[0];
 			toolWorldZ = viewRayPos[2] + viewrayPixel[2] * pickerDistances[0];
 			toolWorldNormal.copyFrom(pickerNormals[0]);
+			toolWorldNormal.normalize(); // For safety
 			toolWorldValid = true;
 		}
 		else

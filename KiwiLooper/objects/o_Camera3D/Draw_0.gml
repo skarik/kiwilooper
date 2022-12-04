@@ -78,6 +78,9 @@ surface_set_target(buffer_scene3d);
 		}
 	}
 	
+	//gpu_set_cullmode(cull_counterclockwise); // TODO
+	gpu_set_cullmode(cull_noculling); // TODO
+	
 	// draw all objects
 	if (global.lightingMode == kLightingModeForward)
 	{

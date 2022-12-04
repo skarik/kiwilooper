@@ -34,6 +34,10 @@ function damageCanHit(source, target)
 	{
 		return false;
 	}
+	if (target.isDefending)
+	{
+		return false; // Yay.
+	}
 	return true;
 }
 

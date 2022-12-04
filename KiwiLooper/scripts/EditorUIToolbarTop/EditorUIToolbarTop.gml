@@ -63,6 +63,14 @@ function AToolbarTop() : AToolbar() constructor
 					element.m_state_showTooltip = false;
 				}
 			}
+			// If not enabled, emulate mouse not inside
+			if (!element.m_state_isEnabled)
+			{
+				element.m_state_isDown = false;
+				element.m_state_isHovered = false;
+				element.m_state_hoveredTime = 0.0;
+				element.m_state_showTooltip = false;
+			}
 			
 			// Advance cursor.
 			topLeft.x += (element.m_isButton || bIsLabel) ? (kButtonSize + extra_width) : kSpacerSize;
@@ -119,7 +127,7 @@ function AToolbarTop() : AToolbar() constructor
 				if (has_text)
 				{
 					draw_set_font(f_04b03);
-					draw_set_color(c_white);
+					draw_set_color(element.m_state_isEnabled ? c_white : c_gray);
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_middle);
 					draw_text(topLeft.x + kButtonSize + kTextPadding - 1, topLeft.y + 1 + kButtonSize / 2, element.m_text);

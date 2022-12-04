@@ -6,6 +6,6 @@
   "isCompatibility": false,
   "parent": {
     "name": "Math",
-    "path": "folders/Scripts/Game/Math.yy",
+    "path": "folders/Scripts/Engine/Math.yy",
   },
 }

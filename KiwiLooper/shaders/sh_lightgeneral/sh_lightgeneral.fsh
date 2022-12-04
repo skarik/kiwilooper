@@ -215,15 +215,20 @@ void main()
 			// Do distance attentuation
 			float attenuation = clamp(1.0 - (point_closest_len * lightParams.y), 0.0, 1.0);
 			
-			// Do averaged surface response
-			/*float surface_response = 0.2 * (
-				clamp(dot(pc_delta / pc_len, pixelNormal), 0.0, 1.0) +
-				clamp(dot(p0_delta / p0_len, pixelNormal), 0.0, 1.0) +
-				clamp(dot(p1_delta / p1_len, pixelNormal), 0.0, 1.0) +
-				clamp(dot(p2_delta / p2_len, pixelNormal), 0.0, 1.0) +
-				clamp(dot(p3_delta / p3_len, pixelNormal), 0.0, 1.0)
-				);*/
+			// Do normal attenuation
+			//float normal_response = clamp(dot(normalize(point_closest), pixelNormal), 0.0, 1.0);
+			// Have to solve the "horizon problem":
+			float normal_response = 0.2 * (
+				clamp(dot(normalize(p0), pixelNormal), 0.0, 1.0) +
+				clamp(dot(normalize(p1), pixelNormal), 0.0, 1.0) +
+				clamp(dot(normalize(p2), pixelNormal), 0.0, 1.0) +
+				clamp(dot(normalize(p3), pixelNormal), 0.0, 1.0) +
+				clamp(dot(normalize(point_to_light_center), pixelNormal), 0.0, 1.0)
+				); // for now, copy the homework and just sample multiple places & average out. it seems to be close enough for what we need
+			
+			// Do surface response
 			float surface_response = RectangleSolidAngle(vec3(0, 0, 0), p0, p1, p2, p3);
+			surface_response *= normal_response;
 			//surface_response = clamp(surface_response * 0.5 + 0.5, 0.0, 1.0); // soft backfaces
 			surface_response = clamp(surface_response, 0.0, 1.0);
 			

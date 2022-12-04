@@ -373,9 +373,9 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				}
 				else if (entMesh.shape == kGizmoMeshWireCube)
 				{
-					var xface_scale = min(1.0 / m_renderInstance.yscale, 1.0 / m_renderInstance.zscale);
-					var yface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.zscale);
-					var zface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.yscale);
+					var xface_scale = min(1.0 / m_renderInstance.yscale, 1.0 / m_renderInstance.zscale) * 0.5;
+					var yface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.zscale) * 0.5;
+					var zface_scale = min(1.0 / m_renderInstance.xscale, 1.0 / m_renderInstance.yscale) * 0.5;
 					// Bottom
 					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
 					MeshbAddLine3(m_mesh, color, 1.0, xface_scale, entHullsize, new Vector3(1, 0, 0), (new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);

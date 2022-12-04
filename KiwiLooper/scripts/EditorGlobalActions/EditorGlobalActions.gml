@@ -1,6 +1,6 @@
 function EditorGet()
 {
-	return instance_find(ot_EditorTest, 0);
+	return instance_find(o_EditorLevel, 0);
 }
 
 function EditorGlobalDeleteSelection()
@@ -36,6 +36,17 @@ function EditorGlobalDeleteSelection()
 				m_splatmap.RemoveSplat(currentSelection.object);
 				delete currentSelection.object;
 				bRebuildProps = true;
+				break;
+				
+			case kEditorSelection_Primitive:
+				var solidIndex = array_get_index(m_state.map.solids, currentSelection.object.primitive);
+				if (solidIndex != null)
+				{
+					delete currentSelection.object.primitive;
+					array_delete(m_state.map.solids, solidIndex, 1);
+					bRebuildTiles = true;
+				}
+				EditorGlobalMarkDirtyGeometry();
 				break;
 			}
 		}
@@ -109,6 +120,11 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 				{
 					MapRebuildSplats();
 				}
+				else if (type == kEditorSelection_Primitive)
+				{
+					EditorGlobalMarkDirtyGeometry();
+					MapRebuildSolidsOnly();
+				}
 			}
 			// otherwise, may need to request rebuilding gizmo meshes
 			else if (iexists(entity))
@@ -120,6 +136,17 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 						// Find the renderer & update it
 						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
 					}
+				}
+			}
+		}
+		else
+		{
+			if (is_struct(entity)) // assume struct inputs are props
+			{
+				if (type == kEditorSelection_Primitive)
+				{
+					EditorGlobalMarkDirtyGeometry();
+					m_wantRebuildSolids = true;
 				}
 			}
 		}
@@ -160,6 +187,34 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 
 //=============================================================================
 
+function EditorGlobalMarkDirtyGeometry()
+{
+	with (EditorGet())
+	{
+		m_state.map.geometry_valid = false;
+		m_state.map.ai_valid = false;
+		m_state.map.lighting_valid = false;
+	}
+}
+
+function EditorGlobalMarkDirtyAi()
+{
+	with (EditorGet())
+	{
+		m_state.map.ai_valid = false;
+	}
+}
+
+function EditorGlobalMarkDirtyLighting()
+{
+	with (EditorGet())
+	{
+		m_state.map.lighting_valid = false;
+	}
+}
+
+//=============================================================================
+
 function EditorGlobalSaveMap()
 {
 	var default_name = "untitled.kmf";
@@ -181,6 +236,7 @@ function EditorGlobalSaveMap_Work(filepath)
 	MapSaveSplats(filedata, EditorGet().m_splatmap);
 	MapSaveEditor(filedata, EditorGet().m_state);
 	MapSaveAi(filedata, EditorGet().m_aimap);
+	MapSaveGeometry(filedata, EditorGet().m_mapgeometry);
 	
 	MapSaveFiledata(filepath, filedata);
 	MapFreeFiledata(filedata);
@@ -214,6 +270,7 @@ function EditorGlobalLoadMap_Work(filepath)
 	MapLoadSplats(filedata, EditorGet().m_splatmap);
 	MapLoadEditor(filedata, EditorGet().m_state);
 	MapLoadAi(filedata, EditorGet().m_aimap);
+	MapLoadGeometry(filedata, EditorGet().m_mapgeometry);
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
@@ -269,6 +326,8 @@ function EditorGlobalNukeMap_Work()
 		// Clear the ai map
 		m_aimap = new AMapAiInfo();
 		
+		// Clear solids
+		m_state.map.solids = [];
 		
 		// Now rebuild everything
 		// TODO: Is there a beter way to do this
@@ -361,4 +420,16 @@ function EditorGlobalRebuildAI()
 		
 	// Save the task in case we need to cancel
 	EditorGet().m_taskRebuildAi = tasker;
+}
+
+function EditorGlobalRebuildLights()
+{
+	// TODO
+}
+
+function EditorGlobalCompileGeo()
+{
+	// TODO
+	EditorGet().m_mapgeometry = MapGeo_BuildAll(EditorGet().m_state.map);
+	EditorGet().m_state.map.geometry_valid = true;
 }

@@ -139,6 +139,13 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 							TextureUpdateMapVisuals();
 						}
 					}
+					else if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+					{
+						if (TextureApplyToSelectObject(selection))
+						{
+							TextureUpdateMapVisuals();
+						}
+					}
 				}
 				else
 				{
@@ -254,7 +261,6 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 				}
 			}
 		}
-		
 		return null;
 	};
 	
@@ -307,6 +313,13 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 				}
 			}
 		}
+		else if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+		{
+			// Apply texture changes
+			var face = selection.object.primitive.faces[selection.object.face];
+			face.texture.index = m_windowBrowser.GetCurrentTile();
+			return true;
+		}
 		return bHasAlignmentChange;
 	}
 	
@@ -335,7 +348,8 @@ function AEditorToolStateTexturing() : AEditorToolState() constructor
 	{
 		with (m_editor)
 		{
-			MapRebuildGraphics();
+			//MapRebuildGraphics();
+			MapRebuildSolidsOnly();
 		}
 	}
 }

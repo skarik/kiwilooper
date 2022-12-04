@@ -14,7 +14,10 @@ function PlayerControl_Create()
 
 function PlayerControl_Step()
 {
-	controlUpdate(iexists(o_uisLogBox));
+	if (!iexists(BattleManager))
+	{
+		controlUpdate(iexists(o_uisLogBox));
+	}
 }
 
 function PlayerControl_UpdateCamera()

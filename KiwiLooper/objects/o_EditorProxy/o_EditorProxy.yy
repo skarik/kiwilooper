@@ -25,7 +25,7 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Tests",
-    "path": "folders/Objects/Editor/Tests.yy",
+    "name": "Editor",
+    "path": "folders/Objects/Editor.yy",
   },
 }

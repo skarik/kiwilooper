@@ -217,10 +217,22 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 	{
 		x = -x;
 		y = -y;
-		z = -y;
+		z = -z;
 		return self;
 	}
 	
+	static invert = function()
+	{
+		return new Vector3(1.0 / x, 1.0 / y, 1.0 / z);
+	}
+	static invertSelf = function()
+	{
+		x = 1.0 / x;
+		y = 1.0 / y;
+		z = 1.0 / z;
+		return self;
+	}
+
 	static linearlerp = function(to, t)
 	{
 		return new Vector3(lerp(x, to.x, t), lerp(y, to.y, t), lerp(z, to.z, t));
@@ -279,7 +291,24 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 	
 	static asArray = function()
 	{
+		gml_pragma("forceinline");
 		return [x, y, z];
+	}
+	
+	static asXY = function()
+	{
+		gml_pragma("forceinline");
+		return new Vector2(x, y);
+	}
+	static asXZ = function()
+	{
+		gml_pragma("forceinline");
+		return new Vector2(x, z);
+	}
+	static asYZ = function()
+	{
+		gml_pragma("forceinline");
+		return new Vector2(y, z);
 	}
 	
 	static toString = function()

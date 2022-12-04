@@ -22,6 +22,7 @@ function Character_Create()
 	hp_previous = 1;
 	hp_max = 1;
 	isDead = false;
+	lastDamaged = false;
 	lastDamageType = kDamageTypeUnarmed;
 	footstepBloody = 0;
 	shadowInstance = inew(o_characterShadow);
@@ -59,6 +60,7 @@ function Character_Create()
 	
 	// Attack state
 	attackTimer = 0.0;
+	isDefending = false;
 	
 	// Death state
 	deathTimer = 0.0;
@@ -76,6 +78,7 @@ function Character_BeginStep()
 	// Has HP dropped? If so, let's do some EFFECTS.
 	if (hp < hp_previous)
 	{
+		lastDamaged = true;
 		// TODO: Do blood effects
 		
 		// Are we dying here?
@@ -91,6 +94,10 @@ function Character_BeginStep()
 				isDead = true;
 			}
 		}
+	}
+	else
+	{
+		lastDamaged = false;
 	}
 	// Update previous values
 	hp_previous = hp;
@@ -190,7 +197,7 @@ function Character_Step()
 		// Update on-ground shock death
 		{
 			if ((((z + 64) % 16 > 8) // Quick hack to let us start falling first
-				|| (onGround && z == shadowInstance.z))
+				|| (onGround && iexists(shadowInstance) && z == shadowInstance.z))
 				&& World_ShockAtPosition(x, y, z))
 			{
 				if (!isDead)

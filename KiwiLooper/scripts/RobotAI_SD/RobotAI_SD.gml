@@ -37,6 +37,8 @@ function airoboCreate()
 
 function airoboLogicAndControl()
 {
+	if (iexists(BattleManager)) return; // skip b/c battle manager manages ALL
+	
 	// Update the states now
 	var xAxis_next = xAxis.value;
 	var yAxis_next = yAxis.value;
@@ -52,7 +54,11 @@ function airoboLogicAndControl()
 		
 		if (m_ai.targetVisible)
 		{
-			m_ai.state = kAiRoboState_Chasing;
+			//m_ai.state = kAiRoboState_Chasing;
+			if (!iexists(BattleManager))
+			{
+				inew(BattleManager); // create a battle manager when aggro fun times
+			}
 		}
 	}
 	else if (m_ai.state == kAiRoboState_Chasing)

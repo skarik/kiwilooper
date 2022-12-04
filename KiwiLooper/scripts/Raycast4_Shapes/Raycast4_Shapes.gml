@@ -67,6 +67,13 @@ function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 	
 	return _raycast4_box_inner(l_boxCenter, l_boxExtents, rayOrigin, rayDir, 1.0);
 }
+/// @function raycast4_box2(bbox3, rayOrigin, rayDir)
+/// @desc Performs a raycast against the given AABB.
+function raycast4_box2(bbox3, rayOrigin, rayDir)
+{
+	gml_pragma("forceinline");
+	return _raycast4_box_inner(bbox3.center, bbox3.extents, rayOrigin, rayDir, 1.0);
+}
 
 /// @function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
 /// @desc Performs a raycast against the given AABB.
@@ -83,6 +90,14 @@ function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
 	l_boxExtents.z = abs(l_boxExtents.z);
 	
 	return _raycast4_box_inner(l_boxCenter, l_boxExtents, rayOrigin, rayDir, -1.0);
+}
+/// @function raycast4_box_backside2(bbox3, rayOrigin, rayDir)
+/// @desc Performs a raycast against the given AABB.
+function raycast4_box_backside2(bbox3, rayOrigin, rayDir)
+{
+	// Some logic borrowed from https://tavianator.com/2011/ray_box.html to get the -1.0
+	gml_pragma("forceinline");
+	return _raycast4_box_inner(bbox3.center, bbox3.extents, rayOrigin, rayDir, -1.0);
 }
 
 /// @function raycast4_box_rotated(boxCenter, boxExtents, preRotation, frontfaces, rayOrigin, rayDir)
@@ -257,4 +272,143 @@ function raycast4_axisplane(axis, offset, rayOrigin, rayDir)
 		
 	// Return if hit.
 	return (l_d >= 0.0);
+}
+
+/// @function raycast4_plane(plane, rayOrigin, rayDir)
+/// @desc Performs a raycast on the given plane.
+function raycast4_plane(plane, rayOrigin, rayDir)
+{
+	var nd = rayDir.dot(plane.n);
+	var pn = rayOrigin.dot(plane.n);
+	
+	// nd must be negative, and not 0
+	// if nd is positive, the ray and plane normals
+	// point in the same direction. No intersection.
+	if (nd >= 0.0)
+	{
+		return false;
+	}
+	
+	var t = (plane.d - pn) / nd;
+	
+	// t must be positive
+	if (t >= 0.0)
+	{
+		global._raycast4_hitdistance = t;
+		global._raycast4_hitnormal = plane.n.copy();
+		return true;
+	}
+
+	return false;
+}
+
+/// @function raycast4_triangle(points, rayOrigin, rayDir, cullback)
+/// @desc Performs a raycast against the given triangle
+/// @param {Vector3[3]} points
+/// @param {Vector3} rayOrigin
+///	@param {Vector3} rayDir
+function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
+{
+	var edge1 = new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z);
+	var edge2 = new Vector3(points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z);
+	
+	// Face normal
+	var normal = edge1.cross(edge2);
+	
+	var pvec = rayDir.cross(edge2);
+	var det = edge1.dot(pvec);
+	
+	// Backfacing or nearly parallel?
+	if (normal.dot(rayDir) >= 0 || abs(det) < KINDA_SMALL_NUMBER)
+		return false;
+		
+	var tvec = rayOrigin.subtract(points[0]).divideSelf(det);
+	var qvec = tvec.cross(edge1);
+	
+	// Get the t-value now
+	var distance = edge2.dot(qvec);
+	// Collided behind the ray?
+	if (distance < KINDA_SMALL_NUMBER) 
+	{
+		return false;
+	}
+	
+	var b_x = tvec.dot(pvec);
+	var b_y = qvec.dot(rayDir);
+	var b_z = b_x + b_y;
+	
+	// Intersected outside triangle?
+	if (b_x < 0.0 || b_y > 1.0 || b_z > 1.0)
+	{	
+		return false;
+	}
+	
+	global._raycast4_hitdistance = distance;
+	
+	return true;
+}
+
+/// @function raycast4_polygon(points, rayOrigin, rayDir)
+function raycast4_polygon(points, rayOrigin, rayDir)
+{
+	var edge1 = new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z);
+	var edge2 = new Vector3(points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z);
+	
+	var normal = edge1.cross(edge2);
+	if (normal.sqrMagnitude() < KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER) // Degenerate case
+		return false;
+		
+	// Now that we have point[0] and normal, we have a plane. Collide with plane to get point
+	var offsetToPlane = rayOrigin.subtract(points[0]);
+	
+	var planeProjectRaydir = rayDir.dot(normal);
+	var planeProjectOffset = -offsetToPlane.dot(normal);
+	
+	if (abs(planeProjectRaydir) < KINDA_SMALL_NUMBER) // Ray is parallel to the checking plane
+		return false;
+		
+	var distance = planeProjectOffset / planeProjectRaydir;
+	if (distance < 0.0) // Ray points away
+		return false;
+		
+	// Get the hit point
+	var hitPoint = rayOrigin.add(rayDir.multiply(distance));
+	
+	// Check against all edges smushed to 2D
+	var axis_dropped = 
+		(abs(normal.x) > abs(normal.y)) 
+			? ((abs(normal.x) > abs(normal.z)) ? kAxisX : kAxisZ)
+			: ((abs(normal.y) > abs(normal.z)) ? kAxisY : kAxisZ);
+	var axis_dropped_sign = sign(normal.getElement(axis_dropped));
+	
+	var edge_count = array_length(points);
+	var edge_index = 0;
+	while (edge_index < edge_count)
+	{
+		var point1 = points[(edge_index + 1) % edge_count];
+		var point0 = points[edge_index];
+		
+		var edge = 
+			(axis_dropped == kAxisX) ? [point1.y - point0.y, point1.z - point0.z] : (
+			(axis_dropped == kAxisY) ? [point1.z - point0.z, point1.x - point0.x] : (
+			/*axis_dropped == kAxisZ*/ [point1.x - point0.x, point1.y - point0.y]
+			));
+		var compare =
+			(axis_dropped == kAxisX) ? [hitPoint.y - point0.y, hitPoint.z - point0.z] : (
+			(axis_dropped == kAxisY) ? [hitPoint.z - point0.z, hitPoint.x - point0.x] : (
+			/*axis_dropped == kAxisZ*/ [hitPoint.x - point0.x, hitPoint.y - point0.y]
+			));
+		
+		// Cross product to check sine between two angles. 
+		if ((edge[0] * compare[1] - edge[1] * compare[0]) * axis_dropped_sign < 0.0) // Is on the wrong side of the edge
+			return false;
+			
+		edge_index++; // Next edge, let's go
+	}
+	
+	// Otherwise, we're at the right spot
+	global._raycast4_hitdistance = distance;
+	global._raycast4_hitnormal = normal.copy(); // TODO
+
+	return true;
 }

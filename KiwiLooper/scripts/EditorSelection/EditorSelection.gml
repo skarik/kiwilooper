@@ -1,11 +1,14 @@
-#macro kEditorSelection_None		0
-#macro kEditorSelection_Prop		1
-#macro kEditorSelection_Tile		2
-#macro kEditorSelection_TileFace	3
-#macro kEditorSelection_Splat		4
-#macro kEditorSelection_Voxel		5 // unused
-#macro kEditorSelection_VoxelFace	6 // unused
-#macro kEditorSelection_Primitive	7 // future work w/ voxels?
+#macro kEditorSelection_None			0
+#macro kEditorSelection_Prop			1
+#macro kEditorSelection_Tile			2
+#macro kEditorSelection_TileFace		3
+#macro kEditorSelection_Splat			4
+#macro kEditorSelection_Voxel			5 // unused
+#macro kEditorSelection_VoxelFace		6 // unused
+#macro kEditorSelection_Primitive		7
+#macro kEditorSelection_PrimitiveFace	8 // subset of Primitive. Only used in specific cases.
+#macro kEditorSelection_PrimitiveEdge	9
+#macro kEditorSelection_PrimitiveVertex	10
 
 function AEditorSelection() constructor
 {
@@ -43,16 +46,28 @@ function EditorSelectionWrapSplat( splat )
 	selection.object = splat;
 	return selection;
 }
+function EditorSelectionWrapPrimitive( mapSolid, faceIndex )
+{
+	var selection = new AEditorSelection();
+	selection.type = kEditorSelection_Primitive;
+	selection.object = {
+		primitive:	mapSolid,
+		face:		faceIndex,
+		};
+	return selection;
+}
 
 function EditorSelectionWrap( ent, type )
 {
 	switch (type)
 	{
-	case kEditorSelection_None:		return ent;
-	case kEditorSelection_Prop:		return EditorSelectionWrapProp(ent);
-	case kEditorSelection_Tile:		return EditorSelectionWrapTile(ent);
-	case kEditorSelection_TileFace:	return EditorSelectionWrapTileFace(ent.tile, ent.normal);
-	case kEditorSelection_Splat:	return EditorSelectionWrapSplat(ent);
+	case kEditorSelection_None:			return ent;
+	case kEditorSelection_Prop:			return EditorSelectionWrapProp(ent);
+	case kEditorSelection_Tile:			return EditorSelectionWrapTile(ent);
+	case kEditorSelection_TileFace:		return EditorSelectionWrapTileFace(ent.tile, ent.normal);
+	case kEditorSelection_Splat:		return EditorSelectionWrapSplat(ent);
+	case kEditorSelection_Primitive:		return EditorSelectionWrapPrimitive(ent.primitive, ent.face);
+	case kEditorSelection_PrimitiveFace:	return EditorSelectionWrapPrimitive(ent.primitive, ent.face);
 	}
 	return null;
 }
@@ -162,6 +177,17 @@ function EditorSelectionGetPosition(selection)
 			else if (selection.type == kEditorSelection_TileFace)
 			{
 				return new Vector3(selection.object.tile.x * 16, selection.object.tile.y * 16, selection.object.tile.height * 16);
+			}
+			else if (selection.type == kEditorSelection_Primitive)
+			{
+				if (selection.object.face == null)
+				{
+					return selection.object.primitive.GetBBox().center;
+				}
+				else
+				{
+					return selection.object.primitive.GetFaceBBox(selection.object.face).center;
+				}
 			}
 		}
 		else if (iexists(selection))

@@ -189,6 +189,14 @@ function _EntityInfoInit()
 			gizmoIndex: 0,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			gizmoOrigin: kGizmoOriginBottom,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshWireCube,
+				color:	c_lime,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+			},
 			
 			hullsize: 16,
 			
@@ -208,6 +216,14 @@ function _EntityInfoInit()
 			gizmoIndex: 0,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
 			gizmoOrigin: kGizmoOriginBottom,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshWireCube,
+				color:	c_aqua,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+			},
 			
 			hullsize: 16,
 			
