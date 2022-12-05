@@ -35,6 +35,8 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 3, "Load", null, EditorGlobalLoadMap, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 2, "Save", null, EditorGlobalSaveMap, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 16, "Clear Tiles", null, function() { EditorTileMapSetup(); MapRebuildSolidsOnly(); }, null));
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 6, "Redo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 5, "Undo (No Effect)", null, null, null));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
