@@ -401,6 +401,7 @@
     {"id":{"name":"CE_Readme","path":"scripts/CE_Readme/CE_Readme.yy",},"order":2,},
     {"id":{"name":"o_livelyFxSpark","path":"objects/o_livelyFxSpark/o_livelyFxSpark.yy",},"order":1,},
     {"id":{"name":"ControlPolling","path":"scripts/ControlPolling/ControlPolling.yy",},"order":16,},
+    {"id":{"name":"o_tileset3DIze2","path":"objects/o_tileset3DIze2/o_tileset3DIze2.yy",},"order":5,},
     {"id":{"name":"settingsGameplayDefaults","path":"scripts/settingsGameplayDefaults/settingsGameplayDefaults.yy",},"order":11,},
     {"id":{"name":"ssy_nodeAiHide","path":"sprites/ssy_nodeAiHide/ssy_nodeAiHide.yy",},"order":25,},
     {"id":{"name":"TriggeringUtils","path":"scripts/TriggeringUtils/TriggeringUtils.yy",},"order":13,},

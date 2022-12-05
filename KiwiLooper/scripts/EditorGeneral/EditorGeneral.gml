@@ -18,31 +18,23 @@ function EditorLevel_Init()
 	m_currentMapName = "";
 
 	// List of all layers currently used for the tiles and props.
-	//intermediateLayers = [];
 	solidsRenderer = null;
 	
 	// Rebuilds all the graphics for the map: props, tilemap, and splats
 	MapRebuildGraphics = function()
 	{
 		// Delete existing renderers
-		//idelete(o_tileset3DIze);
-		//idelete(o_solids3DIze);
-		//idelete(o_props3DIze2);
+		idelete(o_tileset3DIze2);
 	
 		// Delete all current intermediate layers
 		MapFreeAllIntermediateLayers();
 	
-		// Set up the tiles
-		//m_tilemap.BuildLayers(intermediateLayers);
-	
-		// Set up the props
-		//m_propmap.RebuildPropLayer(intermediateLayers);
-	
-		// Create the 3d-ify chain
-		//inew(o_tileset3DIze);
+		// Build tilemap rendering
+		var tilemap_renderer = inew(o_tileset3DIze2);
+		tilemap_renderer.SetTilemap(m_tilemap);
+		tilemap_renderer.BuildMesh();
 		
-		//var solids = inew(o_solids3DIze);
-		//solids.
+		// Build solids
 		EditorSolidsRendererFree();
 		EditorSolidsRendererCreate();
 		
@@ -54,11 +46,22 @@ function EditorLevel_Init()
 	}
 	
 	// Rebuilds only the solids graphics
-	MapRebuildSolidsOnly = function()
+	MapRebuildSolidsOnly = function(solid_id = null)
 	{
-		//solids.
+		// Delete existing renderers
+		idelete(o_tileset3DIze2);
+		
+		// Delete all current intermediate layers
+		MapFreeAllIntermediateLayers();
+		
+		// Build tilemap rendering
+		var tilemap_renderer = inew(o_tileset3DIze2);
+		tilemap_renderer.SetTilemap(m_tilemap);
+		tilemap_renderer.BuildMesh();
+		
+		// Build solids
 		EditorSolidsRendererFree();
-		EditorSolidsRendererCreate();
+		EditorSolidsRendererCreate(); // TODO
 	
 		// Now that we have collision, recreate the splats
 		MapRebuildSplats();
@@ -70,27 +73,10 @@ function EditorLevel_Init()
 		// Delete existing renderers
 		idelete(o_props3DIze2);
 	
-		// Delete the matching intermediate layer
-		/*for (var layerIndex = 0; layerIndex < array_length(intermediateLayers); ++layerIndex)
-		{
-			var layer_name = layer_get_name(intermediateLayers[layerIndex]);
-			var layer_name_search_position = string_pos("props", layer_name);
-			if (layer_name_search_position != 0)
-			{
-				layer_destroy(intermediateLayers[layerIndex]);
-				array_delete(intermediateLayers, layerIndex, 1);
-				break;
-			}
-		}*/
-	
 		// Set up the props
-		//m_propmap.RebuildPropLayer(intermediateLayers);
 		var props = inew(o_props3DIze2);
 		props.SetMap(m_propmap);
 		props.BuildMesh();
-	
-		// Create the missing part of the 3d-ify chain
-		//inew(o_props3DIze);
 	}
 	
 	// Rebuilds all the graphics for the map: splats only
@@ -110,14 +96,10 @@ function EditorLevel_Init()
 				o_splatterRenderer.update();
 			}
 		}
-	
-		// Done.
 	}
 	MapFreeAllIntermediateLayers = function()
 	{
-		// Delete all current intermediate layers
-		//layer_destroy_list(intermediateLayers);
-		//intermediateLayers = [];
+		// Done.
 	}
 
 	EditorUIBitsSetup();
@@ -167,7 +149,8 @@ function EditorSolidsRendererFree()
 function EditorSolidsRendererCreate()
 {
 	// TODO: Batch solids into 4-solid groups (or just about that)
-	
+	// For that, we'd just mark all solid groups as "dirty" then go about rebuilding.
+
 	solidsRenderer = inew(ob_3DObject);
 	solidsRenderer.lit = true; // TODO
 	
