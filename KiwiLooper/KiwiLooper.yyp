@@ -255,6 +255,7 @@
     {"id":{"name":"sui_portraitKiwi","path":"sprites/sui_portraitKiwi/sui_portraitKiwi.yy",},"order":8,},
     {"id":{"name":"_Loader","path":"objects/_Loader/_Loader.yy",},"order":4,},
     {"id":{"name":"o_props3DIze2","path":"objects/o_props3DIze2/o_props3DIze2.yy",},"order":3,},
+    {"id":{"name":"sh_editorGridSurface","path":"shaders/sh_editorGridSurface/sh_editorGridSurface.yy",},"order":4,},
     {"id":{"name":"spr_roboDead","path":"sprites/spr_roboDead/spr_roboDead.yy",},"order":3,},
     {"id":{"name":"o_3DLightYOsc","path":"objects/o_3DLightYOsc/o_3DLightYOsc.yy",},"order":3,},
     {"id":{"name":"EditorTileMap","path":"scripts/EditorTileMap/EditorTileMap.yy",},"order":2,},

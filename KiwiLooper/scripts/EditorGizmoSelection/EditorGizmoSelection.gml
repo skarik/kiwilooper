@@ -184,7 +184,7 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpY)),
 				new Vector3(0, 0, 1)
 			)
-			]);
+			], true);
 				
 		// X faces:
 		meshb_AddQuad(m_mesh, [
@@ -238,7 +238,7 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 				(new Vector2(1.0 + kUVBumpY, 1.0 + kUVBumpZ)),
 				new Vector3(1, 0, 0)
 			)
-			]);
+			], true);
 				
 		// Y faces:
 		meshb_AddQuad(m_mesh, [
@@ -266,7 +266,7 @@ function AEditorGizmoSelectBox3D() : AEditorGizmoSelectBox() constructor
 				(new Vector2(1.0 + kUVBumpX, 1.0 + kUVBumpZ)),
 				new Vector3(0, 1, 0)
 			)
-			]);
+			], true);
 		meshb_AddQuad(m_mesh, [
 			new MBVertex(
 				new Vector3(m_min.x - kBorderExpand, m_max.y, m_min.z - kBorderExpand),
@@ -512,7 +512,7 @@ function AEditorGizmoMultiSelectBox3D() : AEditorGizmoSelectBox3D() constructor
 		{
 			assert(array_length(m_mins) == array_length(m_maxes));
 		
-			var kBorderExpand = 2 / max(0.0001, abs(lengthdir_y(1, o_Camera3D.yrotation)));
+			var kBorderExpand = 2;// / max(0.0001, abs(lengthdir_y(1, o_Camera3D.yrotation))); // TODO: can prolly do this in vertex shader instead.
 		
 			meshb_BeginEdit(m_mesh);
 				for (var i = 0; i < array_length(m_mins); ++i)

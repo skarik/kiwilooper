@@ -71,7 +71,7 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 		m_gizmo.m_color = c_gold;
 		m_gizmo.m_alpha = 0.75;
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click-drag to create a ghost. Enter to change ghost to tiles. Alt-Enter to use ghost to subtract.";
+		m_editor.m_statusbar.m_toolHelpText = "Click-drag to create a ghost. Enter to make a solid. Alt-Enter to use ghost to subtract.";
 	};
 	onEnd = function(trueEnd)
 	{
@@ -83,10 +83,17 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 		
 		// Disable the gizmo temporarily.
 		m_gizmo.SetDisabled();
+		
+		m_editor.toolGridTemporaryDisable = false; // Reset states
 	};
 	onStep = function()
 	{
 		m_skipFrame = false;
+		
+		// Keyboard "no-snap" override toggle
+		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
+		// Check grid stuff
+		var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 		
 		// Initial waiting for input:
 		if (!m_hasShapeReady)
@@ -113,16 +120,19 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 				m_dragPositionEnd.copyFrom(ray_position.add(ray_dir.multiply(raycast4_get_hit_distance())));
 			}
 			
-			m_tileMin.x = floor(min(m_dragPositionStart.x, m_dragPositionEnd.x) / 16.0);
-			m_tileMin.y = floor(min(m_dragPositionStart.y, m_dragPositionEnd.y) / 16.0);
-			m_tileMin.z = floor(min(m_dragPositionStart.z, m_dragPositionEnd.z) / 16.0);
+			if (bLocalSnap)
+			{
+				m_tileMin.x = floor(min(m_dragPositionStart.x, m_dragPositionEnd.x) / m_editor.toolGridSize);
+				m_tileMin.y = floor(min(m_dragPositionStart.y, m_dragPositionEnd.y) / m_editor.toolGridSize);
+				m_tileMin.z = floor(min(m_dragPositionStart.z, m_dragPositionEnd.z) / m_editor.toolGridSize);
 			
-			m_tileMax.x = floor(max(m_dragPositionStart.x, m_dragPositionEnd.x) / 16.0);
-			m_tileMax.y = floor(max(m_dragPositionStart.y, m_dragPositionEnd.y) / 16.0);
-			m_tileMax.z = floor(max(m_dragPositionStart.z, m_dragPositionEnd.z) / 16.0);
+				m_tileMax.x = floor(max(m_dragPositionStart.x, m_dragPositionEnd.x) / m_editor.toolGridSize);
+				m_tileMax.y = floor(max(m_dragPositionStart.y, m_dragPositionEnd.y) / m_editor.toolGridSize);
+				m_tileMax.z = floor(max(m_dragPositionStart.z, m_dragPositionEnd.z) / m_editor.toolGridSize);
 			
-			m_gizmo.m_min.copyFrom(m_tileMin.multiply(16));
-			m_gizmo.m_max.copyFrom(m_tileMax.multiply(16).add(new Vector3(16, 16, 0)));
+				m_gizmo.m_min.copyFrom(m_tileMin.multiply(m_editor.toolGridSize));
+				m_gizmo.m_max.copyFrom(m_tileMax.multiply(m_editor.toolGridSize).add(new Vector3(m_editor.toolGridSize, m_editor.toolGridSize, m_editor.toolGridSize)));
+			}
 		}
 		// Shaping state:
 		else
@@ -130,18 +140,13 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 			m_gizmo.m_handlesActive = true;
 			
 			// Pull the min/max values from the gizmo.
-			{
-				m_tileMin.x = round(min(m_gizmo.m_min.x, m_gizmo.m_max.x - 16) / 16.0);
-				m_tileMin.y = round(min(m_gizmo.m_min.y, m_gizmo.m_max.y - 16) / 16.0);
-				m_tileMin.z = round(min(m_gizmo.m_min.z, m_gizmo.m_max.z) / 16.0);
+			m_tileMin.x = round(m_gizmo.m_min.x);
+			m_tileMin.y = round(m_gizmo.m_min.y);
+			m_tileMin.z = round(m_gizmo.m_min.z);
 			
-				m_tileMax.x = round(max(m_gizmo.m_min.x, m_gizmo.m_max.x - 16) / 16.0);
-				m_tileMax.y = round(max(m_gizmo.m_min.y, m_gizmo.m_max.y - 16) / 16.0);
-				m_tileMax.z = round(max(m_gizmo.m_min.z, m_gizmo.m_max.z) / 16.0);
-			
-				m_gizmo.m_min.copyFrom(m_tileMin.multiply(16));
-				m_gizmo.m_max.copyFrom(m_tileMax.multiply(16).add(new Vector3(16, 16, 0)));
-			}
+			m_tileMax.x = round(m_gizmo.m_max.x);
+			m_tileMax.y = round(m_gizmo.m_max.y);
+			m_tileMax.z = round(m_gizmo.m_max.z);
 			
 			// Check for cancel inputs.
 			if (keyboard_check_pressed(vk_delete) || keyboard_check_pressed(vk_escape) || keyboard_check_pressed(vk_backspace))

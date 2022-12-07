@@ -81,15 +81,15 @@ function meshB_Cleanup(mesh)
 }
 
 /// @desc
-///		quad layout:
-///		0 1
-///		2 3
-function meshb_AddQuad(mesh, quadArray)
+///		Layout		Flipped
+///		0 1			1 0
+///		2 3			3 2
+function meshb_AddQuad(mesh, quadArray, bFlip=false)
 {
-	var vert0 = quadArray[0];
-	var vert1 = quadArray[1];
-	var vert2 = quadArray[2];
-	var vert3 = quadArray[3];
+	var vert0 = quadArray[bFlip ? 1 : 0];
+	var vert1 = quadArray[bFlip ? 0 : 1];
+	var vert2 = quadArray[bFlip ? 3 : 2];
+	var vert3 = quadArray[bFlip ? 2 : 3];
 	
 	meshb_PushVertex(mesh, vert0);
 	meshb_PushVertex(mesh, vert2);

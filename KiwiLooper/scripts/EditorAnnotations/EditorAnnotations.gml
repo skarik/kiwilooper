@@ -4,9 +4,11 @@ function AEditorAnnotation() constructor
 	m_icon		= null;
 	m_iconIndex	= 0;
 	m_text		= null;
+	m_textOutline = false;
 	m_position	= [0,0,0];
 	m_is3D		= false;
 	m_canClick	= false;
+	m_iconAngle	= 0;
 	
 	index = 0;
 	draw_position = [0, 0];
@@ -103,15 +105,34 @@ function EditorAnnotationsDraw()
 		if (annotation.m_icon != null)
 		{
 			draw_sprite_ext(annotation.m_icon, annotation.m_iconIndex, annotation.draw_position[0], annotation.draw_position[1],
-							1.0, 1.0, 0.0, c_white,
+							1.0, 1.0, annotation.m_iconAngle, c_white,
 							draw_get_alpha());
 		}
 		
 		// Draw text (under icon if icon exists)
 		if (is_string(annotation.m_text))
 		{
-			draw_set_color(annotation.m_color);
-			draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+			if (!annotation.m_textOutline)
+			{
+				draw_set_color(annotation.m_color);
+				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+			}
+			else
+			{
+				draw_set_color(c_black);
+				static kOutlineOffsets = [
+					[-1,  0], [ 1,  0],
+					[ 0, -1], [ 0,  1],
+					[-1,  1], [ 1,  1],
+					[-1, -1], [ 1, -1],
+				];
+				for (var j = 0; j < 8; ++j)
+				{
+					draw_text(annotation.draw_position[0] + kOutlineOffsets[j][0], annotation.draw_position[1] + kOutlineOffsets[j][1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+				}
+				draw_set_color(annotation.m_color);
+				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+			}
 		}
 	}
 	
