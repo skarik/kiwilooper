@@ -330,10 +330,8 @@ function WaterRenderer_RenderBodies()
 		surface_free(temp_edge_mask);
 	}
 	
-	{ // surface_reset_target() also resets the view projection matrices
-		matrix_set(matrix_view, o_Camera3D.m_matrixView);
-		matrix_set(matrix_projection, o_Camera3D.m_matrixProjection);
-	}
+	// Needed since surface_sets set up their own projection.
+	o_Camera3D.reapplyViewProjection();
 	
 	drawShaderSet(sh_unlitWater);
 	

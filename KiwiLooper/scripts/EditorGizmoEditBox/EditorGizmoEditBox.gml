@@ -340,36 +340,12 @@ function AEditorGizmo3DEditBox() : AEditorGizmoSelectBox3D() constructor // AEdi
 	/// @function Draw
 	Draw = function()
 	{
-		/*if (m_visible)
-		{
-			var last_shader = drawShaderGet();
-			var last_ztest = gpu_get_zfunc();
-			var last_zwrite = gpu_get_zwriteenable();
-			
-			var color_r = color_get_red(m_color) / 255.0;
-			var color_g = color_get_green(m_color) / 255.0;
-			var color_b = color_get_blue(m_color) / 255.0;
-			
-			gpu_set_zwriteenable(false);
-			
-			drawShaderSet(sh_editorLineEdge);
-			shader_set_uniform_f(global.m_editorLineEdge_uLineSizeAndFade, 0.5, 0, 0, 0);
-			
-			gpu_set_zfunc(cmpfunc_greater);
-			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, color_r * 0.5, color_g * 0.5, color_b * 0.5, m_alpha);
-			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
-			
-			gpu_set_zfunc(last_ztest);
-			shader_set_uniform_f(global.m_editorLineEdge_uLineColor, color_r, color_g, color_b, m_alpha);
-			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
-			
-			drawShaderSet(last_shader);
-			gpu_set_zwriteenable(last_zwrite);
-		*/
-		
 		if (m_visible)
 		{
 			static sh_editorGridSurface_uGridInfo = shader_get_uniform(sh_editorGridSurface, "uGridInfo");
+			static sh_editorGridSurface_uGridColorCenter = shader_get_uniform(sh_editorGridSurface, "uGridColorCenter");
+			static sh_editorGridSurface_uGridColorBigDiv = shader_get_uniform(sh_editorGridSurface, "uGridColorBigDiv");
+			static sh_editorGridSurface_uGridColorNormal = shader_get_uniform(sh_editorGridSurface, "uGridColorNormal");
 			
 			drawShaderStore();
 			gpu_push_state();
@@ -379,10 +355,46 @@ function AEditorGizmo3DEditBox() : AEditorGizmoSelectBox3D() constructor // AEdi
 			
 			drawShaderSet(sh_editorGridSurface);
 			shader_set_uniform_f(sh_editorGridSurface_uGridInfo, m_editor.toolGridSize, m_editor.toolGridSize * 8.0, 0, 0);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorCenter, 1.0, 1.0, 1.0, 0.5);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorBigDiv, 0.5, 0.8, 0.8, 0.5);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorNormal, 0.5, 0.5, 0.5, 0.5);
 			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
 			
 			drawShaderUnstore();
 			gpu_pop_state();
+			
+			// Stencil out the main grid for visual clarity.
+			if (m_editor.toolGridVisible && surface_exists(m_editor.m_gizmoObject.m_grid_global.m_stencilBuffer))
+			{
+				drawShaderStore();
+				gpu_push_state();
+				
+				drawWorldMatrixStore();
+				o_Camera3D.storeViewProjection();
+
+				surface_set_target(m_editor.m_gizmoObject.m_grid_global.m_stencilBuffer);
+				{
+					drawWorldMatrixUnstore();
+					o_Camera3D.reapplyViewProjection();
+					
+					gpu_set_ztestenable(false);
+					gpu_set_cullmode(cull_noculling);
+					
+					drawShaderSet(sh_editorGridSurface);
+					shader_set_uniform_f(sh_editorGridSurface_uGridInfo, 0.1, 0.1, 0, 0);
+					shader_set_uniform_f(sh_editorGridSurface_uGridColorCenter, 1.0, 1.0, 1.0, 1.0);
+					shader_set_uniform_f(sh_editorGridSurface_uGridColorBigDiv, 1.0, 1.0, 1.0, 1.0);
+					shader_set_uniform_f(sh_editorGridSurface_uGridColorNormal, 1.0, 1.0, 1.0, 1.0);
+					vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+				}
+				surface_reset_target();
+				
+				drawWorldMatrixUnstore();
+				o_Camera3D.reapplyViewProjection();
+				
+				drawShaderUnstore();
+				gpu_pop_state();
+			}
 		}
 		
 		parent_Draw();

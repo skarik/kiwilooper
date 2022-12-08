@@ -42,7 +42,8 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 4, "Begin testing level.", "Run", EditorGlobalTestMap, null, function(){ return m_state.map.geometry_valid; }));
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid", null, EditorToolGridToggle, function(){ return toolGrid; }));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 7, "Toggle Grid Visible", null, function() { toolGridVisible = !toolGridVisible; }, function(){ return toolGridVisible; }));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 17, "Toggle Snap", null, EditorToolGridToggle, function(){ return toolGrid; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 8, "Larger Grid", null, EditorToolGridLarger, null));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 9, "Smaller Grid", null, EditorToolGridSmaller, null));
 		m_actionbar.labelGridSize = m_actionbar.AddElement(AToolbarElementAsLabel(null, 0, "Current grid size", "Grid: 16", 15));

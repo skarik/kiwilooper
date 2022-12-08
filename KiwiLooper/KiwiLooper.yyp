@@ -82,6 +82,7 @@
     {"id":{"name":"Gameplay","path":"objects/Gameplay/Gameplay.yy",},"order":0,},
     {"id":{"name":"suie_toolsetTexture","path":"sprites/suie_toolsetTexture/suie_toolsetTexture.yy",},"order":2,},
     {"id":{"name":"o_screenShake","path":"objects/o_screenShake/o_screenShake.yy",},"order":1,},
+    {"id":{"name":"MatrixLayer","path":"scripts/MatrixLayer/MatrixLayer.yy",},"order":14,},
     {"id":{"name":"object_register_name","path":"scripts/object_register_name/object_register_name.yy",},"order":9,},
     {"id":{"name":"sh_lightRect","path":"shaders/sh_lightRect/sh_lightRect.yy",},"order":4,},
     {"id":{"name":"spr_kiwiWalk","path":"sprites/spr_kiwiWalk/spr_kiwiWalk.yy",},"order":6,},

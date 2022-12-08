@@ -138,3 +138,83 @@ function AEditorGizmoGrid() : AEditorGizmoBase() constructor
 		matrix_set(matrix_world, mat_object_old);
 	};
 }
+
+
+/// @function AEditorGizmoGridGlobal() constructor
+/// @desc Editor gizmo for the root axes
+function AEditorGizmoGridGlobal() : AEditorGizmoBase() constructor
+{
+	xscale = 1.0;
+	yscale = 1.0;
+	zscale = 1.0;
+	xrotation = 0;
+	yrotation = 0;
+	zrotation = 0;
+	
+	m_mesh = meshb_Begin();
+		var kQuadWidth = 4096;
+		// Add a super big quad
+		MeshbAddQuad(m_mesh, c_white, new Vector3(kQuadWidth, 0, 0), new Vector3(0, kQuadWidth, 0), new Vector3(-kQuadWidth / 2, -kQuadWidth / 2, 0));
+	meshb_End(m_mesh);
+
+	m_stencilBuffer = null;
+	
+	/// @function Cleanup()
+	/// @desc Cleans up the mesh used for rendering.
+	Cleanup = function()
+	{
+		meshB_Cleanup(m_mesh);
+	};
+	
+	/// @function Draw
+	Draw = function()
+	{
+		var mat_object_old = matrix_get(matrix_world);
+		
+		var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
+		var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
+		var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
+		var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
+		var mat_object_rotz = matrix_build(0, 0, 0, 0, 0, zrotation, 1, 1, 1);
+		
+		var mat_object = mat_object_scal;
+		mat_object = matrix_multiply(mat_object, mat_object_rotx);
+		mat_object = matrix_multiply(mat_object, mat_object_roty);
+		mat_object = matrix_multiply(mat_object, mat_object_rotz);
+		mat_object = matrix_multiply(mat_object, mat_object_pos);
+		matrix_set(matrix_world, mat_object);
+		if (surface_exists(m_stencilBuffer))
+		{
+			static sh_editorGridSurface_uGridInfo = shader_get_uniform(sh_editorGridSurface, "uGridInfo");
+			static sh_editorGridSurface_uGridColorCenter = shader_get_uniform(sh_editorGridSurface, "uGridColorCenter");
+			static sh_editorGridSurface_uGridColorBigDiv = shader_get_uniform(sh_editorGridSurface, "uGridColorBigDiv");
+			static sh_editorGridSurface_uGridColorNormal = shader_get_uniform(sh_editorGridSurface, "uGridColorNormal");
+			static sh_editorGridSurface_textureSkip = shader_get_sampler_index(sh_editorGridSurface, "textureSkip");
+			
+			drawShaderStore();
+			gpu_push_state();
+			
+			gpu_set_zwriteenable(false);
+			gpu_set_cullmode(cull_noculling);
+			
+			drawShaderSet(sh_editorGridSurface);
+			shader_set_uniform_f(sh_editorGridSurface_uGridInfo, m_editor.toolGridSize, m_editor.toolGridSize * 8.0, 1.0, 0);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorCenter, 1.0, 1.0, 1.0, 0.15);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorBigDiv, 0.5, 0.8, 0.8, 0.15);
+			shader_set_uniform_f(sh_editorGridSurface_uGridColorNormal, 0.5, 0.5, 0.5, 0.15);
+			texture_set_stage(sh_editorGridSurface_textureSkip, surface_get_texture(m_stencilBuffer));
+			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+			
+			drawShaderUnstore();
+			gpu_pop_state();
+		}
+		// Create surface
+		{
+			surface_free_if_exists(m_stencilBuffer);
+			m_stencilBuffer = surface_create_from_surface_params(Screen.m_gameSurface);
+			surface_clear_color_alpha(m_stencilBuffer, c_black, 0.0);
+			o_Camera3D.reapplyViewProjection(); // Needed since surface_sets set up their own projection.
+		}
+		matrix_set(matrix_world, mat_object_old);
+	};
+}

@@ -26,6 +26,17 @@ m_matrixProjection = matrix_build_identity();
 m_viewForward = [1, 0, 0];
 m_viewUp = [0, 0, 1];
 
+// update game camera
+with (GameCamera)
+{
+	x = width / 2;
+	y = height / 2;
+	event_user(1);
+}
+
+// start up lighting
+lightInitialize();
+
 ///@function camera.positionToView(x, y, z)
 ///@desc Transforms 3D position into 2D position
 ///@param x {Real}
@@ -74,13 +85,27 @@ viewToRay = function(n_x, n_y)
 		];
 }
 
-// update game camera
-with (GameCamera)
+///@function storeViewProjection()
+///@desc Saves the current view projection setup
+storeViewProjection = function()
 {
-	x = width / 2;
-	y = height / 2;
-	event_user(1);
+	m_saved_matrixView = matrix_get(matrix_view);
+	m_saved_matrixProjection = matrix_get(matrix_projection);
 }
 
-// start up lighting
-lightInitialize();
+///@function unstoreViewProjection()
+///@desc Restores the saved view projection setup
+unstoreViewProjection = function()
+{
+	matrix_set(matrix_view, m_saved_matrixView);
+	matrix_set(matrix_projection, m_saved_matrixProjection);
+}
+
+///@function reapplyViewProjection()
+///@desc Reapplies this camera's viewproj to the GM matrix stack.
+reapplyViewProjection = function()
+{
+	gml_pragma("forceinline");
+	matrix_set(matrix_view, m_matrixView);
+	matrix_set(matrix_projection, m_matrixProjection);
+}

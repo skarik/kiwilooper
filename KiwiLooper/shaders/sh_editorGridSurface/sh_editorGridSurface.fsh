@@ -7,11 +7,21 @@ varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 varying vec3 v_vNormal;
 varying vec3 v_vPosition;
+varying vec4 v_vScreenPosition;
 
 // Grid info
 //	x - Grid size
 //	y - Big div size
-uniform vec4 uGridInfo; 
+//	z - Enable skip
+uniform vec4 uGridInfo;
+
+// Grid colors
+uniform vec4 uGridColorCenter; // recommend default: vec4(1.0, 1.0, 1.0, 0.5)
+uniform vec4 uGridColorBigDiv; // recommend default: vec4(0.5, 0.8, 0.8, 0.5)
+uniform vec4 uGridColorNormal; // recommend default: vec4(0.5, 0.5, 0.5, 0.5)
+
+// Samplers
+uniform sampler2D textureSkip;
 
 void main()
 {
@@ -20,6 +30,19 @@ void main()
 		|| v_vTexcoord.y < 0.0 || v_vTexcoord.y > 1.0)
 	{
 		discard;
+	}
+	
+	// Skip if we have texture skipping enabled
+	if (uGridInfo.z > 0.5)
+	{
+		vec2 coordSkip = v_vScreenPosition.xy / v_vScreenPosition.w;
+		coordSkip.y = -coordSkip.y;
+		
+		vec4 sampleSkip = texture2D(textureSkip, coordSkip * 0.5 + vec2(0.5, 0.5));
+		if (sampleSkip.x > 0.5)
+		{
+			discard;
+		}
 	}
 	
 	// Take our position and flatten it against our normal face
@@ -38,15 +61,15 @@ void main()
 	
 	if (abs(face_flatten.x) < deltaPixel_Max.x * 2.0 || abs(face_flatten.y) < deltaPixel_Max.y * 2.0)
 	{
-		gl_FragColor = vec4(1.0, 1.0, 1.0, 0.5);
+		gl_FragColor = uGridColorCenter;
 	}
 	else if (position_repeatBig.x < deltaPixel_Max.x * 2.0 || position_repeatBig.y < deltaPixel_Max.y * 2.0)
 	{
-		gl_FragColor = vec4(0.5, 0.8, 0.8, 0.5);
+		gl_FragColor = uGridColorBigDiv;
 	}
 	else if (position_repeat.x < deltaPixel_Max.x * 1.0 || position_repeat.y < deltaPixel_Max.y * 1.0)
 	{
-		gl_FragColor = vec4(0.5, 0.5, 0.5, 0.5);
+		gl_FragColor = uGridColorNormal;
 	}
 	else
 	{

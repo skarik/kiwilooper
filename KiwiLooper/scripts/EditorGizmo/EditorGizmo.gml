@@ -72,6 +72,7 @@ function EditorGizmoSetup()
 		m_entRenderObjects = other.EditorGizmoGet(AEditorGizmoEntityRenderObjects);
 		m_testMouse = other.EditorGizmoGet(AEditorGizmoSelectBox3D);
 		m_grid = other.EditorGizmoGet(AEditorGizmoGrid);
+		m_grid_global = other.EditorGizmoGet(AEditorGizmoGridGlobal);
 		
 		m_aiMapRender = other.EditorGizmoGet(AEditorGizmoAiMap);
 	}
@@ -202,6 +203,19 @@ function EditorGizmoUpdate()
 		{
 			m_grid.SetInvisible();
 			m_grid.SetDisabled();
+		}
+		
+		// Global grid update:
+		
+		if (other.toolGridVisible)
+		{
+			m_grid_global.SetVisible();
+			m_grid_global.SetEnabled();
+		}
+		else
+		{
+			m_grid_global.SetInvisible();
+			m_grid_global.SetDisabled();
 		}
 	}
 	
