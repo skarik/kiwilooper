@@ -183,7 +183,7 @@ function _EntityInfoInit()
 		{
 			name: "test_player_start",
 			desc: "Test player start, a proxy for player",
-			objectIndex: o_playerKiwi,
+			objectIndex: o_playerKiwi2,
 			
 			gizmoSprite: object_get_sprite(o_playerKiwi),
 			gizmoIndex: 0,
