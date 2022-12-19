@@ -6,6 +6,8 @@
 /// @function debugLog(type, str)
 function debugLog(type, str)
 {
+	if (type == kLogVerbose) return; // Skip verbose for now.
+	
 	var sourceName = "";
 	// Find the caller
 	if (is_struct(self))

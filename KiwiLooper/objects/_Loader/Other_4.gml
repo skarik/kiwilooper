@@ -67,6 +67,11 @@ debugLog(kLogOutput, "program_directory: " + program_directory);
 debugLog(kLogOutput, "temp_directory: " + temp_directory);
 debugLog(kLogOutput, "default depth buffer state: " + (surface_get_depth_disable() ? "off" : "on"));
 
+// Find max texture size
+debugLog(kLogOutput, "max surface size: " + string(GetLargestSurfaceDims()));
+
+//show_debug_message(os_get_info());
+
 // Finish and go to next room:
 
 // First, run the command line options

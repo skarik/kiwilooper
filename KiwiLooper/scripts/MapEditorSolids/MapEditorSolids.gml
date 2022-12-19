@@ -170,16 +170,25 @@ function AMapSolidFace() constructor
 	}
 }
 
-#macro kTextureTypeSprite 0
-#macro kTextureTypeSpriteTileset 1
+#macro kTextureTypeSprite			0
+#macro kTextureTypeSpriteTileset	1
+#macro kTextureTypeTexture			2
 
 function AMapSolidFaceTexture() constructor
 {
+	// Type of texture
 	type = kTextureTypeSpriteTileset;
+	// Source of the data.
+	//	When a Sprite, is a Game Maker sprite handle.
+	//	When a Texture, is a filepath to a resource. It is up to the renderer to handle the resource loading.
 	source = stl_lab0;
 	index = 1;
 	
+	// UID used internally for identification
 	uid = null;
+	// Resource information used internally for storage.
+	// Usually either: Resource or {atlas, in_atlas_index, Resource}
+	resource_handle = undefined;
 	
 	static Equals = function(otherTexture)
 	{
@@ -195,6 +204,10 @@ function AMapSolidFaceTexture() constructor
 		if (type == kTextureTypeSpriteTileset || type == kTextureTypeSprite)
 		{
 			uid = string(type) + sprite_get_name(source) + string(index);
+		}
+		else if (type == kTextureTypeTexture)
+		{
+			uid = string(type) + source;
 		}
 		return uid;
 	}
@@ -214,6 +227,11 @@ function AMapSolidFaceTexture() constructor
 		else if (type == kTextureTypeSprite)
 		{
 			return [sprite_get_width(source), sprite_get_height(source)];
+		}
+		else if (type == kTextureTypeTexture)
+		{
+			debugLog(kLogError, "Cannot query AMapSolidFaceTexture size from textures.");
+			return [16, 16];
 		}
 		else
 		{
@@ -240,6 +258,32 @@ function AMapSolidFaceTexture() constructor
 				lerp(uv_source[0], uv_source[2], (div_x + 1) / 16),
 				lerp(uv_source[1], uv_source[3], (div_y + 1) / 16)];
 		}
+		else if (type == kTextureTypeTexture)
+		{
+			debugLog(kLogError, "Cannot query AMapSolidFaceTexture UVs from textures.");
+			return [0, 0, 16, 16];
+		}
+	}
+	static GetTextureSubUVs = function(in_atlas_uvs)
+	{
+		if (type == kTextureTypeSprite
+			|| type == kTextureTypeTexture)
+		{
+			return in_atlas_uvs;
+		}
+		else if (type == kTextureTypeSpriteTileset)
+		{
+			var uv_source = in_atlas_uvs;
+			
+			var div_x = int64(index) % 16;
+			var div_y = floor(index / 16);
+			
+			return [
+				lerp(uv_source[0], uv_source[2], div_x / 16),
+				lerp(uv_source[1], uv_source[3], div_y / 16),
+				lerp(uv_source[0], uv_source[2], (div_x + 1) / 16),
+				lerp(uv_source[1], uv_source[3], (div_y + 1) / 16)];
+		}
 	}
 	
 	static SerializeBuffer = function(buffer, ioMode, io_ser)
@@ -248,6 +292,11 @@ function AMapSolidFaceTexture() constructor
 		if (type == kTextureTypeSprite || type == kTextureTypeSpriteTileset)
 		{
 			io_ser(self, "source", buffer, buffer_u64);
+			io_ser(self, "index", buffer, buffer_u16);
+		}
+		else if (type == kTextureTypeTexture)
+		{
+			io_ser(self, "source", buffer, buffer_string);
 			io_ser(self, "index", buffer, buffer_u16);
 		}
 		else

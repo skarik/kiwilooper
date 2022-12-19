@@ -2,6 +2,7 @@
 #macro kResourceTypeMDL			1
 #macro kResourceTypeMD2			2
 #macro kResourceTypePNG			3
+#macro kResourceTypeInternalSprite	4
 
 function ResourceMapInit()
 {
@@ -32,6 +33,16 @@ function ResourceGetType(filepath)
 	}
 	
 	return kResourceTypeInvalid;
+}
+
+function ResourceGetTypeIsTexture(resource)
+{
+	if (resource.type == kResourceTypePNG
+		|| resource.type == kResourceTypeInternalSprite)
+	{
+		return true;
+	}
+	return false;
 }
 
 // Define macros for common resource information
@@ -141,6 +152,7 @@ function ResourceLoadModel(filepath)
 	return undefined;
 }
 
+/// @function ResourceLoadTexture(filepath, target_width, target_height)
 function ResourceLoadTexture(filepath, target_width, target_height)
 {
 	var filepath_indexer = string_lower(filepath);
@@ -172,6 +184,7 @@ function ResourceLoadTexture(filepath, target_width, target_height)
 	return undefined;
 }
 
+/// @function ResourceAddTexture(filepath_indentifier, target_sprite)
 function ResourceAddTexture(filepath_indentifier, target_sprite)
 {
 	var filepath_indexer = string_lower(filepath_indentifier);
@@ -189,7 +202,7 @@ function ResourceAddTexture(filepath_indentifier, target_sprite)
 			sprite:	target_sprite,
 			texture_ptr: sprite_get_texture(target_sprite, 0),
 			INTERNAL_ResourceHousekeeping,
-			type: kResourceTypePNG,
+			type: kResourceTypeInternalSprite,
 		};
 	
 		// Save into texture listing
@@ -197,6 +210,23 @@ function ResourceAddTexture(filepath_indentifier, target_sprite)
 		
 		return new_texture_resource;
 	}
+}
+
+/// @function ResourceFindSpriteTexture(target_sprite)
+function ResourceFindSpriteTexture(target_sprite)
+{
+	var current_key = ds_map_find_first(global.resourceMap);
+	for (var i = 0; i < ds_map_size(global.resourceMap); ++i)
+	{
+		var resource = global.resourceMap[?current_key];
+		if (resource.type == kResourceTypeInternalSprite
+			&& resource.sprite = target_sprite)
+		{
+			return resource;
+		}
+		ds_map_find_next(global.resourceMap, current_key);
+	}
+	return undefined;
 }
 
 ///@function ResourceAddReference(resource)

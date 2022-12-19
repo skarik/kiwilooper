@@ -8,6 +8,7 @@ function EditorGlobalDeleteSelection()
 	var bRebuildTiles = false;
 	var bRebuildProps = false;
 	var bRebuildSplats = false;
+	var bRebuildSolids = false;
 	
 	for (var i = 0; i < array_length(m_selection); ++i)
 	{
@@ -44,7 +45,7 @@ function EditorGlobalDeleteSelection()
 				{
 					delete currentSelection.object.primitive;
 					array_delete(m_state.map.solids, solidIndex, 1);
-					bRebuildTiles = true;
+					bRebuildSolids = true;
 				}
 				EditorGlobalMarkDirtyGeometry();
 				break;
@@ -123,7 +124,10 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 				else if (type == kEditorSelection_Primitive)
 				{
 					EditorGlobalMarkDirtyGeometry();
-					MapRebuildSolidsOnly();
+					
+					var solid_id = array_get_index(m_state.map.solids, entity);
+					assert(solid_id != null);
+					MapRebuildSolidsOnly(solid_id);
 				}
 			}
 			// otherwise, may need to request rebuilding gizmo meshes
@@ -141,12 +145,16 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 		}
 		else
 		{
-			if (is_struct(entity)) // assume struct inputs are props
+			if (is_struct(entity)) // assume struct inputs are all a type of object
 			{
 				if (type == kEditorSelection_Primitive)
 				{
 					EditorGlobalMarkDirtyGeometry();
+					
 					m_wantRebuildSolids = true;
+					var solid_id = array_get_index(m_state.map.solids, entity);
+					assert(solid_id != null);
+					array_push(m_solidUpdateRequestList, solid_id);
 				}
 			}
 		}

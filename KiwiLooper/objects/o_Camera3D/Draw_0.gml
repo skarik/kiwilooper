@@ -1,5 +1,8 @@
 /// @description Draw 3D Scene into surface then copy to screen
 
+// Start by doing all the pre-frame work
+AtlasPushToGPU(); // TODO: organize this draw call better
+
 // Create buffer to render to
 var buffer_scene3d = surface_create(GameCamera.width, GameCamera.height);
 surface_set_target(buffer_scene3d);
