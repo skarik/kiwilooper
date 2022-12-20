@@ -10,9 +10,9 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	{
 		if (m_windowBrowser == null)
 		{
-			m_windowBrowser = EditorWindowAlloc(AEditorWindowTileBrowser);
+			m_windowBrowser = EditorWindowAlloc(AEditorWindowTextureBrowser);
+			m_windowBrowser.InitTextureListing();
 		}
-		m_windowBrowser.InitTileListing();
 		m_windowBrowser.Open();
 		EditorWindowSetFocus(m_windowBrowser);
 		

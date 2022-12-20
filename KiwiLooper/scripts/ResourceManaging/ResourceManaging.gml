@@ -153,6 +153,7 @@ function ResourceLoadModel(filepath)
 }
 
 /// @function ResourceLoadTexture(filepath, target_width, target_height)
+/// desc Loads the given filepath.
 function ResourceLoadTexture(filepath, target_width, target_height)
 {
 	var filepath_indexer = string_lower(filepath);
