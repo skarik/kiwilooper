@@ -1,8 +1,13 @@
 /// @description Set up static world rendering
 
+// Source geometry structure
 m_geometry = null;
-m_mesh = null;
 
+// Meshes and textures for rendering.
+m_meshes = null;
+m_atlasTextures = null;
+
+// Triangle BBox's used for optimizing collision checks.
 m_triangleBBoxes = [];
 
 SetGeometry = function(geometry)
@@ -29,13 +34,61 @@ SetGeometry = function(geometry)
 
 Initialize = function()
 {
-	// TODO: Create atlas
+	m_atlasTextures = [];
 	
 	// Pull the atlas information for all the materials
 	var material_atlas_info = array_create(array_length(m_geometry.materials));
 	for (var matIndex = 0; matIndex < array_length(material_atlas_info); ++matIndex)
 	{
-		material_atlas_info[matIndex] = m_geometry.materials[matIndex].GetTextureUVs();
+		var material = m_geometry.materials[matIndex];
+		
+		// Get the resource for the material
+		var pixel_resource = null;
+		if (material.type == kTextureTypeSpriteTileset
+			|| material.type == kTextureTypeSprite)
+		{
+			// Find the sprite resource
+			var pixel_resource = ResourceFindSpriteTexture(material.source);
+			if (is_undefined(pixel_resource))
+			{
+				pixel_resource = ResourceAddTexture(material.GetUID(), material.source);
+			}
+		}
+		else
+		{
+			// Load the texture resource
+			var pixel_resource = ResourceLoadTexture(material.source, GetLargestSurfaceDims(), GetLargestSurfaceDims());
+		}
+		
+		// Find the texture in the atlas system, or add it.
+		var atlas_lookup = AtlasFindResource(pixel_resource);
+		if (is_undefined(atlas_lookup))
+		{
+			atlas_lookup = AtlasAddResource(pixel_resource);
+		}
+		
+		// Set up the mesh/atlas arrays now
+		var drawlist_index = array_get_index(m_atlasTextures, atlas_lookup.atlas);
+		if (drawlist_index == null)
+		{
+			drawlist_index = array_length(m_atlasTextures);
+			m_atlasTextures[drawlist_index] = atlas_lookup.atlas;
+		}
+		
+		// Set up the atlas and material information
+		material_atlas_info[matIndex] = {
+			uvs: material.GetTextureSubUVs(AtlasGet(atlas_lookup.atlas).GetUVs(atlas_lookup.index)),
+			atlas_index: atlas_lookup.atlas,
+			atlas_subindex: atlas_lookup.index,
+			mesh_index: drawlist_index,
+		};
+	}
+	
+	// Begin all the meshes
+	m_meshes = array_create(array_length(m_atlasTextures));
+	for (var meshIndex = 0; meshIndex < array_length(m_meshes); ++meshIndex)
+	{
+		m_meshes[meshIndex] = meshb_Begin(MapGeometry_CreateVertexFormat());
 	}
 	
 	// Let's just run through the triangles and push ALL of them for now
@@ -46,13 +99,18 @@ Initialize = function()
 		for (var corner = 0; corner < 3; ++corner)
 		{
 			// Save atlas information
-			triangle.vertices[corner].atlas = material_atlas_info[triangle.material];
+			triangle.vertices[corner].atlas = material_atlas_info[triangle.material].uvs;
 			
 			// Push the level geometry in
-			MapGeometry_PushVertex(m_mesh, triangle.vertices[corner]);
+			MapGeometry_PushVertex(m_meshes[material_atlas_info[triangle.material].mesh_index], triangle.vertices[corner]);
 		}
 	}
-	meshb_End(m_mesh);
+	
+	// Finish all the meshes
+	for (var meshIndex = 0; meshIndex < array_length(m_meshes); ++meshIndex)
+	{
+		meshb_End(m_meshes[meshIndex]);
+	}
 }
 
 m_renderEvent = function()
@@ -61,8 +119,12 @@ m_renderEvent = function()
 	{
 		drawShaderStore();
 		drawShaderSet(sh_editorSolidsDebug);
-	
-			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
+		for (var meshIndex = 0; meshIndex < array_length(m_meshes); ++meshIndex)
+		{
+			vertex_submit(m_meshes[meshIndex], pr_trianglelist, AtlasGet(m_atlasTextures[meshIndex]).GetTexture());
+		}
+			//vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
+			// TODO:
 	
 		drawShaderUnstore();
 	}

@@ -1,6 +1,9 @@
 /// @description Clean up meshes & structures
 
-meshB_Cleanup(m_mesh);
+for (var i = 0; i < array_length(m_meshes); ++i)
+{
+	meshB_Cleanup(m_meshes[i]);
+}
 
 if (global.geometry_main == id)
 {

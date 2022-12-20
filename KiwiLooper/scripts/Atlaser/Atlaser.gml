@@ -81,6 +81,22 @@ function AtlasAddResource(texture_resource)
 	return {atlas: atlas_index, index: texture_index};
 }
 
+/// @function AtlasFindResource(texture_resource)
+function AtlasFindResource(texture_resource)
+{
+	var atlases = AtlasGetListing();
+	for (var i = 0; i < array_length(atlases); ++i)
+	{
+		var atlas = atlases[i];
+		var resourceIndex = atlas.FindResource(texture_resource);
+		if (!is_undefined(resourceIndex))
+		{
+			return {atlas: i, index: resourceIndex};
+		}
+	}
+	return undefined;
+}
+
 /// @function AtlasGet(atlas_index)
 function AtlasGet(atlas_index)
 {
@@ -214,6 +230,20 @@ function AAtlas() constructor
 		entries[index].height = 1;
 	}
 	
+	/// @function FindResource(resource)
+	static FindResource = function(resource)
+	{
+		for (var i = 0; i < array_length(entries); ++i)
+		{
+			var entry = entries[i];
+			if (entry.resource == resource)
+			{
+				return i;
+			}
+		}
+		return undefined;
+	}
+	
 	/// @function GetUVs(index)
 	static GetUVs = function(index)
 	{
@@ -229,10 +259,10 @@ function AAtlas() constructor
 			];
 	}
 	
-	static IsFull = function()
+	/*static IsFull = function()
 	{
 		return false; // TODO
-	}
+	}*/
 	
 	static GetTexture = function()
 	{
