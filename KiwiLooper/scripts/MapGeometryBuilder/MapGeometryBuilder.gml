@@ -3,10 +3,12 @@
 function AMapGeoBuilderState() constructor
 {
 	materialMap = ds_map_create();
+	resourceMap = ds_map_create();
 	
 	static Cleanup = function()
 	{
 		ds_map_destroy(materialMap);
+		ds_map_destroy(resourceMap);
 	}
 }
 
@@ -54,6 +56,25 @@ function MapGeo_AddMaterial(builderState, geo, material)
 		
 		// Cache the material with its ID for later
 		builderState.materialMap[? unique_id] = array_length(geo.materials) - 1;
+		
+		// And load the resource into resource system for using later
+		var pixel_resource;
+		if (material.type == kTextureTypeSpriteTileset
+			|| material.type == kTextureTypeSprite)
+		{
+			// Find the sprite resource
+			var pixel_resource = ResourceFindSpriteTexture(material.source);
+			if (is_undefined(pixel_resource))
+			{
+				pixel_resource = ResourceAddTexture(unique_id, material.source);
+			}
+		}
+		else
+		{
+			// Load the texture resource
+			pixel_resource = ResourceLoadTexture(material.source, GetLargestSurfaceDims(), GetLargestSurfaceDims());
+		}
+		builderState.resourceMap[? unique_id] = pixel_resource;
 	}
 }
 
@@ -66,6 +87,13 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 			
 		// Create a plane for calculating UVs
 		var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
+		
+		// Get the original size for this texture
+		var scaleInfo;
+		{
+			var resource = builderState.resourceMap[? face.texture.GetUID()];
+			scaleInfo = [sprite_get_width(resource.sprite), sprite_get_height(resource.sprite)];
+		}
 			
 		// Now grab the vertices
 		for (var triangleIndex = 0; triangleIndex < array_length(triangleList); ++triangleIndex)
@@ -93,7 +121,7 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 					
 				// Get UVs
 				var uvPoint = facePlane.flattenPoint(solidVertex.position);
-				face.uvinfo.TransformPoint(uvPoint, face.texture);
+				face.uvinfo.TransformPoint(uvPoint, face.texture, scaleInfo);
 					
 				meshVert.uv.x = uvPoint.x;
 				meshVert.uv.y = uvPoint.y;

@@ -23,21 +23,23 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 	drag_y_target = 0;
 	drag_max_y = 0;
 	
-	tile_items = [];
+	/*tile_items = [];
 	tile_item_group_counts = [];
 	tile_item_group_name = [];
-	tile_item_group_layoutPos = [];
+	tile_item_group_layoutPos = [];*/
 	
 	texture_needs_layout = false;
 	texture_items = [];
 	static ATextureItem = function() constructor
 	{
+		type = kTextureTypeTexture;
 		filename = "";
 		displayname = "";
 		resource = null;
+		index = 1; // Default to 1 for tile-compatibility.
 		
 		size = {x: 0, y: 0};
-		layout = {x: 0, y: 0, visible: true};
+		layout = {x: 0, y: 0, visible: true, width: 0};
 	};
 	
 	static ContainsMouse = function()
@@ -106,6 +108,39 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			array_push(texture_items, textureItem);
 		}
 		
+		// Add the tiles in quadrants at a time
+		for (var iy = 0; iy < 4; ++iy)
+		{
+			for (var ix = 0; ix < 4; ++ix)
+			{
+				for (var it = 0; it < 16; ++it)
+				{
+					var it_x = it % 4;
+					var it_y = int64(it / 4);
+					var i = (ix * 4 + it_x) + (it_y + iy * 4) * 16;
+					if (i == 0) continue;
+					
+					if (TileIsValidToPlaceFloor(i) || TileIsValidToPlaceWall(i))
+					{
+						var textureItem = new ATextureItem();
+						textureItem.type = kTextureTypeSpriteTileset;
+						textureItem.displayname = "lab0/" + TileGetGroupName(i) + string(it);
+						textureItem.resource = ResourceFindSpriteTexture(stl_lab0); 
+						if (is_undefined(textureItem.resource))
+						{
+							// Add texture w/ hard coded UID for this texture
+							textureItem.resource = ResourceAddTexture("1stl_lab00", stl_lab0);
+						}
+						textureItem.index = i;
+						textureItem.size.x = 16;
+						textureItem.size.y = 16;
+						
+						array_push(texture_items, textureItem);
+					}
+				}
+			}
+		}
+		
 		// Texture layouts are done at another time.
 		texture_needs_layout = true;
 	}
@@ -152,6 +187,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			// Save current pen position
 			texinfo.layout.x = pen.x;
 			texinfo.layout.y = pen.y;
+			texinfo.layout.width = item_width;
 			
 			// Advance the pen
 			pen.x += item_width + kItemMarginsX;
@@ -161,140 +197,13 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 		drag_max_y = pen.y + max_y + 16 + kItemMarginsY - m_size.y;
 	}
 	
-	
-	static InitTileListing = function()
+	static onResize = function()
 	{
-		tile_items = [];
-		tile_item_group_counts = array_create(4 * 4, 0);
-		tile_item_group_name = array_create(4 * 4, "");
-		tile_item_group_layoutPos = array_create(4 * 4, null);
-		for (var i = 0; i < 16; ++i)
-		{
-			tile_item_group_layoutPos[i] = {x: 0, y: 0};
-		}
-		
-		// add them in quadrants at a time
-		for (var iy = 0; iy < 4; ++iy)
-		{
-			for (var ix = 0; ix < 4; ++ix)
-			{
-				for (var it = 0; it < 16; ++it)
-				{
-					var it_x = it % 4;
-					var it_y = int64(it / 4);
-					var i = (ix * 4 + it_x) + (it_y + iy * 4) * 16;
-					if (i == 0) continue;
-			
-					if (TileIsValidToPlaceFloor(i) || TileIsValidToPlaceWall(i))
-					{
-						array_push(tile_items,
-						{
-							tile: i,
-							name: TileGetName(i),
-							isLowerWall: TileIsValidToPlaceWall(i),
-							isUpperWall: TileIsTopWall(i),
-							layoutX: 0,
-							layoutY: 0,
-						});
-						
-						tile_item_group_counts[ix + iy * 4] += 1;
-						tile_item_group_name[ix + iy * 4] = TileGetGroupName(i);
-					}
-				}
-			}
-		}
-		InitTileLayout();
-	}
-	static InitTileLayout = function()
-	{
-		var pen = {x: kItemMarginsX, y: kItemMarginsX};
-		
-		static GetGroupResetWidth = function(groupIndex)
-		{
-			if (tile_item_group_counts[groupIndex] <= 4)
-			{
-				return 2;
-			}
-			else if (tile_item_group_counts[groupIndex] <= 6)
-			{
-				return 3;
-			}
-			else
-			{
-				return 4;
-			}
-		}
-		
-		// Assume that each item is in a quadrant
-		var subpen = {x : 0, y: 0};
-		var max_x = 0;
-		var max_y = 0;
-		var current_group = 0;
-		var current_group_is_wall = false;
-		var current_group_count = 0;
-		var group_reset_width = GetGroupResetWidth(0);
-		for (var i = 0; i < array_length(tile_items); ++i)
-		{
-			var tileinfo = tile_items[i];
-			var tx = tileinfo.tile % 16;
-			var ty = int64(tileinfo.tile / 16);
-			var t_group = int64(tx / 4) + int64(ty / 4) * 4;
-			
-			if (t_group != current_group)
-			{
-				current_group_count = 0;
-				
-				// set up for drawing
-				subpen.x = 0;
-				subpen.y = 0;
-			
-				// advance the pen & reset max's
-				pen.x += max_x + 16;
-				if (pen.x >= m_size.x - kItemMarginsX * 2.0 - kDragWidth - max_x - 16)
-				{
-					pen.x = kItemMarginsX;
-					pen.y += max_y + kItemMarginsY + 16;
-					max_y = 0;
-				}
-				max_x = 0;
-				
-				// update group and drawing
-				current_group = t_group;
-				current_group_is_wall = tileinfo.isLowerWall || tileinfo.isUpperWall;
-				
-				// check max widths
-				group_reset_width = GetGroupResetWidth(t_group);
-			}
-			
-			// Add the block to the current position
-			tileinfo.layoutX = pen.x + subpen.x;
-			tileinfo.layoutY = pen.y + subpen.y;
-			// save max-drawn positions
-			max_x = max(max_x, subpen.x);
-			max_y = max(max_y, subpen.y);
-			// count number of drawings
-			current_group_count++;
-			
-			// Advance the subpen
-			subpen.x += 16;
-			// Newline at end of group
-			if (subpen.x >= 16 * group_reset_width
-				// Newline if halfway through a wall group
-				|| (current_group_is_wall && current_group_count == floor(tile_item_group_counts[t_group] / 2)))
-			{
-				subpen.x = 0;
-				subpen.y += 16;
-			}
-			
-			// Update the max position of the group for text
-			tile_item_group_layoutPos[t_group].x = pen.x;
-			tile_item_group_layoutPos[t_group].y = pen.y + max_y + 16;
-		}
-		
-		drag_max_y = pen.y + max_y + 16 + kItemMarginsY - m_size.y;
+		// On window resize, redo layout
+		texture_needs_layout = true;
 	}
 	
-	static GetCurrentTile = function()
+	/*static GetCurrentTile = function()
 	{
 		return (item_in_use != null) ? tile_items[item_in_use].tile : tile_items[item_focused].tile;
 	}
@@ -317,6 +226,43 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 				item_in_use = i;
 			}
 		}
+	}*/
+	/// @function GetCurrentTexture()
+	static GetCurrentTexture = function()
+	{
+		return (item_in_use != null) ? texture_items[item_in_use] : texture_items[item_focused];
+	}
+	
+	static _GetTextureItemIndex = function(solidTexture)
+	{
+		for (var i = 0; i < array_length(texture_items); ++i)
+		{
+			var texinfo = texture_items[i];
+			if (texinfo.type == solidTexture.type
+				&& texinfo.index == solidTexture.index // Only meaningful for tilesets, but easy to check
+				&& (
+					// Check for tilesets if the resources match
+					(texinfo.type == kTextureTypeSpriteTileset && texinfo.resource.sprite == solidTexture.source)
+					// Check for textures if the paths match
+					|| (texinfo.type == kTextureTypeTexture && texinfo.filename == solidTexture.source)
+					)
+				)
+			{
+				return i;
+			}
+		}
+		return null;
+	}
+	
+	/// @function SetCurrentTexture(solidTexture)
+	static SetCurrentTexture = function(solidTexture)
+	{
+		item_focused = _GetTextureItemIndex(solidTexture);
+	}
+	/// @function SetUsedTile(solidTexture)
+	static SetUsedTile = function(solidTexture)
+	{
+		item_in_use = _GetTextureItemIndex(solidTexture);
 	}
 	
 	static onMouseMove = function(mouseX, mouseY)
@@ -328,11 +274,12 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			
 			var localMouseX = mouseX - m_position.x;
 			var localMouseY = mouseY - m_position.y + drag_y;
-			for (var i = 0; i < array_length(tile_items); ++i) // TODO: narrow this based on the scroll
+			for (var i = 0; i < array_length(texture_items); ++i) // TODO: narrow this based on the scroll
 			{
-				if (point_in_rectangle(localMouseX, localMouseY,
-						tile_items[i].layoutX, tile_items[i].layoutY,
-						tile_items[i].layoutX + 16, tile_items[i].layoutY + 16))
+				if (texture_items[i].layout.visible
+					&& point_in_rectangle(localMouseX, localMouseY,
+						texture_items[i].layout.x, texture_items[i].layout.y,
+						texture_items[i].layout.x + texture_items[i].size.x, texture_items[i].layout.y + texture_items[i].size.y))
 				{
 					item_mouseover = i;
 					break;
@@ -471,7 +418,19 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			}
 			
 			// draw texture
-			draw_sprite(texinfo.resource.sprite, 0, l_dx, l_dy);
+			if (texinfo.type == kTextureTypeSpriteTileset)
+			{
+				draw_sprite_part_ext(
+					texinfo.resource.sprite, 0,
+					(texinfo.index % 16) * 16, int64(texinfo.index / 16) * 16,
+					16, 16,
+					l_dx, l_dy,
+					1.0, 1.0, c_white, 1.0);
+			}
+			else
+			{
+				draw_sprite(texinfo.resource.sprite, 0, l_dx, l_dy);
+			}
 		}
 		
 		// draw texture name
@@ -489,85 +448,21 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			draw_text(l_dx, l_dy, texinfo.displayname);
 		}
 		
-		
-		for (var i = 0; i < array_length(tile_items); ++i) // TODO: narrow this based on the scroll
-		{
-			var tileinfo = tile_items[i];
-			
-			var l_bgColor = focused ? c_black : c_dkgray;
-			
-			var l_dx = m_position.x + tileinfo.layoutX;
-			var l_dy = m_position.y + tileinfo.layoutY - drag_y;
-			
-			// Highlight the selected item.
-			if (item_focused == i)
-			{
-				l_bgColor = kAccentColor;
-			}
-			if (item_mouseover == i)
-			{
-				l_bgColor = merge_color(l_bgColor, kAccentColor, 0.25);
-			}
-			
-			// draw tile sprite
-			draw_sprite_part_ext(stl_lab0, 0,
-				(tileinfo.tile % 16) * 16, int64(tileinfo.tile / 16) * 16,
-				16, 16,
-				l_dx, l_dy,
-				1.0, 1.0, c_white, 1.0);
-		}
-		
-		// draw the tile group names
-		for (var i = 0; i < min(16, array_length(tile_item_group_name)); ++i)
-		{
-			if (tile_item_group_name[i] != "")
-			{
-				var l_dx = m_position.x + tile_item_group_layoutPos[i].x;
-				var l_dy = m_position.y + tile_item_group_layoutPos[i].y - drag_y;
-			
-				draw_set_color(focused ? c_gray : c_black);
-				draw_set_halign(fa_left);
-				draw_set_valign(fa_top);
-				draw_set_font(f_04b03);
-				draw_text(l_dx, l_dy, tile_item_group_name[i]);
-			}
-		}
-		
 		static DrawFocusRectangle = function(item_index, main_color, sub_color, offset)
 		{
-			if (item_index != noone && item_index < array_length(tile_items))
+			if (item_index != noone && item_index < array_length(texture_items))
 			{
-				var tileinfo = tile_items[item_index];
-				var l_dx = m_position.x + tileinfo.layoutX;
-				var l_dy = m_position.y + tileinfo.layoutY - drag_y;
+				var texinfo = texture_items[item_index];
+				var l_dx = m_position.x + texinfo.layout.x;
+				var l_dy = m_position.y + texinfo.layout.y - drag_y;
 			
 				draw_set_color(main_color);
 				draw_set_alpha(1.0);
-				DrawSpriteRectangle(l_dx - offset, l_dy - offset, l_dx + 16 + offset, l_dy + 16 + offset, true);
+				DrawSpriteRectangle(l_dx - offset, l_dy - offset, l_dx + texinfo.layout.width + offset, l_dy + texinfo.size.y + 6 + offset, true);
 				if (offset >= 2)
 				{
 					draw_set_color(c_black);
-					DrawSpriteRectangle(l_dx - offset - 1, l_dy - offset - 1, l_dx + 16 + offset + 1, l_dy + 16 + offset + 1, true);
-				}
-			
-				// Draw the hover info of the wall
-				if (TileIsValidToPlaceWall(tileinfo.tile))
-				{
-					// Find the position of the accompanying wall
-					for (var i = 0; i < array_length(tile_items); ++i)
-					{
-						if (tile_items[i].tile == tileinfo.tile - 32)
-						{
-							tileinfo = tile_items[i];
-							break;
-						}
-					}
-					l_dx = m_position.x + tileinfo.layoutX;
-					l_dy = m_position.y + tileinfo.layoutY - drag_y;
-				
-					draw_set_color(sub_color);
-					draw_set_alpha(0.5);
-					DrawSpriteRectangle(l_dx - offset, l_dy - offset, l_dx + 16 + offset, l_dy + 16 + offset, true);
+					DrawSpriteRectangle(l_dx - offset - 1, l_dy - offset - 1, l_dx + texinfo.layout.width + offset + 1, l_dy + texinfo.size.y + 6 + offset + 1, true);
 				}
 			}
 		}

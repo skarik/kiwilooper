@@ -173,6 +173,9 @@ function EditorSolidsRendererRecreate(solid_id)
 					// Get the atlas UVs used for this face
 					var atlasInfo = AtlasGet(atlas_current).GetUVs(atlas_current_tex_and_atlas.index);
 					atlasInfo = face.texture.GetTextureSubUVs(atlasInfo);
+					
+					// Get the original size for this texture (important for the UVs)
+					var scaleInfo = AtlasGet(atlas_current).GetUnscaledSize(atlas_current_tex_and_atlas.index);
 			
 					// Create a plane for calculating UVs
 					var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
@@ -197,7 +200,7 @@ function EditorSolidsRendererRecreate(solid_id)
 					
 							// Get UVs
 							var uvPoint = facePlane.flattenPoint(solidVertex.position);
-							face.uvinfo.TransformPoint(uvPoint, face.texture);
+							face.uvinfo.TransformPoint(uvPoint, face.texture, scaleInfo);
 					
 							meshVert.uv.x = uvPoint.x;
 							meshVert.uv.y = uvPoint.y;
@@ -345,6 +348,9 @@ function EditorSolidsRendererCreate()
 				// Get the atlas UVs used for this face
 				var atlasInfo = AtlasGet(atlas_current).GetUVs(atlas_current_tex_and_atlas.index);
 				atlasInfo = face.texture.GetTextureSubUVs(atlasInfo);
+				
+				// Get the original size for this texture (important for the UVs)
+				var scaleInfo = AtlasGet(atlas_current).GetUnscaledSize(atlas_current_tex_and_atlas.index);
 			
 				// Create a plane for calculating UVs
 				var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
@@ -369,7 +375,7 @@ function EditorSolidsRendererCreate()
 					
 						// Get UVs
 						var uvPoint = facePlane.flattenPoint(solidVertex.position);
-						face.uvinfo.TransformPoint(uvPoint, face.texture);
+						face.uvinfo.TransformPoint(uvPoint, face.texture, scaleInfo);
 					
 						meshVert.uv.x = uvPoint.x;
 						meshVert.uv.y = uvPoint.y;

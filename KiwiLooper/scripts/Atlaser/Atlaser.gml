@@ -258,6 +258,16 @@ function AAtlas() constructor
 			(entry.y + entry.height) / height,
 			];
 	}
+	/// @function GetUnscaledSize(index)
+	static GetUnscaledSize = function(index)
+	{
+		var entry = entries[index];
+		return [
+			// TODO: ensure this is the original width & height
+			entry.width,
+			entry.height,
+			];
+	}
 	
 	/*static IsFull = function()
 	{

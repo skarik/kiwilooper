@@ -319,9 +319,17 @@ function AMapSolidFaceUVInfo() constructor
 	offset = new Vector2(0, 0);
 	rotation = 0.0;
 	
-	static TransformPoint = function(io_coord, solidTexture)
+	static TransformPoint = function(io_coord, solidTexture, textureSize)
 	{
-		var tex_size = solidTexture.GetTextureSize();
+		var tex_size;
+		if (solidTexture.type == kTextureTypeTexture)
+		{
+			tex_size = textureSize;
+		}
+		else
+		{
+			tex_size = solidTexture.GetTextureSize();
+		}
 		
 		io_coord.x /= tex_size[0];
 		io_coord.y /= tex_size[1];

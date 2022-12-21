@@ -326,7 +326,8 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		var bHasAlignmentChange = false;
 		
 		// Pull the selected texture from the browser and apply it (if valid)
-		var new_tile = m_windowBrowser.GetCurrentTile();
+		//var new_tile = m_windowBrowser.GetCurrentTile();
+		var new_texture = m_windowBrowser.GetCurrentTexture();
 		
 		// Apply the texture now
 		/*if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
@@ -372,7 +373,19 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		{
 			// Apply texture changes
 			var face = selection.object.primitive.faces[selection.object.face];
-			face.texture.index = m_windowBrowser.GetCurrentTile();
+		
+			//face.texture.index = new_tile;
+		
+			face.texture.type = new_texture.type;
+			face.texture.index = new_texture.index;
+			if (face.texture.type == kTextureTypeTexture)
+			{	// Copy over the filename. Let resource system handle the rest.
+				face.texture.source = new_texture.filename;
+			}
+			else
+			{	// Pull the sprite directly
+				face.texture.source = new_texture.resource.sprite;
+			}
 			return true;
 		}
 		return bHasAlignmentChange;

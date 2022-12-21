@@ -221,11 +221,11 @@ function ResourceFindSpriteTexture(target_sprite)
 	{
 		var resource = global.resourceMap[?current_key];
 		if (resource.type == kResourceTypeInternalSprite
-			&& resource.sprite = target_sprite)
+			&& resource.sprite == target_sprite)
 		{
 			return resource;
 		}
-		ds_map_find_next(global.resourceMap, current_key);
+		current_key = ds_map_find_next(global.resourceMap, current_key);
 	}
 	return undefined;
 }
