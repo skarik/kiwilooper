@@ -75,6 +75,9 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 			var propTranslation = matrix_build_translation(prop);
 			var propRotation = matrix_build_rotation(prop);
 			
+			// Currently, BBox is centered around the pivot. We need to transform that center by our rotation first.
+			propBBox.center.transformAMatrixSelf(propRotation);
+			
 			if (raycast4_box_rotated(
 				propBBox.center.add(Vector3FromTranslation(prop)),
 				propBBox.extents.multiplyComponent(Vector3FromScale(prop)),
@@ -551,6 +554,9 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			var propBBox = PropGetBBox(prop.sprite);
 			var propTranslation = matrix_build_translation(prop);
 			var propRotation = matrix_build_rotation(prop);
+			
+			// Currently, BBox is centered around the pivot. We need to transform that center by our rotation first.
+			propBBox.center.transformAMatrixSelf(propRotation);
 			
 			if (lassoRect.contains2(
 					propBBox.center.add(Vector3FromTranslation(prop))))

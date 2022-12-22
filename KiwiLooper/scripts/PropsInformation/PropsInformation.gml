@@ -58,7 +58,7 @@ function PropGetBBox( prop_sprite )
 	assert(buildstyle != kPropBuildstyleNone);
 	
 	var element_width = sprite_get_width(prop_sprite);
-	var element_height = sprite_get_height(prop_sprite);
+	var element_height = PropGetYHeight(prop_sprite);
 	
 	switch (buildstyle)
 	{

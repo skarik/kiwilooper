@@ -31,8 +31,10 @@ function collision4_raycast(rayOrigin, rayDir, rayDist, outHitObjects, outHitDis
 			
 				// Get the prop BBox & transform it into the world
 				var propBBox = PropGetBBox(prop.sprite);
-				//var propTranslation = matrix_build_translation(prop);
 				var propRotation = matrix_build_rotation(prop);
+			
+				// Currently, BBox is centered around the pivot. We need to transform that center by our rotation first.
+				propBBox.center.transformAMatrixSelf(propRotation);
 			
 				if (raycast4_box_rotated(
 					propBBox.center.add(Vector3FromTranslation(prop)),
@@ -148,6 +150,9 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 				// Get the prop BBox & transform it into the world
 				var propBBox = PropGetBBox(prop.sprite);
 				var propRotation = matrix_build_rotation(prop);
+				
+				// Currently, BBox is centered around the pivot. We need to transform that center by our rotation first.
+				propBBox.center.transformAMatrixSelf(propRotation);
 			
 				// Add the center to the bbox so we have a place to work from
 				propBBox.center.addSelf(Vector3FromTranslation(prop));
@@ -321,6 +326,9 @@ function collision4_rectflat3_test(
 				// Get the prop BBox & transform it into the world
 				var propBBox = PropGetBBox(prop.sprite);
 				var propRotation = matrix_build_rotation(prop);
+				
+				// Currently, BBox is centered around the pivot. We need to transform that center by our rotation first.
+				propBBox.center.transformAMatrixSelf(propRotation);
 			
 				// Add the center to the bbox so we have a place to work from
 				propBBox.center.addSelf(Vector3FromTranslation(prop));
