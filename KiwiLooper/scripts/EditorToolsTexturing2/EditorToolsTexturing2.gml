@@ -5,6 +5,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	m_gizmo = null;
 	m_windowBrowser = null;
 	m_lastSelectedTile = null;
+	m_lastSelectedFace = null;
 	
 	onBegin = function()
 	{
@@ -161,7 +162,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				// On selection, update the browser to select the correct texture
 				if (array_length(m_editor.m_selection) > 0)
 				{
-					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					/*var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
 					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
 					{
 						m_windowBrowser.SetUsedTile(
@@ -171,6 +172,12 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 							
 						// (Also save the selected tile)
 						m_lastSelectedTile = recent_object.object.tile;
+					}*/
+					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
+					if (is_struct(recent_object) && recent_object.type == kEditorSelection_Primitive)
+					{
+						// TODO
+						m_lastSelectedFace = recent_object.object.primitive.faces[recent_object.object.face];
 					}
 				}
 			}
@@ -181,14 +188,14 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				if (!keyboard_check(vk_control))
 				{
 					var selection = PickerRun(false, true);
-					if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
+					/*if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
 					{
 						if (TextureApplyToSelectObject(selection))
 						{
 							TextureUpdateMapVisuals();
 						}
 					}
-					else if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+					else */if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 					{
 						if (TextureApplyToSelectObject(selection))
 						{
@@ -374,8 +381,6 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			// Apply texture changes
 			var face = selection.object.primitive.faces[selection.object.face];
 		
-			//face.texture.index = new_tile;
-		
 			face.texture.type = new_texture.type;
 			face.texture.index = new_texture.index;
 			if (face.texture.type == kTextureTypeTexture)
@@ -386,12 +391,30 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			{	// Pull the sprite directly
 				face.texture.source = new_texture.resource.sprite;
 			}
+			
+			
+			// TOOD: normally these would be pulled from the tool's current UV settings but since we dont have that yet, we just copy
+			if (is_struct(m_lastSelectedFace))
+			{
+				//face.uvinfo.
+				if (m_lastSelectedFace.uvinfo.mapping == kSolidMappingWorld)
+					UVAlignToWorld(selection);
+				else if (m_lastSelectedFace.uvinfo.mapping == kSolidMappingFace)
+					UVAlignToFace(selection);
+					
+				face.uvinfo.scale.x = m_lastSelectedFace.uvinfo.scale.x;
+				face.uvinfo.scale.y = m_lastSelectedFace.uvinfo.scale.y;
+				face.uvinfo.offset.x = m_lastSelectedFace.uvinfo.offset.x;
+				face.uvinfo.offset.y = m_lastSelectedFace.uvinfo.offset.y;
+				face.uvinfo.rotation = m_lastSelectedFace.uvinfo.rotation;
+			}
+			
 			return true;
 		}
 		return bHasAlignmentChange;
 	}
 	
-	static UVAlignToWorld = function()
+	static UVAlignToWorld = function(input_selection=undefined)
 	{
 		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
 		{
@@ -423,18 +446,16 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 					: ((abs(normal.y) > abs(normal.z)) ? kAxisY : kAxisZ);
 			
 			// Now, fulfill the normal used for the texcoords
-			/*face.uvinfo.normal.x = (longest_axis == kAxisX) ? sign(normal.x) : 0.0;
-			face.uvinfo.normal.y = (longest_axis == kAxisY) ? sign(normal.y) : 0.0;
-			face.uvinfo.normal.z = (longest_axis == kAxisZ) ? sign(normal.z) : 0.0;*/
 			face.uvinfo.normal.x = (longest_axis == kAxisX) ? 1.0 : 0.0;
 			face.uvinfo.normal.y = (longest_axis == kAxisY) ? 1.0 : 0.0;
 			face.uvinfo.normal.z = (longest_axis == kAxisZ) ? 1.0 : 0.0;
+			face.uvinfo.mapping = kSolidMappingWorld;
 		}
 		
 		// Ask for map to update visuals now
 		TextureUpdateMapVisuals(); // TODO: only update the selected solids
 	}
-	static UVAlignToFace = function()
+	static UVAlignToFace = function(input_selection=undefined)
 	{
 		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
 		{
@@ -464,16 +485,17 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			
 			// Now, fulfill the normal used for the texcoords
 			face.uvinfo.normal.copyFrom(normal);
+			face.uvinfo.mapping = kSolidMappingFace;
 		}
 		
 		// Ask for map to update visuals now
 		TextureUpdateMapVisuals(); // TODO: only update the selected solids
 	}
-	static UVAlignToView = function()
+	static UVAlignToView = function(input_selection=undefined)
 	{
 		// TODO.
 	}
-	static UVAlignUnwrap = function()
+	static UVAlignUnwrap = function(input_selection=undefined)
 	{
 		// TODO.
 	}
@@ -499,12 +521,26 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		}
 	}
 	
-	static TextureUpdateMapVisuals = function()
+	static TextureUpdateMapVisuals = function(solid_list = undefined)
 	{
+		// Mark geometry as changed.
+		EditorGlobalMarkDirtyGeometry();
+		
 		with (m_editor)
 		{
-			//MapRebuildGraphics();
-			MapRebuildSolidsOnly();
+			if (is_undefined(solid_list))
+			{
+				//MapRebuildGraphics();
+				MapRebuildSolidsOnly();
+			}
+			else
+			{
+				for (var i = 0; i < array_length(solid_list); ++i)
+				{
+					//MapRebuildSolidsOnly(solid_list[i]);
+					EditorGlobalSignalTransformChange(solid_list[i], kEditorSelection_Primitive, kValueTypeString, true); // Defer to later in the frame.
+				}
+			}
 		}
 	}
 }
