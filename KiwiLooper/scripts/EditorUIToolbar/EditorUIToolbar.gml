@@ -28,17 +28,20 @@ function AToolbar() constructor
 	{
 		m_state_containsMouse = false;
 		
+		var ui_scale = EditorGetUIScale();
+		
 		var topLeft = new Vector2(x, y);
 		for (var elementIndex = 0; elementIndex < m_elementsCount; ++elementIndex)
 		{
 			var element = m_elements[elementIndex];
+			topLeft.y = floor(topLeft.y);
 			
 			// Check if mouse is inside
 			if (element.m_isButton)
 			{
 				element.m_state_isDown = element.m_onCheckDown();
 				
-				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize - 1, topLeft.y + kButtonSize - 1))
+				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize * ui_scale - 1, topLeft.y + kButtonSize * ui_scale - 1))
 				{
 					element.m_state_isHovered = true;
 					element.m_state_hoveredTime += Time.deltaTime;
@@ -65,7 +68,7 @@ function AToolbar() constructor
 			}
 			
 			// Advance cursor.
-			topLeft.y += element.m_isButton ? kButtonSize : kSpacerSize;
+			topLeft.y += element.m_isButton ? kButtonSize * ui_scale : kSpacerSize;
 		}
 		m_elementsHeight = topLeft.y - y;
 	}
@@ -79,58 +82,61 @@ function AToolbar() constructor
 	{
 		draw_set_alpha(1.0);
 		
+		var ui_scale = EditorGetUIScale();
+		
 		var topLeft = new Vector2(x, y);
 		for (var elementIndex = 0; elementIndex < m_elementsCount; ++elementIndex)
 		{
 			var element = m_elements[elementIndex];
+			topLeft.y = floor(topLeft.y);
 			
 			// Check if mouse is inside
 			if (element.m_isButton)
 			{
 				draw_set_color(element.m_state_isHovered ? c_white : c_gray);
 				DrawSpriteRectangle(topLeft.x, topLeft.y,
-									topLeft.x + kButtonSize, topLeft.y + kButtonSize,
+									topLeft.x + kButtonSize * ui_scale, topLeft.y + kButtonSize * ui_scale,
 									true);
 				if (element.m_state_isDown)
 				{
 					draw_set_color(c_gray);
 					DrawSpriteRectangle(topLeft.x, topLeft.y,
-										topLeft.x + kButtonSize, topLeft.y + kButtonSize,
+										topLeft.x + kButtonSize * ui_scale, topLeft.y + kButtonSize * ui_scale,
 										false);
 				}
 				
-				draw_sprite(element.m_sprite, element.m_spriteIndex, topLeft.x + 1, topLeft.y + 1);
+				draw_sprite_ext(element.m_sprite, element.m_spriteIndex, topLeft.x + 1, topLeft.y + 1,  ui_scale,ui_scale,0.0, c_white, 1.0);
 				
 				if (element.m_state_showTooltip)
 				{
-					draw_set_font(f_04b03);
+					draw_set_font(EditorGetUIFont());
 					var tooltipLength = string_width(element.m_tooltip);
 					var tooltipHeight = string_height(element.m_tooltip);
 					
 					draw_set_color(c_black);
-					DrawSpriteRectangle(topLeft.x + kButtonSize + 1, topLeft.y,
-										topLeft.x + kButtonSize + 2 + 3 + tooltipLength,
+					DrawSpriteRectangle(topLeft.x + kButtonSize * ui_scale + 1, topLeft.y,
+										topLeft.x + kButtonSize * ui_scale + 2 + 3 + tooltipLength,
 										topLeft.y + 4 + tooltipHeight,
 										false);
 					draw_set_color(c_white);
-					DrawSpriteRectangle(topLeft.x + kButtonSize + 1, topLeft.y,
-										topLeft.x + kButtonSize + 2 + 3 + tooltipLength,
+					DrawSpriteRectangle(topLeft.x + kButtonSize * ui_scale + 1, topLeft.y,
+										topLeft.x + kButtonSize * ui_scale + 2 + 3 + tooltipLength,
 										topLeft.y + 4 + tooltipHeight,
 										true);
 					
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_top);
-					draw_text(topLeft.x + kButtonSize + 3, topLeft.y + 2, element.m_tooltip);
+					draw_text(topLeft.x + kButtonSize * ui_scale + 3, topLeft.y + 2, element.m_tooltip);
 				}
 			}
 			else
 			{
 				draw_set_color(c_gray);
-				DrawSpriteLine(topLeft.x + 1, topLeft.y + 1, topLeft.x + kButtonSize - 1, topLeft.y + 1);
+				DrawSpriteLine(topLeft.x + 1, topLeft.y + 1, topLeft.x + kButtonSize * ui_scale - 1, topLeft.y + 1);
 			}
 			
 			// Advance cursor.
-			topLeft.y += element.m_isButton ? kButtonSize : kSpacerSize;
+			topLeft.y += element.m_isButton ? kButtonSize * ui_scale : kSpacerSize;
 		}
 	};
 }

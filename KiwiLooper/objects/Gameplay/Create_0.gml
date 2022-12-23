@@ -18,4 +18,5 @@ m_camera_rotation_z = 0;
 if (!iexists(EditorGet()))
 {
 	Screen.scaleMode = kScreenscalemode_Match;
+	Screen.pixelScale = 2.0;
 }

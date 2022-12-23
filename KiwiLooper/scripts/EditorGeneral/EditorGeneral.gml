@@ -9,6 +9,7 @@ function EditorLevel_Init()
 
 	// Update the screen now
 	Screen.scaleMode = kScreenscalemode_Expand;
+	Screen.pixelScale = 1.0;
 
 	// Set up serialized state
 	m_state = new AMapEditorState();

@@ -4,10 +4,10 @@ commonStart();
 bRoomIsSet = false;
 
 inew(System);
+inew(Debug);
 inew(Screen);
 inew(GameCamera);
 inew(Time);
-inew(Debug);
 inew(Settings);
 inew(Game);
 inew(Audio);

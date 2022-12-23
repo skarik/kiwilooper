@@ -54,6 +54,19 @@ function Vector2(n_x, n_y) constructor
 		return self;
 	}
 	
+	static floorSelf = function()
+	{
+		x = floor(x);
+		y = floor(y);
+		return self;
+	}
+	static roundSelf = function()
+	{
+		x = round(x);
+		y = round(y);
+		return self;
+	}
+	
 	/// @function biasUV(normalized_uvs)
 	/// @desc Utility funciton that moves normalized coordinates into range of given GM sprite UVs
 	static biasUV = function(uvs)

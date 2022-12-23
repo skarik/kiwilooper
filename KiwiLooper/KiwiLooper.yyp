@@ -787,6 +787,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"WasteMTarp.png","CopyToMask":-1,"filePath":"datafiles/tex/WasteM",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest8_solids3_sub3.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"OpenSans-Regular.ttf","CopyToMask":-1,"filePath":"datafiles/fonts",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

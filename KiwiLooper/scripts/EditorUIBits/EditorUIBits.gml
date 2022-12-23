@@ -1,10 +1,54 @@
+function EditorGetUIScale()
+{
+	var editor = EditorGet();
+	if (iexists(editor))
+	{
+		return editor.uiScale;
+	}
+	return 1.5;
+}
+function EditorGetUIFont()
+{
+	static current_scale		= 0.0;
+	static last_loaded_font		= undefined;
+	
+	var scale = EditorGetUIScale();
+	
+	// If scale changes, we need to reload resources for rendering.
+	if (current_scale != scale)
+	{
+		current_scale = scale;
+		
+		if (!is_undefined(last_loaded_font) && font_exists(last_loaded_font))
+		{
+			font_delete(last_loaded_font);
+		}
+		
+		// Load new font.
+		font_add_enable_aa(false);
+		last_loaded_font = font_add("fonts/OpenSans-Regular.ttf", round(6 * scale), false, false, 32, 128);
+	}
+	
+	if (scale <= 1.0)
+	{
+		return f_04b03;
+	}
+	else
+	{
+		return last_loaded_font;
+	}
+}
+
 function EditorUIBitsSetup()
 {
-	#macro kEditorUICursorNormal 0
-	#macro kEditorUICursorMove 1
-	#macro kEditorUICursorHSize 2
+	#macro kEditorUICursorNormal	0
+	#macro kEditorUICursorMove		1
+	#macro kEditorUICursorHSize		2
+	#macro kEditorUICursorWSize		3
 	uiCursor = kEditorUICursorNormal;
 	uiNextCursor = kEditorUICursorNormal;
+	
+	uiScale = 1.5 * display_get_dpi_x() / 96.0; // TODO?
 	
 	// Create toolbar
 	{
@@ -76,7 +120,7 @@ function EditorUIBitsUpdate()
 	var l_bMouseAvailable = !EditorGizmoGetAnyConsumingMouse();
 	
 	m_toolbar.x = 0;
-	m_toolbar.y = 18;
+	m_toolbar.y = 18 * EditorGetUIScale();
 	m_toolbar.Step(l_mouseX, l_mouseY, l_bMouseAvailable);
 	
 	m_actionbar.x = 0;
@@ -96,6 +140,16 @@ function EditorUIBitsUpdate()
 	// Update cursor
 	uiCursor = uiNextCursor;
 	uiNextCursor = kEditorUICursorNormal;
+	
+	// size debug
+	if (keyboard_check_pressed(vk_pageup))
+	{
+		uiScale += 0.25;
+	}
+	if (keyboard_check_pressed(vk_pagedown))
+	{
+		uiScale -= 0.25;
+	}
 }
 
 function EditorUIBitsDraw()
@@ -126,5 +180,9 @@ function EditorUIBitsDraw()
 	else if (uiCursor == kEditorUICursorHSize)
 	{
 		draw_sprite_ext(suie_cursors, 2, uPosition - GameCamera.view_x, vPosition - GameCamera.view_y, 1.0, 1.0, 0.0, c_white, 1.0);
+	}
+	else if (uiCursor == kEditorUICursorWSize)
+	{
+		draw_sprite_ext(suie_cursors, 3, uPosition - GameCamera.view_x, vPosition - GameCamera.view_y, 1.0, 1.0, 0.0, c_white, 1.0);
 	}
 }

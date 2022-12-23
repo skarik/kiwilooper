@@ -18,7 +18,7 @@ function AEditorWindow() constructor
 	
 	m_editor = null;
 	m_position = new Vector2(0, kTitleHeight);
-	m_size = new Vector2(100, 100);
+	m_size = new Vector2(100 * EditorGetUIScale(), 100 * EditorGetUIScale());
 	
 	request_free = false; // Has been requested to be deleted?
 	
@@ -75,8 +75,9 @@ function AEditorWindow() constructor
 	
 	static updateSystem = function(mouseX, mouseY, listIndex)
 	{
-		var rect = [m_position.x - 1, m_position.y - kTitleHeight, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
-		static kResizeMargin = 3;
+		var ui_scale = EditorGetUIScale();
+		var rect = [m_position.x - 1, m_position.y - kTitleHeight * ui_scale, m_position.x + m_size.x + 1, m_position.y + m_size.y + 1];
+		static kResizeMargin = 4; // Half-width margins
 		
 		// Update the rect checks size for minimized state
 		if (minimized)
@@ -86,19 +87,19 @@ function AEditorWindow() constructor
 		
 		// update mouse-over checks
 		if (point_in_rectangle(mouseX, mouseY,
-								rect[2] - kTitleHeight, rect[1],
-								rect[2], rect[1] + kTitleHeight))
+								rect[2] - kTitleHeight * ui_scale, rect[1],
+								rect[2], rect[1] + kTitleHeight * ui_scale))
 		{
 			hovering_button_index = kWindowHoverButtonExit;
 		}
 		else if (point_in_rectangle(mouseX, mouseY,
-								rect[2] - kTitleHeight * 2, rect[1],
-								rect[2] - kTitleHeight, rect[1] + kTitleHeight))
+								rect[2] - kTitleHeight * ui_scale * 2, rect[1],
+								rect[2] - kTitleHeight * ui_scale, rect[1] + kTitleHeight * ui_scale))
 		{
 			hovering_button_index = kWindowHoverButtonMinimize;
 		}
 		else if (!minimized
-			&& !point_in_rectangle(mouseX, mouseY, rect[0], rect[1], rect[2], rect[3])
+			&& !point_in_rectangle(mouseX, mouseY, rect[0] + kResizeMargin, rect[1] + kResizeMargin, rect[2] - kResizeMargin, rect[3] - kResizeMargin)
 			&& point_in_rectangle(mouseX, mouseY, rect[0] - kResizeMargin, rect[1] - kResizeMargin, rect[2] + kResizeMargin, rect[3] + kResizeMargin))
 		{
 			hovering_button_index = kWindowHoverButtonResize;
@@ -144,7 +145,8 @@ function AEditorWindow() constructor
 	
 	static drawWindow = function()
 	{
-		var rect = [m_position.x - kBorderSize, m_position.y - kTitleHeight - kBorderSize, m_position.x + m_size.x + kBorderSize, m_position.y + m_size.y + kBorderSize];
+		var ui_scale = EditorGetUIScale();
+		var rect = [m_position.x - kBorderSize, m_position.y - kTitleHeight * ui_scale - kBorderSize, m_position.x + m_size.x + kBorderSize, m_position.y + m_size.y + kBorderSize];
 		
 		// Draw the background for the window
 		draw_set_color(focused ? kFocusedBGColor : kUnfocusedBGColor);
@@ -155,29 +157,29 @@ function AEditorWindow() constructor
 			var l_titleBgColor = focused ? kAccentColor : c_white;
 			
 			draw_set_color(l_titleBgColor);
-			DrawSpriteRectangle(rect[0], rect[1] + kBorderSize, rect[2], rect[1] + kBorderSize + kTitleHeight, false);
+			DrawSpriteRectangle(rect[0], rect[1] + kBorderSize, rect[2], rect[1] + kBorderSize + kTitleHeight * ui_scale, false);
 			
 			// Draw the title on the far left
 			draw_set_color(focused ? c_white : c_gray);
 			draw_set_halign(fa_left);
-			draw_set_valign(fa_top);
-			draw_set_font(f_04b03);
-			draw_text(rect[0] + kTitleMargin, rect[1] + kBorderSize + kTitleMargin, m_title);
+			draw_set_valign(fa_middle);
+			draw_set_font(EditorGetUIFont());
+			draw_text(rect[0] + kTitleMargin, rect[1] + kBorderSize + kTitleHeight * ui_scale * 0.5, m_title);
 			
 			// Draw the exit button on the far right
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonExit ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1] + kBorderSize, rect[2], rect[1] + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight * ui_scale, rect[1] + kBorderSize, rect[2], rect[1] + kTitleHeight * ui_scale, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kBorderSize + kTitleHeight / 2,
-							1.0, 1.0, 0.0,
+			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight * ui_scale / 2, rect[1] + kBorderSize + kTitleHeight * ui_scale / 2,
+							ui_scale, ui_scale, 0.0,
 							draw_get_color(), draw_get_alpha());
 							
 			// Draw the minimize button a bit back
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonMinimize ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1] + kBorderSize, rect[2] - kTitleHeight, rect[1] + kBorderSize + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight * ui_scale * 2.0, rect[1] + kBorderSize, rect[2] - kTitleHeight * ui_scale, rect[1] + kBorderSize + kTitleHeight * ui_scale, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kBorderSize + kTitleHeight / 2,
-							1.0, 1.0, 0.0,
+			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight * ui_scale - kTitleHeight * ui_scale / 2, rect[1] + kBorderSize + kTitleHeight * ui_scale / 2,
+							ui_scale, ui_scale, 0.0,
 							draw_get_color(), draw_get_alpha());
 		}
 		
@@ -188,6 +190,7 @@ function AEditorWindow() constructor
 	
 	static DrawMinimized = function()
 	{
+		var ui_scale = EditorGetUIScale();
 		var rect = getMinimizedRect();
 		
 		{
@@ -195,29 +198,29 @@ function AEditorWindow() constructor
 			var l_titleBgColor = focused ? kAccentColor : c_white;
 		
 			draw_set_color(l_titleBgColor);
-			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight, false);
+			DrawSpriteRectangle(rect[0], rect[1], rect[2], rect[1] + kTitleHeight * ui_scale, false);
 		
 			// Draw the title on the far left
 			draw_set_color(focused ? c_white : c_gray);
 			draw_set_halign(fa_left);
-			draw_set_valign(fa_top);
-			draw_set_font(f_04b03);
-			draw_text(rect[0] + kTitleMargin, rect[1] + kTitleMargin, m_title);
+			draw_set_valign(fa_middle);
+			draw_set_font(EditorGetUIFont());
+			draw_text(rect[0] + kTitleMargin, rect[1] + kTitleHeight * ui_scale * 0.5, m_title);
 			
 			// Draw the exit button on the far right
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonExit ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight, rect[1], rect[2], rect[1] + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight * ui_scale, rect[1], rect[2], rect[1] + kTitleHeight * ui_scale, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
 			draw_sprite_ext(suie_windowIcons, 0, rect[2] - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
-							1.0, 1.0, 0.0,
+							ui_scale, ui_scale, 0.0,
 							draw_get_color(), draw_get_alpha());
 							
 			// Draw the minimize button a bit back
 			draw_set_color(merge_color(l_titleBgColor, focused ? c_white : c_gray, hovering_button_index == kWindowHoverButtonMinimize ? 0.5 : 0.0));
-			DrawSpriteRectangle(rect[2] - kTitleHeight * 2.0, rect[1], rect[2] - kTitleHeight, rect[1] + kTitleHeight, false); // hover rect
+			DrawSpriteRectangle(rect[2] - kTitleHeight * ui_scale * 2.0, rect[1], rect[2] - kTitleHeight * ui_scale, rect[1] + kTitleHeight * ui_scale, false); // hover rect
 			draw_set_color(focused ? c_white : c_gray);
-			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight - kTitleHeight / 2, rect[1] + kTitleHeight / 2,
-							1.0, 1.0, 0.0,
+			draw_sprite_ext(suie_windowIcons, 1, rect[2] - kTitleHeight * ui_scale - kTitleHeight * ui_scale / 2, rect[1] + kTitleHeight * ui_scale / 2,
+							ui_scale, ui_scale, 0.0,
 							draw_get_color(), draw_get_alpha());
 		}
 		
@@ -493,20 +496,23 @@ function EditorWindowingUpdate(mouseX, mouseY, mouseAvailable)
 	// Find the window that the mouse hovers over & update mouseover checks.
 	for (var iWindow = 0; iWindow < array_length(windows); ++iWindow)
 	{
+		static kSoftMargins = 3;
+		
 		var check_window = windows[iWindow];
 		if (mouseAvailable &&
 			((!check_window.minimized && point_in_rectangle(mouseX, mouseY,
 				check_window.m_position.x - check_window.kBorderSize, check_window.m_position.y - check_window.kBorderSize - check_window.kTitleHeight,
-				check_window.m_position.x + check_window.m_size.x + check_window.kBorderSize, check_window.m_position.y + check_window.m_size.y + check_window.kBorderSize))
+				check_window.m_position.x + check_window.m_size.x + check_window.kBorderSize + kSoftMargins, check_window.m_position.y + check_window.m_size.y + check_window.kBorderSize + kSoftMargins))
 			|| (check_window.minimized && check_window.MinimizedContains(mouseX, mouseY))))
 		{
 			check_window.contains_mouse = true;
 			hovered_window = check_window;
 			
 			check_window.mouse_position = 
-				point_in_rectangle(mouseX, mouseY,
+				/*point_in_rectangle(mouseX, mouseY,
 					check_window.m_position.x, check_window.m_position.y - check_window.kTitleHeight,
-					check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y)
+					check_window.m_position.x + check_window.m_size.x, check_window.m_position.y + check_window.m_size.y)*/
+				(check_window.hovering_button_index != kWindowHoverButtonResize)
 				? ((check_window.minimized || mouseY < check_window.m_position.y) ? kWindowMousePositionTitle : kWindowMousePositionContent)
 				: kWindowMousePositionBorder;
 		}
@@ -534,12 +540,25 @@ function EditorWindowingUpdate(mouseX, mouseY, mouseAvailable)
 		}
 	}
 	
+	// Update drag icons
+	if (EditorGet().uiNextCursor == kEditorUICursorWSize)
+	{
+		EditorGet().uiNextCursor = kEditorUICursorNormal;
+	}
+	
 	// Update dragging
 	if (!windowDragging && !windowResizing)
 	{
 		if (is_struct(windowCurrent)
 			&& !windowCurrent.disabled && !windowCurrent.minimized && windowCurrent.visible)
 		{
+			// Update drag mouse cursor
+			if (windowCurrent.mouse_position == kWindowMousePositionBorder)
+			{
+				EditorGet().uiNextCursor = kEditorUICursorWSize;
+			}
+			
+			// Update dragging stuff
 			if (mouse_check_button_pressed(mb_left))
 			{
 				if (windowCurrent.mouse_position == kWindowMousePositionTitle)

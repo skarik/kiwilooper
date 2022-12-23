@@ -7,8 +7,9 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	m_position.x = 48;
 	m_position.y = 64;
 	
-	m_size.x = 100;
-	m_size.y = 80;
+	m_size.x = 100 * EditorGetUIScale();
+	m_size.y = 80 * EditorGetUIScale();
+	m_size.roundSelf();
 	
 	item_focused = 0;
 	item_mouseover = null;
@@ -29,12 +30,20 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	static kLineMargin = 2;
 	static kDragWidth = 10;
 	
+	static onResize = function()
+	{
+		drag_now = false;
+		item_drag = false;
+	}
+	
 	static onMouseMove = function(mouseX, mouseY)
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (mouse_position == kWindowMousePositionContent && mouseX < m_position.x + m_size.x - kDragWidth)
 		{
 			drag_mouseover = false;
-			item_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / kLineHeight);
+			item_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / (kLineHeight * ui_scale));
 			if (item_mouseover < 0 || item_mouseover >= entlistIterationLength())
 				item_mouseover = null;
 		}
@@ -51,13 +60,15 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
 		{
 			// If mouse wheel, attempt scroll
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
 			{
-				var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
-				drag_y_target += (button == kEditorButtonWheelUp) ? -kLineHeight : kLineHeight;
+				var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight * ui_scale - m_size.y);
+				drag_y_target += ((button == kEditorButtonWheelUp) ? -kLineHeight : kLineHeight) * ui_scale;
 				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
 			}
 			// If click the list, then we just change highlight
@@ -87,9 +98,11 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	
 	static Step = function()
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (drag_now)
 		{
-			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
+			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight * ui_scale - m_size.y);
 			
 			// Move the bar based on the position
 			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
@@ -106,6 +119,8 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	static Draw = function()
 	{
 		drawWindow();
+		
+		var ui_scale = EditorGetUIScale();
 		
 		// Draw the scroll bar:
 		draw_set_color(focused ? c_dkgray : c_gray);
@@ -133,7 +148,7 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 		{
 			var entinfo = entlistIterationGet(entIndex);
 			
-			var l_lineY = entIndex * kLineHeight + 1 - drag_y;
+			var l_lineY = entIndex * kLineHeight * ui_scale + 1 - drag_y;
 			var l_bgColor = focused ? ((entIndex % 2 == 0) ? c_black : c_dkgray) : c_dkgray;
 			
 			// Highlight the selected item.
@@ -148,14 +163,14 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 			
 			// draw property background
 			draw_set_color(l_bgColor);
-			DrawSpriteRectangle(m_position.x, m_position.y + l_lineY, m_position.x + m_size.x - kDragWidth, m_position.y + l_lineY + kLineHeight, false);
+			DrawSpriteRectangle(m_position.x, m_position.y + l_lineY, m_position.x + m_size.x - kDragWidth, m_position.y + l_lineY + kLineHeight * ui_scale, false);
 			
 			// draw property name
 			draw_set_color(focused ? c_white : c_ltgray);
 			draw_set_halign(fa_left);
 			draw_set_valign(fa_bottom);
-			draw_set_font(f_04b03);
-			draw_text(m_position.x + kLineMargin, m_position.y + l_lineY + kLineHeight - kLineMargin, entinfo.name);
+			draw_set_font(EditorGetUIFont());
+			draw_text(m_position.x + kLineMargin, m_position.y + l_lineY + kLineHeight * ui_scale - kLineMargin, entinfo.name);
 		}
 		
 		drawShaderUnset(sh_editorDefaultScissor);

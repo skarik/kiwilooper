@@ -3,6 +3,8 @@
 #macro kScreenCorner_DrawDevelopmentInfo true
 #macro kScreenCorner_String "KIWILOOPER IN-DEV"
 
+debugLog(kLogOutput, "dpi: " + string(display_get_dpi_x()) + "," + string(display_get_dpi_y()));
+
 m_initialized = false;
 
 if (singleton_this()) exit;

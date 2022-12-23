@@ -90,9 +90,11 @@ function EditorAnnotationsUpdate(mouseX, mouseY, mouseAvailable)
 
 function EditorAnnotationsDraw()
 {
-	draw_set_font(f_04b03);
+	draw_set_font(EditorGetUIFont());
 	draw_set_valign(fa_middle);
 	draw_set_halign(fa_center);
+	
+	var ui_scale = EditorGetUIScale();
 	
 	for (var i = 0; i < array_length(m_annotations); ++i)
 	{
@@ -105,7 +107,7 @@ function EditorAnnotationsDraw()
 		if (annotation.m_icon != null)
 		{
 			draw_sprite_ext(annotation.m_icon, annotation.m_iconIndex, annotation.draw_position[0], annotation.draw_position[1],
-							1.0, 1.0, annotation.m_iconAngle, c_white,
+							ui_scale, ui_scale, annotation.m_iconAngle, c_white,
 							draw_get_alpha());
 		}
 		
@@ -115,7 +117,7 @@ function EditorAnnotationsDraw()
 			if (!annotation.m_textOutline)
 			{
 				draw_set_color(annotation.m_color);
-				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 * ui_scale : 0), annotation.m_text);
 			}
 			else
 			{
@@ -131,7 +133,7 @@ function EditorAnnotationsDraw()
 					draw_text(annotation.draw_position[0] + kOutlineOffsets[j][0], annotation.draw_position[1] + kOutlineOffsets[j][1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
 				}
 				draw_set_color(annotation.m_color);
-				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 : 0), annotation.m_text);
+				draw_text(annotation.draw_position[0], annotation.draw_position[1] + (annotation.m_icon != null ? 16 * ui_scale : 0), annotation.m_text);
 			}
 		}
 	}

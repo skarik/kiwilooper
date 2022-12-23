@@ -12,20 +12,23 @@ function AToolbarTop() : AToolbar() constructor
 	{
 		m_state_containsMouse = false;
 		
+		var ui_scale = EditorGetUIScale();
+		
 		// Set font for checking widths
-		draw_set_font(f_04b03);
+		draw_set_font(EditorGetUIFont());
 		
 		var topLeft = new Vector2(x, y);
 		for (var elementIndex = 0; elementIndex < m_elementsCount; ++elementIndex)
 		{
 			var element = m_elements[elementIndex];
+			topLeft.x = floor(topLeft.x);
 			
 			// Get element extra width that text adds
 			var extra_width = 0;
 			var has_text = is_string(element.m_text);
 			if (has_text)
 			{
-				extra_width = (element.m_width > 0) ? element.m_width : (kTextPadding * 2 + string_width(element.m_text));
+				extra_width = (element.m_width > 0) ? element.m_width * ui_scale : (kTextPadding * 2 + string_width(element.m_text));
 			}
 			
 			var bIsLabel = !element.m_isButton && has_text;
@@ -38,7 +41,7 @@ function AToolbarTop() : AToolbar() constructor
 			{
 				element.m_state_isDown = (element.m_onCheckDown == null) ? false : element.m_onCheckDown();
 				
-				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize + extra_width - 1, topLeft.y + kButtonSize - 1))
+				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize * ui_scale + extra_width - 1, topLeft.y + kButtonSize * ui_scale - 1))
 				{
 					element.m_state_isHovered = true;
 					element.m_state_hoveredTime += Time.deltaTime;
@@ -73,27 +76,31 @@ function AToolbarTop() : AToolbar() constructor
 			}
 			
 			// Advance cursor.
-			topLeft.x += (element.m_isButton || bIsLabel) ? (kButtonSize + extra_width) : kSpacerSize;
+			topLeft.x += (element.m_isButton || bIsLabel) ? (kButtonSize * ui_scale + extra_width) : kSpacerSize;
 		}
 		m_elementsWidth = topLeft.x - x;
 	};
 	
 	static Draw = function()
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		draw_set_alpha(1.0);
 		
 		var topLeft = new Vector2(x, y);
 		for (var elementIndex = 0; elementIndex < m_elementsCount; ++elementIndex)
 		{
 			var element = m_elements[elementIndex];
+			topLeft.x = floor(topLeft.x);
+			// TODO: Unify the rects of the drawing & using.
 			
 			// Get element extra width that text adds
 			var extra_width = 0;
 			var has_text = false;
 			if (is_string(element.m_text))
 			{
-				draw_set_font(f_04b03);
-				extra_width = (element.m_width > 0) ? element.m_width : (kTextPadding * 2 + string_width(element.m_text));
+				draw_set_font(EditorGetUIFont());
+				extra_width = (element.m_width > 0) ? element.m_width * ui_scale : (kTextPadding * 2 + string_width(element.m_text));
 				has_text = true;
 			}
 			
@@ -107,52 +114,52 @@ function AToolbarTop() : AToolbar() constructor
 				{
 					draw_set_color(c_gray);
 					DrawSpriteRectangle(topLeft.x, topLeft.y,
-										topLeft.x + kButtonSize + extra_width, topLeft.y + kButtonSize,
+										topLeft.x + kButtonSize * ui_scale + extra_width, topLeft.y + kButtonSize * ui_scale,
 										false);
 				}
 				draw_set_color((element.m_state_isHovered && element.m_state_isEnabled) ? c_white : c_gray);
 				DrawSpriteRectangle(topLeft.x, topLeft.y,
-									topLeft.x + kButtonSize + extra_width, topLeft.y + kButtonSize,
+									topLeft.x + kButtonSize * ui_scale + extra_width, topLeft.y + kButtonSize * ui_scale,
 									true);
 				
 				if (element.m_state_isEnabled)
 				{
-					draw_sprite(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding);
+					draw_sprite_ext(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding * ui_scale, topLeft.y + 1 + kButtonPadding * ui_scale, ui_scale,ui_scale,0, c_white, 1.0);
 				}
 				else
 				{
-					draw_sprite_ext(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding, topLeft.y + 1 + kButtonPadding, 1,1,0, c_gray, 1.0);
+					draw_sprite_ext(element.m_sprite, element.m_spriteIndex, topLeft.x + 1 + kButtonPadding * ui_scale, topLeft.y + 1 + kButtonPadding * ui_scale, ui_scale,ui_scale,0, c_gray, 1.0);
 				}
 				
 				if (has_text)
 				{
-					draw_set_font(f_04b03);
+					draw_set_font(EditorGetUIFont());
 					draw_set_color(element.m_state_isEnabled ? c_white : c_gray);
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_middle);
-					draw_text(topLeft.x + kButtonSize + kTextPadding - 1, topLeft.y + 1 + kButtonSize / 2, element.m_text);
+					draw_text(topLeft.x + kButtonSize * ui_scale + kTextPadding - 1, topLeft.y + 1 + kButtonSize / 2 * ui_scale, element.m_text);
 				}
 				
 				if (element.m_state_showTooltip)
 				{
-					draw_set_font(f_04b03);
+					draw_set_font(EditorGetUIFont());
 					var tooltipLength = string_width(element.m_tooltip);
 					var tooltipHeight = string_height(element.m_tooltip);
 					
 					draw_set_color(c_black);
-					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize,
+					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize * ui_scale,
 										topLeft.x + 2 + 3 + tooltipLength,
-										topLeft.y + kButtonSize + 4 + tooltipHeight,
+										topLeft.y + kButtonSize * ui_scale + 4 + tooltipHeight,
 										false);
 					draw_set_color(c_white);
-					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize,
+					DrawSpriteRectangle(topLeft.x + 1, topLeft.y + kButtonSize * ui_scale,
 										topLeft.x + 2 + 3 + tooltipLength,
-										topLeft.y + kButtonSize + 4 + tooltipHeight,
+										topLeft.y + kButtonSize * ui_scale + 4 + tooltipHeight,
 										true);
 					
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_top);
-					draw_text(topLeft.x + 3, topLeft.y + kButtonSize + 2, element.m_tooltip);
+					draw_text(topLeft.x + 3, topLeft.y + kButtonSize * ui_scale + 2, element.m_tooltip);
 				}
 			}
 			// Draw label
@@ -165,16 +172,16 @@ function AToolbarTop() : AToolbar() constructor
 				
 				if (has_text)
 				{
-					draw_set_font(f_04b03);
+					draw_set_font(EditorGetUIFont());
 					draw_set_color(c_white);
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_middle);
-					draw_text(topLeft.x + kTextPadding, topLeft.y + 1 + kButtonSize / 2, element.m_text);
+					draw_text(topLeft.x + kTextPadding, topLeft.y + 1 + kButtonSize / 2 * ui_scale, element.m_text);
 				}
 				
 				if (element.m_state_showTooltip)
 				{
-					draw_set_font(f_04b03);
+					draw_set_font(EditorGetUIFont());
 					var tooltipLength = string_width(element.m_tooltip);
 					var tooltipHeight = string_height(element.m_tooltip);
 					
@@ -191,18 +198,18 @@ function AToolbarTop() : AToolbar() constructor
 					
 					draw_set_halign(fa_left);
 					draw_set_valign(fa_top);
-					draw_text(topLeft.x + 3, topLeft.y + kButtonSize + 2, element.m_tooltip);
+					draw_text(topLeft.x + 3, topLeft.y + kButtonSize * ui_scale + 2, element.m_tooltip);
 				}
 			}
 			// Draw spacer
 			else
 			{
 				draw_set_color(c_gray);
-				DrawSpriteLine(topLeft.x + floor(kSpacerSize / 2), topLeft.y + 1, topLeft.x + floor(kSpacerSize / 2), topLeft.y + kButtonSize - 1);
+				DrawSpriteLine(topLeft.x + floor(kSpacerSize / 2), topLeft.y + 1, topLeft.x + floor(kSpacerSize / 2), topLeft.y + kButtonSize * ui_scale - 1);
 			}
 			
 			// Advance cursor.
-			topLeft.x += (element.m_isButton || has_text) ? (kButtonSize + extra_width) : kSpacerSize;
+			topLeft.x += (element.m_isButton || has_text) ? (kButtonSize * ui_scale + extra_width) : kSpacerSize;
 		}
 	};
 }

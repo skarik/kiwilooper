@@ -26,8 +26,9 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	drag_y = 0;
 	drag_y_target = 0;
 	
-	m_size.x = 150;
-	m_size.y = 180;
+	m_size.x = 150 * EditorGetUIScale();
+	m_size.y = 180 * EditorGetUIScale();
+	m_size.roundSelf();
 	
 	static sh_uScissorRect = shader_get_uniform(sh_editorDefaultScissor, "uScissorRect");
 	static kPropertyHeight = 12;
@@ -269,12 +270,18 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		InitPropertyNames();
 	}
 	
+	static onResize = function()
+	{
+		drag_mouseover = false;
+	}
 	static onMouseMove = function(mouseX, mouseY)
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (mouse_position == kWindowMousePositionContent && mouseX < m_position.x + m_size.x - kDragWidth)
 		{
 			drag_mouseover = false;
-			property_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / kPropertyHeight);
+			property_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / (kPropertyHeight * ui_scale));
 			if (property_mouseover < 0 || property_mouseover >= array_length(entity_info.properties))
 				property_mouseover = null;
 		}
@@ -291,13 +298,15 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
 		{
 			// If mouse wheel, attempt scroll
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
 			{
-				var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight - m_size.y);
-				drag_y_target += (button == kEditorButtonWheelUp) ? -kPropertyHeight : kPropertyHeight;
+				var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight * ui_scale - m_size.y);
+				drag_y_target += ((button == kEditorButtonWheelUp) ? -kPropertyHeight : kPropertyHeight) * ui_scale;
 				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
 			}
 			// If click the list, then we just change highlight
@@ -365,9 +374,11 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	static Step = function()
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (drag_now)
 		{
-			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight - m_size.y);
+			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight * ui_scale - m_size.y);
 			
 			// Move the bar based on the position
 			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
@@ -572,12 +583,14 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		drawWindow();
 		
+		var ui_scale = EditorGetUIScale();
+		
 		if (editing_target == kEditorSelection_Prop)
 		{
 			draw_set_color(focused ? c_white : c_ltgray);
 			draw_set_halign(fa_left);
 			draw_set_valign(fa_top);
-			draw_set_font(f_04b03);
+			draw_set_font(EditorGetUIFont());
 			
 			draw_text(m_position.x + 2, m_position.y + 2, "Prop Keyvalues not yet set.");
 			//return;
@@ -587,7 +600,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			draw_set_color(focused ? c_white : c_ltgray);
 			draw_set_halign(fa_left);
 			draw_set_valign(fa_top);
-			draw_set_font(f_04b03);
+			draw_set_font(EditorGetUIFont());
 			
 			draw_text(m_position.x + 2, m_position.y + 2, "No selection.");
 			return;
@@ -597,7 +610,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		draw_set_color(focused ? c_dkgray : c_gray);
 		DrawSpriteRectangle(m_position.x + m_size.x - kDragWidth, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y, true);
 		{
-			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight - m_size.y);
+			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight * ui_scale - m_size.y);
 			var l_barH = 10;
 			var l_barY = (m_size.y - 4 - l_barH) * (drag_y / kDragMaxY);
 			
@@ -618,7 +631,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		{
 			var property = entity_info.properties[iProperty];
 			
-			var l_propY = iProperty * kPropertyHeight + 1 - drag_y;
+			var l_propY = iProperty * kPropertyHeight * ui_scale + 1 - drag_y;
 			var l_bgColor = focused ? ((iProperty % 2 == 0) ? c_black : c_dkgray) : c_dkgray;
 			
 			if (iProperty == property_mouseover)
@@ -628,13 +641,13 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			
 			// draw property background
 			draw_set_color(l_bgColor);
-			DrawSpriteRectangle(m_position.x, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight, false);
+			DrawSpriteRectangle(m_position.x, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
 			// draw property focus outline
 			if (iProperty == property_focused)
 			{
 				// If we're editing, also draw a brighter background
 				draw_set_color(focused ? kAccentColor : c_gray);
-				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight, false);
+				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
 				
 				if (!property_change_ok)
 				{
@@ -653,14 +666,14 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 						draw_vertex_texture_color(m_position.x + kPropertyColumn, m_position.y + l_propY,
 							UvBiasX(uvs, (Time.time * -8 % 8) + 0), UvBiasY(uvs, 0),
 							color, alpha);
-						draw_vertex_texture_color(m_position.x + kPropertyColumn, m_position.y + l_propY + kPropertyHeight,
-							UvBiasX(uvs, (Time.time * -8 % 8) + 0), UvBiasY(uvs, kPropertyHeight),
+						draw_vertex_texture_color(m_position.x + kPropertyColumn, m_position.y + l_propY + kPropertyHeight * ui_scale,
+							UvBiasX(uvs, (Time.time * -8 % 8) + 0), UvBiasY(uvs, kPropertyHeight * ui_scale),
 							color, alpha);
 						draw_vertex_texture_color(m_position.x + m_size.x, m_position.y + l_propY,
 							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn), UvBiasY(uvs, 0),
 							color, alpha);
-						draw_vertex_texture_color(m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight,
-							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn), UvBiasY(uvs, kPropertyHeight),
+						draw_vertex_texture_color(m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale,
+							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn), UvBiasY(uvs, kPropertyHeight * ui_scale),
 							color, alpha);
 					draw_primitive_end();
 					
@@ -672,11 +685,11 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			draw_set_color(focused ? c_white : c_ltgray);
 			draw_set_halign(fa_left);
 			draw_set_valign(fa_bottom);
-			draw_set_font(f_04b03);
+			draw_set_font(EditorGetUIFont());
 			
 			// draw the property name:
 			var l_textX = m_position.x + kPropertyMargin;
-			var l_textY = m_position.y + l_propY + kPropertyHeight - kPropertyMargin;
+			var l_textY = m_position.y + l_propY + kPropertyHeight * ui_scale - kPropertyMargin;
 			
 			/*var l_bSpecialPosition = (property[0] == "") && (property[1] == kValueTypePosition);
 			var l_bSpecialRotation = (property[0] == "") && (property[1] == kValueTypeRotation);
@@ -701,7 +714,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				var color = variable_instance_get(entity_instance, property[0]);
 				// Draw the color as background
 				draw_set_color(color);
-				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight, false);
+				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
 				
 				// Draw the text for the color values behind
 				draw_set_color(color_get_value(color) > 128 ? c_black : c_white);
@@ -736,7 +749,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					// Draw the text edit cursor
 					var l_strForCursor = string_copy(property_value, 1, property_edit_cursor);
 					var l_strW = string_width(l_strForCursor);
-					DrawSpriteLine(l_textX + l_strW - 1, m_position.y + l_propY + 2, l_textX + l_strW - 1, m_position.y + l_propY + kPropertyHeight - 2);
+					DrawSpriteLine(l_textX + l_strW - 1, m_position.y + l_propY + 2, l_textX + l_strW - 1, m_position.y + l_propY + kPropertyHeight * ui_scale - 2);
 				}
 			}
 			
@@ -745,10 +758,10 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		// draw the focused property
 		if (property_focused != null)
 		{
-			var l_propY = property_focused * kPropertyHeight + 1 - drag_y;
+			var l_propY = property_focused * kPropertyHeight * ui_scale + 1 - drag_y;
 			
 			draw_set_color(focused ? (property_change_ok ? kAccentColor : c_red) : c_gray);
-			DrawSpriteRectangle(m_position.x, m_position.y + l_propY - 2, m_position.x + m_size.x - kDragWidth, m_position.y + l_propY + kPropertyHeight + 2, true);
+			DrawSpriteRectangle(m_position.x, m_position.y + l_propY - 2, m_position.x + m_size.x - kDragWidth, m_position.y + l_propY + kPropertyHeight * ui_scale + 2, true);
 		}
 		
 		drawShaderUnset(sh_editorDefaultScissor);
