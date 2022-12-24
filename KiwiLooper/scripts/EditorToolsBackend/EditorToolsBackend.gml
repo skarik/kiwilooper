@@ -75,6 +75,19 @@ function EditorToolsSetup()
 	toolGridTemporaryDisable = false;
 	toolGridVisible = true;
 	
+	toolTextureInfo =
+	{
+		type:		kTextureTypeSpriteTileset,
+		source:		stl_lab0,
+		index:		1,
+		
+		mapping:	kSolidMappingWorld,
+		normal:		new Vector3(0, 0, 1),
+		rotation:	0,
+		offset:		new Vector2(0, 0),
+		scale:		new Vector2(1, 1),
+	};
+	
 	EditorProxyObject_Init();
 	
 	// Set up all tool states that hold the various tools
@@ -315,6 +328,15 @@ function EditorToolCurrent()
 }
 
 function EditorToolInstance()
+{
+	with (EditorGet())
+	{
+		return toolStates[toolCurrent];
+	}
+	return null;
+}
+
+function EditorToolGetInstance(type)
 {
 	with (EditorGet())
 	{

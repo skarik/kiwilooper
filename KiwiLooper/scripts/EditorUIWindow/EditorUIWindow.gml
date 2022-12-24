@@ -56,6 +56,8 @@ function AEditorWindow() constructor
 		minimized = false;
 		disabled = false;
 		visible = true;
+		
+		EditorWindowClampPosition(self);
 	}
 	static Close = function()
 	{
@@ -596,8 +598,7 @@ function EditorWindowingUpdate(mouseX, mouseY, mouseAvailable)
 				windowCurrent.m_position.y = round(windowDraggingStart.y + (mouseY - windowDraggingMouseStart.y));
 				
 				// clamp to the view
-				windowCurrent.m_position.x = clamp(windowCurrent.m_position.x, -windowCurrent.m_size.x + 40, GameCamera.width - 40);
-				windowCurrent.m_position.y = clamp(windowCurrent.m_position.y, round(windowCurrent.kTitleHeight * 0.5), GameCamera.height - 20);
+				EditorWindowClampPosition(windowCurrent);
 			}
 			// Resize window
 			if (windowResizing)
@@ -713,6 +714,13 @@ function EditorWindowingUpdate(mouseX, mouseY, mouseAvailable)
 			check_window.contains_mouse = false;
 		}
 	}
+}
+
+function EditorWindowClampPosition(window)
+{
+	var ui_scale = EditorGetUIScale();
+	window.m_position.x = clamp(window.m_position.x, -window.m_size.x + 40 * ui_scale, GameCamera.width - 40 * ui_scale);
+	window.m_position.y = clamp(window.m_position.y, round(window.kTitleHeight * 0.5) * ui_scale, GameCamera.height - 20 * ui_scale);
 }
 
 function EditorWindowingDraw()

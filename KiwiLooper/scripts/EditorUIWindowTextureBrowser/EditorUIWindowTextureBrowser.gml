@@ -17,16 +17,13 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 	item_drag = false;
 	item_in_use = null;
 	
+	
 	drag_mouseover = false;
 	drag_now = false;
 	drag_y = 0;
 	drag_y_target = 0;
 	drag_max_y = 0;
 	
-	/*tile_items = [];
-	tile_item_group_counts = [];
-	tile_item_group_name = [];
-	tile_item_group_layoutPos = [];*/
 	
 	texture_needs_layout = false;
 	texture_items = [];
@@ -41,6 +38,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 		size = {x: 0, y: 0};
 		layout = {x: 0, y: 0, visible: true, width: 0};
 	};
+	
 	
 	static ContainsMouse = function()
 	{
@@ -203,30 +201,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 		texture_needs_layout = true;
 	}
 	
-	/*static GetCurrentTile = function()
-	{
-		return (item_in_use != null) ? tile_items[item_in_use].tile : tile_items[item_focused].tile;
-	}
-	static SetCurrentTile = function(inputTile)
-	{
-		for (var i = 0; i < array_length(tile_items); ++i)
-		{
-			if (tile_items[i].tile == inputTile)
-			{
-				item_focused = i;
-			}
-		}
-	}
-	static SetUsedTile = function(inputTile)
-	{
-		for (var i = 0; i < array_length(tile_items); ++i)
-		{
-			if (tile_items[i].tile == inputTile)
-			{
-				item_in_use = i;
-			}
-		}
-	}*/
+	
 	/// @function GetCurrentTexture()
 	static GetCurrentTexture = function()
 	{
@@ -259,11 +234,12 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 	{
 		item_focused = _GetTextureItemIndex(solidTexture);
 	}
-	/// @function SetUsedTile(solidTexture)
-	static SetUsedTile = function(solidTexture)
+	/// @function SetUsedTexture(solidTexture)
+	static SetUsedTexture = function(solidTexture)
 	{
 		item_in_use = _GetTextureItemIndex(solidTexture);
 	}
+	
 	
 	static onMouseMove = function(mouseX, mouseY)
 	{
@@ -337,18 +313,28 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 	}
 	static onMouseDoubleclick = function()
 	{
-		// Apply the texture
-		if (EditorToolCurrent() == kEditorToolTexture)
-		{
-			var tool = EditorToolInstance();
-			if (is_struct(tool))
-			{
-				tool.TextureApplyToSelection();
-			}
-		}
-		
 		// Update in-use texture
 		item_in_use = item_focused;
+		
+		// Update editor texture
+		var texinfo = texture_items[item_in_use];
+		if (texinfo.type == kTextureTypeTexture)
+		{
+			m_editor.toolTextureInfo.source = texinfo.filename;
+		}
+		else
+		{
+			m_editor.toolTextureInfo.source = texinfo.resource.sprite;
+		}
+		m_editor.toolTextureInfo.type = texinfo.type;
+		m_editor.toolTextureInfo.index = texinfo.index;
+		
+		// Apply the texture
+		var tool = EditorToolGetInstance(kEditorToolTexture);
+		if (is_struct(tool))
+		{
+			tool.TextureApplyToSelection();
+		}
 	}
 	
 	static Step = function()

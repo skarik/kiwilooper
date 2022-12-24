@@ -439,7 +439,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		// Cast against all objects in that specific ray
 		var hitObjects = [];
 		var hitDists = [];
-		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists);
+		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists, 0xFF, keyboard_check(vk_shift));
 		if (hitCount > 0)
 		{
 			if (!bAdditive)
@@ -458,17 +458,29 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 			}
 			else
 			{
-				// if in grabber mode, then we just add the last one
+				// if in additive mode, then we just add the last one
 				m_pickerLastClickList = [];
 				m_pickerLastClickIndex = null;
 				
 				closestEnt = hitObjects[0];
+				
+				// TODO: if it's already in the list, remove it.
 			}
 		}
 		
 		// If we hit something, save it
 		if (is_struct(closestEnt) || closestEnt != null)
 		{
+			// Fix up ent based on subobject mode
+			if (closestEnt.type == kEditorSelection_Primitive)
+			{
+				// Only select specific faces if holding shift down.
+				if (!keyboard_check(vk_shift))
+				{
+					closestEnt.object.face = null;
+				}
+			}
+			
 			// Not additive, just set up the selection
 			if (!bAdditive)
 			{

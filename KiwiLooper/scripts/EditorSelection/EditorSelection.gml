@@ -232,8 +232,9 @@ function EditorSelectionEqual(value1, value2)
 	else if (b1IsStruct)
 	{
 		if (value1.type == value2.type
-			&& ( (value1.type == kEditorSelection_TileFace && value1.object.tile == value2.object.tile && value1.object.normal.equals(value2.object.normal))
-				|| (value1.type != kEditorSelection_TileFace && value1.object == value2.object)
+			&& (   (value1.type == kEditorSelection_TileFace && value1.object.tile == value2.object.tile && value1.object.normal.equals(value2.object.normal))
+				|| (value1.type == kEditorSelection_Primitive && value1.object.primitive == value2.object.primitive && value1.object.face == value2.object.face)
+				|| (value1.object == value2.object)
 				)
 			)
 		{

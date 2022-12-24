@@ -15,6 +15,8 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			m_windowBrowser.InitTextureListing();
 		}
 		m_windowBrowser.Open();
+		m_windowBrowser.SetCurrentTexture(m_editor.toolTextureInfo);
+		m_windowBrowser.SetUsedTexture(m_editor.toolTextureInfo);
 		EditorWindowSetFocus(m_windowBrowser);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";
@@ -88,15 +90,6 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		if (array_length(m_editor.m_selection) > 0)
 		{
 			var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
-			/*if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
-			{
-				// Update the window position (TODO: save status elswhere & hide when nonselected)
-				m_editor.m_minimenu.SetCenterPosition3D(
-					recent_object.object.tile.x * 16 + 8 + 8 * recent_object.object.normal.x,
-					recent_object.object.tile.y * 16 + 8 + 8 * recent_object.object.normal.y,
-					recent_object.object.tile.height * 16 - 8 + 8 * recent_object.object.normal.z);
-			}
-			else*/
 			if (is_struct(recent_object) && recent_object.type == kEditorSelection_Primitive)
 			{
 				// Update the window position
@@ -162,17 +155,6 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				// On selection, update the browser to select the correct texture
 				if (array_length(m_editor.m_selection) > 0)
 				{
-					/*var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
-					if (is_struct(recent_object) && recent_object.type == kEditorSelection_TileFace)
-					{
-						m_windowBrowser.SetUsedTile(
-							(abs(recent_object.object.normal.z) > 0.707)
-							? recent_object.object.tile.floorType
-							: recent_object.object.tile.wallType);
-							
-						// (Also save the selected tile)
-						m_lastSelectedTile = recent_object.object.tile;
-					}*/
 					var recent_object = m_editor.m_selection[array_length(m_editor.m_selection)-1];
 					if (is_struct(recent_object) && recent_object.type == kEditorSelection_Primitive)
 					{
@@ -185,17 +167,10 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			// Right click apply texture.
 			if (button == mb_right)
 			{
-				if (!keyboard_check(vk_control))
+				/*if (!keyboard_check(vk_control))
 				{
 					var selection = PickerRun(false, true);
-					/*if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
-					{
-						if (TextureApplyToSelectObject(selection))
-						{
-							TextureUpdateMapVisuals();
-						}
-					}
-					else */if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+					if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 					{
 						if (TextureApplyToSelectObject(selection))
 						{
@@ -206,6 +181,14 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				else
 				{
 					TextureApplyToSelection();
+				}*/
+				var selection = PickerRun(false, true);
+				if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+				{
+					if (TextureApplyToSelectObject(selection) || UVApplyToSelectObject(selection))
+					{
+						TextureUpdateMapVisuals();
+					}
 				}
 			}
 		}
@@ -330,88 +313,74 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	/// @returns True when texture has changed. False otherwise.
 	static TextureApplyToSelectObject = function(selection)
 	{
-		var bHasAlignmentChange = false;
+		var bHasTextureChange = false;
+		var new_texture = m_editor.toolTextureInfo;
 		
-		// Pull the selected texture from the browser and apply it (if valid)
-		//var new_tile = m_windowBrowser.GetCurrentTile();
-		var new_texture = m_windowBrowser.GetCurrentTexture();
-		
-		// Apply the texture now
-		/*if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
-		{
-			// Apply the turns
-			if (is_struct(m_lastSelectedTile))
-			{
-				if (m_lastSelectedTile.floorRotate90 != selection.object.tile.floorRotate90
-					|| m_lastSelectedTile.floorFlipX != selection.object.tile.floorFlipX
-					|| m_lastSelectedTile.floorFlipY != selection.object.tile.floorFlipY
-					)
-					{
-						selection.object.tile.floorRotate90 = m_lastSelectedTile.floorRotate90;
-						selection.object.tile.floorFlipX = m_lastSelectedTile.floorFlipX;
-						selection.object.tile.floorFlipY = m_lastSelectedTile.floorFlipY;
-						
-						bHasAlignmentChange = true;
-					}
-			}
-			
-			// Apply texture changes
-			if (abs(selection.object.normal.z) > 0.707)
-			{
-				var old_tile = selection.object.tile.floorType;
-				if (old_tile != new_tile)
-				{
-					selection.object.tile.floorType = new_tile;0
-					return true;
-				}
-			}
-			else
-			{
-				var old_tile = selection.object.tile.wallType;
-				if (old_tile != new_tile)
-				{
-					selection.object.tile.wallType = new_tile;
-					return true;
-				}
-			}
-		}
-		else */
 		if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 		{
-			// Apply texture changes
 			var face = selection.object.primitive.faces[selection.object.face];
 		
-			face.texture.type = new_texture.type;
-			face.texture.index = new_texture.index;
-			if (face.texture.type == kTextureTypeTexture)
-			{	// Copy over the filename. Let resource system handle the rest.
-				face.texture.source = new_texture.filename;
-			}
-			else
-			{	// Pull the sprite directly
-				face.texture.source = new_texture.resource.sprite;
-			}
-			
-			
-			// TOOD: normally these would be pulled from the tool's current UV settings but since we dont have that yet, we just copy
-			if (is_struct(m_lastSelectedFace))
+			if (face.texture.type != new_texture.type
+				|| face.texture.index != new_texture.index
+				|| (face.text.type == kTextureTypeTexture && face.texture.source != new_texture.filename)
+				|| (face.text.type != kTextureTypeTexture && face.texture.source != new_texture.resource.sprite)
+				)
 			{
-				//face.uvinfo.
-				if (m_lastSelectedFace.uvinfo.mapping == kSolidMappingWorld)
-					UVAlignToWorld(selection);
-				else if (m_lastSelectedFace.uvinfo.mapping == kSolidMappingFace)
-					UVAlignToFace(selection);
-					
-				face.uvinfo.scale.x = m_lastSelectedFace.uvinfo.scale.x;
-				face.uvinfo.scale.y = m_lastSelectedFace.uvinfo.scale.y;
-				face.uvinfo.offset.x = m_lastSelectedFace.uvinfo.offset.x;
-				face.uvinfo.offset.y = m_lastSelectedFace.uvinfo.offset.y;
-				face.uvinfo.rotation = m_lastSelectedFace.uvinfo.rotation;
+				bHasTextureChange = true;
+				
+				face.texture.type = new_texture.type;
+				face.texture.index = new_texture.index;
+				if (face.texture.type == kTextureTypeTexture)
+				{	// Copy over the filename. Let resource system handle the rest.
+					face.texture.source = new_texture.filename;
+				}
+				else
+				{	// Pull the sprite directly
+					face.texture.source = new_texture.resource.sprite;
+				}
 			}
-			
-			return true;
 		}
-		return bHasAlignmentChange;
+		return bHasTextureChange;
+	}
+	/// @function UVApplyToSelectObject(selection)
+	/// @desc Apply texture changes to the given selection.
+	static UVApplyToSelectObject = function(selection)
+	{
+		var bHasTextureChange = false;
+		//var new_texture = m_editor.toolTextureInfo;
+		var new_alignment = m_editor.toolTextureInfo;
+		
+		if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+		{
+			var face = selection.object.primitive.faces[selection.object.face];
+			
+			if ((face.uvinfo.mapping == kSolidMappingNormal && face.uvinfo.normal.equals(new_alignment.normal))
+				|| face.uvinfo.mapping != new_alignment.mapping
+				|| face.uvinfo.scale.x != new_alignment.scale.x || face.uvinfo.scale.y != new_alignment.scale.y
+				|| face.uvinfo.offset.x != new_alignment.offset.x || face.uvinfo.offset.y != new_alignment.offset.y
+				|| face.uvinfo.rotation != new_alignment.rotation)
+			{
+				bHasTextureChange = true;
+				
+				if (new_alignment.mapping == kSolidMappingWorld)
+					UVAlignToWorld(selection);
+				else if (new_alignment.mapping == kSolidMappingFace)
+					UVAlignToFace(selection);
+				else if (new_alignment.mapping == kSolidMappingNormal)
+				{ 
+					face.uvinfo.normal.x = new_alignment.normal.x;
+					face.uvinfo.normal.y = new_alignment.normal.y;
+					face.uvinfo.normal.z = new_alignment.normal.z;
+				}
+					
+				face.uvinfo.scale.x = new_alignment.scale.x;
+				face.uvinfo.scale.y = new_alignment.scale.y;
+				face.uvinfo.offset.x = new_alignment.offset.x;
+				face.uvinfo.offset.y = new_alignment.offset.y;
+				face.uvinfo.rotation = new_alignment.rotation;
+			}
+		}
+		return bHasTextureChange;
 	}
 	
 	static UVAlignToWorld = function(input_selection=undefined)
@@ -504,7 +473,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	{
 		var bRequestRebuild = false;
 		
-		// Get current tile:
+		// Get current primitive:
 		for (var i = 0; i < array_length(m_editor.m_selection); ++i)
 		{
 			var selection = m_editor.m_selection[i];
