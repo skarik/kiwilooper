@@ -4,6 +4,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	state = kEditorToolTextureSolids;
 	m_gizmo = null;
 	m_windowBrowser = null;
+	m_windowTextureTools = null;
 	m_lastSelectedTile = null;
 	m_lastSelectedFace = null;
 	

@@ -61,3 +61,8 @@
 #macro kCompareOpGreaterEqual 3
 #macro kCompareOpLessEqual 4
 #macro kCompareOpNotEqual 5
+
+#macro kDirLeft 0
+#macro kDirRight 2
+#macro kDirUp 1
+#macro kDirDown 3
