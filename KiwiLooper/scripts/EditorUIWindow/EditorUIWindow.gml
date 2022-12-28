@@ -45,6 +45,7 @@ function AEditorWindow() constructor
 	static onMouseMove = function(mouseX, mouseY) {}
 	static onMouseEvent = function(mouseX, mouseY, button, event) {}
 	static onMouseLeave = function(mouseX, mouseY) {}
+	static onCleanup = function() {}
 	static Step = function() {}
 	static Draw = function()
 	{
@@ -403,6 +404,8 @@ function EditorWindowFree(window)
 		if (is_struct(window))
 		{
 			EditorWindowSavePositions(window);
+			
+			window.onCleanup();
 		
 			// Disable window & request free
 			window.request_free = true;

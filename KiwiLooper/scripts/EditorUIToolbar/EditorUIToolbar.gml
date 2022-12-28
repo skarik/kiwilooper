@@ -121,8 +121,8 @@ function AToolbar() constructor
 				topLeft.y += (element.m_isButton || bIsLabel) ? ((kButtonSize + kButtonMargin) * ui_scale + extra_height) : kSpacerSize;
 			}
 		}
-		m_elementsWidth = topLeft.x - x;
-		m_elementsHeight = topLeft.y - y;
+		m_elementsWidth = (kBarDirection == kDirRight) ? (topLeft.x - x) : (kButtonSize * ui_scale); // This is incorrect but is OK since we dont layout macro elements horizontally
+		m_elementsHeight = (kBarDirection == kDirDown) ? (topLeft.y - y) : (kButtonSize * ui_scale);
 	}
 	
 	static ContainsMouse = function()
@@ -281,10 +281,14 @@ function AToolbar() constructor
 /// @notes A toolbar element for the AToolbar structure
 function AToolbarElement() constructor
 {
-	m_isButton		= false; // If false, then is a separator.
+	m_isButton		= false; // If false, then is a separator or label.
+	m_customDraw	= false; // Does this element have a custom draw?
+	m_richParams	= false; // If true, then the callbacks will also be sent mouse position.
+	m_stepEnabled	= false; // If true, then onStep will be called.
 	m_onClick		= function() {};
 	m_onCheckDown	= function() { return false; };
 	m_onCanClick	= function() { return true; };
+	m_onStep		= function() {};
 	m_sprite		= sui_handy;
 	m_spriteIndex	= 0;
 	m_tooltip		= "Handy";

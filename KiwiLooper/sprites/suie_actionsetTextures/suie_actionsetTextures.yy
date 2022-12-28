@@ -35,6 +35,7 @@
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"15b8d9a7-05ad-4252-b44a-1cc8cb5bad56",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"ae6c98fb-b9c0-44a0-9856-81bee3cdc983",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"ac4cbff9-b18f-43b0-a41b-051ec99eb839",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"2c1b5e25-293f-4c11-9fa1-e5e9c117d9f8",},
   ],
   "sequence": {
     "resourceType": "GMSequence",
@@ -46,7 +47,7 @@
     "playbackSpeedType": 0,
     "autoRecord": true,
     "volume": 1.0,
-    "length": 7.0,
+    "length": 8.0,
     "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MessageEventKeyframe>",},
     "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MomentsEventKeyframe>",},
     "tracks": [
@@ -58,6 +59,7 @@
             {"id":"79504b68-21b4-4db8-b1af-24cec710bf40","Key":4.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"15b8d9a7-05ad-4252-b44a-1cc8cb5bad56","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"ff285f4c-9f2e-4b8c-bc59-4dfccd6bc07a","Key":5.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ae6c98fb-b9c0-44a0-9856-81bee3cdc983","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"4fca71fe-bb7f-4a1d-b88e-efd1adf55c8d","Key":6.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"ac4cbff9-b18f-43b0-a41b-051ec99eb839","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"49bf3d34-8e83-4226-92f2-c7f248573653","Key":7.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"2c1b5e25-293f-4c11-9fa1-e5e9c117d9f8","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
           ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"modifiers":[],},
     ],
     "visibleRange": null,

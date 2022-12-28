@@ -18,6 +18,13 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		m_windowBrowser.Open();
 		m_windowBrowser.SetCurrentTexture(m_editor.toolTextureInfo);
 		m_windowBrowser.SetUsedTexture(m_editor.toolTextureInfo);
+		
+		if (m_windowTextureTools == null)
+		{
+			m_windowTextureTools = EditorWindowAlloc(AEditorWindowTextureTools);
+		}
+		m_windowTextureTools.Open();
+		
 		EditorWindowSetFocus(m_windowBrowser);
 		
 		m_editor.m_statusbar.m_toolHelpText = "Click to select faces to edit. Right click to apply selected texture. Ctrl+Action to multi-action.";
@@ -76,6 +83,9 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			//m_window = null;
 			EditorWindowFree(m_windowBrowser);
 			m_windowBrowser = null;
+			
+			EditorWindowFree(m_windowTextureTools);
+			m_windowTextureTools = null;
 		}
 		m_editor.m_minimenu.Hide();
 		
@@ -333,11 +343,11 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				face.texture.index = new_texture.index;
 				if (face.texture.type == kTextureTypeTexture)
 				{	// Copy over the filename. Let resource system handle the rest.
-					face.texture.source = new_texture.filename;
+					face.texture.source = new_texture.source; // TODO: check??
 				}
 				else
 				{	// Pull the sprite directly
-					face.texture.source = new_texture.resource.sprite;
+					face.texture.source = new_texture.source; // TODO: check??
 				}
 			}
 		}
