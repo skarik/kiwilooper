@@ -132,6 +132,7 @@ function Rect2(n_min, n_max) constructor
 	m_min	= new Vector2(n_min.x, n_min.y);
 	m_max	= new Vector2(n_max.y, n_max.y);
 	
+	/// @function contains(x, y)
 	static contains = function(x, y)
 	{
 		gml_pragma("forceinline");
@@ -141,6 +142,7 @@ function Rect2(n_min, n_max) constructor
 			m_max.x, m_max.y);
 	}
 	
+	/// @function contains2(vec)
 	static contains2 = function(vec)
 	{
 		gml_pragma("forceinline");
@@ -148,6 +150,16 @@ function Rect2(n_min, n_max) constructor
 			vec.x, vec.y,
 			m_min.x, m_min.y,
 			m_max.x, m_max.y);
+	}
+	
+	/// @function containsSubEdge(x, y, edgeLeft, edgeUp, edgeRight, edgeDown)
+	static containsSubEdge = function(x, y, edgeLeft, edgeUp, edgeRight, edgeDown)
+	{
+		gml_pragma("forceinline");
+		return point_in_rectangle(
+			x, y,
+			m_min.x + edgeLeft, m_min.y + edgeUp,
+			m_max.x - edgeRight, m_max.y - edgeDown);
 	}
 	
 	static expand1Self = function(dist)

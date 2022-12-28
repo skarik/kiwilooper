@@ -4,6 +4,7 @@ function AToolbar() constructor
 {
 	static kButtonSize		= 22;
 	static kButtonPadding	= 0;
+	static kButtonMargin	= 0;
 	static kSpacerSize		= 3;
 	static kTooltipShowTime	= 0.5;
 	static kTextPadding		= 0;
@@ -18,6 +19,15 @@ function AToolbar() constructor
 	
 	x = 0;
 	y = 0;
+	
+	static GetHeight = function()
+	{
+		return m_elementsHeight;
+	}
+	static GetWidth = function()
+	{
+		return m_elementsWidth;
+	}
 	
 	static AddElement = function(elementToAdd)
 	{
@@ -53,6 +63,12 @@ function AToolbar() constructor
 			
 			var bIsLabel = !element.m_isButton && has_text;
 			
+			// Set up the layout rect
+			element.layout_rect.m_min.x = topLeft.x;
+			element.layout_rect.m_min.y = topLeft.y;
+			element.layout_rect.m_max.x = (element.m_isButton || bIsLabel) ? topLeft.x + kButtonSize * ui_scale + extra_width : kSpacerSize;
+			element.layout_rect.m_max.y = (element.m_isButton || bIsLabel) ? topLeft.y + kButtonSize * ui_scale : kSpacerSize;
+			
 			// Update enabled state
 			element.m_state_isEnabled = (element.m_onCanClick == null) ? true : element.m_onCanClick();
 			
@@ -61,7 +77,7 @@ function AToolbar() constructor
 			{
 				element.m_state_isDown = (element.m_onCheckDown == null) ? false : element.m_onCheckDown();
 				
-				if (mouseAvailable && point_in_rectangle(mouseX, mouseY, topLeft.x, topLeft.y, topLeft.x + kButtonSize * ui_scale + extra_width - 1, topLeft.y + kButtonSize * ui_scale - 1))
+				if (mouseAvailable && element.layout_rect.containsSubEdge(mouseX, mouseY, 0, 0, 1, 1))
 				{
 					element.m_state_isHovered = true;
 					element.m_state_hoveredTime += Time.deltaTime;
@@ -98,11 +114,11 @@ function AToolbar() constructor
 			// Advance cursor.
 			if (kBarDirection == kDirRight)
 			{
-				topLeft.x += (element.m_isButton || bIsLabel) ? (kButtonSize * ui_scale + extra_width) : kSpacerSize;
+				topLeft.x += (element.m_isButton || bIsLabel) ? ((kButtonSize + kButtonMargin) * ui_scale + extra_width) : kSpacerSize;
 			}
 			else if (kBarDirection == kDirDown)
 			{
-				topLeft.y += (element.m_isButton || bIsLabel) ? (kButtonSize * ui_scale + extra_height) : kSpacerSize;
+				topLeft.y += (element.m_isButton || bIsLabel) ? ((kButtonSize + kButtonMargin) * ui_scale + extra_height) : kSpacerSize;
 			}
 		}
 		m_elementsWidth = topLeft.x - x;
@@ -120,23 +136,17 @@ function AToolbar() constructor
 		
 		var ui_scale = EditorGetUIScale();
 		
-		var topLeft = new Vector2(x, y);
+		var topLeft = new Vector2(0, 0);
 		for (var elementIndex = 0; elementIndex < m_elementsCount; ++elementIndex)
 		{
 			var element = m_elements[elementIndex];
-			// Round the position to fix rendering wonkiness.
+			
+			// Pull position from the layout system.
+			topLeft.copyFrom(element.layout_rect.m_min);
 			topLeft.floorSelf();
 			
 			// Get element extra width that text adds
-			var extra_width = 0;
-			var extra_height = 0;
-			var has_text = false;
-			if (is_string(element.m_text))
-			{
-				draw_set_font(EditorGetUIFont());
-				extra_width = (element.m_width > 0) ? element.m_width * ui_scale : (kTextPadding * 2 + string_width(element.m_text));
-				has_text = true;
-			}
+			var has_text = is_string(element.m_text);
 			
 			// Cache if have sprite
 			var has_sprite = sprite_exists(element.m_sprite);
@@ -148,12 +158,12 @@ function AToolbar() constructor
 				{
 					draw_set_color(c_gray);
 					DrawSpriteRectangle(topLeft.x, topLeft.y,
-										topLeft.x + kButtonSize * ui_scale + extra_width, topLeft.y + kButtonSize * ui_scale,
+										element.layout_rect.m_max.x, element.layout_rect.m_max.y,
 										false);
 				}
 				draw_set_color((element.m_state_isHovered && element.m_state_isEnabled) ? c_white : c_gray);
 				DrawSpriteRectangle(topLeft.x, topLeft.y,
-									topLeft.x + kButtonSize * ui_scale + extra_width, topLeft.y + kButtonSize * ui_scale,
+									element.layout_rect.m_max.x, element.layout_rect.m_max.y,
 									true);
 				
 				if (has_sprite)
@@ -264,16 +274,6 @@ function AToolbar() constructor
 					DrawSpriteLine(topLeft.x + 1, topLeft.y + 1, topLeft.x + kButtonSize * ui_scale - 1, topLeft.y + 1);
 				}
 			}
-			
-			// Advance cursor.
-			if (kBarDirection == kDirRight)
-			{
-				topLeft.x += (element.m_isButton || has_text) ? (kButtonSize * ui_scale + extra_width) : kSpacerSize;
-			}
-			else if (kBarDirection == kDirDown)
-			{
-				topLeft.y += (element.m_isButton || has_text) ? (kButtonSize * ui_scale + extra_height) : kSpacerSize;
-			}
 		}
 	};
 }
@@ -297,8 +297,7 @@ function AToolbarElement() constructor
 	m_state_isDown		= false;
 	m_state_isEnabled	= true;
 	
-	layout_position	= new Vector2();
-	layout_size		= new Vector2();
+	layout_rect		= new Rect2(new Vector2(0, 0), new Vector2(0, 0));
 	
 	m_editor		= EditorGet();
 }

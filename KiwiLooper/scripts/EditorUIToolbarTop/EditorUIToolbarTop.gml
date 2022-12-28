@@ -4,6 +4,7 @@ function AToolbarTop() : AToolbar() constructor
 {
 	static kButtonSize		= 18;
 	static kButtonPadding	= 3;
+	static kButtonMargin	= 0;
 	static kSpacerSize		= 7;
 	static kTooltipShowTime	= 0.25;
 	static kTextPadding		= 1;
