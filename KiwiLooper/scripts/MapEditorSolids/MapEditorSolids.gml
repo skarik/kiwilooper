@@ -331,12 +331,14 @@ function AMapSolidFaceUVInfo() constructor
 			tex_size = solidTexture.GetTextureSize();
 		}
 		
-		io_coord.addSelf(offset);
+		io_coord.rotateSelf(rotation);
+		
+		io_coord.multiplyComponentSelf(scale); // Scale down first
+		
+		io_coord.subtractSelf(offset); // Subtract to offset forward, in texture space still?
 		
 		io_coord.x /= tex_size[0];
 		io_coord.y /= tex_size[1];
-		
-		io_coord.multiplyComponentSelf(scale).rotateSelf(rotation);
 		
 		// Bias to the UVs? Or do we want to do this in the shader?
 		// Let's just...do this in the shader, methinks

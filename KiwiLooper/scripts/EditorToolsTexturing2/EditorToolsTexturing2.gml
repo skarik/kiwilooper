@@ -141,6 +141,18 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				
 				// Set minimenu below the face
 				m_editor.m_minimenu.SetCenterPosition((min_x + max_x) * 0.5, max_y);
+				
+				// Update the tool texture info
+				{
+					var mapSolid = recent_object.object.primitive;
+					var face = mapSolid.faces[recent_object.object.face];
+					
+					m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
+					m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
+					m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
+					
+					// TODO: mapping
+				}
 			}
 			else
 			{
@@ -229,36 +241,8 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
 			{
 				var selection = m_editor.m_selection[iSelection];
-			
-				/*if (is_struct(selection) && selection.type == kEditorSelection_TileFace)
-				{
-					// get the center of the tile
-					var tile = selection.object.tile;
-					var tileCenter = new Vector3(tile.x * 16 + 8, tile.y * 16 + 8, tile.height * 16 - 8);
-					// get center of the face
-					var faceNormal = selection.object.normal;
-					var faceCenter = tileCenter.add(faceNormal.multiply(9.0));
-					
-					// get the left & right ways to expand the selection box
-					var faceTangent = faceNormal.cross(new Vector3(1, 0, 0));
-					if (faceTangent.sqrMagnitude() <= KINDA_SMALL_NUMBER)
-					{
-						faceTangent = faceNormal.cross(new Vector3(0, 0, 1));
-					}
-					var faceBinormal = faceTangent.cross(faceNormal);
-					
-					// create the bbbox
-					var tileBBox = new BBox3(faceCenter, faceNormal.add(faceTangent.multiply(9.0).add(faceBinormal.multiply(9.0))));
-					tileBBox.extents.x = abs(tileBBox.extents.x);
-					tileBBox.extents.y = abs(tileBBox.extents.y);
-					tileBBox.extents.z = abs(tileBBox.extents.z);
-					
-					m_showSelectGizmo.m_mins[gizmoIndex]  = tileBBox.getMin();
-					m_showSelectGizmo.m_maxes[gizmoIndex] = tileBBox.getMax();
-					m_showSelectGizmo.m_trses[gizmoIndex] = undefined;
-					gizmoIndex++;
-				}
-				else*/ if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
+				
+				if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 				{
 					if (selection.object.face != null)
 					{
@@ -335,8 +319,9 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		
 			if (face.texture.type != new_texture.type
 				|| face.texture.index != new_texture.index
-				|| (face.texture.type == kTextureTypeTexture && face.texture.source != new_texture.filename)
-				|| (face.texture.type != kTextureTypeTexture && face.texture.source != new_texture.resource.sprite)
+				|| face.texture.source != new_texture.source
+				//|| (face.texture.type == kTextureTypeTexture && face.texture.source != new_texture.source)
+				//|| (face.texture.type != kTextureTypeTexture && face.texture.source != new_texture.source)
 				)
 			{
 				bHasTextureChange = true;
@@ -394,6 +379,40 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			}
 		}
 		return bHasTextureChange;
+	}
+	
+	// ========================================================================
+	// UV Tools
+	// ========================================================================
+	
+	// Helper for the common iteration thru faces.
+	static UV_ForEachFaceIn = function(input_selection, relevant_selection, params, task)
+	{
+		var solidsEdited = [];
+		
+		var selectionArray = is_undefined(input_selection) ? relevant_selection : input_selection;
+		
+		for (var iSelection = 0; iSelection < array_length(selectionArray); ++iSelection)
+		{
+			var selection = selectionArray[iSelection];
+			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
+				continue; // Only work on prims
+			if (selection.object.face == null) 
+				continue; // Only work on faces
+			
+			var mapSolid = selection.object.primitive;
+			var face = mapSolid.faces[selection.object.face];
+			
+			// Save solid for update
+			if (!array_contains(solidsEdited, mapSolid))
+				array_push(solidsEdited, mapSolid);
+				
+			// Run the task
+			task(mapSolid, face, params);
+		}
+		
+		// Ask for map to update visuals now
+		TextureUpdateMapVisuals(solidsEdited);
 	}
 	
 	static UVAlignToWorld = function(input_selection=undefined)
@@ -557,11 +576,9 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		{
 			var selection = m_editor.m_selection[iSelection];
 			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
-				continue;
-			
-			// Only work on faces
-			if (selection.object.face == null)
-				continue;
+				continue; // Only work on prims
+			if (selection.object.face == null) 
+				continue; // Only work on faces
 			
 			var mapSolid = selection.object.primitive;
 			var face = mapSolid.faces[selection.object.face];
@@ -577,6 +594,97 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		// Ask for map to update visuals now
 		TextureUpdateMapVisuals(solidsEdited);
 	}
+	
+	
+	
+	static UVFit = function(repeatX, repeatY, input_selection=undefined)
+	{
+		var params = {repeatX: repeatX, repeatY: repeatY};
+		UV_ForEachFaceIn(input_selection, m_editor.m_selection, params, function(mapSolid, face, params) 
+		{
+			var repeatX = params.repeatX;
+			var repeatY = params.repeatY;
+			
+			// Get the face's current texture
+			var texture_sprite = null;
+			if (face.texture.type == kTextureTypeTexture)
+			{
+				texture_sprite = ResourceFindTexture(face.texture.source).sprite;
+			}
+			else
+			{
+				texture_sprite = face.texture.source;
+			}
+			// Get texture size
+			var texture_size = new Vector2(sprite_get_width(texture_sprite), sprite_get_height(texture_sprite));
+			if (face.texture.type == kTextureTypeSpriteTileset)
+			{
+				texture_size.x = 16;
+				texture_size.y = 16;
+			}
+			
+			// Create a plane for calculating UVs
+			var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
+			
+			// Create an array of positions, and get them in the current face's plane
+			var face_positions = array_create(array_length(face.indicies));
+			for (var indexIndex = 0; indexIndex < array_length(face.indicies); ++indexIndex)
+			{
+				var position_3d = mapSolid.vertices[face.indicies[indexIndex]].position;
+				var position_flat = facePlane.flattenPoint(position_3d);
+				position_flat.rotateSelf(-face.uvinfo.rotation); // Undo rotation, it'll be "redone" in the output
+				
+				face_positions[indexIndex] = position_flat;
+			}
+			
+			// TODO: combine this with justify & scale
+			
+			// We want to fix X and Y seperately
+			if (repeatX != 0)
+			{
+				// Get the min & max X with face's current orientation
+				var min_x = face_positions[0].x;
+				var max_x = min_x;
+				for (cornerIndex = 1; cornerIndex < array_length(face_positions); ++cornerIndex)
+				{
+					min_x = min(min_x, face_positions[cornerIndex].x);
+					max_x = max(max_x, face_positions[cornerIndex].x);
+				}
+				
+				// Calculate scale & translation we need to apply
+				var x_scale = (texture_size.x / (max_x - min_x)) * repeatX;
+				var x_shift = min_x * x_scale;
+				
+				// Apply new values
+				face.uvinfo.scale.x = x_scale;
+				face.uvinfo.offset.x = x_shift;
+			}
+			
+			if (repeatY != 0)
+			{
+				// Get the min & max X with face's current orientation
+				var min_y = face_positions[0].y;
+				var max_y = min_y;
+				for (cornerIndex = 1; cornerIndex < array_length(face_positions); ++cornerIndex)
+				{
+					min_y = min(min_y, face_positions[cornerIndex].y);
+					max_y = max(max_y, face_positions[cornerIndex].y);
+				}
+				
+				// Calculate scale & translation we need to apply
+				var y_scale = (texture_size.y / (max_y - min_y)) * repeatY;
+				var y_shift = min_y * y_scale;
+				
+				// Apply new values
+				face.uvinfo.scale.y = y_scale;
+				face.uvinfo.offset.y = y_shift;
+			}
+		});
+	}
+	
+	// ========================================================================
+	// Texturing Tools
+	// ========================================================================
 	
 	static TextureApplyToSelection = function()
 	{

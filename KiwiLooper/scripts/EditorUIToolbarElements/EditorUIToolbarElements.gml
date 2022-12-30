@@ -236,6 +236,15 @@ function AToolbarElementSpinner(tooltip, label, onChange, initialValue) : AToolb
 		}
 	}
 	
+	static PropertyEndEditAndGet = function()
+	{
+		if (IsEditing())
+		{
+			PropertyChangeEnd();
+		}
+		return propertyValue;
+	}
+	
 	m_onDraw = function(x, y)
 	{
 		var ui_scale = EditorGetUIScale();

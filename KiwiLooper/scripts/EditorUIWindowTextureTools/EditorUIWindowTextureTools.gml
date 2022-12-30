@@ -23,6 +23,9 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 	m_spinner_shift_y = null;
 	m_spinner_rotation = null;
 	
+	m_spinner_fit_x = null;
+	m_spinner_fit_y = null;
+	
 	{
 		// Set up UI
 		m_elements = [];
@@ -86,9 +89,9 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 			toolbar.kButtonPadding = 2;
 			toolbar.kButtonMargin = 2;
 			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Align", 20));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 3, "Align texture to closest world XYZ plane", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 4, "Align texture to face's plane", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 5, "Align texture to the camera's plane", null, null, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 3, "Align texture to closest world XYZ plane", null, function(){ m_toolstate.UVAlignToWorld() }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 4, "Align texture to face's plane", null, function(){ m_toolstate.UVAlignToFace() }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 5, "Align texture to the current view's plane", null, function(){ m_toolstate.UVAlignToView() }, null));
 			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
 		}
 		{	// Scale toolbar
@@ -98,10 +101,10 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 			toolbar.kButtonPadding = 2;
 			toolbar.kButtonMargin = 2;
 			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Scale", 20));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "x fit", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "x 1:1", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "y fit", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "y 1:1", null, null, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "x fit", null, function(){ m_toolstate.UVScaleUpX() }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "x 1:1", null, function(){ m_editor.toolTextureInfo.scale.x = 1.0; m_toolstate.UVApplyShift(0,0,1,0,0); }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "y fit", null, function(){ m_toolstate.UVScaleUpY() }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "y 1:1", null, function(){ m_editor.toolTextureInfo.scale.y = 1.0; m_toolstate.UVApplyShift(0,0,0,1,0); }, null));
 			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
 		}
 		{	// Rotate toolbar
@@ -122,11 +125,13 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 			toolbar.kButtonPadding = 2;
 			toolbar.kButtonMargin = 2;
 			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Fit", 20));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, "X repeat", "X", null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, "Y repeat", "Y", null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit all", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit X", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit y", null, null, null));
+			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "X", 1));
+			m_spinner_fit_x = toolbar.AddElement(AToolbarElementAsSpinner("X repeat", "X", null, 1));
+			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Y", 1));
+			m_spinner_fit_y = toolbar.AddElement(AToolbarElementAsSpinner("Y repeat", "Y", null, 1));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit all", null, function(){ m_toolstate.UVFit(m_spinner_fit_x.PropertyEndEditAndGet(), m_spinner_fit_y.PropertyEndEditAndGet()); }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit X", null, function(){ m_toolstate.UVFit(m_spinner_fit_x.PropertyEndEditAndGet(), 0); }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "fit y", null, function(){ m_toolstate.UVFit(0, m_spinner_fit_y.PropertyEndEditAndGet()); }, null));
 			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
 		}
 		{	// Justify toolbar

@@ -229,6 +229,20 @@ function ResourceFindSpriteTexture(target_sprite)
 	}
 	return undefined;
 }
+/// @function ResourceFindTexture(filepath)
+function ResourceFindTexture(filepath)
+{
+	var filepath_indexer = string_lower(filepath);
+	
+	// Check if already loaded the texture
+	var existing_resource = global.resourceMap[?filepath_indexer];
+	if (!is_undefined(existing_resource))
+	{
+		return existing_resource;
+	}
+	
+	return undefined;
+}
 
 ///@function ResourceAddReference(resource)
 ///@desc Incremenets refcount of resource. Remember to pair properly with ResourceRemoveReference!
