@@ -3,6 +3,32 @@
 /// @returns Edited string.
 function inputPollTyping(value, cursor)
 {
+	// Move the edit cursor
+	if (cursor == null)
+	{
+		cursor = string_length(value);
+	}
+	if (keyboard_check_pressed(vk_left)
+		|| (!keyboard_get_numlock() && keyboard_check_pressed(vk_numpad4)))
+	{
+		cursor = max(0, cursor - 1);
+	}
+	else if (keyboard_check_pressed(vk_right)
+		|| (!keyboard_get_numlock() && keyboard_check_pressed(vk_numpad6)))
+	{
+		cursor = min(string_length(value), cursor + 1);
+	}
+	else if (keyboard_check_pressed(vk_home)
+		|| (!keyboard_get_numlock() && keyboard_check_pressed(vk_numpad7)))
+	{
+		cursor = 0;
+	}
+	else if (keyboard_check_pressed(vk_end)
+		|| (!keyboard_get_numlock() && keyboard_check_pressed(vk_numpad1)))
+	{
+		cursor = string_length(value);
+	}
+	
 	// Check letters
 	for (var key = ord("A"); key <= ord("Z"); ++key)
 	{
@@ -24,6 +50,21 @@ function inputPollTyping(value, cursor)
 			value = string_insert(chr(key), value, cursor + 1);
 			cursor++;
 		}
+	}
+	// Check numpad
+	if (keyboard_get_numlock())
+	{
+		for (var key = vk_numpad0; key <= vk_numpad9; ++key)
+		{
+			if (keyboard_check_pressed(key)) {
+				value = string_insert(chr(ord("0") + key - vk_numpad0), value, cursor + 1);
+				cursor++;
+			}
+		}
+	}
+	else
+	{
+		// TODO: arrow keys
 	}
 	// Check symbols
 	{

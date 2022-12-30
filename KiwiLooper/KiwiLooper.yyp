@@ -359,6 +359,7 @@
     {"id":{"name":"duiStepRectFromSprite","path":"scripts/duiStepRectFromSprite/duiStepRectFromSprite.yy",},"order":4,},
     {"id":{"name":"duiStepHoverFocus","path":"scripts/duiStepHoverFocus/duiStepHoverFocus.yy",},"order":3,},
     {"id":{"name":"suie_annoteEdit","path":"sprites/suie_annoteEdit/suie_annoteEdit.yy",},"order":5,},
+    {"id":{"name":"EditorUIToolbarElements","path":"scripts/EditorUIToolbarElements/EditorUIToolbarElements.yy",},"order":14,},
     {"id":{"name":"BattleManagerUI","path":"scripts/BattleManagerUI/BattleManagerUI.yy",},"order":25,},
     {"id":{"name":"ssy_light192","path":"sprites/ssy_light192/ssy_light192.yy",},"order":16,},
     {"id":{"name":"ssy_aiWall","path":"sprites/ssy_aiWall/ssy_aiWall.yy",},"order":2,},

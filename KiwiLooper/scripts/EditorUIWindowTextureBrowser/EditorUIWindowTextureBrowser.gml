@@ -330,7 +330,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 		m_editor.toolTextureInfo.index = texinfo.index;
 		
 		// Apply the texture
-		var tool = EditorToolGetInstance(kEditorToolTexture);
+		var tool = EditorToolGetInstance(kEditorToolTextureSolids);
 		if (is_struct(tool))
 		{
 			tool.TextureApplyToSelection();

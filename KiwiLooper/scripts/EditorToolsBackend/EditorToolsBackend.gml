@@ -86,6 +86,8 @@ function EditorToolsSetup()
 		rotation:	0,
 		offset:		new Vector2(0, 0),
 		scale:		new Vector2(1, 1),
+		
+		treatAsOne:	false,
 	};
 	
 	EditorProxyObject_Init();

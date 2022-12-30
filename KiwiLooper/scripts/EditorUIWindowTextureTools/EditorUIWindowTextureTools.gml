@@ -15,22 +15,70 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 	m_size.x = 300;
 	m_size.y = 300;
 	
+	m_toolstate = undefined;
+	
+	m_spinner_scale_x = null;
+	m_spinner_scale_y = null;
+	m_spinner_shift_x = null;
+	m_spinner_shift_y = null;
+	m_spinner_rotation = null;
+	
 	{
 		// Set up UI
 		m_elements = [];
 		
 		array_push(m_elements, {type: kTextureUIElementTypeLabel, label: "Texture Transform"});
 		{
-			var toolbarTransform = new AToolbar();
-			toolbarTransform.kBarDirection = kDirRight;
-			toolbarTransform.kButtonSize = 30;
-			toolbarTransform.AddElement(AToolbarElementAsButtonInfo2(null, 0, "Texture scale", "Scale\nvec2", null, null));
-			toolbarTransform.AddElement(AToolbarElementAsButtonInfo2(null, 0, "Texture shift on their local plane", "Shift\nvec2", null, null));
-			toolbarTransform.AddElement(AToolbarElementAsButtonInfo2(null, 0, "Texture rotation", "Rotation\nreal", null, null));
-			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbarTransform});
+			var toolbar;
+			
+			// Header row
+			toolbar = new AToolbar();
+			toolbar.kBarDirection = kDirRight;
+			toolbar.kButtonSize = 12;
+			toolbar.kButtonMargin = 2;
+			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Scale", 20));
+			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Shift", 20));
+			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Rotation", 20));
+			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
+			
+			// First row
+			toolbar = new AToolbar();
+			toolbar.kBarDirection = kDirRight;
+			toolbar.kButtonSize = 12;
+			toolbar.kButtonMargin = 2;
+			m_spinner_scale_x = toolbar.AddElement(AToolbarElementAsSpinner("Texture scale", "Scale X", function(value){ m_editor.toolTextureInfo.scale.x = value; m_toolstate.UVApplyShift(0,0,1,0,0); }, 0.0));
+			m_spinner_scale_x.valueType = kValueTypeFloat;
+			m_spinner_scale_x.valueIncrements = 0.01;
+			m_spinner_shift_x = toolbar.AddElement(AToolbarElementAsSpinner("Texture shift on their local plane", "Shift X", function(value){ m_editor.toolTextureInfo.offset.x = value; m_toolstate.UVApplyShift(1,0,0,0,0); }, 0.0));
+			m_spinner_rotation = toolbar.AddElement(AToolbarElementAsSpinner("Texture rotation", "Rotation", function(value){ m_editor.toolTextureInfo.rotation = value; m_toolstate.UVApplyShift(0,0,0,0,1); }, 0.0));
+			m_spinner_rotation.valueType = kValueTypeFloat;
+			m_spinner_rotation.valueIncrements = 0.5;
+			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
+			
+			// Second row
+			toolbar = new AToolbar();
+			toolbar.kBarDirection = kDirRight;
+			toolbar.kButtonSize = 12;
+			toolbar.kButtonMargin = 2;
+			m_spinner_scale_y = toolbar.AddElement(AToolbarElementAsSpinner("Texture scale", "Scale Y", function(value){ m_editor.toolTextureInfo.scale.y = value; m_toolstate.UVApplyShift(0,0,0,1,0); }, 0.0));
+			m_spinner_scale_y.valueType = kValueTypeFloat;
+			m_spinner_scale_y.valueIncrements = 0.01;
+			m_spinner_shift_y = toolbar.AddElement(AToolbarElementAsSpinner("Texture shift on their local plane", "Shift Y", function(value){ m_editor.toolTextureInfo.offset.y = value; m_toolstate.UVApplyShift(0,1,0,0,0); }, 0.0));
+			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
 		}
 		
 		array_push(m_elements, {type: kTextureUIElementTypeLabel, label: "Modify Texture"});
+		{	// Options toolbar
+			var toolbar = new AToolbar();
+			toolbar.kBarDirection = kDirRight;
+			toolbar.kButtonSize = 16;
+			toolbar.kButtonPadding = 2;
+			toolbar.kButtonMargin = 2;
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "Do fit & alignment treating all selected faces as one face?", "Treat as one",
+				function(){ m_editor.toolTextureInfo.treatAsOne = !m_editor.toolTextureInfo.treatAsOne; },
+				function(){ return m_editor.toolTextureInfo.treatAsOne; }));
+			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
+		}
 		{	// Alignment toolbar
 			var toolbar = new AToolbar();
 			toolbar.kBarDirection = kDirRight;
@@ -63,8 +111,8 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 			toolbar.kButtonPadding = 2;
 			toolbar.kButtonMargin = 2;
 			toolbar.AddElement(AToolbarElementAsLabel(null, 0, null, "Rotate", 20));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 0, "rotate left", null, null, null));
-			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "rotate right", null, null, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 0, "rotate left", null, function() { m_toolstate.UVRotate90Clockwise(); }, null));
+			toolbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetTextures, 7, "rotate right", null, function() { m_toolstate.UVRotate90CounterClockwise(); }, null));
 			array_push(m_elements, {type: kTextureUIElementTypeToolbar, object: toolbar});
 		}
 		{	// Fit toolbar
@@ -160,6 +208,13 @@ function AEditorWindowTextureTools() : AEditorWindow() constructor
 			
 			topLeft.y = element.rect.m_max.y + kElementPadding * ui_scale;
 		}
+		
+		// Update the spinner values
+		m_spinner_scale_x.PropertySetIfNotEditing(m_editor.toolTextureInfo.scale.x);
+		m_spinner_scale_y.PropertySetIfNotEditing(m_editor.toolTextureInfo.scale.y);
+		m_spinner_shift_x.PropertySetIfNotEditing(m_editor.toolTextureInfo.offset.x);
+		m_spinner_shift_y.PropertySetIfNotEditing(m_editor.toolTextureInfo.offset.y);
+		m_spinner_rotation.PropertySetIfNotEditing(m_editor.toolTextureInfo.rotation);
 	}
 	
 	static Draw = function()

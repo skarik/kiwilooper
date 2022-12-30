@@ -15,6 +15,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			m_windowBrowser = EditorWindowAlloc(AEditorWindowTextureBrowser);
 			m_windowBrowser.InitTextureListing();
 		}
+		m_windowBrowser.m_toolstate = self;
 		m_windowBrowser.Open();
 		m_windowBrowser.SetCurrentTexture(m_editor.toolTextureInfo);
 		m_windowBrowser.SetUsedTexture(m_editor.toolTextureInfo);
@@ -23,6 +24,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		{
 			m_windowTextureTools = EditorWindowAlloc(AEditorWindowTextureTools);
 		}
+		m_windowTextureTools.m_toolstate = self;
 		m_windowTextureTools.Open();
 		
 		EditorWindowSetFocus(m_windowBrowser);
@@ -333,8 +335,8 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		
 			if (face.texture.type != new_texture.type
 				|| face.texture.index != new_texture.index
-				|| (face.text.type == kTextureTypeTexture && face.texture.source != new_texture.filename)
-				|| (face.text.type != kTextureTypeTexture && face.texture.source != new_texture.resource.sprite)
+				|| (face.texture.type == kTextureTypeTexture && face.texture.source != new_texture.filename)
+				|| (face.texture.type != kTextureTypeTexture && face.texture.source != new_texture.resource.sprite)
 				)
 			{
 				bHasTextureChange = true;
@@ -437,6 +439,8 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	}
 	static UVAlignToFace = function(input_selection=undefined)
 	{
+		var solidsEdited = [];
+		
 		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
 		{
 			var selection = m_editor.m_selection[iSelection];
@@ -449,6 +453,10 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			
 			var mapSolid = selection.object.primitive;
 			var face = mapSolid.faces[selection.object.face];
+			
+			// Save solid for update
+			if (!array_contains(solidsEdited, mapSolid))
+				array_push(solidsEdited, mapSolid);
 			
 			// Create an array of positions
 			var face_positions = array_create(array_length(face.indicies));
@@ -469,7 +477,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		}
 		
 		// Ask for map to update visuals now
-		TextureUpdateMapVisuals(); // TODO: only update the selected solids
+		TextureUpdateMapVisuals(solidsEdited);
 	}
 	static UVAlignToView = function(input_selection=undefined)
 	{
@@ -478,6 +486,96 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	static UVAlignUnwrap = function(input_selection=undefined)
 	{
 		// TODO.
+	}
+	
+	static UVApplyShift = function(shiftX=false, shiftY=false, scaleX=false, scaleY=false, rotated=false, input_selection=undefined)
+	{
+		var solidsEdited = [];
+		var new_alignment = m_editor.toolTextureInfo;
+		
+		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
+		{
+			var selection = m_editor.m_selection[iSelection];
+			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
+				continue;
+			
+			// Only work on faces
+			if (selection.object.face == null)
+				continue;
+			
+			var mapSolid = selection.object.primitive;
+			var face = mapSolid.faces[selection.object.face];
+			
+			// Save solid for update
+			if (!array_contains(solidsEdited, mapSolid))
+				array_push(solidsEdited, mapSolid);
+				
+			if (scaleX) face.uvinfo.scale.x = new_alignment.scale.x;
+			if (scaleY) face.uvinfo.scale.y = new_alignment.scale.y;
+			if (shiftX) face.uvinfo.offset.x = new_alignment.offset.x;
+			if (shiftY) face.uvinfo.offset.y = new_alignment.offset.y;
+			if (rotated) face.uvinfo.rotation = new_alignment.rotation;
+		}
+		
+		// Ask for map to update visuals now
+		TextureUpdateMapVisuals(solidsEdited);
+	}
+	
+	static UVRotate90Clockwise = function(input_selection=undefined)
+	{
+		var solidsEdited = [];
+		
+		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
+		{
+			var selection = m_editor.m_selection[iSelection];
+			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
+				continue;
+			
+			// Only work on faces
+			if (selection.object.face == null)
+				continue;
+			
+			var mapSolid = selection.object.primitive;
+			var face = mapSolid.faces[selection.object.face];
+			
+			// Save solid for update
+			if (!array_contains(solidsEdited, mapSolid))
+				array_push(solidsEdited, mapSolid);
+				
+			// Rotate UVs
+			face.uvinfo.rotation += 90;
+		}
+		
+		// Ask for map to update visuals now
+		TextureUpdateMapVisuals(solidsEdited);
+	}
+	static UVRotate90CounterClockwise = function(input_selection=undefined)
+	{
+		var solidsEdited = [];
+		
+		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
+		{
+			var selection = m_editor.m_selection[iSelection];
+			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
+				continue;
+			
+			// Only work on faces
+			if (selection.object.face == null)
+				continue;
+			
+			var mapSolid = selection.object.primitive;
+			var face = mapSolid.faces[selection.object.face];
+			
+			// Save solid for update
+			if (!array_contains(solidsEdited, mapSolid))
+				array_push(solidsEdited, mapSolid);
+				
+			// Rotate UVs
+			face.uvinfo.rotation -= 90;
+		}
+		
+		// Ask for map to update visuals now
+		TextureUpdateMapVisuals(solidsEdited);
 	}
 	
 	static TextureApplyToSelection = function()

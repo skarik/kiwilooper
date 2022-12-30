@@ -1,3 +1,5 @@
+#macro EXECUTE_CONDITIONAL var _ =
+
 /// @function AToolbar() constructor
 /// @notes A toolbar for rendering a vertical selection menu.
 function AToolbar() constructor
@@ -88,7 +90,9 @@ function AToolbar() constructor
 					
 					if (element.m_isButton && mouse_check_button_pressed(mb_left))
 					{
-						element.m_onClick();
+						EXECUTE_CONDITIONAL element.m_richParams
+							? element.m_onClick(mouseX, mouseY)
+							: element.m_onClick();
 						element.m_state_isDown = true;
 					}
 					
@@ -109,6 +113,12 @@ function AToolbar() constructor
 				element.m_state_isHovered = false;
 				element.m_state_hoveredTime = 0.0;
 				element.m_state_showTooltip = false;
+			}
+			
+			// Run step if we have one
+			if (element.m_stepEnabled)
+			{
+				element.m_onStep(mouseX, mouseY);
 			}
 			
 			// Advance cursor.
@@ -151,8 +161,13 @@ function AToolbar() constructor
 			// Cache if have sprite
 			var has_sprite = sprite_exists(element.m_sprite);
 			
+			// Draw custom
+			if (element.m_customDraw)
+			{
+				element.m_onDraw(topLeft.x, topLeft.y);
+			}
 			// Draw button
-			if (element.m_isButton)
+			else if (element.m_isButton)
 			{
 				if (element.m_state_isDown)
 				{
@@ -288,7 +303,8 @@ function AToolbarElement() constructor
 	m_onClick		= function() {};
 	m_onCheckDown	= function() { return false; };
 	m_onCanClick	= function() { return true; };
-	m_onStep		= function() {};
+	m_onStep		= function(mouseX, mouseY) {};
+	m_onDraw		= function(x, y) {};
 	m_sprite		= sui_handy;
 	m_spriteIndex	= 0;
 	m_tooltip		= "Handy";

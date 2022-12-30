@@ -469,10 +469,11 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		}
 		
 		// If we hit something, save it
-		if (is_struct(closestEnt) || closestEnt != null)
+		if (is_struct(closestEnt) || iexists(closestEnt))
 		{
 			// Fix up ent based on subobject mode
-			if (closestEnt.type == kEditorSelection_Primitive)
+			if (is_struct(closestEnt)
+				&& closestEnt.type == kEditorSelection_Primitive)
 			{
 				// Only select specific faces if holding shift down.
 				if (!keyboard_check(vk_shift))

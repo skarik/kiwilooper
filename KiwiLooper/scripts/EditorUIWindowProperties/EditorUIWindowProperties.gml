@@ -335,7 +335,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 						property_edit_cursor =  string_length(property_values[property_focused]);
 						
 						// Update the mouse click position
-						draw_set_font(f_04b03);
+						draw_set_font(EditorGetUIFont());
 						var deltaX = mouseX - (m_position.x + kPropertyColumn + kPropertyMargin - string_width("W") * 0.5);
 						for (var iLength = 1; iLength <= string_length(property_values[property_focused]); ++iLength)
 						{
@@ -483,28 +483,6 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				// Use the string editor
 				else
 				{
-					// Move the edit cursor
-					if (property_edit_cursor == null)
-					{
-						property_edit_cursor = string_length(value);
-					}
-					if (keyboard_check_pressed(vk_left))
-					{
-						property_edit_cursor = max(0, property_edit_cursor - 1);
-					}
-					else if (keyboard_check_pressed(vk_right))
-					{
-						property_edit_cursor = min(string_length(value), property_edit_cursor + 1);
-					}
-					else if (keyboard_check_pressed(vk_home))
-					{
-						property_edit_cursor = 0;
-					}
-					else if (keyboard_check_pressed(vk_end))
-					{
-						property_edit_cursor = string_length(value);
-					}
-				
 					// Perform typing controls
 					var l_valueCursor = inputPollTyping(value, property_edit_cursor);
 					value = l_valueCursor.value;
