@@ -365,7 +365,7 @@ function AToolbarElementAsSpacer()
 {
 	return new AToolbarElement();
 }
-/// @function AToolbarElementAsLabel()
+/// @function AToolbarElementAsLabel(sprite, spriteIndex, tooltip, text, width)
 function AToolbarElementAsLabel(sprite, spriteIndex, tooltip, text, width)
 {
 	element = new AToolbarElement();

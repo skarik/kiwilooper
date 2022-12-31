@@ -507,6 +507,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		// TODO.
 	}
 	
+	/// @function UVApplyShift(shiftX=false, shiftY=false, scaleX=false, scaleY=false, rotated=false, input_selection=undefined)
 	static UVApplyShift = function(shiftX=false, shiftY=false, scaleX=false, scaleY=false, rotated=false, input_selection=undefined)
 	{
 		var solidsEdited = [];
@@ -540,68 +541,29 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		TextureUpdateMapVisuals(solidsEdited);
 	}
 	
-	static UVRotate90Clockwise = function(input_selection=undefined)
+	static UVRotate = function(rotation, input_selection=undefined)
 	{
-		var solidsEdited = [];
-		
-		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
-		{
-			var selection = m_editor.m_selection[iSelection];
-			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
-				continue;
-			
-			// Only work on faces
-			if (selection.object.face == null)
-				continue;
-			
-			var mapSolid = selection.object.primitive;
-			var face = mapSolid.faces[selection.object.face];
-			
-			// Save solid for update
-			if (!array_contains(solidsEdited, mapSolid))
-				array_push(solidsEdited, mapSolid);
-				
-			// Rotate UVs
-			face.uvinfo.rotation += 90;
-		}
-		
-		// Ask for map to update visuals now
-		TextureUpdateMapVisuals(solidsEdited);
-	}
-	static UVRotate90CounterClockwise = function(input_selection=undefined)
-	{
-		var solidsEdited = [];
-		
-		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
-		{
-			var selection = m_editor.m_selection[iSelection];
-			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
-				continue; // Only work on prims
-			if (selection.object.face == null) 
-				continue; // Only work on faces
-			
-			var mapSolid = selection.object.primitive;
-			var face = mapSolid.faces[selection.object.face];
-			
-			// Save solid for update
-			if (!array_contains(solidsEdited, mapSolid))
-				array_push(solidsEdited, mapSolid);
-				
-			// Rotate UVs
-			face.uvinfo.rotation -= 90;
-		}
-		
-		// Ask for map to update visuals now
-		TextureUpdateMapVisuals(solidsEdited);
-	}
-	
-	
-	
-	static UVFit = function(repeatX, repeatY, input_selection=undefined)
-	{
-		var params = {repeatX: repeatX, repeatY: repeatY};
+		var params = {rotation: rotation};
 		UV_ForEachFaceIn(input_selection, m_editor.m_selection, params, function(mapSolid, face, params) 
 		{
+			// Rotate UVs
+			face.uvinfo.rotation += params.rotation;
+		});
+	}
+	
+	#macro kAlignUnchanged	-1
+	#macro kAlignCenter		0
+	#macro kAlignMin		1
+	#macro kAlignMax		2
+	
+	/// @function UVJustifyAndFit(justifyX, justifyY, repeatX, repeatY, input_selection=undefined)
+	static UVJustifyAndFit = function(justifyX, justifyY, repeatX, repeatY, input_selection=undefined)
+	{
+		var params = {justifyX: justifyX, justifyY: justifyY, repeatX: repeatX, repeatY: repeatY};
+		UV_ForEachFaceIn(input_selection, m_editor.m_selection, params, function(mapSolid, face, params) 
+		{
+			var justifyX = params.justifyX;
+			var justifyY = params.justifyY;
 			var repeatX = params.repeatX;
 			var repeatY = params.repeatY;
 			
@@ -632,15 +594,12 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			{
 				var position_3d = mapSolid.vertices[face.indicies[indexIndex]].position;
 				var position_flat = facePlane.flattenPoint(position_3d);
-				position_flat.rotateSelf(-face.uvinfo.rotation); // Undo rotation, it'll be "redone" in the output
+				position_flat.rotateSelf(face.uvinfo.rotation); // Undo rotation, it'll be "redone" in the output
 				
 				face_positions[indexIndex] = position_flat;
 			}
 			
-			// TODO: combine this with justify & scale
-			
-			// We want to fix X and Y seperately
-			if (repeatX != 0)
+			// We want to fit X and Y seperately
 			{
 				// Get the min & max X with face's current orientation
 				var min_x = face_positions[0].x;
@@ -651,18 +610,36 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 					max_x = max(max_x, face_positions[cornerIndex].x);
 				}
 				
-				// Calculate scale & translation we need to apply
-				var x_scale = (texture_size.x / (max_x - min_x)) * repeatX;
-				var x_shift = min_x * x_scale;
+				// Calculate scaling
+				if (repeatX != 0)
+				{
+					var x_scale = (texture_size.x / (max_x - min_x)) * repeatX;
+					face.uvinfo.scale.x = x_scale;
+				}
 				
-				// Apply new values
-				face.uvinfo.scale.x = x_scale;
-				face.uvinfo.offset.x = x_shift;
+				// Calculate the translation we want to apply
+				if (justifyX != kAlignUnchanged)
+				{
+					var x_shift = face.uvinfo.offset.x;
+					if (justifyX == kAlignCenter)
+					{
+						x_shift = ((min_x + max_x) * 0.5 - texture_size.x * 0.5 / face.uvinfo.scale.x);
+					}
+					else if (justifyX == kAlignMin)
+					{
+						x_shift = min_x;
+					}
+					else if (justifyX == kAlignMax)
+					{
+						x_shift = (max_x - texture_size.x / face.uvinfo.scale.x);
+					}
+					x_shift *= face.uvinfo.scale.x;
+					face.uvinfo.offset.x = x_shift;
+				}
 			}
 			
-			if (repeatY != 0)
 			{
-				// Get the min & max X with face's current orientation
+				// Get the min & max Y with face's current orientation
 				var min_y = face_positions[0].y;
 				var max_y = min_y;
 				for (cornerIndex = 1; cornerIndex < array_length(face_positions); ++cornerIndex)
@@ -671,15 +648,39 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 					max_y = max(max_y, face_positions[cornerIndex].y);
 				}
 				
-				// Calculate scale & translation we need to apply
-				var y_scale = (texture_size.y / (max_y - min_y)) * repeatY;
-				var y_shift = min_y * y_scale;
+				// Calculate scaling
+				if (repeatY != 0)
+				{
+					var y_scale = (texture_size.y / (max_y - min_y)) * repeatY;
+					face.uvinfo.scale.y = y_scale;
+				}
 				
-				// Apply new values
-				face.uvinfo.scale.y = y_scale;
-				face.uvinfo.offset.y = y_shift;
+				// Calculate the translation we want to apply
+				if (justifyY != kAlignUnchanged)
+				{
+					var y_shift = face.uvinfo.offset.y;
+					if (justifyY == kAlignCenter)
+					{
+						y_shift = ((min_y + max_y) * 0.5 - texture_size.y * 0.5 / face.uvinfo.scale.y);
+					}
+					else if (justifyY == kAlignMin)
+					{
+						y_shift = min_y;
+					}
+					else if (justifyY == kAlignMax)
+					{
+						y_shift = (max_y - texture_size.y / face.uvinfo.scale.y);
+					}
+					y_shift *= face.uvinfo.scale.y;
+					face.uvinfo.offset.y = y_shift;
+				}
 			}
 		});
+	}	
+	
+	static UVFit = function(repeatX, repeatY, input_selection=undefined)
+	{
+		UVJustifyAndFit(fa_center, fa_middle, repeatX, repeatY, input_selection);
 	}
 	
 	// ========================================================================
