@@ -791,6 +791,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest8_solids3_sub3.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"OpenSans-Regular.ttf","CopyToMask":-1,"filePath":"datafiles/fonts",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest9.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

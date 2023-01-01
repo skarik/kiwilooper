@@ -129,10 +129,17 @@ function EditorLevel_Init()
 	// TODO: combine with [m_solidUpdateRequestList]
 	m_wantRebuildSolids = false;
 	m_solidUpdateRequestList = [];
+	
+	
+	// Everything is set up, load options
+	EditorSettingsLoad();
 }
 
 function EditorLevel_Cleanup()
 {
+	// Save options on quit
+	EditorSettingsSave();
+	
 	EditorSolidsRendererFree(); // TODO: Other
 	EditorSolidsRendererEnd();
 }
