@@ -6,6 +6,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	
 	entity_instance = null;
 	entity_info = null;
+	entity_canSimulate = false;
 	
 	prop_instance = null;
 	
@@ -35,6 +36,8 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	static kPropertyColumn = 75;
 	static kPropertyMargin = 2;
 	static kDragWidth = 10;
+	
+	#macro kPropertyMouseOverId_Simulate 1023
 	
 	static ContainsMouse = function()
 	{
@@ -201,6 +204,18 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		m_title = entityInfo.name + " Properties";
 		// Update property names for display
 		InitPropertyNames();
+		
+		// Check if can simulate
+		if (entityInfo.proxyCanQueryEditor)
+		{
+			var temp = inew(entityInfo.objectIndex);
+			entity_canSimulate = variable_instance_exists(temp, "onEditorPreviewBegin");
+			idelete(temp);
+		}
+		else
+		{
+			entity_canSimulate	= false;
+		}
 	} // End InitWithEntityInfo()
 	
 	static InitUpdateEntityInfoTransform = function(incoming_entity)
@@ -245,6 +260,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		
 		entity_instance	= prop.Id();
 		entity_info		= null;
+		entity_canSimulate	= false;
 		prop_instance	= prop;
 		editing_target	= kEditorSelection_Prop;
 		
@@ -281,8 +297,11 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		if (mouse_position == kWindowMousePositionContent && mouseX < m_position.x + m_size.x - kDragWidth)
 		{
 			drag_mouseover = false;
-			property_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / (kPropertyHeight * ui_scale));
-			if (property_mouseover < 0 || property_mouseover >= array_length(entity_info.properties))
+			property_mouseover = floor((mouseY - m_position.y - 1 + drag_y) / (kPropertyHeight * ui_scale) - (entity_canSimulate ? 1 : 0));
+			
+			if (entity_canSimulate && property_mouseover == -1)
+				property_mouseover = kPropertyMouseOverId_Simulate;
+			else if (property_mouseover < 0 || property_mouseover >= array_length(entity_info.properties))
 				property_mouseover = null;
 		}
 		else
@@ -309,6 +328,49 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				drag_y_target += ((button == kEditorButtonWheelUp) ? -kPropertyHeight : kPropertyHeight) * ui_scale;
 				drag_y_target = clamp(drag_y_target, 0.0, kDragMaxY);
 			}
+			// If click simulate, then we have to sim
+			else if (property_mouseover == kPropertyMouseOverId_Simulate && entity_canSimulate)
+			{
+				// With our current ent, instantiate using our proxy and then simulate.
+				var simulatedEnt = inew(entity_info.objectIndex);
+				
+				// Since editing everything is based around key-values, we need to generate string values for each entry now.
+				for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
+				{
+					var property = entity_info.properties[iProperty];
+					if (entpropIsSpecialTransform(property))
+					{
+						if (property[1] == kValueTypePosition)
+						{
+							simulatedEnt.x = entity_instance.x;
+							simulatedEnt.y = entity_instance.y;
+							simulatedEnt.z = entity_instance.z;
+						}
+						else if (property[1] == kValueTypeRotation)
+						{
+							simulatedEnt.xrotation = entity_instance.xrotation;
+							simulatedEnt.yrotation = entity_instance.yrotation;
+							simulatedEnt.zrotation = entity_instance.zrotation;
+						}
+						else if (property[1] == kValueTypeScale)
+						{
+							simulatedEnt.xscale = entity_instance.xscale;
+							simulatedEnt.yscale = entity_instance.yscale;
+							simulatedEnt.zscale = entity_instance.zscale;
+						}
+					}
+					else
+					{
+						variable_instance_set(simulatedEnt, property[0], variable_instance_get(entity_instance, property[0]));
+					}
+				}
+				
+				// Begin sim
+				simulatedEnt.onEditorPreviewBegin();
+				
+				// We're done with the ent after simulating!
+				idelete(simulatedEnt);
+			}
 			// If click the list, then we just change highlight
 			else if (property_mouseover != null)
 			{
@@ -322,7 +384,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				property_drag = true;
 				
 				// Commit or update if changing editing otherwise
-				if (mouseX > m_position.x + kPropertyColumn)
+				if (mouseX > m_position.x + kPropertyColumn * ui_scale)
 				{
 					if (!property_editing)
 					{
@@ -336,7 +398,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 						
 						// Update the mouse click position
 						draw_set_font(EditorGetUIFont());
-						var deltaX = mouseX - (m_position.x + kPropertyColumn + kPropertyMargin - string_width("W") * 0.5);
+						var deltaX = mouseX - (m_position.x + kPropertyColumn * ui_scale + kPropertyMargin - string_width("W") * 0.5);
 						for (var iLength = 1; iLength <= string_length(property_values[property_focused]); ++iLength)
 						{
 							if (string_width(string_copy(property_values[property_focused], 1, iLength)) > deltaX)
@@ -378,7 +440,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		
 		if (drag_now)
 		{
-			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight * ui_scale - m_size.y);
+			var kDragMaxY = max(0.0, (array_length(entity_info.properties) + entity_canSimulate) * kPropertyHeight * ui_scale - m_size.y);
 			
 			// Move the bar based on the position
 			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
@@ -588,7 +650,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		draw_set_color(focused ? c_dkgray : c_gray);
 		DrawSpriteRectangle(m_position.x + m_size.x - kDragWidth, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y, true);
 		{
-			var kDragMaxY = max(0.0, array_length(entity_info.properties) * kPropertyHeight * ui_scale - m_size.y);
+			var kDragMaxY = max(0.0, (array_length(entity_info.properties) + entity_canSimulate) * kPropertyHeight * ui_scale - m_size.y);
 			var l_barH = 10;
 			var l_barY = (m_size.y - 4 - l_barH) * (drag_y / kDragMaxY);
 			
@@ -604,12 +666,30 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 		drawShaderSet(sh_editorDefaultScissor);
 		shader_set_uniform_f(sh_uScissorRect, m_position.x, m_position.y + 1, m_position.x + m_size.x - kDragWidth, m_position.y + m_size.y);
 		
+		// Start with the simulate button at the top
+		if (entity_canSimulate)
+		{
+			draw_set_color((property_mouseover == kPropertyMouseOverId_Simulate) ? kAccentColor : c_black);
+			//DrawSpriteRectangle(m_position.x + 2, m_position.y + 2, m_position.x + kPropertyColumn * ui_scale, m_position.y + kPropertyHeight * ui_scale - 1, false);
+			DrawSpriteRectangle(m_position.x + 2, m_position.y + 2, m_position.x + m_size.x - 2, m_position.y + kPropertyHeight * ui_scale - 1, false);
+			draw_set_color((property_mouseover == kPropertyMouseOverId_Simulate) ? c_white : kAccentColor);
+			//DrawSpriteRectangle(m_position.x + 2, m_position.y + 2, m_position.x + kPropertyColumn * ui_scale, m_position.y + kPropertyHeight * ui_scale - 1, true);
+			DrawSpriteRectangle(m_position.x + 2, m_position.y + 2, m_position.x + m_size.x - 2, m_position.y + kPropertyHeight * ui_scale - 1, true);
+			draw_set_color((property_mouseover == kPropertyMouseOverId_Simulate) ? c_white : kAccentColor);
+			draw_set_halign(fa_left);
+			draw_set_valign(fa_bottom);
+			draw_set_font(EditorGetUIFont());
+			draw_text(m_position.x + 3,
+					  m_position.y + kPropertyHeight * ui_scale - 1,
+					  "Click to Simulate Trigger");
+		}
+		
 		// Run through all the properties and draw them
 		for (var iProperty = 0; iProperty < array_length(entity_info.properties); ++iProperty)
 		{
 			var property = entity_info.properties[iProperty];
 			
-			var l_propY = iProperty * kPropertyHeight * ui_scale + 1 - drag_y;
+			var l_propY = (iProperty + entity_canSimulate) * kPropertyHeight * ui_scale + 1 - drag_y;
 			var l_bgColor = focused ? ((iProperty % 2 == 0) ? c_black : c_dkgray) : c_dkgray;
 			
 			if (iProperty == property_mouseover)
@@ -625,7 +705,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			{
 				// If we're editing, also draw a brighter background
 				draw_set_color(focused ? kAccentColor : c_gray);
-				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
+				DrawSpriteRectangle(m_position.x + kPropertyColumn * ui_scale, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
 				
 				if (!property_change_ok)
 				{
@@ -641,17 +721,17 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					
 					gpu_set_tex_repeat(true);
 					draw_primitive_begin_texture(pr_trianglestrip, sprite_get_texture(suie_textures16, 0));
-						draw_vertex_texture_color(m_position.x + kPropertyColumn, m_position.y + l_propY,
+						draw_vertex_texture_color(m_position.x + kPropertyColumn * ui_scale, m_position.y + l_propY,
 							UvBiasX(uvs, (Time.time * -8 % 8) + 0), UvBiasY(uvs, 0),
 							color, alpha);
-						draw_vertex_texture_color(m_position.x + kPropertyColumn, m_position.y + l_propY + kPropertyHeight * ui_scale,
+						draw_vertex_texture_color(m_position.x + kPropertyColumn * ui_scale, m_position.y + l_propY + kPropertyHeight * ui_scale,
 							UvBiasX(uvs, (Time.time * -8 % 8) + 0), UvBiasY(uvs, kPropertyHeight * ui_scale),
 							color, alpha);
 						draw_vertex_texture_color(m_position.x + m_size.x, m_position.y + l_propY,
-							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn), UvBiasY(uvs, 0),
+							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn * ui_scale), UvBiasY(uvs, 0),
 							color, alpha);
 						draw_vertex_texture_color(m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale,
-							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn), UvBiasY(uvs, kPropertyHeight * ui_scale),
+							UvBiasX(uvs, (Time.time * -8 % 8) + m_size.x - kPropertyColumn * ui_scale), UvBiasY(uvs, kPropertyHeight * ui_scale),
 							color, alpha);
 					draw_primitive_end();
 					
@@ -683,7 +763,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 			}*/
 			
 			// draw the property value:
-			l_textX = m_position.x + kPropertyColumn + kPropertyMargin;
+			l_textX = m_position.x + kPropertyColumn * ui_scale + kPropertyMargin;
 			
 			var property_value = property_values[iProperty];
 			
@@ -692,7 +772,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				var color = variable_instance_get(entity_instance, property[0]);
 				// Draw the color as background
 				draw_set_color(color);
-				DrawSpriteRectangle(m_position.x + kPropertyColumn, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
+				DrawSpriteRectangle(m_position.x + kPropertyColumn * ui_scale, m_position.y + l_propY, m_position.x + m_size.x, m_position.y + l_propY + kPropertyHeight * ui_scale, false);
 				
 				// Draw the text for the color values behind
 				draw_set_color(color_get_value(color) > 128 ? c_black : c_white);

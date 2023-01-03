@@ -2,6 +2,7 @@
 
 event_inherited();
 
+idelete_delay(this, 2.0); // Delete this with delay
 
 m_system = new ALiteParticleSystem();
 m_system.behaviors = [

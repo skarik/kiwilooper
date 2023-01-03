@@ -789,6 +789,7 @@ function _EntityInfoInit()
 			name: "lifxy_sparks",
 			parent: "lively_base",
 			objectIndex: o_livelyFxSpark,
+			proxyCanQueryEditor: true,
 			
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 8,
@@ -946,10 +947,18 @@ function _EntityInfoInit_FillMissingDefaults()
 		{
 			currentEntry.objectIndex = _dummy;
 		}
-		// Default to full proxy
+		// Default to full proxy & cannot instance
 		if (!variable_struct_exists(currentEntry, "proxy"))
 		{
 			currentEntry.proxy = kProxyTypeDefault;
+		}
+		else if (currentEntry.proxy == kProxyTypeNone)
+		{
+			currentEntry.proxyCanQueryEditor = true;
+		}
+		if (!variable_struct_exists(currentEntry, "proxyCanQueryEditor"))
+		{
+			currentEntry.proxyCanQueryEditor = false;
 		}
 		// Default to shown in the list
 		if (!variable_struct_exists(currentEntry, "hidden"))

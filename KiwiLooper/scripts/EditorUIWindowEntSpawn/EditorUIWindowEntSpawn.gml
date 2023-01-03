@@ -105,14 +105,14 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight * ui_scale - m_size.y);
 			
 			// Move the bar based on the position
-			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious);
+			drag_y += (m_editor.vPosition - m_editor.vPositionPrevious) * ui_scale;
 			drag_y = clamp(drag_y, 0.0, kDragMaxY);
 			drag_y_target = drag_y;
 		}
 		else if (drag_y_target != drag_y)
 		{
 			var delta = drag_y_target - drag_y;
-			drag_y += sign(delta) * min(abs(delta), Time.deltaTime * 200.0);
+			drag_y += sign(delta) * min(abs(delta), Time.deltaTime * 200.0 * ui_scale);
 		}
 	}
 	
@@ -126,10 +126,10 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 		draw_set_color(focused ? c_dkgray : c_gray);
 		DrawSpriteRectangle(m_position.x + m_size.x - kDragWidth, m_position.y, m_position.x + m_size.x, m_position.y + m_size.y, true);
 		{
-			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight - m_size.y);
+			var kDragMaxY = max(0.0, entlistIterationLength() * kLineHeight * ui_scale - m_size.y);
 			var kDragSpeed = kDragMaxY / m_size.y;
 			var l_barH = 10;
-			var l_barY = (m_size.y - 4 - l_barH) * (drag_y / kDragMaxY);
+			var l_barY = (m_size.y - 4 - l_barH) * min(1.0, drag_y / kDragMaxY);
 			
 			DrawSpriteRectangle(
 				m_position.x + m_size.x - kDragWidth + 2,
