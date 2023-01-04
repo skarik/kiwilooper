@@ -184,6 +184,7 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 				if (!geometryInstance.m_triangleBBoxes[triIndex].overlaps(bbox))
 					continue;
 					
+					// TODO: should select ALLL colliding triangles because you can hit more than once at a time and need to push out of all of them
 				if (bbox3_triangle_distance(
 					bbox,
 					[triangle.vertices[0].position, triangle.vertices[1].position, triangle.vertices[2].position]))
@@ -275,6 +276,33 @@ function collision4_bbox3_test2(bbox, bboxFrom, outHitObjects, outHitDistances, 
 						debugRay3(triangle_center.add(triangle_normal), triangle_normal, c_white);
 					}*/
 				}
+			}
+		}
+	}
+	
+	if (hitMask & kHitmaskDoors)
+	{
+		var door_count = instance_number(o_livelyDoor);
+		for (var doorIndex = 0; doorIndex < door_count; ++doorIndex)
+		{
+			var door = instance_find(o_livelyDoor, doorIndex);
+			
+			// Get door BBox
+			var doorScale = new Vector3(door.image_xscale, door.image_yscale, door.zscale); // workaround for a workaround
+			var doorBBox = new BBox3(new Vector3(door.x, door.y, door.z), doorScale.multiply(16));
+			var doorRotation = matrix_build_rotation(door);
+			
+			// Fix the pivot to the center of the door
+			doorBBox.center.addSelf( doorScale.multiply(16).transformAMatrixSelf(doorRotation) );
+			
+			// TODO: renderables (& props!) should cache their rotation matrices so we dont have to rebuild them each frame
+				
+			if (bbox3_box_rotated(
+				bbox,
+				doorBBox,
+				doorRotation))
+			{
+				l_priorityHits.add([door, raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
 			}
 		}
 	}

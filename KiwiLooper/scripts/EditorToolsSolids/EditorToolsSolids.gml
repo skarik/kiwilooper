@@ -194,103 +194,14 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 				newSolid.faces[5].indicies = [3, 0, 4, 7];
 				
 				// TODO: fix the normals on all the faces
+				// TODO: pull in call to the UV tool to world-map every face
 				
 				array_push(map.solids, newSolid);
 				
 				m_editor.MapRebuildSolidsOnly();
 				
 				EditorGlobalMarkDirtyGeometry();
-				
-				// TODO
-				
-				/*with (m_editor)
-				{
-					var kInputHeight = other.m_tileMax.z;
-					
-					if (kInputHeight < 0) continue; // Skip sub-zero layers since the mesher will crash
-					
-					for (var ix = other.m_tileMin.x; ix <= other.m_tileMax.x; ++ix)
-					{
-						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
-						{
-							var existingTile = m_tilemap.GetPosition(ix, iy);
-							// create a new block at position if it doesn't exist yet
-							if (!is_struct(existingTile))
-							{
-								var maptile = new AMapTile();
-								maptile.x = ix;
-								maptile.y = iy;
-								maptile.height = kInputHeight;
-								
-								m_tilemap.AddTile(maptile);
-							}
-							// otherwise, heighten the block if it's lower than the gizmo height
-							else
-							{
-								if (existingTile.height < kInputHeight)
-								{
-									m_tilemap.RemoveHeightSlow(existingTile.height); // TODO: defer this.
-									existingTile.height = kInputHeight;
-								}
-							}
-						}
-					}
-					
-					m_tilemap.AddHeight(kInputHeight);
-					MapRebuildGraphics();
-				}*/
-				
 			}
-			
-			// Check for building the map up
-			/*if ((keyboard_check_pressed(vk_enter) && keyboard_check(vk_alt))
-				|| m_gizmo.m_editWantsCutout)
-			{
-				m_isDraggingShape = false;
-				m_hasShapeReady = false;
-				m_skipFrame = true; // Skip the next click event. TODO: make this a common call.
-				
-				// TODO.
-				
-				with (m_editor)
-				{
-					var kInputHeight = other.m_tileMin.z;
-					
-					for (var ix = other.m_tileMin.x; ix <= other.m_tileMax.x; ++ix)
-					{
-						for (var iy = other.m_tileMin.y; iy <= other.m_tileMax.y; ++iy)
-						{
-							var existingTileIndex = m_tilemap.GetPositionIndex(ix, iy);
-							
-							if (existingTileIndex >= 0)
-							{
-								var existingTile = m_tilemap.tiles[existingTileIndex];
-								
-								// lower the height of the tile if the input height is high enough
-								if (kInputHeight >= 0)
-								{
-									if (existingTile.height > kInputHeight)
-									{
-										m_tilemap.RemoveHeightSlow(existingTile.height); // TODO: defer this.
-										existingTile.height = kInputHeight;
-									}
-								}
-								// otherwise, we delete the tile
-								else
-								{
-									m_tilemap.RemoveHeightSlow(existingTile.height);
-									m_tilemap.DeleteTileIndex(existingTileIndex); // TODO: defer this.
-								}
-							}
-						}
-					}
-					
-					if (kInputHeight >= 0)
-						m_tilemap.AddHeight(kInputHeight);
-					MapRebuildGraphics();
-				}
-				
-			}*/
 		}
 		
 	};

@@ -8,7 +8,7 @@ function AEditorWindowEntSpawn() : AEditorWindow() constructor
 	m_position.y = 64;
 	
 	m_size.x = 100 * EditorGetUIScale();
-	m_size.y = 80 * EditorGetUIScale();
+	m_size.y = 120 * EditorGetUIScale();
 	m_size.roundSelf();
 	
 	item_focused = 0;
