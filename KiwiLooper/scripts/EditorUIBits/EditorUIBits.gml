@@ -55,6 +55,13 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 15, "Rebuild geometry information", "Compile", EditorGlobalCompileGeo, null, function(){ return !m_state.map.geometry_valid; })); // TODO: make a ui popup in case this takes forever
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 11, "Rebuild static lighting", "Toast Lights", EditorGlobalRebuildLights, null, function(){ return m_state.map.geometry_valid; }));
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 12, "Rebuild navigation information", "Cook AI", EditorGlobalRebuildAI, null, function(){ return m_state.map.geometry_valid; })); // TODO: make a ui popup in case this takes forever
+		// experimental stuff w/ view modes
+		m_actionbar.AddElement(AToolbarElementAsSpacer());
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "def", function() { global.shadeType = kShadeTypeDefault; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "albedo", function() { global.shadeType = kShadeTypeDebug_Albedo; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "albedo2", function() { global.shadeType = kShadeTypeDebug_AlbedoDarken; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "lighting", function() { global.shadeType = kShadeTypeDebug_Lighting; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "normals", function() { global.shadeType = kShadeTypeDebug_Normals; }, null));
 	}
 	
 	// Create status bar

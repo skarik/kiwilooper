@@ -1,8 +1,10 @@
 ///@desc Deferred surface information
 
-#define kShadeTypeDefault		0
-#define kShadeTypeDebug_Normals	1
-#define kShadeTypeDebug_Albedo	2
+#define kShadeTypeDefault				0
+#define kShadeTypeDebug_Normals			1
+#define kShadeTypeDebug_Albedo			2
+#define kShadeTypeDebug_Lighting		3
+#define kShadeTypeDebug_AlbedoDarken	4
 
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;

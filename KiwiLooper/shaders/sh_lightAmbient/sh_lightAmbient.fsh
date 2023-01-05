@@ -8,6 +8,10 @@ uniform mat4 uInverseViewProjection;
 uniform vec4 uCameraInfo;
 uniform vec4 uViewInfo;
 
+// TODO: dont have here, move to lightGeneral
+#define kShadeTypeDebug_Lighting		3
+uniform int uShadeType;
+
 uniform sampler2D textureAlbedo;
 uniform sampler2D textureNormal;
 uniform sampler2D textureIllum;
@@ -55,6 +59,6 @@ void main()
 	
 	vec3 totalLighting = uLightAmbientColor.rgb + baseIllum.rgb;
 	
-	gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
+	gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * ((uShadeType == kShadeTypeDebug_Lighting) ? vec4(1.0, 1.0, 1.0, 1.0) : baseAlbedo);
 	gl_FragData[0].a = 1.0;
 }

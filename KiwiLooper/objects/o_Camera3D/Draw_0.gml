@@ -166,38 +166,55 @@ surface_set_target(buffer_scene3d);
 		draw_primitive_end();
 		drawShaderReset();*/
 		
-		drawShaderSet(sh_lightAmbient);
-		lightDeferredPushUniforms_Ambient(buffer_albedo, buffer_normals, buffer_illumin, buffer_depth);
-		// Draw a quad using the albedo
-		draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
-			draw_vertex_texture(-1, -1, 0, 1);
-			draw_vertex_texture(1, -1, 1, 1);
-			draw_vertex_texture(-1, 1, 0, 0);
-			draw_vertex_texture(1, 1, 1, 0);
-		draw_primitive_end();
-		drawShaderReset();
+		if (global.shadeType == kShadeTypeDefault
+			|| global.shadeType == kShadeTypeDebug_Lighting)
+		{
+			drawShaderSet(sh_lightAmbient);
+			lightDeferredPushUniforms_Ambient(buffer_albedo, buffer_normals, buffer_illumin, buffer_depth);
+			// Draw a quad using the albedo
+			draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+				draw_vertex_texture(-1, -1, 0, 1);
+				draw_vertex_texture(1, -1, 1, 1);
+				draw_vertex_texture(-1, 1, 0, 0);
+				draw_vertex_texture(1, 1, 1, 0);
+			draw_primitive_end();
+			drawShaderReset();
 		
-		gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
+			gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
 		
-		//drawShaderSet(sh_lightPoint);
-		//lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
-		drawShaderSet(sh_lightGeneral);
-		lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
-			var allLights = lightParams.lightlist;
-			// loop through all the lights
-			for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
-			{
-				//var light = allLights[lightIndex];
-				//lightDeferredPushUniforms_Point_Index(lightIndex);
-				lightDeferredPushUniforms_General_Index(lightIndex);
+			//drawShaderSet(sh_lightPoint);
+			//lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+			drawShaderSet(sh_lightGeneral);
+			lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+				var allLights = lightParams.lightlist;
+				// loop through all the lights
+				for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
+				{
+					//var light = allLights[lightIndex];
+					//lightDeferredPushUniforms_Point_Index(lightIndex);
+					lightDeferredPushUniforms_General_Index(lightIndex);
+					draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+						draw_vertex_texture(-1, -1, 0, 1);
+						draw_vertex_texture(1, -1, 1, 1);
+						draw_vertex_texture(-1, 1, 0, 0);
+						draw_vertex_texture(1, 1, 1, 0);
+					draw_primitive_end();
+				}
+			drawShaderReset();
+		}
+		else
+		{
+			// Draw single quad w/ the given debug mode
+			drawShaderSet(sh_lightGeneral);
+			lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
 				draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
 					draw_vertex_texture(-1, -1, 0, 1);
 					draw_vertex_texture(1, -1, 1, 1);
 					draw_vertex_texture(-1, 1, 0, 0);
 					draw_vertex_texture(1, 1, 1, 0);
 				draw_primitive_end();
-			}
-		drawShaderReset();
+			drawShaderReset();
+		}
 		
 		surface_free(buffer_albedo);
 		surface_free(buffer_normals);

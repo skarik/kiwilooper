@@ -1,14 +1,21 @@
 ///@desc Deferred surface lighting. Starts off with the ambient lighting.
 
-#define kLightType_SpotAngle		0x01
+#define kLightType_SpotAngle		0x02
 
-#define kLightType_Point			0x00
+#define kLightType_Ambient			0x00
+#define kLightType_Point			0x01
 //#define kLightType_PointSpot		(kLightType_Point | kLightType_SpotAngle)
-#define kLightType_PointSpot		0x01
-#define kLightType_Sphere			0x02
+#define kLightType_PointSpot		0x02
+#define kLightType_Sphere			0x04
 #define kLightType_SphereSpot		(kLightType_Sphere | kLightType_SpotAngle)
-#define kLightType_Rect				0x04
+#define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
+
+#define kShadeTypeDefault				0
+#define kShadeTypeDebug_Normals			1
+#define kShadeTypeDebug_Albedo			2
+#define kShadeTypeDebug_Lighting		3
+#define kShadeTypeDebug_AlbedoDarken	4
 
 varying vec4 v_vColour;
 
@@ -21,6 +28,8 @@ uniform vec4 uLightOthers [32];
 uniform mat4 uInverseViewProjection;
 uniform vec4 uCameraInfo;
 uniform vec4 uViewInfo;
+
+uniform int uShadeType;
 
 uniform sampler2D textureAlbedo;
 uniform sampler2D textureNormal;
@@ -98,6 +107,8 @@ void main()
 	
 	
 	vec3 totalLighting = vec3(0.0);
+	if (uShadeType == kShadeTypeDefault
+		|| uShadeType == kShadeTypeDebug_Lighting)
 	{
 		int lightIndex = uLightIndex;
 		
@@ -110,7 +121,7 @@ void main()
 		vec4 lightParams	= uLightParams[lightIndex];
 		vec4 lightDirection	= uLightDirections[lightIndex];
 		vec4 lightOther		= uLightOthers[lightIndex];
-		
+
 		if (lightType == kLightType_Point)
 		{
 			vec3 point_to_light = lightPosition.xyz - pixelPosition;
@@ -286,6 +297,30 @@ void main()
 		}
 	}
 	
-	gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
-	gl_FragData[0].a = 1.0;
+	if (uShadeType == kShadeTypeDefault)
+	{
+		gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
+		gl_FragData[0].a = 1.0;
+	}
+	else if (uShadeType == kShadeTypeDebug_Lighting)
+	{
+		gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0);
+	}
+	else if (uShadeType == kShadeTypeDebug_Normals)
+	{
+		gl_FragData[0] = vec4(pixelNormal.xyz * 0.5 + 0.5, 1.0);
+	}
+	else if (uShadeType == kShadeTypeDebug_Albedo)
+	{
+		gl_FragData[0] = vec4(baseAlbedo.rgb, 1.0);
+	}
+	else if (uShadeType == kShadeTypeDebug_AlbedoDarken)
+	{
+		gl_FragData[0] = vec4((dot(pixelNormal, vec3(1, 0.707, 0.5)) * 0.2 + 0.7 ) * baseAlbedo.rgb, 1.0);
+	}
+	// Fallback for warnings
+	else
+	{
+		gl_FragData[0] = vec4(1.0, 0.0, 1.0, 1.0);
+	}
 }

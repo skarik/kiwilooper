@@ -34,6 +34,15 @@ with (GameCamera)
 	event_user(1);
 }
 
+// match with shaders
+#macro kShadeTypeDefault				0
+#macro kShadeTypeDebug_Normals			1
+#macro kShadeTypeDebug_Albedo			2
+#macro kShadeTypeDebug_Lighting		3
+#macro kShadeTypeDebug_AlbedoDarken	4
+// start up shade modes
+global.shadeType = kShadeTypeDefault;
+
 // start up lighting
 lightInitialize();
 

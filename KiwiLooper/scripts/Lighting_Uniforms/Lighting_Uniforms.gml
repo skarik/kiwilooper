@@ -3,13 +3,14 @@
 #macro kLightingModeForward		0
 #macro kLightingModeDeferred	1
 
-#macro kLightType_SpotAngle		0x01
+#macro kLightType_SpotAngle		0x02
 
-#macro kLightType_Point			0x00
+#macro kLightType_Ambient		0x00
+#macro kLightType_Point			0x01
 #macro kLightType_PointSpot		(kLightType_Point | kLightType_SpotAngle)
-#macro kLightType_Sphere		0x02
+#macro kLightType_Sphere		0x04
 #macro kLightType_SphereSpot	(kLightType_Sphere | kLightType_SpotAngle)
-#macro kLightType_Rect			0x04
+#macro kLightType_Rect			0x08
 #macro kLightType_RectSpot		(kLightType_Rect | kLightType_SpotAngle)
 
 ///@function lightInitialize()
@@ -58,6 +59,7 @@ function lightInitialize()
 		"uInverseViewProjection",
 		"uCameraInfo",
 		"uViewInfo",
+		"uShadeType",
 	]);
 	global.deferred_ambient_samplers = shaderGetSamplers(sh_lightAmbient,
 	[
@@ -117,6 +119,7 @@ function lightInitialize()
 		"uInverseViewProjection",
 		"uCameraInfo",
 		"uViewInfo",
+		"uShadeType",
 	]);
 	global.deferred_general_samplers = shaderGetSamplers(sh_lightGeneral,
 	[
@@ -180,6 +183,8 @@ function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
 	shader_set_uniform_f(global.deferred_ambient_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
 	shader_set_uniform_f(global.deferred_ambient_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
 	
+	shader_set_uniform_i(global.deferred_ambient_uniforms.uShadeType, global.shadeType);
+	
 	texture_set_stage(global.deferred_ambient_samplers.textureAlbedo, surface_get_texture(albedo));
 	texture_set_stage(global.deferred_ambient_samplers.textureNormal, surface_get_texture(normal));
 	texture_set_stage(global.deferred_ambient_samplers.textureIllum,  surface_get_texture(illum));
@@ -223,6 +228,8 @@ function lightDeferredPushUniforms_General(params, albedo, normal, depth)
 	shader_set_uniform_f_array(global.deferred_general_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
 	shader_set_uniform_f(global.deferred_general_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
 	shader_set_uniform_f(global.deferred_general_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
+	
+	shader_set_uniform_i(global.deferred_general_uniforms.uShadeType, global.shadeType);
 	
 	texture_set_stage(global.deferred_general_samplers.textureAlbedo, surface_get_texture(albedo));
 	texture_set_stage(global.deferred_general_samplers.textureNormal, surface_get_texture(normal));
