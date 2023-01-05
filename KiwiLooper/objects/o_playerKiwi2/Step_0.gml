@@ -1,5 +1,4 @@
-/// @description Insert description here
-// You can write your code in this editor
+/// @description Run input, override camera
 
 PlayerControl_Step();
 

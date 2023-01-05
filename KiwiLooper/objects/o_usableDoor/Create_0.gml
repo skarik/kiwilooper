@@ -20,7 +20,7 @@ image_index = 0;
 // Set up callback
 m_onActivation = function(activatedBy)
 {
-	if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi)
+	if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy))
 	{
 		// Switch image
 		image_index = !image_index;

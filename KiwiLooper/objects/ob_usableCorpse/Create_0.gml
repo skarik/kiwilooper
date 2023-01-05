@@ -61,7 +61,7 @@ UpdateGlowOutline = function()
 // Set up callback
 m_onActivation = function(activatedBy)
 {
-	if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi)
+	if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy))
 	{
 		// Pick the item up
 		if (!m_pickedUp)

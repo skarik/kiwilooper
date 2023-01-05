@@ -16,7 +16,7 @@ m_onActivation = function(activatedBy)
 	if (m_usable && (m_activated == false || m_isToggle)) // can we be activated?
 	{
 		// activate only from player for now
-		if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi)
+		if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy))
 		{
 			if (l_isUnlockedForPlayer())
 			{

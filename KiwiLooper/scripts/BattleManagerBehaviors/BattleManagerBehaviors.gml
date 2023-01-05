@@ -15,7 +15,7 @@ function BMSStepBehaviors(deltaTime)
 		// TODO LMAO
 		
 		// reset states at end of the timer
-		if (actor.m_character.object_index == o_playerKiwi)
+		if (Game_IsPlayer_safe(actor.m_character))
 		{
 			if (actor.m_timeUntilNextAction <= 0.0)
 			{

@@ -7,7 +7,7 @@ m_useText = "READ";
 
 m_onActivation = function(activatedBy)
 {
-	if (iexists(activatedBy) && activatedBy.object_index == o_playerKiwi
+	if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy) 
 		&& !iexists(o_uisLogBox))
 	{
 		var log = inew(o_uisLogBox);
