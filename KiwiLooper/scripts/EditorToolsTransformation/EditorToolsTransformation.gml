@@ -29,7 +29,7 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to move along an axis. Hold Alt to toggle snapping.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects, Shift-Click subobjects (geometry). Use gizmo to move along an axis. Hold Alt to toggle snapping.";
 	};
 	onEnd = function(trueEnd)
 	{
@@ -173,13 +173,24 @@ function AEditorToolStateTranslate() : AEditorToolStateSelect() constructor
 		}
 	}
 	
+	// local helper to see if selection is primitive.
+	// primitives need the "multiple select" offset
+	static SelectionIsPrimitive = function(selection)
+	{
+		return is_struct(selection) &&
+			(selection.type == kEditorSelection_Primitive
+			|| selection.type == kEditorSelection_PrimitiveEdge
+			|| selection.type == kEditorSelection_PrimitiveFace
+			|| selection.type == kEditorSelection_PrimitiveVertex);
+	}
+	
 	onStep = function()
 	{
 		// Keyboard "no-snap" override toggle
 		m_editor.toolGridTemporaryDisable = keyboard_check(vk_alt);
 		
 		var bIsValidSelection = array_length(m_editor.m_selection) > 0;
-		var bIsSingleSelection = m_editor.m_selectionSingle;
+		var bIsSingleSelection = m_editor.m_selectionSingle && !array_is_any_of(m_editor.m_selection, SelectionIsPrimitive);
 		
 		if (!bIsValidSelection)
 		{
@@ -468,7 +479,7 @@ function AEditorToolStateRotate() : AEditorToolStateTranslate() constructor
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to rotate around an axis. Hold Shift to enable snapping.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects, Shift-Click subobjects (geometry). Use gizmo to rotate around an axis. Hold Shift to enable snapping.";
 	};
 	
 	// TODO onSignalTransformChange = function(entity, type)
@@ -597,7 +608,7 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 		m_transformGizmo.SetInvisible();
 		m_transformGizmo.SetDisabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects. Use gizmo to scale a local axis. Hold Alt to toggle snapping.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects, Shift-Click subobjects (geometry). Use gizmo to scale a local axis. Hold Alt to toggle snapping.";
 	};
 	onEnd = function(trueEnd)
 	{

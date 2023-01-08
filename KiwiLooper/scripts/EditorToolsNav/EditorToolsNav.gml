@@ -217,7 +217,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 		m_gizmo.SetVisible();
 		m_gizmo.SetEnabled();
 		
-		m_editor.m_statusbar.m_toolHelpText = "Click to select objects.";
+		m_editor.m_statusbar.m_toolHelpText = "Click to select objects, Shift-Click subobjects (geometry).";
 	};
 	onEnd = function(trueEnd)
 	{
