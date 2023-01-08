@@ -1,5 +1,14 @@
-///@desc Deferred surface lighting. Starts off with the ambient lighting.
+//@desc Deferred surface lighting. Starts off with the ambient lighting.
 
+#pragma include("ShadingCommon.glsli")
+// Shading types
+#define kShadeTypeDefault				0
+#define kShadeTypeDebug_Normals			1
+#define kShadeTypeDebug_Albedo			2
+#define kShadeTypeDebug_Lighting		3
+#define kShadeTypeDebug_AlbedoDarken	4
+
+// Lighting types
 #define kLightType_SpotAngle		0x02
 
 #define kLightType_Ambient			0x00
@@ -11,11 +20,18 @@
 #define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
 
-#define kShadeTypeDefault				0
-#define kShadeTypeDebug_Normals			1
-#define kShadeTypeDebug_Albedo			2
-#define kShadeTypeDebug_Lighting		3
-#define kShadeTypeDebug_AlbedoDarken	4
+vec2 encode_to_r8g8( float value )
+{
+	float low_prec = floor(value * 255.0) / 255.0;
+	float high_prec = (value - low_prec) * 255.0;
+	return vec2(low_prec, high_prec);
+}
+
+float decode_from_r8g8( vec2 value )
+{
+	return value.x + value.y / 255.0;
+}
+// include("ShadingCommon.glsli")
 
 varying vec4 v_vColour;
 
@@ -35,17 +51,7 @@ uniform sampler2D textureAlbedo;
 uniform sampler2D textureNormal;
 uniform sampler2D textureDepth;
 
-vec2 encode_to_r8g8( float value )
-{
-	float low_prec = floor(value * 255.0) / 255.0;
-	float high_prec = (value - low_prec) * 255.0;
-	return vec2(low_prec, high_prec);
-}
-
-float decode_from_r8g8( vec2 value )
-{
-	return value.x + value.y / 255.0;
-}
+#pragma include("LightingCommon.glsli")
 
 vec3 calculate_world_position( float depth )
 {
@@ -85,7 +91,7 @@ float RectangleSolidAngle( vec3 worldPos, vec3 p0, vec3 p1, vec3 p2, vec3 p3)
 
 	// Sum the angles
 	return g0 + g1 + g2 + g3 - 2.0 * 3.1415;
-}
+}// include("LightingCommon.glsli")
 
 void main()
 {

@@ -1,17 +1,24 @@
 ///@desc Deferred surface information
 
+#pragma include("ShadingCommon.glsli")
+// Shading types
 #define kShadeTypeDefault				0
 #define kShadeTypeDebug_Normals			1
 #define kShadeTypeDebug_Albedo			2
 #define kShadeTypeDebug_Lighting		3
 #define kShadeTypeDebug_AlbedoDarken	4
 
-varying vec2 v_vTexcoord;
-varying vec4 v_vColour;
-varying vec3 v_vNormal;
-varying vec3 v_vPosition;
-varying vec4 v_vScreenPosition;
-varying vec4 v_vAtlasParameters;
+// Lighting types
+#define kLightType_SpotAngle		0x02
+
+#define kLightType_Ambient			0x00
+#define kLightType_Point			0x01
+//#define kLightType_PointSpot		(kLightType_Point | kLightType_SpotAngle)
+#define kLightType_PointSpot		0x02
+#define kLightType_Sphere			0x04
+#define kLightType_SphereSpot		(kLightType_Sphere | kLightType_SpotAngle)
+#define kLightType_Rect				0x08
+#define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
 
 vec2 encode_to_r8g8( float value )
 {
@@ -19,6 +26,19 @@ vec2 encode_to_r8g8( float value )
 	float high_prec = (value - low_prec) * 255.0;
 	return vec2(low_prec, high_prec);
 }
+
+float decode_from_r8g8( vec2 value )
+{
+	return value.x + value.y / 255.0;
+}
+// include("ShadingCommon.glsli")
+
+varying vec2 v_vTexcoord;
+varying vec4 v_vColour;
+varying vec3 v_vNormal;
+varying vec3 v_vPosition;
+varying vec4 v_vScreenPosition;
+varying vec4 v_vAtlasParameters;
 
 void main()
 {
