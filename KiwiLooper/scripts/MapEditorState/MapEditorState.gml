@@ -31,6 +31,8 @@ function AMapEditorState() constructor
 		geometry_valid:	false,
 		ai_valid:		false,
 		lighting_valid:	false,
+		
+		last_valid_entIdentifier:	0x0FFF,
 	};
 	
 	static serializeBuffer = function(version, buffer, ioMode, io_ser)
@@ -84,5 +86,37 @@ function AMapEditorState() constructor
 			io_ser(map, "ai_valid", buffer, buffer_bool);
 			io_ser(map, "lighting_valid", buffer, buffer_bool);
 		}
+		
+		if (version >= kMapEditorFeature_EntityNumbering)
+		{
+			io_ser(map, "last_valid_entIdentifier", buffer, buffer_u32);
+		}
 	}
+}
+
+function EditorState_UpdateLastEntityIdentifier()
+{
+	with (EditorGet())
+	{
+		// Ensure last_valid_entIdentifier is past the end.
+		m_state.map.last_valid_entIdentifier = 0x0FFF;
+		
+		for (var entIndex = 0; entIndex < m_entityInstList.GetEntityCount(); ++entIndex)
+		{
+			var instance = m_entityInstList.GetEntity(entIndex);
+			
+			// Choose higher value.
+			m_state.map.last_valid_entIdentifier = max(m_state.map.last_valid_entIdentifier, instance.entityMapIndex);
+		}
+	}
+}
+function EditorState_GetNextEntityIdentifier()
+{
+	with (EditorGet())
+	{
+		var entMapIndex = m_state.map.last_valid_entIdentifier;
+		m_state.map.last_valid_entIdentifier += 1;
+		return entMapIndex;
+	}
+	return current_time; // TOOD
 }

@@ -12,6 +12,11 @@ startz = z;
 
 door_open_sound = (room == rm_Ship5) ? "sound/door/doom_door_open0.wav" : "sound/door/door_open0.wav";
 
+// Set up persistence
+PersistentState("opening", kValueTypeBoolean);
+PersistentState("closing", kValueTypeBoolean);
+PersistentState("openstate", kValueTypeFloat);
+
 // Reset the startz on post-level-load
 onPostLevelLoad = function()
 {

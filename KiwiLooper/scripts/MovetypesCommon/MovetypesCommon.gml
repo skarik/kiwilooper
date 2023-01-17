@@ -126,7 +126,7 @@ function mvtcZMotion()
 		kHitmaskAll))
 	{
 		highest_z = (z + 16) - raycast4_get_hit_distance();
-		debugLog(kLogVerbose, string(highest_z));
+		//debugLog(kLogVerbose, string(highest_z));
 	}
 	// our rectangle casts are always gonna be 4 planes
 	

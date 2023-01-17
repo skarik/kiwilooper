@@ -46,6 +46,7 @@ Show = function()
 		// Enable & create debug menu
 		on = true;
 		visible = true;
+		show_debug_overlay(true);
 		if (!iexists(o_debugMenu)) {
 			inew(o_debugMenu);	
 		}
@@ -60,5 +61,6 @@ Hide = function()
 		// Disable debug menu
 		on = false;
 		visible = false;
+		show_debug_overlay(false);
 	}
 }

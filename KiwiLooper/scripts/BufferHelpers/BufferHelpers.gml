@@ -47,3 +47,25 @@ function buffer_read_byte_array_as_terminated_string(buffer, length)
 	}
 	return str;
 }
+
+/// @function buffer_write_buffer(destBuffer, srcBuffer)
+/// @desc Writes a buffer into a buffer.
+function buffer_write_buffer(destBuffer, srcBuffer)
+{
+	var old_dest_start = buffer_tell(destBuffer);
+	var src_size = buffer_tell(srcBuffer);
+	
+	// Allocate data in the destination
+	var dest_start = buffer_tell(destBuffer);
+	for (var i = 0; i < src_size; ++i)
+	{
+		buffer_write(destBuffer, buffer_u8, 0);
+	}
+	
+	// Copy into allocated area
+	buffer_copy(srcBuffer, 0, src_size, destBuffer, dest_start);
+	
+	// TODO: verify this
+	var new_dest_start = buffer_tell(destBuffer);
+	assert(old_dest_start + src_size == new_dest_start);
+}

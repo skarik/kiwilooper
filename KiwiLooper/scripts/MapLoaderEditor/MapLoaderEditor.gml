@@ -3,6 +3,7 @@
 #macro kMapEditorFeature_Solids					0x0004
 #macro kMapEditorFeature_DirtyFlagsAndCamToggle	0x0005
 #macro kMapEditorFeature_ViewModeInfo			0x0007
+#macro kMapEditorFeature_EntityNumbering		0x0008
 
 #macro kMapEditorFeature_Current	kMapEditorFeature_DirtyFlagsAndCamToggle
 

@@ -5,6 +5,9 @@ event_inherited();
 m_priority = 2;
 m_useText = "NAB";
 
+// Set up persistence
+PersistentStateExistence();
+
 m_onActivation = function(activatedBy)
 {
 	if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy))

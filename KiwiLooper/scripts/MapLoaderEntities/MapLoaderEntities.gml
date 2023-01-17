@@ -1,5 +1,6 @@
 #macro kMapEntityFeature_None			0x0001
 #macro kMapEntityFeature_ByteSizePerEnt	0x0002
+#macro kMapEntityFeature_Persistence	0x0003
 
 function MapLoadEntities(filedata, entityInstanceList)
 {
@@ -19,21 +20,52 @@ function MapLoadEntities(filedata, entityInstanceList)
 	var extrainfoA = buffer_read(buffer, buffer_u32);
 	var extrainfoB = buffer_read(buffer, buffer_u32);
 
-	if (featureset <= kMapEntityFeature_None)
+	if (featureset >= kMapEntityFeature_None)
 	{
 		// Entity element format:
 		//	string					entity name
+		//	u32						entity map id
+		//	u32						entity byte size
 		//	u16						keyvalue count
 		//	{string,u8,varies}[]	keyvalue {name, type, value}
+		//	extras
 		
 		for (var entIndex = 0; entIndex < elementcount; ++entIndex)
 		{
 			var ent_name = buffer_read(buffer, buffer_string);
 			var ent = entlistFindWithName(ent_name);
-		
-			// If we don't recognize the struct, we can't read the data since we cannot skip ahead without size info.
-			assert(is_struct(ent));
-		
+			
+			// Read in the entity map id
+			var ent_map_id = entIndex;
+			if (featureset >= kMapEntityFeature_Persistence)
+			{
+				ent_map_id = buffer_read(buffer, buffer_u32);
+			}
+			
+			// Read the entry size
+			var ent_byte_size = 0;
+			if (featureset >= kMapEntityFeature_ByteSizePerEnt)
+			{
+				ent_byte_size = buffer_read(buffer, buffer_u32);
+				assert(ent_byte_size > 0);
+			}
+			
+			if (ent_byte_size == 0)
+			{
+				// If we don't recognize the struct, we can't read the data since we cannot skip ahead without size info.
+				assert(is_struct(ent));
+			}
+			else
+			{
+				// If we don't recognize the struct, skip ahead
+				if (!is_struct(ent))
+				{
+					buffer_seek(buffer, buffer_seek_relative, ent_byte_size);
+				}
+			}
+			
+			var ent_byte_start = buffer_tell(buffer);
+			
 			var bMakeProxy = (ent.proxy != kProxyTypeNone);
 		
 			// Create an instance now, to read data into
@@ -45,6 +77,7 @@ function MapLoadEntities(filedata, entityInstanceList)
 			// Set initial needed values
 			{
 				instance.entity = ent;
+				instance.entityMapIndex = ent_map_id;
 				instance.x = 0;
 				instance.y = 0;
 				instance.z = 0;
@@ -64,109 +97,66 @@ function MapLoadEntities(filedata, entityInstanceList)
 				var property = [property_name, property_type];
 			
 				var bSpecialTransform = entpropIsSpecialTransform(property);
+				
+				var value = buffer_read_type(buffer, property[1]);
 				switch (property[1])
 				{
 				case kValueTypePosition:
 					{
-						var tx = buffer_read(buffer, buffer_f16);
-						var ty = buffer_read(buffer, buffer_f16);
-						var tz = buffer_read(buffer, buffer_f16);
-					
 						if (bSpecialTransform)
 						{
-							instance.x = tx;
-							instance.y = ty;
-							instance.z = tz;
+							instance.x = value.x;
+							instance.y = value.y;
+							instance.z = value.z;
 						}
 						else 
 						{
-							variable_instance_set(instance, property[0], new Vector3(tx, ty, tz));
+							variable_instance_set(instance, property[0], value);
 						}
 					}
 					break;
-				
+			
 				case kValueTypeRotation:
 					{
-						var tx = DecodeAngleFromS16(buffer_read(buffer, buffer_s16));
-						var ty = DecodeAngleFromS16(buffer_read(buffer, buffer_s16));
-						var tz = DecodeAngleFromS16(buffer_read(buffer, buffer_s16));
-					
 						if (bSpecialTransform)
 						{
-							instance.xrotation = tx;
-							instance.yrotation = ty;
-							instance.zrotation = tz;
+							instance.xrotation = value.x;
+							instance.yrotation = value.y;
+							instance.zrotation = value.z;
 							// Apply game-maker rotations for other effects
-							instance.image_angle = tz;
+							instance.image_angle = value.z;
 						}
 						else 
 						{
-							variable_instance_set(instance, property[0], new Vector3(tx, ty, tz));
+							variable_instance_set(instance, property[0], value);
 						}
 					}
 					break;
 				
 				case kValueTypeScale:
 					{
-						var tx = buffer_read(buffer, buffer_f16);
-						var ty = buffer_read(buffer, buffer_f16);
-						var tz = buffer_read(buffer, buffer_f16);
-					
 						if (bSpecialTransform)
 						{
-							instance.xscale = tx;
-							instance.yscale = ty;
-							instance.zscale = tz;
+							instance.xscale = value.x;
+							instance.yscale = value.y;
+							instance.zscale = value.z;
 							// Apply game-maker scaling for other effects
-							//instance.image_xscale = tx;
-							//instance.image_yscale = ty;
+							//instance.image_xscale = value.x;
+							//instance.image_yscale = value.y;
 						}
 						else 
 						{
-							variable_instance_set(instance, property[0], new Vector3(tx, ty, tz));
+							variable_instance_set(instance, property[0], value);
 						}
 					}
 					break;
 				
-				case kValueTypeFloat:
-					{
-						var value = buffer_read(buffer, buffer_f32);
-						variable_instance_set(instance, property[0], value);
-					}
-					break;
-					
-				case kValueTypeInteger:
-				case kValueTypeEnum:
-					{
-						var value = buffer_read(buffer, buffer_s32);
-						variable_instance_set(instance, property[0], value);
-					}
-					break;
-				
-				case kValueTypeColor:
-					{
-						var value = buffer_read(buffer, buffer_u32); // The colors in GM cannot be expressed outside of 8-bit color, so we just IO as 32-bit int.
-						variable_instance_set(instance, property[0], value);
-					}
-					break;
-			
-				case kValueTypeBoolean:
-					{
-						var value = buffer_read(buffer, buffer_u8) ? true : false; // No documentation on buffer_bool, so force to true/false here
-						variable_instance_set(instance, property[0], value);
-					}
-					break;
-					
-				case kValueTypeString:
-				case kValueTypeLively:
-					{
-						var value = buffer_read(buffer, buffer_string);
-						variable_instance_set(instance, property[0], value);
-					}
-					break;
-			
 				default:
-					assert(false); // Unknown type!
+					{
+						assert(!is_undefined(value));
+						variable_instance_set(instance, property[0], value);
+					}
+					break;
 				}
 			}
 			
@@ -179,6 +169,38 @@ function MapLoadEntities(filedata, entityInstanceList)
 				{
 					variable_instance_set(instance, property[0], property[2]);
 				}
+			}
+			
+			// Load in persistence (unused)
+			if (featureset >= kMapEntityFeature_Persistence)
+			{
+				var persistence_count = buffer_read(buffer, buffer_u32);
+				
+				if (persistence_count > 0)
+				{
+					with (instance)
+					{
+						PersistentStateInitializeHolder();
+					}
+					for (var varIndex = 0; varIndex < persistence_count; ++varIndex)
+					{
+						var name = buffer_read(buffer, buffer_string);
+						var type = buffer_read(buffer, buffer_u8);
+						var value = buffer_read_type(buffer, type);
+					
+						with (instance)
+						{
+							PersistentState_AddVariable(name, type, value);
+						}
+					}
+				}
+			}
+			
+			// If we have byte size, use it to verify the data location
+			if (featureset >= kMapEntityFeature_ByteSizePerEnt)
+			{
+				var ent_byte_now = buffer_tell(buffer);
+				assert(ent_byte_start + ent_byte_size == ent_byte_now);
 			}
 		
 			// Add instance to the listing
@@ -204,7 +226,7 @@ function MapSaveEntities(filedata, entityInstanceList)
 	//	u32			extra info B
 	//	varies[]	entities
 	
-	buffer_write(buffer, buffer_u32, kMapEntityFeature_None);
+	buffer_write(buffer, buffer_u32, kMapEntityFeature_Persistence);
 	buffer_write(buffer, buffer_u32, entityInstanceList.GetEntityCount());
 	buffer_write(buffer, buffer_u32, 0);
 	buffer_write(buffer, buffer_u32, 0);
@@ -243,113 +265,108 @@ function MapSaveEntities(filedata, entityInstanceList)
 		
 		// Entity element format:
 		//	string					entity name
+		//	u32						entity map id
+		//	u32						entity byte size
 		//	u16						keyvalue count
 		//	{string,u8,varies}[]	keyvalue {name, type, value}
+		//	extras
 		
 		buffer_write(buffer, buffer_string, ent.name);
-		buffer_write(buffer, buffer_u16, validPropertyCount); // We write valid property count, not ent.properties. Could be less or more.
 		
-		for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
+		// Write in the entity map id
+		buffer_write(buffer, buffer_u32, instance.entityMapIndex);
+		
+		// Create a buffer for our ent
+		var ent_buffer = buffer_create(0, buffer_grow, 1);
 		{
-			var property = ent.properties[propertyIndex];
-			var bSpecialTransform = entpropIsSpecialTransform(property);
-			
-			// Skip undefined/unsupported variables
-			if (!PropertyIsValid(instance, property))
+			// Write the properties:
+			buffer_write(ent_buffer, buffer_u16, validPropertyCount); // We write valid property count, not ent.properties. Could be less or more.
+			for (var propertyIndex = 0; propertyIndex < array_length(ent.properties); ++propertyIndex)
 			{
-				continue;
-			}
+				var property = ent.properties[propertyIndex];
+				var bSpecialTransform = entpropIsSpecialTransform(property);
 			
-			buffer_write(buffer, buffer_string, property[0]);
-			buffer_write(buffer, buffer_u8, property[1]);
-			
-			
-			switch (property[1])
-			{
-			case kValueTypePosition:
+				// Skip undefined/unsupported variables
+				if (!PropertyIsValid(instance, property))
 				{
-					var value;
-					if (bSpecialTransform)
-						value = new Vector3(instance.x, instance.y, instance.z);
-					else 
-						value = variable_instance_get(instance, property[0]);
-				
-					buffer_write(buffer, buffer_f16, value.x);
-					buffer_write(buffer, buffer_f16, value.y);
-					buffer_write(buffer, buffer_f16, value.z);
+					continue;
 				}
-				break;
-				
-			case kValueTypeRotation:
+			
+				buffer_write(ent_buffer, buffer_string, property[0]);
+				buffer_write(ent_buffer, buffer_u8, property[1]);
+			
+				switch (property[1])
 				{
-					var value;
-					if (bSpecialTransform)
-						value = new Vector3(instance.xrotation, instance.yrotation, instance.zrotation);
-					else 
-						value = variable_instance_get(instance, property[0]);
+				case kValueTypePosition:
+					{
+						var value;
+						if (bSpecialTransform)
+							value = new Vector3(instance.x, instance.y, instance.z);
+						else 
+							value = variable_instance_get(instance, property[0]);
 				
-					buffer_write(buffer, buffer_s16, EncodeAngleToS16(value.x));
-					buffer_write(buffer, buffer_s16, EncodeAngleToS16(value.y));
-					buffer_write(buffer, buffer_s16, EncodeAngleToS16(value.z));
-				}
-				break;
+						buffer_write_type(ent_buffer, value, property[1]);
+					}
+					break;
 				
-			case kValueTypeScale:
-				{
-					var value;
-					if (bSpecialTransform)
-						value = new Vector3(instance.xscale, instance.yscale, instance.zscale);
-					else 
-						value = variable_instance_get(instance, property[0]);
+				case kValueTypeRotation:
+					{
+						var value;
+						if (bSpecialTransform)
+							value = new Vector3(instance.xrotation, instance.yrotation, instance.zrotation);
+						else 
+							value = variable_instance_get(instance, property[0]);
+				
+						buffer_write_type(ent_buffer, value, property[1]);
+					}
+					break;
+				
+				case kValueTypeScale:
+					{
+						var value;
+						if (bSpecialTransform)
+							value = new Vector3(instance.xscale, instance.yscale, instance.zscale);
+						else 
+							value = variable_instance_get(instance, property[0]);
 						
-					buffer_write(buffer, buffer_f16, value.x);
-					buffer_write(buffer, buffer_f16, value.y);
-					buffer_write(buffer, buffer_f16, value.z);
-				}
-				break;
+						buffer_write_type(ent_buffer, value, property[1]);
+					}
+					break;
 				
-			case kValueTypeFloat:
-				{
-					var value = variable_instance_get(instance, property[0]);
-					buffer_write(buffer, buffer_f32, value);
+				default:
+					{
+						var value = variable_instance_get(instance, property[0]);
+						buffer_write_type(ent_buffer, value, property[1]);
+					}
+					break;
 				}
-				break;
-			
-			case kValueTypeInteger:
-			case kValueTypeEnum:
-				{
-					var value = variable_instance_get(instance, property[0]);
-					buffer_write(buffer, buffer_s32, value);
-				}
-				break;
-				
-			case kValueTypeColor:
-				{
-					var value = variable_instance_get(instance, property[0]);
-					buffer_write(buffer, buffer_u32, value); // The colors in GM cannot be expressed outside of 8-bit color, so we just IO as 32-bit int.
-				}
-				break;
-			
-			case kValueTypeBoolean:
-				{
-					var value = variable_instance_get(instance, property[0]);
-					buffer_write(buffer, buffer_u8, value ? 0xFF : 0x00); // No documentation on buffer_bool, so force to u8 here
-				}
-				break;
-				
-			case kValueTypeString:
-			case kValueTypeLively:
-				{
-					var value = variable_instance_get(instance, property[0]);
-					buffer_write(buffer, buffer_string, value);
-				}
-				break;
-			
-			default:
-				assert(false); // Unknown type!
 			}
-			
+		
+			// Write the persistence state (unused):
+			var persistence_state = PersistentStateGet(instance);
+			if (!is_undefined(persistence_state))
+			{
+				buffer_write(ent_buffer, buffer_u32, array_length(persistence_state.listing));
+				for (var varIndex = 0; varIndex < array_length(persistence_state.listing); ++varIndex)
+				{
+					// Write name,type,value
+					var entry = persistence_state.listing[varIndex];
+					buffer_write(ent_buffer, buffer_string, entry.name);
+					buffer_write(ent_buffer, buffer_u8, entry.type);
+					buffer_write_type(ent_buffer, entry.value, entry.type);
+				}
+			}
+			else
+			{
+				buffer_write(ent_buffer, buffer_u32, 0);
+			}
 		}
+		
+		// Write size of ent_buffer to the buffer
+		buffer_write(buffer, buffer_u32, buffer_tell(ent_buffer));
+		
+		// Write the ent_buffer contents over
+		buffer_write_buffer(buffer, ent_buffer);
 	}
 	
 	// Save the buffer we just created to the filedata.

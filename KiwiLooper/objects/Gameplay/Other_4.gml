@@ -41,7 +41,6 @@ if (!m_isGameplay)
 }
 else
 {
-	
 	if (!iexists(o_Camera3D))
 	{
 		inew(o_Camera3D);

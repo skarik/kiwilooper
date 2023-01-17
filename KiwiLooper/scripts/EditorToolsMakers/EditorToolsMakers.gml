@@ -88,6 +88,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					variable_instance_set_if_not_exists(ent, "zrotation", 0.0);
 					// save ent
 					ent.entity = entlistFindWithObjectIndex(m_entityToMake);
+					ent.entityMapIndex = EditorState_GetNextEntityIdentifier();
 				}
 				else
 				{
@@ -104,6 +105,7 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					ent.zrotation = 0.0;
 					// save ent
 					ent.entity = m_entityToMake;
+					ent.entityMapIndex = EditorState_GetNextEntityIdentifier();
 				}
 				
 				if (ensure(iexists(ent)))

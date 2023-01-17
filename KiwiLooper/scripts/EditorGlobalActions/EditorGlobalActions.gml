@@ -266,6 +266,8 @@ function EditorGlobalLoadMap()
 		{
 			MapRebuildGraphics();
 		}
+		
+		EditorState_UpdateLastEntityIdentifier(); // Update indetifier for new ents.
 	}
 }
 function EditorGlobalLoadMap_Work(filepath)

@@ -3,11 +3,28 @@
 #macro kGameLoadingFromDisk 2
 #macro kGameLoadingInvalid 3
 
+/// @function Game_GetMapId()
+/// @desc Generates map ID based on current map information
+function Game_GetMapId()
+{
+	if (is_string(global.game_loadingMap))
+	{
+		return global.game_loadingMap;
+	}
+	else if (room_exists(room) && room != rm_EmptyMap)
+	{
+		return room_get_name(room);
+	}
+	return undefined;
+}
+
 /// @function Game_LoadMap( map, [asEditor = false] )
 /// @desc Load the given map or room.
 function Game_LoadMap( map, asEditor = false )
 {
 	global.game_editorRun = asEditor;
+	
+	PersistentStateRoomEnd(Game_GetMapId());
 	
 	if (is_undefined(map))
 	{
@@ -57,6 +74,13 @@ function Game_AdvanceMap( map )
 /// @function Game_Event_RoomStart()
 function Game_Event_RoomStart()
 {
+	// Create gameplay
+	if (!iexists(Gameplay))
+		inew(Gameplay);
+	
+	// Clear out persistence
+	PersistentStateRoomStart(Game_GetMapId());
+	
 	// Load up all the room info
 	_Game_LoadMapInternal();
 	
@@ -72,10 +96,6 @@ function Game_Event_RoomStart()
 			event_perform(ev_create, 0);
 		}
 	}
-
-	// Create gameplay
-	if (!iexists(Gameplay))
-		inew(Gameplay);
 		
 	// If NOT loading from disk, perform callbacks on objects
 	if (global.game_loadingInfo == kGameLoadingFromGMS)
@@ -275,6 +295,7 @@ function _Game_LoadMapInternal()
 					
 					// Copy over system values
 					entReplacement.entity = entInstance.entity;
+					entReplacement.entityMapIndex = entInstance.entityMapIndex;
 					
 					// Finish replacement & delete old
 					idelete(entInstance);
@@ -290,22 +311,34 @@ function _Game_LoadMapInternal()
 								
 					variable_instance_set(entInstance, property_name, property_value);
 				}
+				
+				// Load in persistence information
+				PersistentStateApply(entInstance);
 							
 				// Perform post-level-load
-				if (variable_instance_exists(entInstance, "onPostLevelLoad"))
+				if (iexists(entInstance)) // Persistence apply could destroy this instance.
 				{
-					//entInstance.onPostLevelLoad();
-					executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
+					if (variable_instance_exists(entInstance, "onPostLevelLoad"))
+					{
+						//entInstance.onPostLevelLoad();
+						executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
+					}
 				}
 			}
 			// No proxy, we set the properties directly so we're OK.
 			else
 			{
+				// Load in persistence information
+				PersistentStateApply(entInstance);
+				
 				// Perform post-level-load 
-				if (variable_instance_exists(entInstance, "onPostLevelLoad"))
+				if (iexists(entInstance)) // Persistence apply could destroy this instance.
 				{
-					//entInstance.onPostLevelLoad();
-					executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
+					if (variable_instance_exists(entInstance, "onPostLevelLoad"))
+					{
+						//entInstance.onPostLevelLoad();
+						executeNextStep(method(entInstance, entInstance.onPostLevelLoad), entInstance);
+					}
 				}
 			}
 		}
@@ -329,6 +362,12 @@ function _Game_LoadMapInternal()
 	
 	MapFreeFiledata(filedata);
 	delete filedata;
+}
+
+/// @function Game_Event_Cleanup()
+function Game_Event_Cleanup()
+{
+	PersistentStateGameFree();
 }
 
 //=============================================================================

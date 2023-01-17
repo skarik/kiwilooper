@@ -9,6 +9,10 @@ image_index = 0;
 m_activated = false;
 m_activeTime = 0.0;
 
+// Set up persistent state
+PersistentState("m_activated", kValueTypeBoolean);
+PersistentState("m_activeTime", kValueTypeFloat);
+
 // Set up callback
 m_onActivation = function(activatedBy)
 {
