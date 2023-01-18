@@ -63,6 +63,7 @@
     {"id":{"name":"suie_gizmoEnts","path":"sprites/suie_gizmoEnts/suie_gizmoEnts.yy",},"order":4,},
     {"id":{"name":"room_get_index","path":"scripts/room_get_index/room_get_index.yy",},"order":0,},
     {"id":{"name":"sui_starclouds","path":"sprites/sui_starclouds/sui_starclouds.yy",},"order":3,},
+    {"id":{"name":"sh_lightPointSpot","path":"shaders/sh_lightPointSpot/sh_lightPointSpot.yy",},"order":6,},
     {"id":{"name":"ssettingGetValue","path":"scripts/ssettingGetValue/ssettingGetValue.yy",},"order":4,},
     {"id":{"name":"rm_EmptyMap","path":"rooms/rm_EmptyMap/rm_EmptyMap.yy",},"order":10,},
     {"id":{"name":"_execute_step_nodelete","path":"objects/_execute_step_nodelete/_execute_step_nodelete.yy",},"order":16,},

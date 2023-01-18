@@ -3,12 +3,14 @@
 #pragma include("ShadingCommon.glsli")
 // Shading types
 #define kShadeTypeDefault				0
+#define kShadeType_Dynamic				0xFF
 #define kShadeTypeDebug_Normals			1
 #define kShadeTypeDebug_Albedo			2
 #define kShadeTypeDebug_Lighting		3
 #define kShadeTypeDebug_AlbedoDarken	4
 
 // Lighting types
+#define kLightType_Dynamic			0xFF
 #define kLightType_SpotAngle		0x02
 
 #define kLightType_Ambient			0x00
@@ -19,6 +21,15 @@
 #define kLightType_SphereSpot		(kLightType_Sphere | kLightType_SpotAngle)
 #define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
+
+// Default shade types
+#ifndef SHADE_TYPE
+#define SHADE_TYPE kShadeType_Dynamic
+#endif
+
+#ifndef LIGHT_TYPE
+#define LIGHT_TYPE kLightType_Dynamic
+#endif
 
 vec2 encode_to_r8g8( float value )
 {
@@ -113,7 +124,8 @@ void main()
 	
 	
 	vec3 totalLighting = vec3(0.0);
-	if (uShadeType == kShadeTypeDefault
+	
+	if (   uShadeType == kShadeTypeDefault
 		|| uShadeType == kShadeTypeDebug_Lighting)
 	{
 		int lightIndex = uLightIndex;
@@ -255,51 +267,6 @@ void main()
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
-			
-			// Pull the contribution of the rect (some distance atten via sizes?)
-			/*float solidAngle = RectangleSolidAngle(pixelPosition, p0, p1, p2, p3);
-			
-			// Do surface blending
-			float attenuation = solidAngle * 0.2 * (
-				clamp(dot(normalize(p0 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p1 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p2 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p3 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(point_to_light_center), pixelNormal), 0.0, 1.0)
-				);
-			
-			attenuation = max(0.0, attenuation);
-			
-			// Get total response
-			float total_response = attenuation;// * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
-			
-			// Acculmulate this light's lighting
-			totalLighting = lightColors.rgb * total_response * lightParams.x;*/
-			
-			// Get our final closest point
-			/*vec3 point_to_light = light_up * up_distance + light_side * side_distance + point_to_light_center;
-			//vec3 point_to_light = point_on_plane;
-			float point_to_light_len = length(point_to_light);
-			
-			// Now we do normal lighting:
-			
-			// Shit stolen from https://wickedengine.net/2017/09/07/area-lights/ as usual
-			
-			// Do distance attentuation
-			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
-			
-			// Do surface blending
-			float surface_response = dot(point_to_light / point_to_light_len, pixelNormal);
-			//surface_response = clamp(surface_response * 0.5 + 0.5, 0.0, 1.0); // soft backfaces
-			surface_response = clamp(surface_response, 0.0, 1.0);
-			
-			// Get total response
-			float total_response = attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
-			
-			// Acculmulate this light's lighting
-			totalLighting = lightColors.rgb * total_response * lightParams.x;*/
 		}
 	}
 	

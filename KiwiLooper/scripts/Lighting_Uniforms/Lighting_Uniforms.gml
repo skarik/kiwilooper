@@ -307,6 +307,11 @@ function lightGatherLights_Deferred()
 {
 	var lights = array_create(0);
 	
+	var lights_point = array_create(0);
+	var lights_pointSpot = array_create(0);
+	var lights_rect = array_create(0);
+	var lights_rectSpot = array_create(0);
+	
 	with (ob_3DLight)
 	{
 		// Skip invalid lights
@@ -315,10 +320,21 @@ function lightGatherLights_Deferred()
 			continue;
 		}
 		
-		// Save this light into the data we want
-		lights[array_length(lights)] = id;
+		// Save this light into specific kind of light
+		var light_index = array_length(lights);
+		if (type == kLightType_Point)
+			array_push(lights_point, light_index);
+		else if (type == kLightType_PointSpot)
+			array_push(lights_pointSpot, light_index);
+		else if (type == kLightType_Rect)
+			array_push(lights_rect, light_index);
+		else if (type == kLightType_RectSpot)
+			array_push(lights_rectSpot, light_index);
 		
-		// Break out if we have gathered 8 lights
+		// Save this light into the data we want
+		array_push(lights, id);
+		
+		// Break out if we have gathered too many lights
 		if (array_length(lights) >= 32)
 		{
 			break;
@@ -406,5 +422,10 @@ function lightGatherLights_Deferred()
 		colors:		light_color_array,
 		directions:	light_direction_array,
 		others:		light_other_array,
+		
+		lightlist_point:		lights_point,
+		lightlist_pointSpot:	lights_pointSpot,
+		lightlist_rect:			lights_rect,
+		lightlist_rectSpot:		lights_rectSpot,
 	};
 }

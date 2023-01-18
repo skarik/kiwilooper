@@ -42,8 +42,12 @@ void main()
 	
 	
 	vec3 totalLighting = vec3(0.0);
-	if (uShadeType == kShadeTypeDefault
+	
+#if SHADE_TYPE == kShadeType_Dynamic
+	if (   uShadeType == kShadeTypeDefault
 		|| uShadeType == kShadeTypeDebug_Lighting)
+#endif
+#if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDefault || SHADE_TYPE == kShadeTypeDebug_Lighting)
 	{
 		int lightIndex = uLightIndex;
 		
@@ -57,7 +61,10 @@ void main()
 		vec4 lightDirection	= uLightDirections[lightIndex];
 		vec4 lightOther		= uLightOthers[lightIndex];
 
+#if LIGHT_TYPE == kLightType_Dynamic
 		if (lightType == kLightType_Point)
+#endif
+#	if (LIGHT_TYPE == kLightType_Dynamic || LIGHT_TYPE == kLightType_Point)
 		{
 			vec3 point_to_light = lightPosition.xyz - pixelPosition;
 			float point_to_light_len = length(point_to_light);
@@ -77,7 +84,11 @@ void main()
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
 		}
+#	endif
+#if LIGHT_TYPE == kLightType_Dynamic
 		else if (lightType == kLightType_PointSpot)
+#endif
+#	if (LIGHT_TYPE == kLightType_Dynamic || LIGHT_TYPE == kLightType_PointSpot)
 		{
 			// Grab light parameters needed
 			vec3 light_forward = lightDirection.xyz;
@@ -109,7 +120,11 @@ void main()
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
 		}
+#	endif
+#if LIGHT_TYPE == kLightType_Dynamic
 		else if (lightType == kLightType_Rect)
+#endif
+#	if (LIGHT_TYPE == kLightType_Dynamic || LIGHT_TYPE == kLightType_Rect)
 		{
 			// Turn plane into a n.d definition
 			vec3 light_forward = lightDirection.xyz;
@@ -184,78 +199,57 @@ void main()
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
-			
-			// Pull the contribution of the rect (some distance atten via sizes?)
-			/*float solidAngle = RectangleSolidAngle(pixelPosition, p0, p1, p2, p3);
-			
-			// Do surface blending
-			float attenuation = solidAngle * 0.2 * (
-				clamp(dot(normalize(p0 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p1 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p2 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(p3 - pixelPosition), pixelNormal), 0.0, 1.0) +
-				clamp(dot(normalize(point_to_light_center), pixelNormal), 0.0, 1.0)
-				);
-			
-			attenuation = max(0.0, attenuation);
-			
-			// Get total response
-			float total_response = attenuation;// * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
-			
-			// Acculmulate this light's lighting
-			totalLighting = lightColors.rgb * total_response * lightParams.x;*/
-			
-			// Get our final closest point
-			/*vec3 point_to_light = light_up * up_distance + light_side * side_distance + point_to_light_center;
-			//vec3 point_to_light = point_on_plane;
-			float point_to_light_len = length(point_to_light);
-			
-			// Now we do normal lighting:
-			
-			// Shit stolen from https://wickedengine.net/2017/09/07/area-lights/ as usual
-			
-			// Do distance attentuation
-			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
-			
-			// Do surface blending
-			float surface_response = dot(point_to_light / point_to_light_len, pixelNormal);
-			//surface_response = clamp(surface_response * 0.5 + 0.5, 0.0, 1.0); // soft backfaces
-			surface_response = clamp(surface_response, 0.0, 1.0);
-			
-			// Get total response
-			float total_response = attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
-			
-			// Acculmulate this light's lighting
-			totalLighting = lightColors.rgb * total_response * lightParams.x;*/
 		}
+#	endif
 	}
+#endif
 	
+#if SHADE_TYPE == kShadeType_Dynamic
 	if (uShadeType == kShadeTypeDefault)
+#endif
+#	if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDefault)
 	{
 		gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0) * baseAlbedo;
 		gl_FragData[0].a = 1.0;
 	}
+#	endif
+#if SHADE_TYPE == kShadeType_Dynamic
 	else if (uShadeType == kShadeTypeDebug_Lighting)
+#endif
+#	if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDebug_Lighting)
 	{
 		gl_FragData[0] = vec4(clamp(totalLighting, 0.0, 1.2), 1.0);
 	}
+#	endif
+#if SHADE_TYPE == kShadeType_Dynamic
 	else if (uShadeType == kShadeTypeDebug_Normals)
+#endif
+#	if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDebug_Normals)
 	{
 		gl_FragData[0] = vec4(pixelNormal.xyz * 0.5 + 0.5, 1.0);
 	}
+#	endif
+#if SHADE_TYPE == kShadeType_Dynamic
 	else if (uShadeType == kShadeTypeDebug_Albedo)
+#endif
+#	if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDebug_Albedo)
 	{
 		gl_FragData[0] = vec4(baseAlbedo.rgb, 1.0);
 	}
+#	endif
+#if SHADE_TYPE == kShadeType_Dynamic
 	else if (uShadeType == kShadeTypeDebug_AlbedoDarken)
+#endif
+#	if (SHADE_TYPE == kShadeType_Dynamic || SHADE_TYPE == kShadeTypeDebug_AlbedoDarken)
 	{
 		gl_FragData[0] = vec4((dot(pixelNormal, vec3(1, 0.707, 0.5)) * 0.2 + 0.7 ) * baseAlbedo.rgb, 1.0);
 	}
+#	endif
+#if SHADE_TYPE == kShadeType_Dynamic
 	// Fallback for warnings
 	else
 	{
 		gl_FragData[0] = vec4(1.0, 0.0, 1.0, 1.0);
 	}
+#endif
 }

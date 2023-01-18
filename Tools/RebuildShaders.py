@@ -2,12 +2,42 @@
 ## go to ../Kiwilooper
 ## let's just make a list of xshader -> shader path for rebuilding
 
+g_shaderCommonDefines = [
+	"kShadeTypeDefault=0",
+	"kShadeType_Dynamic=0xFF",
+	"kShadeTypeDebug_Normals=1",
+	"kShadeTypeDebug_Albedo=2",
+	"kShadeTypeDebug_Lighting=3",
+	"kShadeTypeDebug_AlbedoDarken=4",
+	"kLightType_Dynamic=0xFF",
+	"kLightType_SpotAngle=0x02",
+	"kLightType_Ambient=0x00",
+	"kLightType_Point=0x01",
+	"kLightType_PointSpot=0x02",
+	"kLightType_Sphere=0x04",
+	"kLightType_SphereSpot=0x06",
+	"kLightType_Rect=0x08",
+	"kLightType_RectSpot=0x0A",
+]
+
 g_shaders = [
 	("SolidsReference_vv.glsl", "sh_editorSolidsDebug.vsh", ""),
 	("SolidsReference_p.glsl", "sh_editorSolidsDebug.fsh", ""),
-	("LightingGeneral_vv.glsl", "sh_lightGeneral.vsh", ""),
-	("LightingGeneral_p.glsl", "sh_lightGeneral.fsh", ""),
+	# Skip these two for faster iteration times
+	#("LightingGeneral_vv.glsl", "sh_lightGeneral.vsh", ""),
+	#("LightingGeneral_p.glsl", "sh_lightGeneral.fsh", "SHADE_TYPE=0xFF LIGHT_TYPE=0xFF"),
+	("LightingGeneral_vv.glsl", "sh_lightPoint.vsh", ""),
+	("LightingGeneral_p.glsl", "sh_lightPoint.fsh", "SHADE_TYPE=0 LIGHT_TYPE=0x01"),
+	("LightingGeneral_vv.glsl", "sh_lightPointSpot.vsh", ""),
+	("LightingGeneral_p.glsl", "sh_lightPointSpot.fsh", "SHADE_TYPE=0 LIGHT_TYPE=0x02"),
+	("LightingGeneral_vv.glsl", "sh_lightRect.vsh", ""),
+	("LightingGeneral_p.glsl", "sh_lightRect.fsh", "SHADE_TYPE=0 LIGHT_TYPE=0x08"),
 ];
+
+
+# Add common defines
+for index, tup in enumerate(g_shaders):
+	g_shaders[index] = (tup[0], tup[1], tup[2] + " " + " ".join(g_shaderCommonDefines))
 
 #=========================================================#
 # Options

@@ -3,12 +3,14 @@
 #pragma include("ShadingCommon.glsli")
 // Shading types
 #define kShadeTypeDefault				0
+#define kShadeType_Dynamic				0xFF
 #define kShadeTypeDebug_Normals			1
 #define kShadeTypeDebug_Albedo			2
 #define kShadeTypeDebug_Lighting		3
 #define kShadeTypeDebug_AlbedoDarken	4
 
 // Lighting types
+#define kLightType_Dynamic			0xFF
 #define kLightType_SpotAngle		0x02
 
 #define kLightType_Ambient			0x00
@@ -19,6 +21,15 @@
 #define kLightType_SphereSpot		(kLightType_Sphere | kLightType_SpotAngle)
 #define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
+
+// Default shade types
+#ifndef SHADE_TYPE
+#define SHADE_TYPE kShadeType_Dynamic
+#endif
+
+#ifndef LIGHT_TYPE
+#define LIGHT_TYPE kLightType_Dynamic
+#endif
 
 vec2 encode_to_r8g8( float value )
 {

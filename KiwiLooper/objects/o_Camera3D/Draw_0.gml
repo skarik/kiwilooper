@@ -182,25 +182,72 @@ surface_set_target(buffer_scene3d);
 		
 			gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
 		
-			//drawShaderSet(sh_lightPoint);
-			//lightDeferredPushUniforms_Point(lightParams, buffer_albedo, buffer_normals, buffer_depth);
-			drawShaderSet(sh_lightGeneral);
-			lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
-				var allLights = lightParams.lightlist;
-				// loop through all the lights
-				for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
-				{
-					//var light = allLights[lightIndex];
-					//lightDeferredPushUniforms_Point_Index(lightIndex);
-					lightDeferredPushUniforms_General_Index(lightIndex);
-					draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
-						draw_vertex_texture(-1, -1, 0, 1);
-						draw_vertex_texture(1, -1, 1, 1);
-						draw_vertex_texture(-1, 1, 0, 0);
-						draw_vertex_texture(1, 1, 1, 0);
-					draw_primitive_end();
-				}
-			drawShaderReset();
+			if (global.shadeType == kShadeTypeDebug_Lighting)
+			{
+				drawShaderSet(sh_lightGeneral);
+				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+					var allLights = lightParams.lightlist;
+					// loop through all the lights
+					for (var lightIndex = 0; lightIndex < array_length(allLights); ++lightIndex)
+					{
+						lightDeferredPushUniforms_General_Index(lightIndex);
+						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+							draw_vertex_texture(-1, -1, 0, 1);
+							draw_vertex_texture(1, -1, 1, 1);
+							draw_vertex_texture(-1, 1, 0, 0);
+							draw_vertex_texture(1, 1, 1, 0);
+						draw_primitive_end();
+					}
+				drawShaderReset();
+			}
+			else
+			{
+				drawShaderSet(sh_lightPoint);
+				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+					// loop through all the lights
+					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_point); ++lightIndex)
+					{
+						lightDeferredPushUniforms_General_Index(lightParams.lightlist_point[lightIndex]);
+						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+							draw_vertex_texture(-1, -1, 0, 1);
+							draw_vertex_texture(1, -1, 1, 1);
+							draw_vertex_texture(-1, 1, 0, 0);
+							draw_vertex_texture(1, 1, 1, 0);
+						draw_primitive_end();
+					}
+				drawShaderReset();
+			
+				drawShaderSet(sh_lightPointSpot);
+				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+					// loop through all the lights
+					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_pointSpot); ++lightIndex)
+					{
+						lightDeferredPushUniforms_General_Index(lightParams.lightlist_pointSpot[lightIndex]);
+						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+							draw_vertex_texture(-1, -1, 0, 1);
+							draw_vertex_texture(1, -1, 1, 1);
+							draw_vertex_texture(-1, 1, 0, 0);
+							draw_vertex_texture(1, 1, 1, 0);
+						draw_primitive_end();
+					}
+				drawShaderReset();
+			
+				drawShaderSet(sh_lightRect);
+				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+					// loop through all the lights
+					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_rect); ++lightIndex)
+					{
+						lightDeferredPushUniforms_General_Index(lightParams.lightlist_rect[lightIndex]);
+						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+							draw_vertex_texture(-1, -1, 0, 1);
+							draw_vertex_texture(1, -1, 1, 1);
+							draw_vertex_texture(-1, 1, 0, 0);
+							draw_vertex_texture(1, 1, 1, 0);
+						draw_primitive_end();
+					}
+				drawShaderReset();
+			}
+			
 		}
 		else
 		{
