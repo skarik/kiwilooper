@@ -145,12 +145,44 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 				// Update the tool texture info
 				{
 					var mapSolid = recent_object.object.primitive;
-					var face = mapSolid.faces[recent_object.object.face];
+					// Selected a single face
+					if (recent_object.object.face != null)
+					{
+						var face = mapSolid.faces[recent_object.object.face];
 					
-					m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
-					m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
-					m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
-					
+						// Update transformation info
+						m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
+						m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
+						m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
+					}
+					// Selected an entire solid
+					else
+					{
+						var bFacesIdentical = true;
+						for (var i = 1; i < array_length(mapSolid.faces); ++i)
+						{
+							var face0 = mapSolid.faces[0];
+							var face = mapSolid.faces[i];
+							
+							if (!face.uvinfo.scale.equals(face0.uvinfo.scale)
+								|| !face.uvinfo.offset.equals(face0.uvinfo.offset)
+								|| face.uvinfo.rotation != face0.uvinfo.rotation)
+							{
+								bFacesIdentical = false;
+								break;
+							}
+						}
+						
+						if (bFacesIdentical)
+						{
+							var face = mapSolid.faces[0];
+						
+							// Update transformation info
+							m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
+							m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
+							m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
+						}
+					}
 					// TODO: mapping
 				}
 			}
@@ -315,6 +347,11 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		
 		if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 		{
+			if (selection.object.face == null)
+			{
+				debugLog(kLogError, "Invalid face applied.");
+				return false;
+			}
 			var face = selection.object.primitive.faces[selection.object.face];
 		
 			if (face.texture.type != new_texture.type
@@ -350,6 +387,11 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		
 		if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 		{
+			if (selection.object.face == null)
+			{
+				debugLog(kLogError, "Invalid face applied.");
+				return false;
+			}
 			var face = selection.object.primitive.faces[selection.object.face];
 			
 			if ((face.uvinfo.mapping == kSolidMappingNormal && face.uvinfo.normal.equals(new_alignment.normal))
