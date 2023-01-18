@@ -10,6 +10,7 @@ m_activated = false;
 m_activeTime = 0.0;
 
 // Set up persistent state
+PersistentState("enabled", kValueTypeBoolean);
 PersistentState("m_activated", kValueTypeBoolean);
 PersistentState("m_activeTime", kValueTypeFloat);
 

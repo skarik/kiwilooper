@@ -17,6 +17,11 @@ function PersistentStateGameSave()
 
 function PersistentStateRoomStart(map_id)
 {
+	if (is_undefined(map_id) || (is_string(map_id) && map_id == "") || map_id == null)
+	{
+		return;
+	}
+	
 	// Initialize the entity listing
 	
 	debugLog(kLogVerbose, "Persistence target set to \"" + string(map_id) + "\"");
@@ -28,6 +33,11 @@ function PersistentStateRoomStart(map_id)
 }
 function PersistentStateRoomEnd(map_id)
 {
+	if (is_undefined(map_id) || (is_string(map_id) && map_id == "") || map_id == null)
+	{
+		return;
+	}
+	
 	// If there is no ent listing, don't bother tracking.
 	if (!variable_global_exists("_persistent_ent_listing"))
 	{
@@ -48,6 +58,9 @@ function PersistentStateRoomEnd(map_id)
 		
 		if (iexists(ent_entry.instance))
 		{
+			// Update variables in the state before saving
+			PersistentState_UpdateValues(ent_entry.instance);
+			
 			array_push(	map_state.entity_listing,
 						{
 							index:	ent_entry.index,
@@ -57,6 +70,7 @@ function PersistentStateRoomEnd(map_id)
 		}
 		else
 		{
+			debugLog(kLogVerbose, " map ent " + string(i) + " is destroyed");
 			array_push(	map_state.entity_listing,
 						{
 							index:	ent_entry.index,
@@ -144,6 +158,24 @@ function PersistentState_AddVariable(variable_name, variable_type, variable_valu
 		value:		variable_value,
 		type:		variable_type,
 	});
+}
+
+/// @function PersistentState_UpdateValues(instance)
+/// @desc Updates the persistent state table with the current variables.
+function PersistentState_UpdateValues(instance)
+{
+	// Initialize persistent state holder
+	PersistentStateInitializeHolder();
+	
+	var state = instance.game_persistent_state;
+	
+	// Loop through all the values and grab them
+	for (var varIndex = 0; varIndex < array_length(state.listing); ++varIndex)
+	{
+		var variableEntry = state.listing[varIndex];
+		variableEntry.value = variable_instance_get(instance, variableEntry.name);
+		variableEntry.haveValue = !is_undefined(variableEntry.value);
+	}
 }
 
 /// @function PersistentStateGet(instance)

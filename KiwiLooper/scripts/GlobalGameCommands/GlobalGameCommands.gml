@@ -9,7 +9,24 @@ function Game_GetMapId()
 {
 	if (is_string(global.game_loadingMap))
 	{
-		return global.game_loadingMap;
+		if (string_length(global.game_loadingMap) > 0)
+		{
+			var split_name = string_split(global.game_loadingMap, "/\\", true);
+			var last_filename = split_name[array_length(split_name) - 1];
+			var last_filename_len = string_pos(".", last_filename);
+			if (last_filename_len == 0)
+			{
+				return last_filename;
+			}
+			else
+			{
+				return string_copy(last_filename, 1, last_filename_len - 1);
+			}
+		}
+		else
+		{
+			return "";
+		}
 	}
 	else if (room_exists(room) && room != rm_EmptyMap)
 	{
@@ -314,6 +331,7 @@ function _Game_LoadMapInternal()
 				
 				// Load in persistence information
 				PersistentStateApply(entInstance);
+				// Note: an invalid ref is potentially in the entlist.
 							
 				// Perform post-level-load
 				if (iexists(entInstance)) // Persistence apply could destroy this instance.
@@ -330,6 +348,7 @@ function _Game_LoadMapInternal()
 			{
 				// Load in persistence information
 				PersistentStateApply(entInstance);
+				// Note: an invalid ref is potentially in the entlist.
 				
 				// Perform post-level-load 
 				if (iexists(entInstance)) // Persistence apply could destroy this instance.

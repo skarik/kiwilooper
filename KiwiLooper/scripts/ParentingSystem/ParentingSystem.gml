@@ -42,6 +42,13 @@ function Parenting_BuildHeirarchy(entlist)
 	for (var entIndex = 0; entIndex < entlist.GetEntityCount(); ++entIndex)
 	{
 		var entInstance = entlist.GetEntity(entIndex);
+		
+		// Skip if entity was deleted by persistence (TODO: should this be done AFTER?)
+		if (!iexists(entInstance))
+		{
+			continue;
+		}
+		
 		var ent = entInstance.entity;
 		
 		if (entPropertyExists(ent, "parent", kValueTypeLively))
