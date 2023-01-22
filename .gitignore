@@ -6,3 +6,5 @@ Assets/History
 Assets/History/*
 KiwiLooper/datafiles/models/test
 KiwiLooper/datafiles/models/test/*
+__pycache__/*
+Tools/Blender/__pycache__/*
