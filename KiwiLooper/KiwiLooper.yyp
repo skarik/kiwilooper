@@ -356,6 +356,7 @@
     {"id":{"name":"sfx_explo5","path":"sprites/sfx_explo5/sfx_explo5.yy",},"order":0,},
     {"id":{"name":"omu_tseq1Text","path":"objects/omu_tseq1Text/omu_tseq1Text.yy",},"order":0,},
     {"id":{"name":"duiDrawHoverRect","path":"scripts/duiDrawHoverRect/duiDrawHoverRect.yy",},"order":0,},
+    {"id":{"name":"KAILoader","path":"scripts/KAILoader/KAILoader.yy",},"order":3,},
     {"id":{"name":"MapLoaderEditor","path":"scripts/MapLoaderEditor/MapLoaderEditor.yy",},"order":5,},
     {"id":{"name":"MapLoaderSplatmap","path":"scripts/MapLoaderSplatmap/MapLoaderSplatmap.yy",},"order":4,},
     {"id":{"name":"o_charaRobot","path":"objects/o_charaRobot/o_charaRobot.yy",},"order":3,},

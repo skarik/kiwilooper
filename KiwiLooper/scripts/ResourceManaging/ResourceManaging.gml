@@ -132,10 +132,47 @@ function ResourceLoadModel(filepath)
 		// and we're done w/ parser
 		delete parser;
 		
+		// check for a KAI file as well
+		var mesh_animation = undefined;
+		{
+			var kai_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kai";
+			debugLog(kLogVerbose, "Looking for \"" + kai_filename + "\"");
+			
+			var kailoader = new AFileKAILoader();
+			if (kailoader.OpenFile(kai_filename))
+			{
+				debugLog(kLogVerbose, "Found a Kiwi Animation Info file. Loading in.");
+				
+				// Read in all data at once
+				if (kailoader.ReadHighLevel()
+					&& kailoader.ReadSubanims()
+					&& kailoader.ReadAllAttachments())
+				{
+					mesh_animation = {
+						frame_begin:	kailoader.m_frame_begin,
+						frame_end:		kailoader.m_frame_end,
+						subanims:		kailoader.m_subanims,
+							// [name, frame_begin, frame_end]
+						attachments:	kailoader.m_attachments,
+							// [name, data[pos[], rot[], scal[]]]
+					};
+				}
+				else
+				{
+					debugLog(kLogWarning, "Had an issue when loading in the KAI file.");
+				}
+				
+				kailoader.CloseFile();
+			}
+			
+			delete kailoader;
+		}
+		
 		// save data in new resource
 		var new_model_resource = {
 			frames: mesh_frames,
 			textures: mesh_textures,
+			animation: mesh_animation,
 			INTERNAL_ResourceHousekeeping,
 			type: resourceType,
 		};

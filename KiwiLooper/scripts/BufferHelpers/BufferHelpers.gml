@@ -48,6 +48,57 @@ function buffer_read_byte_array_as_terminated_string(buffer, length)
 	return str;
 }
 
+/// @function buffer_read_string_line(buffer)
+/// @desc Reads a byte array until hitting a null character or endline. Will not ensure encoding sticks.
+function buffer_read_string_line(buffer)
+{
+	var max_len = buffer_get_size(buffer);
+	
+	var str = "";
+	
+	var bRead = true;
+	while (bRead)
+	{
+		// Check for EoF
+		var tell_pos = buffer_tell(buffer);
+		if (tell_pos >= max_len)
+		{
+			bRead = false;
+		}
+		else
+		{
+			var ch = buffer_read(buffer, buffer_u8);
+			// Check for EoL
+			if (ch == ord("\n") || ch == ord("\r") || ch == 0)
+			{
+				bRead = false;
+				// Check if this is possibly a windows newline
+				if (ch == ord("\r"))
+				{
+					// Peak ahead for \r\n and go past it
+					ch = buffer_peek(buffer, buffer_tell(buffer), buffer_u8);
+					if (ch == ord("\n"))
+					{
+						buffer_read(buffer, buffer_u8); 
+					}
+				}
+			}
+			else
+			{
+				str += chr(ch);
+			}
+		}
+	}
+	
+	return str;
+}
+
+/// @function buffer_at_eof(buffer)
+function buffer_at_eof(buffer)
+{
+	return buffer_tell(buffer) >= buffer_get_size(buffer);
+}
+
 /// @function buffer_write_buffer(destBuffer, srcBuffer)
 /// @desc Writes a buffer into a buffer.
 function buffer_write_buffer(destBuffer, srcBuffer)
