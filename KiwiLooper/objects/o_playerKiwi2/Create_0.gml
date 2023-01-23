@@ -3,6 +3,9 @@
 // Inherit the parent event
 event_inherited();
 
+// Set move options
+kMoveSpeed = 40;
+
 // Change mesh updating to follow character angles
 {
 	m_updateCharacterMesh = function()
@@ -40,6 +43,8 @@ event_inherited();
 		//vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sprite_index, animationRenderIndex));
 		if (bRenderOk)
 		{
+			//animationRenderIndex = floor((Time.time * 5.0) % (23 - 11) + 11); // test
+			
 			var finalIndex = floor(abs(animationRenderIndex)) % array_length(mesh_frame);
 			var finalMesh = mesh_frame[finalIndex];
 		

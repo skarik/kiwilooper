@@ -14,7 +14,8 @@ import importlib
 if __name__ == "__main__":
 	import sys, os
 	this_python_filepath = bpy.path.abspath(bpy.context.space_data.text.filepath)
-	if (os.path.basename(this_python_filepath) == "kiwiTools.py"):
+	this_python_basename = os.path.basename(this_python_filepath)
+	if (this_python_basename == "kiwiTools.py" or this_python_basename == "__init__.py"):
 		new_path = os.path.dirname(this_python_filepath)
 		if not (new_path in sys.path):
 			sys.path.append(new_path)

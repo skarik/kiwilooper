@@ -768,7 +768,6 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"default cube.md2","CopyToMask":3035426170322551022,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwibod.png","CopyToMask":-1,"filePath":"datafiles/models",},
-    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.md2","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_skin.pcx","CopyToMask":-1,"filePath":"datafiles/models/test",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner_skin.png","CopyToMask":-1,"filePath":"datafiles/models/test",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gunner.md2","CopyToMask":-1,"filePath":"datafiles/models/test",},
@@ -799,6 +798,9 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest10.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_hallway_test.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kai","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi_old.md2","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.md2","CopyToMask":-1,"filePath":"datafiles/models",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

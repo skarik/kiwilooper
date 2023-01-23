@@ -182,7 +182,7 @@ surface_set_target(buffer_scene3d);
 		
 			gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
 		
-			if (global.shadeType == kShadeTypeDebug_Lighting)
+			if (true || global.shadeType == kShadeTypeDebug_Lighting)
 			{
 				drawShaderSet(sh_lightGeneral);
 				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
@@ -200,7 +200,7 @@ surface_set_target(buffer_scene3d);
 					}
 				drawShaderReset();
 			}
-			else
+			else // TODO: fix uniform submission
 			{
 				drawShaderSet(sh_lightPoint);
 				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);

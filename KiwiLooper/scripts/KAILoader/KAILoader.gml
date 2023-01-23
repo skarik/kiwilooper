@@ -29,7 +29,7 @@ function AFileKAILoader() constructor
 		
 		while (!buffer_at_eof(m_stringBlob))
 		{
-			var read_pos = buffer_tell(buffer);
+			var read_pos = buffer_tell(m_stringBlob);
 			var line = buffer_read_string_line(m_stringBlob);
 			
 			// Split line on whitespace
