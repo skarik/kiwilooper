@@ -22,13 +22,32 @@ class PropertyGroup_KiwiTools_Object(bpy.types.PropertyGroup):
 		type=bpy.types.ID,
 		)
 
+class PropertyGroup_KiwiTools_WeakMarker(bpy.types.PropertyGroup):
+	frame: bpy.props.IntProperty(
+		name="Frame",
+		default=0,
+		)
+	name: bpy.props.StringProperty(
+		name="Name",
+		default="",
+		)
+
+class PropertyGroup_KiwiTools_MarkerEvent(bpy.types.PropertyGroup):
+	# Marker events have a marker
+	marker: bpy.props.PointerProperty(
+		type=PropertyGroup_KiwiTools_WeakMarker,
+		)
+	# And an object to potentially pull transform from
+	object: bpy.props.PointerProperty(
+		type=bpy.types.Object,
+		)
+
 class SceneProperties_KiwiTools_AnimInfoExport(bpy.types.PropertyGroup):
 	tracked_transforms: bpy.props.CollectionProperty(
 		type=PropertyGroup_KiwiTools_Object,
 		name="Tracked Transforms",
 		description="Transforms that will be tracked and exported",
 		)
-	
 	tracked_transforms_index: bpy.props.IntProperty(
 		name="Index for list",
 		default=0,
@@ -38,9 +57,7 @@ class SceneProperties_KiwiTools_AnimInfoExport(bpy.types.PropertyGroup):
 		name="Use Markers",
 		description="If enabled, exports animation",
 		default=True,
-		)
-		
-	# TODO: note down list of Markers that are to be used as events
+	)
 	
 	export_path: bpy.props.StringProperty(
 		name="Export Directory",
@@ -48,7 +65,22 @@ class SceneProperties_KiwiTools_AnimInfoExport(bpy.types.PropertyGroup):
 		default="//",
 		maxlen=1024,
 		subtype="FILE_PATH",
-		#set=OnSet_export_path,
+		)
+
+	export_events: bpy.props.BoolProperty(
+		name="Export Events",
+		description="If enabled, exports markers as events",
+		default=False,
+		)
+
+	tracked_events: bpy.props.CollectionProperty(
+		type=PropertyGroup_KiwiTools_MarkerEvent,
+		name="Events",
+		description="Events that will be exported"
+		)
+	tracked_events_index: bpy.props.IntProperty(
+		name="Index for list",
+		default=0,
 		)
 
 # ==================================================================================
@@ -57,7 +89,6 @@ class UIList_KiwiTools_Objects(bpy.types.UIList):
 	def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
 		# We could write some code to decide which icon to use here...
 		custom_icon = 'OBJECT_DATAMODE'
-		
 
 		# Make sure your code supports all 3 layout types
 		if self.layout_type in {'DEFAULT', 'COMPACT'}:
@@ -71,6 +102,30 @@ class UIList_KiwiTools_Objects(bpy.types.UIList):
 			else:
 				layout.label(text="<Invalid>", icon=custom_icon)
 
+		elif self.layout_type in {'GRID'}:
+			layout.alignment = 'CENTER'
+			layout.label(text="", icon=custom_icon)
+
+class UIList_KiwiTools_MarkerEvents(bpy.types.UIList):
+	def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+		# We could write some code to decide which icon to use here...
+		custom_icon = 'OBJECT_DATAMODE'
+
+		# Make sure your code supports all 3 layout types
+		if self.layout_type in {'DEFAULT', 'COMPACT'}:
+			# Display the object & icon
+			if item.marker is not None:
+				row = layout.row(align=True)
+				split = row.split(factor=0.2, align=True)
+				split.label(text=f"{item.marker.frame:d}")
+				split.label(text=item.marker.name)
+				if item.object is not None:
+					split.label(text=item.object.name, icon=item.object.bl_rna.properties['type'].enum_items[item.object.type].icon)
+				else:
+					split.label(text="<No Object>")
+			else:
+				layout.label(text="<Invalid>", icon=custom_icon)
+		
 		elif self.layout_type in {'GRID'}:
 			layout.alignment = 'CENTER'
 			layout.label(text="", icon=custom_icon)
@@ -92,13 +147,31 @@ class View3DPanel_KiwiTools_AnimInfoExporter(bpy.types.Panel):
 		col.template_list(
 			"UIList_KiwiTools_Objects", "DEFAULT",
 			context.scene.kiwitools_animinfo, "tracked_transforms",
-			context.scene.kiwitools_animinfo, "tracked_transforms_index"
+			context.scene.kiwitools_animinfo, "tracked_transforms_index",
+			rows=4,
 			)
 		
 		row = col.row(align=True)
 		row.operator("kiwitools.animinfo_add_item", text="Selected", icon='ADD')
 		row.operator("kiwitools.animinfo_delete_item", text="Delete Item", icon='REMOVE')
 		
+		#If exporting event data?
+		col = layout.column()
+		col.prop(context.scene.kiwitools_animinfo, "export_events")
+		if context.scene.kiwitools_animinfo.export_events is True:
+			# Show list
+			col.template_list(
+				"UIList_KiwiTools_MarkerEvents", "DEFAULT",
+				context.scene.kiwitools_animinfo, "tracked_events",
+				context.scene.kiwitools_animinfo, "tracked_events_index",
+				rows=4,
+				)
+			# Show tools for editing the list
+			row = col.row(align=True)
+			row.operator("kiwitools.animinfo_add_event", text="Selected", icon='ADD')
+			row.operator("kiwitools.animinfo_delete_event", text="Delete Item", icon='REMOVE')
+			col.operator("kiwitools.animinfo_assign_object_to_event", text="Assign Selected", icon='EYEDROPPER')
+
 		#If exporting marker data?
 		col = layout.column()
 		col.prop(context.scene.kiwitools_animinfo, "export_markers")
@@ -109,6 +182,7 @@ class View3DPanel_KiwiTools_AnimInfoExporter(bpy.types.Panel):
 		# Need a button for "export"
 		layout.operator("kiwitools.animinfo_export", text="Export", icon='EXPORT')
 		
+
 
 class Operator_KiwiTools_ExportListNewItem(bpy.types.Operator):
 	bl_idname = "kiwitools.animinfo_add_item"
@@ -136,6 +210,60 @@ class Operator_KiwiTools_ExportListDeleteItem(bpy.types.Operator):
 			animinfo.tracked_transforms.remove(animinfo.tracked_transforms_index)
 			animinfo.tracked_transforms_index = min(max(0, animinfo.tracked_transforms_index - 1), len(animinfo.tracked_transforms) - 1)
 		return {'FINISHED'}
+
+
+
+class Operator_KiwiTools_ExportListNewEvent(bpy.types.Operator):
+	bl_idname = "kiwitools.animinfo_add_event"
+	bl_label = "Add new item to listng"
+	
+	def execute(self, context):
+		# Grab the main selected marker
+		selected_marker = None
+		for marker in context.scene.timeline_markers:
+			if marker.select:
+				selected_marker = marker
+				break
+		
+		if selected_marker is not None:
+			# Save it
+			tracked_item = context.scene.kiwitools_animinfo.tracked_events.add()
+			tracked_item.marker.name = selected_marker.name
+			tracked_item.marker.frame = selected_marker.frame
+			return {'FINISHED'}
+		return {'CANCELLED'}
+		
+class Operator_KiwiTools_ExportListDeleteEvent(bpy.types.Operator):
+	bl_idname = "kiwitools.animinfo_delete_event"
+	bl_label = "Remove highlighted list item"
+	
+	def execute(self, context):
+		animinfo = context.scene.kiwitools_animinfo
+		# Remove highlighted object
+		if animinfo.tracked_events_index is not None:
+			animinfo.tracked_events.remove(animinfo.tracked_events_index)
+			animinfo.tracked_events_index = min(max(0, animinfo.tracked_events_index - 1), len(animinfo.tracked_events) - 1)
+		return {'FINISHED'}
+
+class Operator_KiwiTools_ExportListAssignObjectToEvent(bpy.types.Operator):
+	bl_idname = "kiwitools.animinfo_assign_object_to_event"
+	bl_label = "Remove highlighted list item"
+	
+	def execute(self, context):
+		animinfo = context.scene.kiwitools_animinfo
+		# Associate selected object (or deselect if no selection)
+		if animinfo.tracked_events_index is not None:
+			# Assign an object
+			if len(context.selected_objects) > 0 and context.selected_objects[0] is not None:
+				new_object = context.selected_objects[0]
+				animinfo.tracked_events[animinfo.tracked_events_index].object = new_object
+			# Unassign and object
+			else:
+				animinfo.tracked_events[animinfo.tracked_events_index].object = None
+			console_print("TODO")
+		return {'FINISHED'}
+
+
 
 class Operator_KiwiTools_AnimInfoExport(bpy.types.Operator):
 	bl_idname = "kiwitools.animinfo_export"
@@ -166,7 +294,8 @@ class Operator_KiwiTools_AnimInfoExport(bpy.types.Operator):
 			scene=context.scene,
 			context=context,
 			export_filepath=context.scene.kiwitools_animinfo.export_path,
-			markers_enabled=context.scene.kiwitools_animinfo.export_markers
+			markers_enabled=context.scene.kiwitools_animinfo.export_markers,
+			events_enabled=context.scene.kiwitools_animinfo.export_events,
 			)
 
 		if ret:
@@ -176,7 +305,7 @@ class Operator_KiwiTools_AnimInfoExport(bpy.types.Operator):
 		
 # ==================================================================================
 
-def ExportAnimationInfo(export_filepath, scene: bpy.types.Scene=None, context: bpy.types.Context=None, markers_enabled=False):
+def ExportAnimationInfo(export_filepath, scene: bpy.types.Scene=None, context: bpy.types.Context=None, markers_enabled=False, events_enabled=False):
 	import os
 	import math
 
@@ -233,9 +362,37 @@ def ExportAnimationInfo(export_filepath, scene: bpy.types.Scene=None, context: b
 				fout.write(f"\t{subAnimationName} {subAnimationStart} {marker.frame}\n")
 		fout.write("}\n")
 
-	# Export the transform info
+	# Since we're about to mess with time, save original state
 	frame_old = scene.frame_current
-	
+
+	# If events are enabled, then roll through the animation and output those
+	if events_enabled:
+		fout.write("events\n")
+		fout.write("{\n")
+
+		event_ref: PropertyGroup_KiwiTools_MarkerEvent
+		for event_ref in scene.kiwitools_animinfo.tracked_events:
+			# For each one, output the event information
+			if event_ref.object is None:
+				fout.write(f"\t{event_ref.marker.frame} {event_ref.marker.name}")
+			else:
+				# Set frame & evaluate the frame
+				scene.frame_set(event_ref.marker.frame)
+				depsgraph = context.evaluated_depsgraph_get()
+				evaluated_object = event_ref.object.evaluated_get(depsgraph)
+
+				translation	= evaluated_object.matrix_world.to_translation()
+				rotation	= evaluated_object.matrix_world.to_euler('XYZ')
+				scale		= evaluated_object.matrix_world.to_scale()
+
+				# Write out the event w/ transform data
+				fout.write(f"\t{event_ref.marker.frame} {event_ref.marker.name}")
+				fout.write(f" {translation.x:0.12f} {translation.y:0.12f} {translation.z:0.12f}")
+				fout.write(f" {math.degrees(rotation.x):0.12f} {math.degrees(rotation.y):0.12f} {math.degrees(rotation.z):0.12f}")
+				fout.write(f" {scale.x:0.12f} {scale.y:0.12f} {scale.z:0.12f}\n")
+		fout.write("}\n")
+
+	# Export the transform info
 	object_ref: PropertyGroup_KiwiTools_Object
 	for object_ref in scene.kiwitools_animinfo.tracked_transforms:
 		# For each one, roll through frame-by-frame and export TRS information
@@ -262,6 +419,7 @@ def ExportAnimationInfo(export_filepath, scene: bpy.types.Scene=None, context: b
 
 		fout.write("}\n")
 
+	# Restore scene state
 	scene.frame_set(frame_old)
 
 	# Close file now that we're done
@@ -274,12 +432,18 @@ def ExportAnimationInfo(export_filepath, scene: bpy.types.Scene=None, context: b
 
 classes = (
 	PropertyGroup_KiwiTools_Object,
+	PropertyGroup_KiwiTools_WeakMarker,
+	PropertyGroup_KiwiTools_MarkerEvent,
 	SceneProperties_KiwiTools_AnimInfoExport,
 
 	UIList_KiwiTools_Objects,
+	UIList_KiwiTools_MarkerEvents,
 	View3DPanel_KiwiTools_AnimInfoExporter,
 	Operator_KiwiTools_ExportListNewItem,
 	Operator_KiwiTools_ExportListDeleteItem,
+	Operator_KiwiTools_ExportListNewEvent,
+	Operator_KiwiTools_ExportListDeleteEvent,
+	Operator_KiwiTools_ExportListAssignObjectToEvent,
 	Operator_KiwiTools_AnimInfoExport,
 	)
 

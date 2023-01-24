@@ -144,10 +144,12 @@ function ResourceLoadModel(filepath)
 				debugLog(kLogVerbose, "Found a Kiwi Animation Info file. Loading in.");
 				
 				// Read in all data at once
-				if (kailoader.ReadHighLevel()
-					&& kailoader.ReadSubanims()
-					&& kailoader.ReadAllAttachments())
+				if (kailoader.ReadHighLevel())
 				{
+					kailoader.ReadSubanims(); 
+					kailoader.ReadAllAttachments();
+					kailoader.ReadEvents();
+					
 					mesh_animation = {
 						frame_begin:	kailoader.m_frame_begin,
 						frame_end:		kailoader.m_frame_end,
@@ -157,6 +159,8 @@ function ResourceLoadModel(filepath)
 						//attachments:	kailoader.m_attachments,
 						attachments:	ds_map_create(),
 							// [name, data[pos[], rot[], scal[]]]
+						events:			ds_map_create(),
+							// [frame, name, pos[], rot[], scal[]]
 					};
 					
 					// Set up the map for fast access
@@ -169,6 +173,11 @@ function ResourceLoadModel(filepath)
 					{
 						var attachment = kailoader.m_attachments[i];
 						mesh_animation.attachments[? attachment.name] = attachment;
+					}
+					for (var i = 0; i < array_length(kailoader.m_events); ++i)
+					{
+						var event = kailoader.m_events[i];
+						mesh_animation.events[? int64(event.frame)] = event;
 					}
 				}
 				else

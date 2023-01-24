@@ -33,6 +33,7 @@ function Character_Create()
 	animationIndex = 0;
 	animationRenderIndex = 0;
 	animationLooped = false;
+	animationName = "";
 
 	// Control state
 	hasControl = false;

@@ -1,3 +1,5 @@
+/// @function AFileKaiLoader() constructor
+/// @desc Loader for the Kiwi Animation Info files, which stores animation info not directly in the MD2.
 function AFileKAILoader() constructor
 {
 	m_stringBlob = null;
@@ -6,9 +8,11 @@ function AFileKAILoader() constructor
 	m_frame_end		= 0;
 	m_subanims		= [];
 	m_attachments	= [];
+	m_events		= [];
 	
 	m_offset_subanims		= null;
 	m_offset_attachments	= [];
+	m_offset_events			= null;
 	
 	static OpenFile = function(path)
 	{
@@ -52,6 +56,11 @@ function AFileKAILoader() constructor
 			else if (line_tokens[0] == "subanims")
 			{
 				m_offset_subanims = read_pos;
+			}
+			// Save subanim block position
+			else if (line_tokens[0] == "events")
+			{
+				m_offset_events = read_pos;
 			}
 			// Read in attachment name & save start position
 			else if (string_pos("attachment", line_tokens[0]) == 1)
@@ -169,5 +178,51 @@ function AFileKAILoader() constructor
 			ReadAttachment(i);
 		}
 		return true;
+	}
+	
+	static ReadEvents = function()
+	{
+		if (m_offset_events != null)
+		{
+			buffer_seek(m_stringBlob, buffer_seek_start, m_offset_events);
+		
+			// Read in to the {
+			_bufferReadUntil(m_stringBlob, "{");
+			// Read until our line is }
+			_bufferReadUntil(m_stringBlob, "}", function(line_tokens)
+				{
+					if (array_length(line_tokens) == 0)
+					{
+						return;
+					}
+					// Read in the transform only if we have all the tokens for it
+					else if (array_length(line_tokens) < 10)
+					{
+						array_push(m_events,
+							{
+								frame:	real(line_tokens[0]),
+								name:	line_tokens[1],
+								position:	undefined,
+								rotation:	undefined,
+								scale:		undefined,
+							});
+					}
+					// Read in transform data if we have ALL the tokens for it
+					else
+					{
+						array_push(m_events,
+							{
+								frame:	real(line_tokens[0]),
+								name:	line_tokens[1],
+								position:	[real(line_tokens[2]), real(line_tokens[3]), real(line_tokens[4])],
+								rotation:	[real(line_tokens[5]), real(line_tokens[6]), real(line_tokens[7])],
+								scale:		[real(line_tokens[8]), real(line_tokens[9]), real(line_tokens[10])],
+							});
+					}
+				});
+			
+			return true;
+		}
+		return false;
 	}
 }
