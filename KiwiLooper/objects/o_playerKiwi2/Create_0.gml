@@ -3,6 +3,9 @@
 // Inherit the parent event
 event_inherited();
 
+m_uiWorld = inew(o_uiPlayerKiwi2);
+//m_uiEgg = inew(o_uiPlayerEgg);
+
 // Set move options
 kMoveSpeed = 40;
 
