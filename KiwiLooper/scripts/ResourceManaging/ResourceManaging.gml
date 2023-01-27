@@ -71,7 +71,7 @@ function ResourceLoadModel(filepath)
 			l_load_time_start = get_timer();
 		}
 		
-		// Check for a KCH file to see if we can skip frames
+		// Check for a KCH file to see if we can skip the slow Frames[] loading
 		var bHasCachedMesh = false;
 		var cached_data = undefined;
 		if (kResources_UseCachedModels)
@@ -79,46 +79,9 @@ function ResourceLoadModel(filepath)
 			var kch_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kch";
 			debugLog(kLogVerbose, "Looking for \"" + kch_filename + "\"");
 			
-			if (file_exists(kch_filename))
-			{
-				var model_edit_time	= faudioUtilGetFileLastEditTime(filepath);
-				var kch_edit_time	= faudioUtilGetFileLastEditTime(kch_filename);
-				
-				// Is our cache younger than our model? Then it's up-to-date!
-				if (kch_edit_time > model_edit_time)
-				{
-					var filecache_buffer = buffer_load(kch_filename);
-					if (buffer_exists(filecache_buffer))
-					{
-						debugLog(kLogVerbose, "Cached mesh found, loading.");
-						
-						// Read in the time (unused atm)
-						var cache_creation = buffer_read(filecache_buffer, buffer_u64);
-				
-						// Read in the other data
-						var cacheFrameCount = buffer_read(filecache_buffer, buffer_u32);
-						var cacheVertCount = buffer_read(filecache_buffer, buffer_u32);
-						var cacheVertBufferSize = buffer_read(filecache_buffer, buffer_u32);
-				
-						// Read in the frames
-						for (var frameIndex = 0; frameIndex < cacheFrameCount; ++frameIndex)
-						{
-							var cacheFrameByteSize = buffer_read(filecache_buffer, buffer_u32);
-							var cacheFrameData = buffer_read_buffer(filecache_buffer, buffer_fixed, cacheFrameByteSize);
-							// Create vertex buffer now
-							cached_data[frameIndex] = vertex_create_buffer_from_buffer_ext(cacheFrameData, meshb_CreateVertexFormat(), 0, cacheVertCount);
-							// Done with loaded data
-							buffer_delete(cacheFrameData);
-						}
-				
-						// Done with loaded buffer
-						buffer_delete(filecache_buffer);
-				
-						// Mark we do have a cached mesh
-						bHasCachedMesh = true;
-					}
-				}
-			}
+			cached_data = ModelCacheRead(kch_filename, filepath);
+			// Did we have something loaded?
+			bHasCachedMesh = !is_undefined(cached_data);
 		}
 		
 		// Create correct parser
@@ -209,32 +172,7 @@ function ResourceLoadModel(filepath)
 			if (kResources_UseCachedModels)
 			{
 				var kch_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kch";
-				
-				var total_output_buffer = buffer_create(0, buffer_grow, 1);
-				
-				// Write time of the cache
-				buffer_write(total_output_buffer, buffer_u64, faudioUtilGetCurrentTime());
-				// Write size of meshes
-				buffer_write(total_output_buffer, buffer_u32, frameCount);
-				// Write the buffer size info
-				buffer_write(total_output_buffer, buffer_u32, vertex_get_number(mesh_frames[0]));
-				buffer_write(total_output_buffer, buffer_u32, vertex_get_buffer_size(mesh_frames[0]));
-				
-				// Write out all the meshes
-				for (var iframe = 0; iframe < frameCount; ++iframe)
-				{
-					var frame_buffer = buffer_create_from_vertex_buffer(mesh_frames[iframe], buffer_fixed, 1);
-					buffer_write(total_output_buffer, buffer_u32, buffer_get_size(frame_buffer));
-					buffer_write_buffer(total_output_buffer, frame_buffer);
-					buffer_delete(frame_buffer);
-				}
-				
-				// Save to file
-				var kch_output_filename = fioGetDatafileDirectory() + "\\" + kch_filename;
-				debugLog(kLogVerbose, "Caching to \"" + kch_output_filename + "\"");
-				buffer_save(total_output_buffer, kch_output_filename);
-				// Clear up data
-				buffer_delete(total_output_buffer);
+				ModelCacheWrite(kch_filename);
 			}
 		}
 		else
@@ -255,57 +193,8 @@ function ResourceLoadModel(filepath)
 			var kai_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kai";
 			debugLog(kLogVerbose, "Looking for \"" + kai_filename + "\"");
 			
-			var kailoader = new AFileKAILoader();
-			if (kailoader.OpenFile(kai_filename))
-			{
-				debugLog(kLogVerbose, "Found a Kiwi Animation Info file. Loading in.");
-				
-				// Read in all data at once
-				if (kailoader.ReadHighLevel())
-				{
-					kailoader.ReadSubanims(); 
-					kailoader.ReadAllAttachments();
-					kailoader.ReadEvents();
-					
-					mesh_animation = {
-						frame_begin:	kailoader.m_frame_begin,
-						frame_end:		kailoader.m_frame_end,
-						//subanims:		kailoader.m_subanims,
-						subanims:		ds_map_create(),
-							// [name, frame_begin, frame_end]
-						//attachments:	kailoader.m_attachments,
-						attachments:	ds_map_create(),
-							// [name, data[pos[], rot[], scal[]]]
-						events:			ds_map_create(),
-							// [frame, name, pos[], rot[], scal[]]
-					};
-					
-					// Set up the map for fast access
-					for (var i = 0; i < array_length(kailoader.m_subanims); ++i)
-					{
-						var subanim = kailoader.m_subanims[i];
-						mesh_animation.subanims[? subanim.name] = subanim;
-					}
-					for (var i = 0; i < array_length(kailoader.m_attachments); ++i)
-					{
-						var attachment = kailoader.m_attachments[i];
-						mesh_animation.attachments[? attachment.name] = attachment;
-					}
-					for (var i = 0; i < array_length(kailoader.m_events); ++i)
-					{
-						var event = kailoader.m_events[i];
-						mesh_animation.events[? int64(event.frame)] = event;
-					}
-				}
-				else
-				{
-					debugLog(kLogWarning, "Had an issue when loading in the KAI file.");
-				}
-				
-				kailoader.CloseFile();
-			}
-			
-			delete kailoader;
+			// Loads up all the kai data and puts it into a useable form
+			mesh_animation = KAILoadInfo(kai_filename);
 		}
 		
 		// done loading
