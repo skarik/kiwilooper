@@ -9,3 +9,4 @@ KiwiLooper/datafiles/models/test/*
 __pycache__/*
 Tools/Blender/__pycache__/*
 *.blend1
+*.kch

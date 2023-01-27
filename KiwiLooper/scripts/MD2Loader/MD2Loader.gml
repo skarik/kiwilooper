@@ -1,3 +1,6 @@
+#macro kMD2_IsBitpackedVertexRead true
+#macro kMD2_IsFlatAttributeArrays true
+
 function AFileMD2Header() constructor
 {
 	ident		= 0;
@@ -123,19 +126,16 @@ function AFileMD2Reader() constructor
 			m_tris = array_create(m_header.num_tris);
 			for (var i = 0; i < m_header.num_tris; ++i)
 			{
-				m_tris[i] = {};
-				m_tris[i].vertex = array_create(3);
+				m_tris[i] = {
+					vertex:	array_create(3, 0),
+					st:		array_create(3, 0),
+				};
 				m_tris[i].vertex[0] = buffer_read(m_blob, buffer_s16);
 				m_tris[i].vertex[1] = buffer_read(m_blob, buffer_s16);
 				m_tris[i].vertex[2] = buffer_read(m_blob, buffer_s16);
-				m_tris[i].st = array_create(3);
 				m_tris[i].st[0] = buffer_read(m_blob, buffer_s16);
 				m_tris[i].st[1] = buffer_read(m_blob, buffer_s16);
 				m_tris[i].st[2] = buffer_read(m_blob, buffer_s16);
-				/*	{
-					vertex: [buffer_read(m_blob, buffer_s16), buffer_read(m_blob, buffer_s16), buffer_read(m_blob, buffer_s16)],
-					st: [buffer_read(m_blob, buffer_s16), buffer_read(m_blob, buffer_s16), buffer_read(m_blob, buffer_s16)],
-				};*/
 			}
 			return true;
 		}
@@ -163,37 +163,36 @@ function AFileMD2Reader() constructor
 			m_frames = array_create(m_header.num_frames);
 			for (var frame = 0; frame < m_header.num_frames; ++frame)
 			{
-				m_frames[frame] = {};
-				m_frames[frame].scale = array_create(3);
-					m_frames[frame].scale[0] = buffer_read(m_blob, buffer_f32);
-					m_frames[frame].scale[1] = buffer_read(m_blob, buffer_f32);
-					m_frames[frame].scale[2] = buffer_read(m_blob, buffer_f32);
-				m_frames[frame].translate = array_create(3);
-					m_frames[frame].translate[0] = buffer_read(m_blob, buffer_f32);
-					m_frames[frame].translate[1] = buffer_read(m_blob, buffer_f32);
-					m_frames[frame].translate[2] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame] = {
+					scale:		array_create(3, 0.0),
+					translate:	array_create(3, 0.0),
+					name:		"",
+					verts:		array_create(m_header.num_vertices, 0),
+				};
+				m_frames[frame].scale[0] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame].scale[1] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame].scale[2] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame].translate[0] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame].translate[1] = buffer_read(m_blob, buffer_f32);
+				m_frames[frame].translate[2] = buffer_read(m_blob, buffer_f32);
 				m_frames[frame].name = buffer_read_byte_array_as_terminated_string(m_blob, 16);
-				m_frames[frame].verts = array_create(m_header.num_vertices);
-					/*{
-					scale: new Vector3(buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32)),
-					translate: new Vector3(buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32), buffer_read(m_blob, buffer_f32)),
-					name: buffer_read_byte_array(m_blob, 16),
-					verts: array_create(m_header.num_vertices),
-				};*/
 				for (var i = 0; i < m_header.num_vertices; ++i)
 				{
-					m_frames[frame].verts[i] = {}; 
-					m_frames[frame].verts[i].v = array_create(3);
-					m_frames[frame].verts[i].v[0] = buffer_read(m_blob, buffer_u8);
-					m_frames[frame].verts[i].v[1] = buffer_read(m_blob, buffer_u8);
-					m_frames[frame].verts[i].v[2] = buffer_read(m_blob, buffer_u8);
-					m_frames[frame].verts[i].normalIndex = buffer_read(m_blob, buffer_u8);
-						/*{
-						// Compressed vertex position
-						v: [buffer_read(m_blob, buffer_u8), buffer_read(m_blob, buffer_u8), buffer_read(m_blob, buffer_u8)],
-						// Normal index
-						normalIndex: buffer_read(m_blob, buffer_u8),
-					};*/
+					if (kMD2_IsBitpackedVertexRead)
+					{
+						m_frames[frame].verts[i] = buffer_read(m_blob, buffer_u32);
+					}
+					else
+					{
+						m_frames[frame].verts[i] = {
+							v:	array_create(3, 0),
+							normalIndex:	0,
+						};
+						m_frames[frame].verts[i].v[0] = buffer_read(m_blob, buffer_u8);
+						m_frames[frame].verts[i].v[1] = buffer_read(m_blob, buffer_u8);
+						m_frames[frame].verts[i].v[2] = buffer_read(m_blob, buffer_u8);
+						m_frames[frame].verts[i].normalIndex = buffer_read(m_blob, buffer_u8);
+					}
 				}
 			}
 			return true;
@@ -204,9 +203,19 @@ function AFileMD2Reader() constructor
 
 function AMeshFrame(vertex_count) constructor
 {
-	vertices	= array_create(vertex_count);
-	normals		= array_create(vertex_count);
-	texcoords	= array_create(vertex_count);
+	count = 0;
+	if (kMD2_IsFlatAttributeArrays)
+	{
+		vertices	= array_create(vertex_count * 3, 0.0);
+		normals		= array_create(vertex_count * 3, 0.0);
+		texcoords	= array_create(vertex_count * 2, 0.0);
+	}
+	else
+	{
+		vertices	= array_create(vertex_count);
+		normals		= array_create(vertex_count);
+		texcoords	= array_create(vertex_count);
+	}
 }
 
 function AMD2FileParser() constructor
@@ -214,6 +223,7 @@ function AMD2FileParser() constructor
 	m_loader = new AFileMD2Reader();
 	m_frames = [];
 	m_textures = [];
+	m_frameCount = 0;
 	
 	/// @function GetFrames()
 	static GetFrames = function()
@@ -226,6 +236,11 @@ function AMD2FileParser() constructor
 	{
 		gml_pragma("forceinline");
 		return m_textures;
+	}
+	/// @function GetFrameCount()
+	static GetFrameCount = function()
+	{
+		return m_frameCount;
 	}
 	
 	/// @function OpenFile(filepath)
@@ -244,6 +259,7 @@ function AMD2FileParser() constructor
 			m_loader.CloseFile();
 			return false;
 		}
+		m_frameCount = m_loader.m_header.num_frames;
 		return true;
 	}
 	/// @function CloseFile(filepath)
@@ -266,6 +282,10 @@ function AMD2FileParser() constructor
 				// Create the mesh we need to submit for this frame
 				m_frames[frame] = new AMeshFrame(m_loader.m_header.num_tris * 3);
 				
+				// Set up initial output frame info
+				var output_frame = m_frames[frame];
+				output_frame.count = m_loader.m_header.num_tris * 3;
+				
 				// Take all the triangles and find their vertices:
 				var compressed_frame = m_loader.m_frames[frame];
 				
@@ -275,24 +295,77 @@ function AMD2FileParser() constructor
 					{
 						var out_vert_index = tri * 3 + tri_index;
 						
-						var compressed_vertex_index = m_loader.m_tris[tri].vertex[tri_index];
-						var compressed_st_index = m_loader.m_tris[tri].st[tri_index];
+						var compressed_vertex_index	= m_loader.m_tris[tri].vertex[tri_index];
+						var compressed_st_index		= m_loader.m_tris[tri].st[tri_index];
 						
-						// 
-						var vert = [compressed_frame.verts[compressed_vertex_index].v[0], compressed_frame.verts[compressed_vertex_index].v[1], compressed_frame.verts[compressed_vertex_index].v[2]];
-						vert[0] = vert[0] * compressed_frame.scale[0] + compressed_frame.translate[0];
-						vert[1] = vert[1] * compressed_frame.scale[1] + compressed_frame.translate[1];
-						vert[2] = vert[2] * compressed_frame.scale[2] + compressed_frame.translate[2];
-						m_frames[frame].vertices[out_vert_index] = vert;
+						// Load in flat arrays
+						if (kMD2_IsFlatAttributeArrays)
+						{
+							var out_vert_index2 = out_vert_index * 2;
+							var out_vert_index3 = out_vert_index * 3;
+							
+							//
+							output_frame.vertices[out_vert_index3+0]
+								= ((compressed_frame.verts[compressed_vertex_index] & 0x0000FF))		* compressed_frame.scale[0] + compressed_frame.translate[0];
+							output_frame.vertices[out_vert_index3+1]
+								= ((compressed_frame.verts[compressed_vertex_index] & 0x00FF00) >> 8)	* compressed_frame.scale[1] + compressed_frame.translate[1];
+							output_frame.vertices[out_vert_index3+2]
+								= ((compressed_frame.verts[compressed_vertex_index] & 0xFF0000) >> 16)	* compressed_frame.scale[2] + compressed_frame.translate[2];
+							
+							//
+							var normal = FileMD2LookupNormal((compressed_frame.verts[compressed_vertex_index] & 0xFF000000) >> 24);
+							output_frame.normals[out_vert_index3+0] = normal[0];
+							output_frame.normals[out_vert_index3+1] = normal[1];
+							output_frame.normals[out_vert_index3+2] = normal[2];
+							
+							//
+							var st = m_loader.m_st[compressed_st_index];
+							output_frame.texcoords[out_vert_index2+0] = real(st[0]) / m_loader.m_header.skinwidth;
+							output_frame.texcoords[out_vert_index2+1] = real(st[1]) / m_loader.m_header.skinheight;
+						}
+						// Load into arrays-in-arrays
+						else
+						{
+							// 
+							var vert;
+							if (kMD2_IsBitpackedVertexRead)
+							{
+								vert = [
+									(compressed_frame.verts[compressed_vertex_index] & 0x0000FF),
+									(compressed_frame.verts[compressed_vertex_index] & 0x00FF00) >> 8, 
+									(compressed_frame.verts[compressed_vertex_index] & 0xFF0000) >> 16
+									];
+							}
+							else
+							{
+								vert = [
+									compressed_frame.verts[compressed_vertex_index].v[0],
+									compressed_frame.verts[compressed_vertex_index].v[1],
+									compressed_frame.verts[compressed_vertex_index].v[2]
+									];
+							}
+							vert[0] = vert[0] * compressed_frame.scale[0] + compressed_frame.translate[0];
+							vert[1] = vert[1] * compressed_frame.scale[1] + compressed_frame.translate[1];
+							vert[2] = vert[2] * compressed_frame.scale[2] + compressed_frame.translate[2];
+							output_frame.vertices[out_vert_index] = vert;
 						
-						//
-						var normal = FileMD2LookupNormal(compressed_frame.verts[compressed_vertex_index].normalIndex);
-						m_frames[frame].normals[out_vert_index] = normal;
+							//
+							var normal;
+							if (kMD2_IsBitpackedVertexRead)
+							{
+								normal = FileMD2LookupNormal((compressed_frame.verts[compressed_vertex_index] & 0xFF000000) >> 24);
+							}
+							else
+							{
+								normal = FileMD2LookupNormal(compressed_frame.verts[compressed_vertex_index].normalIndex);
+							}
+							output_frame.normals[out_vert_index] = normal;
 						
-						//
-						var st = m_loader.m_st[compressed_st_index];
-						var texCoord = [real(st[0]) / m_loader.m_header.skinwidth, real(st[1]) / m_loader.m_header.skinheight];
-						m_frames[frame].texcoords[out_vert_index] = texCoord;
+							//
+							var st = m_loader.m_st[compressed_st_index];
+							var texCoord = [real(st[0]) / m_loader.m_header.skinwidth, real(st[1]) / m_loader.m_header.skinheight];
+							output_frame.texcoords[out_vert_index] = texCoord;
+						}
 					}
 				}
 			}

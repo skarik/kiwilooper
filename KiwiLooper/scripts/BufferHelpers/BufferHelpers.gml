@@ -20,9 +20,18 @@ function buffer_read_byte_array(buffer, length)
 	var str = "";
 	for (var i = 0; i < length; ++i)
 	{
-		str += chr(buffer_read(buffer, buffer_u8));
+		str += ansi_char(buffer_read(buffer, buffer_u8));
 	}
 	return str;
+}
+
+/// @function buffer_read_buffer(buffer, type, length)
+function buffer_read_buffer(buffer, type, length)
+{
+	var result = buffer_create(length, type, 1);
+	buffer_copy(buffer, buffer_tell(buffer), length, result, 0);
+	buffer_seek(buffer, buffer_seek_relative, length);
+	return result;
 }
 
 /// @function buffer_read_byte_array_as_terminated_string(buffer, length)
@@ -38,7 +47,7 @@ function buffer_read_byte_array_as_terminated_string(buffer, length)
 			++i
 			break;
 		}
-		str += chr(ch);
+		str += ansi_char(ch);
 	}
 	while (i < length)
 	{
@@ -76,7 +85,7 @@ function buffer_read_string_line(buffer)
 				if (ch == ord("\r"))
 				{
 					// Peak ahead for \r\n and go past it
-					ch = buffer_peek(buffer, buffer_tell(buffer), buffer_u8);
+					ch = buffer_peek(buffer, tell_pos + 1, buffer_u8);
 					if (ch == ord("\n"))
 					{
 						buffer_read(buffer, buffer_u8); 
@@ -85,7 +94,7 @@ function buffer_read_string_line(buffer)
 			}
 			else
 			{
-				str += chr(ch);
+				str += ansi_char(ch);
 			}
 		}
 	}
@@ -104,6 +113,9 @@ function buffer_at_eof(buffer)
 function buffer_write_buffer(destBuffer, srcBuffer)
 {
 	var old_dest_start = buffer_tell(destBuffer);
+	
+	if (buffer_get_type(srcBuffer) != buffer_grow)
+		buffer_seek(srcBuffer, buffer_seek_end, 0);
 	var src_size = buffer_tell(srcBuffer);
 	
 	// Allocate data in the destination

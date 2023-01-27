@@ -75,7 +75,8 @@ function AFileKAILoader() constructor
 			}
 			else
 			{
-				debugLog(kLogWarning, "Unidentified KAI line \"" + line + "\"");
+				//debugLog(kLogWarning, "Unidentified KAI line \"" + line + "\"");
+				// TODO, skip between { and }
 			}
 		}
 		

@@ -196,6 +196,9 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		for (var entIndex = 0; entIndex < entInstanceList.GetEntityCount(); ++entIndex)
 		{
 			var entInstance = entInstanceList.GetEntity(entIndex);
+			// Skip if object does not exist
+			if (!iexists(entInstance) || entInstance == null)
+				continue;
 			
 			// Skip if no mesh defined
 			if (is_undefined(entInstance.entity.gizmoMesh) || !is_struct(entInstance.entity.gizmoMesh))

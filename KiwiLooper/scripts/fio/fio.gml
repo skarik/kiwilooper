@@ -67,6 +67,20 @@ function fioGetProjectDirectory()
 	return global.fio_projectDir;
 }
 
+/// @function fioGetDatafileDirectory()
+/// @description Returns the current datafile path.
+function fioGetDatafileDirectory()
+{
+	if (global.fio_development)
+	{
+		return global.fio_projectDir + "\\datafiles\\";
+	}
+	else
+	{
+		return global.fio_projectDir;
+	}
+}
+
 /// @function fioLocalPathFindAbsoluteFilepath(localPath)
 /// @param localPath : path to the local folder
 function fioLocalPathFindAbsoluteFilepath(localPath)

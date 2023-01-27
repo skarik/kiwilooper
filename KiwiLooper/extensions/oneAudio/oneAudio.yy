@@ -166,6 +166,10 @@
         {"resourceType":"GMExtensionFunction","resourceVersion":"1.0","name":"faudioEffectLowPass1GetCutoffStrength","externalName":"AudioEffectLowPass1GetCutoffStrength","kind":1,"help":"effect","hidden":false,"returnType":2,"argCount":0,"args":[
             2,
           ],"documentation":"",},
+        {"resourceType":"GMExtensionFunction","resourceVersion":"1.0","name":"faudioUtilGetCurrentTime","externalName":"UtilGetCurrentTime","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[],"documentation":"",},
+        {"resourceType":"GMExtensionFunction","resourceVersion":"1.0","name":"faudioUtilGetFileLastEditTime","externalName":"UtilGetFileLastEditTime","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[
+            1,
+          ],"documentation":"",},
       ],"constants":[
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"kFAMixChannelDefault","value":"0","hidden":false,},
         {"resourceType":"GMExtensionConstant","resourceVersion":"1.0","name":"kFAMixChannelPhysics","value":"1","hidden":false,},

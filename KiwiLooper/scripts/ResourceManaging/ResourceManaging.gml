@@ -48,6 +48,9 @@ function ResourceGetTypeIsTexture(resource)
 // Define macros for common resource information
 #macro INTERNAL_ResourceHousekeeping references: 0, last_used: Time.time
 
+#macro kResources_UseCachedModels true
+#macro kResources_TimeModelLoader true
+
 function ResourceLoadModel(filepath)
 {
 	var filepath_indexer = string_lower(filepath);
@@ -62,6 +65,62 @@ function ResourceLoadModel(filepath)
 	var resourceType = ResourceGetType(filepath);
 	if (resourceType == kResourceTypeMDL || kResourceTypeMD2)
 	{
+		var l_load_time_start = 0;
+		if (kResources_TimeModelLoader)
+		{
+			l_load_time_start = get_timer();
+		}
+		
+		// Check for a KCH file to see if we can skip frames
+		var bHasCachedMesh = false;
+		var cached_data = undefined;
+		if (kResources_UseCachedModels)
+		{
+			var kch_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kch";
+			debugLog(kLogVerbose, "Looking for \"" + kch_filename + "\"");
+			
+			if (file_exists(kch_filename))
+			{
+				var model_edit_time	= faudioUtilGetFileLastEditTime(filepath);
+				var kch_edit_time	= faudioUtilGetFileLastEditTime(kch_filename);
+				
+				// Is our cache younger than our model? Then it's up-to-date!
+				if (kch_edit_time > model_edit_time)
+				{
+					var filecache_buffer = buffer_load(kch_filename);
+					if (buffer_exists(filecache_buffer))
+					{
+						debugLog(kLogVerbose, "Cached mesh found, loading.");
+						
+						// Read in the time (unused atm)
+						var cache_creation = buffer_read(filecache_buffer, buffer_u64);
+				
+						// Read in the other data
+						var cacheFrameCount = buffer_read(filecache_buffer, buffer_u32);
+						var cacheVertCount = buffer_read(filecache_buffer, buffer_u32);
+						var cacheVertBufferSize = buffer_read(filecache_buffer, buffer_u32);
+				
+						// Read in the frames
+						for (var frameIndex = 0; frameIndex < cacheFrameCount; ++frameIndex)
+						{
+							var cacheFrameByteSize = buffer_read(filecache_buffer, buffer_u32);
+							var cacheFrameData = buffer_read_buffer(filecache_buffer, buffer_fixed, cacheFrameByteSize);
+							// Create vertex buffer now
+							cached_data[frameIndex] = vertex_create_buffer_from_buffer_ext(cacheFrameData, meshb_CreateVertexFormat(), 0, cacheVertCount);
+							// Done with loaded data
+							buffer_delete(cacheFrameData);
+						}
+				
+						// Done with loaded buffer
+						buffer_delete(filecache_buffer);
+				
+						// Mark we do have a cached mesh
+						bHasCachedMesh = true;
+					}
+				}
+			}
+		}
+		
 		// Create correct parser
 		var parser;
 		if (resourceType == kResourceTypeMDL)
@@ -76,8 +135,11 @@ function ResourceLoadModel(filepath)
 		// Load model
 		if (parser.OpenFile(filepath))
 		{
+			// TODO: check if bHasCachedMesh and if cached mesh matches the file
+			
 			// decompress the model
-			if (!parser.ReadFrames() || !parser.ReadTextures())
+			var bReadFramesOk = bHasCachedMesh || parser.ReadFrames();
+			if (!bReadFramesOk || !parser.ReadTextures())
 			{
 				show_error("beansed it", true);
 			}
@@ -104,29 +166,84 @@ function ResourceLoadModel(filepath)
 			mesh_textures[itexture] = parser.GetTextures()[itexture];
 		}
 		
-		var frameCount = array_length(parser.GetFrames());
+		var frameCount = parser.GetFrameCount();
 		var mesh_frames = array_create(frameCount);
 		
 		// create render meshes from the data
-		var uvs = sprite_get_uvs(mesh_textures[0].sprite, 0);
-		for (var iframe = 0; iframe < frameCount; ++iframe)
+		if (!bHasCachedMesh)
 		{
-			var frame = parser.GetFrames()[iframe];
-			var frame_mesh = meshb_Begin();
-			for (var i = 0; i < array_length(frame.vertices); ++i)
+			assert(frameCount == array_length(parser.GetFrames()));
+			
+			var uvs = sprite_get_uvs(mesh_textures[0].sprite, 0);
+			for (var iframe = 0; iframe < frameCount; ++iframe)
 			{
-				meshb_PushVertex(frame_mesh, 
-					new MBVertex(
-						Vec3(frame.vertices[i][0], frame.vertices[i][1], frame.vertices[i][2]),
-						c_white, 1.0,
-						(new Vector2(frame.texcoords[i][0], frame.texcoords[i][1])).biasUVSelf(uvs),
-						Vec3(frame.normals[i][0], frame.normals[i][1], frame.normals[i][2])
-						)
-					);
-			}
-			meshb_End(frame_mesh);
+				var frame = parser.GetFrames()[iframe];
+				var frame_mesh = meshb_Begin();
+				for (var i = 0; i < frame.count; ++i)
+				{
+					if (kMD2_IsFlatAttributeArrays)
+					{
+						meshb_PushVertex2(frame_mesh,
+							frame.vertices[i*3+0], frame.vertices[i*3+1], frame.vertices[i*3+2],
+							c_white, 1.0,
+							lerp(uvs[0], uvs[2], frame.texcoords[i*2+0]), lerp(uvs[0], uvs[2], frame.texcoords[i*2+1]),
+							frame.normals[i*3+0], frame.normals[i*3+1], frame.normals[i*3+2]
+							);
+					}
+					else
+					{
+						meshb_PushVertex2(frame_mesh,
+							frame.vertices[i][0], frame.vertices[i][1], frame.vertices[i][2],
+							c_white, 1.0,
+							lerp(uvs[0], uvs[2], frame.texcoords[i][0]), lerp(uvs[0], uvs[2], frame.texcoords[i][1]),
+							frame.normals[i][0], frame.normals[i][1], frame.normals[i][2]
+							);
+					}
+				}
+				meshb_End(frame_mesh);
 	
-			mesh_frames[iframe] = frame_mesh;
+				mesh_frames[iframe] = frame_mesh;
+			}
+			
+			// Save the cached stuff
+			if (kResources_UseCachedModels)
+			{
+				var kch_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kch";
+				
+				var total_output_buffer = buffer_create(0, buffer_grow, 1);
+				
+				// Write time of the cache
+				buffer_write(total_output_buffer, buffer_u64, faudioUtilGetCurrentTime());
+				// Write size of meshes
+				buffer_write(total_output_buffer, buffer_u32, frameCount);
+				// Write the buffer size info
+				buffer_write(total_output_buffer, buffer_u32, vertex_get_number(mesh_frames[0]));
+				buffer_write(total_output_buffer, buffer_u32, vertex_get_buffer_size(mesh_frames[0]));
+				
+				// Write out all the meshes
+				for (var iframe = 0; iframe < frameCount; ++iframe)
+				{
+					var frame_buffer = buffer_create_from_vertex_buffer(mesh_frames[iframe], buffer_fixed, 1);
+					buffer_write(total_output_buffer, buffer_u32, buffer_get_size(frame_buffer));
+					buffer_write_buffer(total_output_buffer, frame_buffer);
+					buffer_delete(frame_buffer);
+				}
+				
+				// Save to file
+				var kch_output_filename = fioGetDatafileDirectory() + "\\" + kch_filename;
+				debugLog(kLogVerbose, "Caching to \"" + kch_output_filename + "\"");
+				buffer_save(total_output_buffer, kch_output_filename);
+				// Clear up data
+				buffer_delete(total_output_buffer);
+			}
+		}
+		else
+		{
+			// Copy cached data to mesh_frames
+			for (var iframe = 0; iframe < frameCount; ++iframe)
+			{
+				mesh_frames[iframe] = cached_data[iframe];
+			}
 		}
 		
 		// and we're done w/ parser
@@ -189,6 +306,13 @@ function ResourceLoadModel(filepath)
 			}
 			
 			delete kailoader;
+		}
+		
+		// done loading
+		if (kResources_TimeModelLoader)
+		{
+			var elapsed_time = get_timer() - l_load_time_start;
+			debugLog(kLogOutput, "Loading took " + string(elapsed_time / 1000.0) + "ms");
 		}
 		
 		// save data in new resource

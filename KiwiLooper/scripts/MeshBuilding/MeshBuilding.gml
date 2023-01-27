@@ -73,6 +73,17 @@ function meshb_PushVertex(mesh, vertex)
 	vertex_normal(mesh, vertex.normal.x, vertex.normal.y, vertex.normal.z);
 }
 
+/// @function meshb_PushVertex2(mesh, x, y, z, color, alpha, u, v, nx, ny, nz)
+/// @desc Appends a vertex to the given mesh. Must be under edit.
+/// @param {Handle} Mesh to edit
+function meshb_PushVertex2(mesh, x, y, z, color, alpha, u, v, nx, ny, nz)
+{
+	vertex_position_3d(mesh, x, y, z);
+	vertex_color(mesh, color, alpha);
+	vertex_texcoord(mesh, u, v);
+	vertex_normal(mesh, nx, ny, nz);
+}
+
 /// @function meshB_Cleanup(mesh)
 /// @desc Deletes the given mesh and associated data.
 function meshB_Cleanup(mesh)

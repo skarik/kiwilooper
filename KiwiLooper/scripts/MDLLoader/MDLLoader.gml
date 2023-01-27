@@ -291,6 +291,7 @@ function AMDLFileParser() constructor
 	m_loader = new AFileMDLReader();
 	m_frames = [];
 	m_textures = [];
+	m_frameCount = 0;
 	
 	// Loaders used for tracking which parts have already been read in
 	m_lsSkins = null;
@@ -318,6 +319,11 @@ function AMDLFileParser() constructor
 		gml_pragma("forceinline");
 		return m_textures;
 	}
+	/// @function GetFrameCount()
+	static GetFrameCount = function()
+	{
+		return m_frameCount;
+	}
 	
 	/// @function OpenFile(filepath)
 	/// @desc Attempts to open & read the given file as a MD2 model
@@ -334,6 +340,7 @@ function AMDLFileParser() constructor
 			m_loader.CloseFile();
 			return false;
 		}
+		m_frameCount = m_loader.m_header.num_frames;
 		return true;
 	}
 	/// @function CloseFile(filepath)

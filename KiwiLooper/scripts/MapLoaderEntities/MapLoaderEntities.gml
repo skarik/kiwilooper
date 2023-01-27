@@ -54,6 +54,10 @@ function MapLoadEntities(filedata, entityInstanceList)
 			{
 				// If we don't recognize the struct, we can't read the data since we cannot skip ahead without size info.
 				assert(is_struct(ent));
+				if (!is_struct(ent))
+				{
+					debugLog(kLogError, "Invalid ent in map, fatal, \"" + ent_name + "\"");
+				}
 			}
 			else
 			{
