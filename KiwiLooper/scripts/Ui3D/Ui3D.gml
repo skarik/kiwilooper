@@ -85,6 +85,21 @@ function Ui3Renderer(buildUIFunction) constructor
 }
 
 //=============================================================================
+// Utilities
+
+/// @function Ui3PosScale(x, y, z)
+/// @desc Gets the scale using the given position, using distance to camera and camera FoV
+function Ui3PosScale(x, y, z)
+{
+	var camera = o_Camera3D;
+	var distance_to_camera = sqrt(sqr(x - camera.x) + sqr(y - camera.y) + sqr(z - camera.z));
+	var camera_vheight = sin(degtorad(o_Camera3D.fov_vertical));
+	
+	return (distance_to_camera / camera_vheight) / 2048.0;
+}
+
+//=============================================================================
+// Context
 
 /// @function Ui3Begin(build_info)
 function Ui3Begin(build_info)
@@ -129,6 +144,10 @@ function Ui3End(context)
 }
 
 //=============================================================================
+// Texture
+
+#macro kUi3Texture_Text		0
+#macro kUi3Texture_Rect		1
 
 /// @function Ui3Tex_Text(context, text)
 /// @desc Makes a texture with the given content.
@@ -144,10 +163,12 @@ function Ui3Tex_Text(context, text)
 	
 	var placement_index = context.atlas.AddRect(pixel_width, pixel_height, undefined);
 	var placement_uvs = context.atlas.GetUVs(placement_index);
-	placement_uvs[5] = pixel_width;
-	placement_uvs[6] = pixel_height;
-	
 	var placement_pos = context.atlas.GetUnscaledPosition(placement_index);
+	placement_uvs[5] = kUi3Texture_Text;
+	placement_uvs[6] = pixel_width;
+	placement_uvs[7] = pixel_height;
+	placement_uvs[8] = placement_pos[0];
+	placement_uvs[9] = placement_pos[1];
 	
 	// Draw text, assuming we're using the surface now
 	draw_text(placement_pos[0], placement_pos[1], text);
@@ -158,18 +179,53 @@ function Ui3Tex_Text(context, text)
 	return placement_uvs;
 }
 
-//=============================================================================
+/// @function Ui3Tex_Rect(context, width, height, outline)
+function Ui3Tex_Rect(context, width, height, outline)
+{
+	var placement_index = context.atlas.AddRect(width, height, undefined);
+	var placement_uvs = context.atlas.GetUVs(placement_index);
+	var placement_pos = context.atlas.GetUnscaledPosition(placement_index);
+	placement_uvs[5] = kUi3Texture_Rect;
+	placement_uvs[6] = width;
+	placement_uvs[7] = height;
+	placement_uvs[8] = placement_pos[0];
+	placement_uvs[9] = placement_pos[1];
+	
+	DrawSpriteRectangle(placement_pos[0], placement_pos[1], placement_pos[0] + width, placement_pos[1] + height, outline);
+	
+	return placement_uvs;
+}
 
-/// @function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, rotation=0.0, color=c_white, alpha=1.0)
+/// @function Ui3Tex_TextRect(context, tex, offset_x, offset_y, text)
+function Ui3Tex_TextRect(context, tex, offset_x, offset_y, text)
+{
+	// todo: scissor to tex
+	
+	draw_text(tex[8] + offset_x, tex[9] + offset_y, text);
+}
+
+//=============================================================================
+// Shape
+
+/// @function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, autoscale=false, rotation=0.0, color=c_white, alpha=1.0)
 /// @desc Makes a mesh with the given context and texture
-function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, rotation=0.0, color=c_white, alpha=1.0)
+function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, autoscale=false, rotation=0.0, color=c_white, alpha=1.0)
 {
 	var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
 	var cross_x = frontface_direction.cross(Vector3FromArray(o_Camera3D.m_viewUp));
 	var cross_y = frontface_direction.cross(cross_x);
+
+	if (autoscale)
+	{
+		var pos_scale = Ui3PosScale(x, y, z);
+		xscale *= pos_scale;
+		yscale *= pos_scale;
+	}
 	
-	cross_x.normalize().multiplySelf(-tex[5] * xscale);
-	cross_y.normalize().multiplySelf( tex[6] * yscale);
+	cross_x.normalize().multiplySelf(-tex[6] * xscale);
+	cross_y.normalize().multiplySelf( tex[7] * yscale);
+	
+	// todo, if tex[5] is kUi3Texture_Text, then take alignment
 	
 	// Add the quad
 	MeshbAddQuadUVs(

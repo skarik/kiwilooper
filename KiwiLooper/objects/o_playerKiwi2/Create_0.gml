@@ -3,6 +3,9 @@
 // Inherit the parent event
 event_inherited();
 
+idelete(m_uiUsables);
+m_uiUsables = null;
+
 m_uiWorld = inew(o_uiPlayerKiwi2);
 //m_uiEgg = inew(o_uiPlayerEgg);
 

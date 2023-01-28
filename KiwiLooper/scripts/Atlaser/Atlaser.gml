@@ -198,9 +198,9 @@ function AAtlas() constructor
 					var test_entry = entries[entry_index];
 					// BBoxes overlap, failure
 					if (test_x + width > test_entry.x
-						|| test_x < test_entry.x + test_entry.width
-						|| test_y + height > test_entry.y
-						|| test_y < test_entry.y + test_entry.height)
+						&& test_x < test_entry.x + test_entry.width
+						&& test_y + height > test_entry.y
+						&& test_y < test_entry.y + test_entry.height)
 					{
 						test_isOkay = false;
 						break;
