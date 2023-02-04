@@ -87,6 +87,8 @@ Character_Step();
 		o_Camera3D.fov_vertical = 60;
 	}
 	
+	o_Camera3D.updateVectors();
+	
 	// Update listener too
 	faudioListenerSetPosition(Audio.mainListener, x, y, z);
 	faudioListenerSetOrientation(Audio.mainListener,

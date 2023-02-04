@@ -25,6 +25,7 @@ m_matrixProjection = matrix_build_identity();
 
 m_viewForward = [1, 0, 0];
 m_viewUp = [0, 0, 1];
+m_viewReady = false;
 
 // update game camera
 with (GameCamera)
@@ -117,4 +118,17 @@ reapplyViewProjection = function()
 	gml_pragma("forceinline");
 	matrix_set(matrix_view, m_matrixView);
 	matrix_set(matrix_projection, m_matrixProjection);
+}
+
+///@function updateVectors()
+///@desc Update this camera's direction vectors
+updateVectors = function()
+{
+	var forwardAndUp = Vector3ForwardAndUpFromAngles(xrotation, yrotation, zrotation);
+	m_viewForward	= forwardAndUp[0].asArray();
+	m_viewUp		= forwardAndUp[1].asArray();
+	delete forwardAndUp[0];
+	delete forwardAndUp[1];
+	
+	m_viewReady = true;
 }

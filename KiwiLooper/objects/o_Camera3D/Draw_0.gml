@@ -24,11 +24,10 @@ surface_set_target(buffer_scene3d);
 	else
 		mat_projection = matrix_build_projection_ortho(GameCamera.width * ortho_vertical / GameCamera.height, ortho_vertical, 1, zfar);
 		
-	var forwardAndUp = Vector3ForwardAndUpFromAngles(xrotation, yrotation, zrotation);
-	m_viewForward	= forwardAndUp[0].asArray();
-	m_viewUp		= forwardAndUp[1].asArray();
-	delete forwardAndUp[0];
-	delete forwardAndUp[1];
+	if (!m_viewReady) 
+	{
+		updateVectors();
+	}
 	var mat_view = matrix_build_lookat(
 		// from
 		x, y, z,
@@ -354,3 +353,6 @@ draw_circle_color(
 	make_color_rgb(85, 84, 115),
 	false);
 gpu_set_blendmode(bm_normal);*/
+
+// Set post-draw state
+m_viewReady = false;

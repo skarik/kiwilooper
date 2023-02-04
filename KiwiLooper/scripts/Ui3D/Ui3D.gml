@@ -148,6 +148,22 @@ function Ui3End(context)
 
 #macro kUi3Texture_Text		0
 #macro kUi3Texture_Rect		1
+#macro kUi3Texture_Space	2
+
+/// @function Ui3Tex_Space(context, width, height)
+function Ui3Tex_Space(context, width, height)
+{
+	var placement_index = context.atlas.AddRect(width, height, undefined);
+	var placement_uvs = context.atlas.GetUVs(placement_index);
+	var placement_pos = context.atlas.GetUnscaledPosition(placement_index);
+	placement_uvs[5] = kUi3Texture_Space;
+	placement_uvs[6] = width;
+	placement_uvs[7] = height;
+	placement_uvs[8] = placement_pos[0];
+	placement_uvs[9] = placement_pos[1];
+	
+	return placement_uvs;
+}
 
 /// @function Ui3Tex_Text(context, text)
 /// @desc Makes a texture with the given content.
@@ -204,6 +220,15 @@ function Ui3Tex_TextRect(context, tex, offset_x, offset_y, text)
 	draw_text(tex[8] + offset_x, tex[9] + offset_y, text);
 }
 
+/// @function Ui3Tex_RectRect(context, tex, offset_x, offset_y, width, height, outline)
+function Ui3Tex_RectRect(context, tex, offset_x, offset_y, width, height, outline)
+{
+	// todo: scissor to tex
+	
+	DrawSpriteRectangle(tex[8] + offset_x, tex[9] + offset_y, tex[8] + offset_x + width, tex[9] + offset_y + height, outline);
+}
+
+
 //=============================================================================
 // Shape
 
@@ -212,8 +237,11 @@ function Ui3Tex_TextRect(context, tex, offset_x, offset_y, text)
 function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, autoscale=false, rotation=0.0, color=c_white, alpha=1.0)
 {
 	var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
-	var cross_x = frontface_direction.cross(Vector3FromArray(o_Camera3D.m_viewUp));
-	var cross_y = frontface_direction.cross(cross_x);
+	var t_cross_x = frontface_direction.cross(Vector3FromArray(o_Camera3D.m_viewUp));
+	var t_cross_y = frontface_direction.cross(t_cross_x);
+	
+	var cross_x = t_cross_x.multiply(lengthdir_x(1, rotation)).add(t_cross_y.multiply(lengthdir_y(1, rotation)));
+	var cross_y = t_cross_y.multiply(lengthdir_x(1, rotation)).add(t_cross_x.multiply(-lengthdir_y(1, rotation)));
 
 	if (autoscale)
 	{
