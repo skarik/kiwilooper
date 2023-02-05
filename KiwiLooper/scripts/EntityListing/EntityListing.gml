@@ -579,8 +579,30 @@ function _EntityInfoInit()
 		
 		// Usables:
 		{
-			name: "usable_button",
+			hidden: true,
+			name: "usable_base",
 			parent: "lively_base",
+			
+			properties:
+			[
+				["m_useInfoType", kValueTypeEnum, undefined,
+					[
+						["Do not override", undefined],
+						["Small (default)", kUseInfoTypeDefault],
+						["Big", kUseInfoTypeBig],
+						["Item", kUseInfoTypeItem],
+					],
+				],
+				["vanityName", kValueTypeString, "Unknown Door"],
+				["vanityGroup", kValueTypeString, "Predictive_Floorplan_B"],
+				["vanityEnable", kValueTypeString, "Unlocked"],
+				["vanityDisable", kValueTypeString, "Locked"],
+			]
+		},
+		
+		{
+			name: "usable_button",
+			parent: "usable_base",
 			objectIndex: o_usableButton,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -755,7 +777,7 @@ function _EntityInfoInit()
 		},
 		{
 			name: "item_keycard",
-			parent: "lively_base",
+			parent: "usable_base",
 			objectIndex: o_usablePickupKeycard,
 			
 			gizmoSprite: suie_gizmoEnts,
@@ -773,6 +795,7 @@ function _EntityInfoInit()
 					[kGizmoMeshTransformScaleX, sprite_get_width( object_get_sprite(o_usablePickupKeycard)) / 8],
 					[kGizmoMeshTransformScaleY, sprite_get_height(object_get_sprite(o_usablePickupKeycard)) / 8],
 					[kGizmoMeshTransformTranslateZ, 0.7],
+					["vanityName", kValueTypeString, "Unknown Keycard"],
 				],
 			},
 			

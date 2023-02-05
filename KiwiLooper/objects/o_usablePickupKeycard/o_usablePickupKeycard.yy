@@ -35,6 +35,8 @@
   ],
   "overriddenProperties": [
     {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"lit","path":"objects/ob_3DObject/ob_3DObject.yy",},"objectId":{"name":"ob_3DObject","path":"objects/ob_3DObject/ob_3DObject.yy",},"value":"True",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"m_useInfoType","path":"objects/ob_usable/ob_usable.yy",},"objectId":{"name":"ob_usable","path":"objects/ob_usable/ob_usable.yy",},"value":"kUseInfoTypeItem",},
+    {"resourceType":"GMOverriddenProperty","resourceVersion":"1.0","name":"","propertyId":{"name":"m_useText","path":"objects/ob_usable/ob_usable.yy",},"objectId":{"name":"ob_usable","path":"objects/ob_usable/ob_usable.yy",},"value":"\"NAB\"",},
   ],
   "parent": {
     "name": "Lively Usables",

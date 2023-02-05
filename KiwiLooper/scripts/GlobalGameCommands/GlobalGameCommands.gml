@@ -298,10 +298,14 @@ function _Game_LoadMapInternal()
 							}
 						}
 					}
-					// all other types of variables just get copied over naiively
+					// all other types of variables just get copied over naiively with light checking
 					else
 					{
-						array_push(saved_property_info, [property[0], variable_instance_get(entInstance, property[0])]);
+						var value = variable_instance_get(entInstance, property[0]);
+						if (value != undefined)
+						{
+							array_push(saved_property_info, [property[0], value]);
+						}
 					}
 				}
 				

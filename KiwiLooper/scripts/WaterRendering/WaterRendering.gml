@@ -335,9 +335,9 @@ function WaterRenderer_RenderBodies()
 	
 	drawShaderSet(sh_unlitWater);
 	
-	//gpu_set_blendmode_ext(bm_dest_color, bm_src_color);
+	gpu_set_blendmode_ext(bm_dest_color, bm_src_color);
 	//gpu_set_blendmode_ext(bm_src_alpha, bm_src_color);
-	gpu_set_blendmode(bm_normal);
+	//gpu_set_blendmode(bm_normal);
 	gpu_set_ztestenable(true);
 	gpu_set_zwriteenable(true);
 	//gpu_set_zfunc(cmpfunc_notequal);

@@ -507,7 +507,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 					// Find the current index of the property
 					for (var propertySubIndex = 0; propertySubIndex < array_length(property[3]); ++propertySubIndex)
 					{
-						if (property[3][propertySubIndex][1] == enum_value)
+						if (is_equal(property[3][propertySubIndex][1], enum_value))
 						{
 							enum_index = propertySubIndex;
 							break;
@@ -786,7 +786,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				// Find the matching value in the property
 				for (var propertySubIndex = 0; propertySubIndex < array_length(property[3]); ++propertySubIndex)
 				{
-					if (property[3][propertySubIndex][1] == enum_value)
+					if (is_equal(property[3][propertySubIndex][1], enum_value))
 					{
 						enum_index = propertySubIndex;
 						break;

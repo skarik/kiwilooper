@@ -3,8 +3,6 @@
 event_inherited();
 
 m_priority = 2;
-m_useText = "NAB";
-m_bigUseInfo = true;
 
 // Set up persistence
 PersistentStateExistence();

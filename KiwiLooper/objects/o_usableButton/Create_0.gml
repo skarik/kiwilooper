@@ -81,6 +81,10 @@ m_onActivation = function(activatedBy)
 		// if usable, play the do-not-use sound?
 	}
 }
+m_onCheckEnabled = function()
+{
+	return l_isUnlockedForPlayer(); // Just forward to the local unlock check
+}
 
 l_isUnlockedForPlayer = function()
 {

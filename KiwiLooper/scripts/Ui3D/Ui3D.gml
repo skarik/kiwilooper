@@ -228,6 +228,19 @@ function Ui3Tex_RectRect(context, tex, offset_x, offset_y, width, height, outlin
 	DrawSpriteRectangle(tex[8] + offset_x, tex[9] + offset_y, tex[8] + offset_x + width, tex[9] + offset_y + height, outline);
 }
 
+function Ui3Tex_SpriteRect(context, tex, offset_x, offset_y, sprite, index, xscale=1.0, yscale=1.0, rotation=0.0, color=c_white, alpha=1.0)
+{
+	// todo: scissor to tex
+	
+	draw_sprite_general(
+		sprite, index,
+		0, 0, sprite_get_width(sprite), sprite_get_height(sprite),
+		tex[8] + offset_x, tex[9] + offset_y,
+		xscale, yscale,
+		rotation, color, color, color, color,
+		alpha);
+}
+
 
 //=============================================================================
 // Shape

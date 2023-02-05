@@ -169,7 +169,8 @@ function MapLoadEntities(filedata, entityInstanceList)
 			{
 				var property = ent.properties[propertyIndex];
 				if (entpropHasDefaultValue(property)
-					&& is_undefined(variable_instance_get(instance, property[0])) )
+					&& is_undefined(variable_instance_get(instance, property[0]))
+					&& !is_undefined(property[2]) )
 				{
 					variable_instance_set(instance, property[0], property[2]);
 				}
@@ -245,7 +246,8 @@ function MapSaveEntities(filedata, entityInstanceList)
 		{
 			var property = ent.properties[propertyIndex];
 			if (entpropHasDefaultValue(property)
-				&& is_undefined(variable_instance_get(instance, property[0])) )
+				&& is_undefined(variable_instance_get(instance, property[0]))
+				&& !is_undefined(property[2]) )
 			{
 				variable_instance_set(instance, property[0], property[2]);
 			}
@@ -296,9 +298,6 @@ function MapSaveEntities(filedata, entityInstanceList)
 					continue;
 				}
 			
-				buffer_write(ent_buffer, buffer_string, property[0]);
-				buffer_write(ent_buffer, buffer_u8, property[1]);
-			
 				switch (property[1])
 				{
 				case kValueTypePosition:
@@ -309,6 +308,8 @@ function MapSaveEntities(filedata, entityInstanceList)
 						else 
 							value = variable_instance_get(instance, property[0]);
 				
+						buffer_write(ent_buffer, buffer_string, property[0]);
+						buffer_write(ent_buffer, buffer_u8, property[1]);
 						buffer_write_type(ent_buffer, value, property[1]);
 					}
 					break;
@@ -321,6 +322,8 @@ function MapSaveEntities(filedata, entityInstanceList)
 						else 
 							value = variable_instance_get(instance, property[0]);
 				
+						buffer_write(ent_buffer, buffer_string, property[0]);
+						buffer_write(ent_buffer, buffer_u8, property[1]);
 						buffer_write_type(ent_buffer, value, property[1]);
 					}
 					break;
@@ -333,6 +336,8 @@ function MapSaveEntities(filedata, entityInstanceList)
 						else 
 							value = variable_instance_get(instance, property[0]);
 						
+						buffer_write(ent_buffer, buffer_string, property[0]);
+						buffer_write(ent_buffer, buffer_u8, property[1]);
 						buffer_write_type(ent_buffer, value, property[1]);
 					}
 					break;
@@ -340,7 +345,12 @@ function MapSaveEntities(filedata, entityInstanceList)
 				default:
 					{
 						var value = variable_instance_get(instance, property[0]);
-						buffer_write_type(ent_buffer, value, property[1]);
+						if (!is_undefined(value))
+						{
+							buffer_write(ent_buffer, buffer_string, property[0]);
+							buffer_write(ent_buffer, buffer_u8, property[1]);
+							buffer_write_type(ent_buffer, value, property[1]);
+						}
 					}
 					break;
 				}
@@ -355,9 +365,12 @@ function MapSaveEntities(filedata, entityInstanceList)
 				{
 					// Write name,type,value
 					var entry = persistence_state.listing[varIndex];
-					buffer_write(ent_buffer, buffer_string, entry.name);
-					buffer_write(ent_buffer, buffer_u8, entry.type);
-					buffer_write_type(ent_buffer, entry.value, entry.type);
+					if (!is_undefined(entry.value))
+					{
+						buffer_write(ent_buffer, buffer_string, entry.name);
+						buffer_write(ent_buffer, buffer_u8, entry.type);
+						buffer_write_type(ent_buffer, entry.value, entry.type);
+					}
 				}
 			}
 			else
