@@ -1,5 +1,7 @@
-TALLY MARKS
-===========
+ORBITAL
+=======
+
+A scifi horror RPG.
 
 Originally a [LD47 submission](https://ldjam.com/events/ludum-dare/47/tally-marks), now a larger project!
 
