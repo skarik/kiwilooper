@@ -212,6 +212,7 @@
     {"id":{"name":"DebugTools","path":"scripts/DebugTools/DebugTools.yy",},"order":7,},
     {"id":{"name":"CE_StringUtil","path":"scripts/CE_StringUtil/CE_StringUtil.yy",},"order":2,},
     {"id":{"name":"fmusic_is_during_intro","path":"scripts/fmusic_is_during_intro/fmusic_is_during_intro.yy",},"order":3,},
+    {"id":{"name":"sh_editorEntBillboards","path":"shaders/sh_editorEntBillboards/sh_editorEntBillboards.yy",},"order":5,},
     {"id":{"name":"inputSet","path":"scripts/inputSet/inputSet.yy",},"order":11,},
     {"id":{"name":"EditorUIToolbar","path":"scripts/EditorUIToolbar/EditorUIToolbar.yy",},"order":0,},
     {"id":{"name":"commonStartup","path":"scripts/commonStartup/commonStartup.yy",},"order":6,},

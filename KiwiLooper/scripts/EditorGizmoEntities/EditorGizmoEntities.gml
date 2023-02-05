@@ -6,7 +6,90 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 	y = 0;
 	z = 0;
 	
-	m_mesh = meshb_CreateEmptyMesh();
+#region Mesh building tools
+	
+	#macro kLMeshbBillboardOffset_Screen	0.0
+	#macro kLMeshbBillboardOffset_World		1.0
+	
+	/// @function l_meshb_CreateBillboardVertexFormat()
+	/// @desc Creates billboard vertex format.
+	function l_meshb_CreateBillboardVertexFormat()
+	{
+		static format = null;
+		if (format == null)
+		{
+			vertex_format_begin();
+			{
+				vertex_format_add_position_3d();
+				vertex_format_add_color();
+				vertex_format_add_texcoord();
+				// xyz,type
+				vertex_format_add_custom(vertex_type_float4, vertex_usage_texcoord);
+			}
+			format = vertex_format_end();
+		}
+		return format;
+	}
+	
+	/// @function l_meshb_AddBillboardQuad(mesh, position, uvs, color, alpha, offsets[][])
+	function l_meshb_AddBillboardQuad(mesh, position, uvs, color, alpha, offsets)
+	{
+		// 0
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(0.0, 0.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[0][0], offsets[0][1], offsets[0][2], offsets[0][3]);
+	
+		// 2
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(0.0, 1.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[2][0], offsets[2][1], offsets[2][2], offsets[2][3]);
+	
+		// 1
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(1.0, 0.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[1][0], offsets[1][1], offsets[1][2], offsets[1][3]);
+	
+	
+		// 1
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(1.0, 0.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[1][0], offsets[1][1], offsets[1][2], offsets[1][3]);
+		
+		// 2
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(0.0, 1.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[2][0], offsets[2][1], offsets[2][2], offsets[2][3]);
+		
+		// 3
+		meshb_VertexPushPosition(mesh, position);
+		vertex_color(mesh, color, alpha);
+		meshb_VertexPushTexcoord(mesh, (new Vector2(1.0, 1.0)).biasUVSelf(uvs));
+		vertex_float4(mesh, offsets[3][0], offsets[3][1], offsets[3][2], offsets[3][3]);
+	}
+	
+	function l_meshb_CreateEmptyMesh()
+	{
+		var mesh = meshb_Begin(l_meshb_CreateBillboardVertexFormat());
+		repeat (3) // Start with a single triangle so rendering doesn't completely trip up
+		{
+			vertex_position_3d(mesh, 0.0, 0.0, 0.0);
+			vertex_color(mesh, c_white, 1.0);
+			vertex_texcoord(mesh, 0.0, 0.0);
+			vertex_float4(mesh, 0.0, 0.0, 0.0, kLMeshbBillboardOffset_Screen);
+		}
+		meshb_End(mesh);
+		return mesh;
+	}
+	
+#endregion
+	
+	m_mesh = l_meshb_CreateEmptyMesh();
+	m_dirty = true;
 	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
@@ -15,124 +98,172 @@ function AEditorGizmoEntityBillboards() : AEditorGizmoBase() constructor
 		meshB_Cleanup(m_mesh);
 	};
 	
+	/// @function Step()
 	Step = function()
 	{
-		meshb_BeginEdit(m_mesh);
+		if (m_dirty)
+		{
+			meshb_BeginEdit(m_mesh, l_meshb_CreateBillboardVertexFormat());
 		
-		static GetEntColor = function(entity)
-		{
-			if (entity.object_index == ob_3DLight
-				|| entity.object_index == o_ambientOverride)
+			static GetEntColor = function(entity)
 			{
-				return entity.color;
-			}
-			else if (entity.object_index == m_editor.OProxyClass)
+				if (entity.object_index == ob_3DLight
+					|| entity.object_index == o_ambientOverride)
+				{
+					return entity.color;
+				}
+				else if (entity.object_index == m_editor.OProxyClass)
+				{
+					return c_white; // TODO for specific entity types
+				}
+				else
+				{
+					return c_white;
+				}
+			};
+		
+			// Add all non-proxy entities:
+			for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
 			{
-				return c_white; // TODO for specific entity types
+				var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
+				entTypeInfo = entlistIterationGet(entTypeIndex);
+				entType			= entTypeInfo.objectIndex;
+				entSprite		= entTypeInfo.gizmoSprite;
+				entImageIndex	= entTypeInfo.gizmoIndex;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entHullsize		= entTypeInfo.hullsize;
+				entOrient		= entTypeInfo.gizmoOrigin;
+				entProxyType	= entTypeInfo.proxy;
+			
+				if (entProxyType != kProxyTypeNone) continue; // Skip proxies
+			
+				// Get sprite info for this type
+				var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
+				var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
+				var entUvs = sprite_get_uvs(entSprite, entImageIndex);
+			
+				// Count through the ents
+				var entCount = instance_number(entType);
+				for (var entIndex = 0; entIndex < entCount; ++entIndex)
+				{
+					var ent = instance_find(entType, entIndex);
+					if (ent.object_index != entType) continue; // Skip invalid objects
+				
+					// Generate misc rendering info
+					var entColor = GetEntColor(ent);
+				
+					// Generate center and other dimensions
+					var entCenter = entGetSelectionCenter(ent, entOrient, new Vector3(entHullsize * 0.5 * ent.xscale, entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale));
+				
+					if (entGizmoType == kGizmoDrawmodeBillboard)
+					{
+						l_meshb_AddBillboardQuad(m_mesh, entCenter, entUvs, entColor, 1.0,
+							[
+								[entSpriteWidth * 0.5, -entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[-entSpriteWidth * 0.5, -entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[entSpriteWidth * 0.5, entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[-entSpriteWidth * 0.5, entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+							]);
+					}
+					else if (entGizmoType == kGizmoDrawmodeFlatsprite)
+					{
+						var center = entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, 0.0));
+						for (var i = 0; i < 4; ++i)
+						{
+							var z_alpha = 1.0 * (1.0 - i / 4);
+							var z_offset = i * 2;
+							l_meshb_AddBillboardQuad(m_mesh, center, entUvs, entColor, z_alpha,
+								[
+									[0.0, 0.0, z_offset, kLMeshbBillboardOffset_World],
+									[entHullsize * ent.xscale, 0.0, z_offset, kLMeshbBillboardOffset_World],
+									[0.0, entHullsize * ent.yscale, z_offset, kLMeshbBillboardOffset_World],
+									[entHullsize * ent.xscale, entHullsize * ent.yscale, z_offset, kLMeshbBillboardOffset_World],
+								]);
+						}
+					}
+				}
 			}
-			else
-			{
-				return c_white;
-			}
-		};
-
-		// Add all non-proxy entities:
-		for (var entTypeIndex = 0; entTypeIndex < entlistIterationLength(); ++entTypeIndex)
-		{
-			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
-			entTypeInfo = entlistIterationGet(entTypeIndex);
-			entType			= entTypeInfo.objectIndex;
-			entSprite		= entTypeInfo.gizmoSprite;
-			entImageIndex	= entTypeInfo.gizmoIndex;
-			entGizmoType	= entTypeInfo.gizmoDrawmode;
-			entHullsize		= entTypeInfo.hullsize;
-			entOrient		= entTypeInfo.gizmoOrigin;
-			entProxyType	= entTypeInfo.proxy;
-			
-			if (entProxyType != kProxyTypeNone) continue; // Skip proxies
-			
-			// Get sprite info for this type
-			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
-			var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
-			var entUvs = sprite_get_uvs(entSprite, entImageIndex);
-			
-			// Count through the ents
-			var entCount = instance_number(entType);
+		
+			// Add proxies as well:
+			var entCount = instance_number(m_editor.OProxyClass);
 			for (var entIndex = 0; entIndex < entCount; ++entIndex)
 			{
-				var ent = instance_find(entType, entIndex);
-				if (ent.object_index != entType) continue; // Skip invalid objects
-				
-				// Generate misc rendering info
+				var ent = instance_find(m_editor.OProxyClass, entIndex);
+			
+				// Get all the ent info now.
+				var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
+				entTypeInfo = ent.entity;
+				entType			= entTypeInfo.objectIndex;
+				entSprite		= entTypeInfo.gizmoSprite;
+				entImageIndex	= entTypeInfo.gizmoIndex;
+				entGizmoType	= entTypeInfo.gizmoDrawmode;
+				entHullsize		= entTypeInfo.hullsize;
+				entOrient		= entTypeInfo.gizmoOrigin;
+				entProxyType	= entTypeInfo.proxy;
+			
+				if (entProxyType == kProxyTypeNone) continue; // Skip non-proxies
+			
+				// Get sprite info for this type
+				var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
+				var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
+				var entUvs = sprite_get_uvs(entSprite, entImageIndex);
 				var entColor = GetEntColor(ent);
-				
+			
 				// Generate center and other dimensions
 				var entCenter = entGetSelectionCenter(ent, entOrient, new Vector3(entHullsize * 0.5 * ent.xscale, entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale));
-				
+			
 				if (entGizmoType == kGizmoDrawmodeBillboard)
 				{
-					MeshbAddBillboardUVs(m_mesh, entColor, entSpriteWidth, entSpriteHeight, entUvs, new Vector3(0,0,1), entCenter);
+					l_meshb_AddBillboardQuad(m_mesh, entCenter, entUvs, entColor, 1.0,
+							[
+								[entSpriteWidth * 0.5, -entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[-entSpriteWidth * 0.5, -entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[entSpriteWidth * 0.5, entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+								[-entSpriteWidth * 0.5, entSpriteHeight * 0.5, 0.0, kLMeshbBillboardOffset_Screen],
+							]);
 				}
 				else if (entGizmoType == kGizmoDrawmodeFlatsprite)
 				{
-					// TODO
+					var center = entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, 0.0));
+					for (var i = 0; i < 4; ++i)
+					{
+						var z_alpha = 1.0 * (1.0 - i / 4);
+						var z_offset = i * 2;
+						l_meshb_AddBillboardQuad(m_mesh, center, entUvs, entColor, z_alpha,
+							[
+								[0.0, 0.0, z_offset, kLMeshbBillboardOffset_World],
+								[entHullsize * ent.xscale, 0.0, z_offset, kLMeshbBillboardOffset_World],
+								[0.0, entHullsize * ent.yscale, z_offset, kLMeshbBillboardOffset_World],
+								[entHullsize * ent.xscale, entHullsize * ent.yscale, z_offset, kLMeshbBillboardOffset_World],
+							]);
+					}
 				}
 			}
-		}
-		
-		// Add proxies as well:
-		var entCount = instance_number(m_editor.OProxyClass);
-		for (var entIndex = 0; entIndex < entCount; ++entIndex)
-		{
-			var ent = instance_find(m_editor.OProxyClass, entIndex);
-			
-			// Get all the ent info now.
-			var entTypeInfo, entType, entSprite, entImageIndex, entGizmoType, entHullsize, entOrient, entProxyType;
-			entTypeInfo = ent.entity;
-			entType			= entTypeInfo.objectIndex;
-			entSprite		= entTypeInfo.gizmoSprite;
-			entImageIndex	= entTypeInfo.gizmoIndex;
-			entGizmoType	= entTypeInfo.gizmoDrawmode;
-			entHullsize		= entTypeInfo.hullsize;
-			entOrient		= entTypeInfo.gizmoOrigin;
-			entProxyType	= entTypeInfo.proxy;
-			
-			if (entProxyType == kProxyTypeNone) continue; // Skip non-proxies
-			
-			// Get sprite info for this type
-			var entSpriteWidth = sprite_get_width(entSprite) * 0.6;
-			var entSpriteHeight = sprite_get_height(entSprite) * 0.6;
-			var entUvs = sprite_get_uvs(entSprite, entImageIndex);
-			var entColor = GetEntColor(ent);
-			
-			// Generate center and other dimensions
-			var entCenter = entGetSelectionCenter(ent, entOrient, new Vector3(entHullsize * 0.5 * ent.xscale, entHullsize * 0.5 * ent.yscale, entHullsize * 0.5 * ent.zscale));
-			
-			if (entGizmoType == kGizmoDrawmodeBillboard)
-			{
-				MeshbAddBillboardUVs(m_mesh, entColor, entSpriteWidth, entSpriteHeight, entUvs, new Vector3(0,0,1), entCenter);
-			}
-			else if (entGizmoType == kGizmoDrawmodeFlatsprite)
-			{
-				for (var i = 0; i < 4; ++i)
-				{
-					MeshbAddQuadUVs(
-						m_mesh, entColor, 1.0 * (1.0 - i/4),
-						new Vector3(entHullsize * ent.xscale, 0, 0),
-						new Vector3(0, entHullsize * ent.yscale, 0),
-						entUvs,
-						entCenter.add(new Vector3(-entHullsize * 0.5 * ent.xscale, -entHullsize * 0.5 * ent.yscale, i * 2))
-						);
-				}
-			}
-		}
 
-		meshb_End(m_mesh);
+			meshb_End(m_mesh);
+			
+			m_dirty = false;
+		} // End dirty update
 	}
 	
+	/// @function Draw()
 	Draw = function()
 	{
+		var frontface_direction = Vector3FromArray(o_Camera3D.m_viewForward);
+		var cross_x = frontface_direction.cross(Vector3FromArray(o_Camera3D.m_viewUp)).normalize();
+		var cross_y = frontface_direction.cross(cross_x).normalize();
+		var cross_z = cross_x.cross(cross_y).normalize();
+		
+		static uLookatVectors = shader_get_uniform(sh_editorEntBillboards, "uLookatVectors");
+		drawShaderSet(sh_editorEntBillboards);
+		shader_set_uniform_f_array(uLookatVectors, [
+			cross_x.x, cross_x.y, cross_x.z, 0.0,
+			cross_y.x, cross_y.y, cross_y.z, 0.0,
+			cross_z.x, cross_z.y, cross_z.z, 0.0,
+			 0.0, 0.0, 0.0, 0.0,
+			]);
 		vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(sfx_square, 0));
+		drawShaderReset();
 	}
 }
 

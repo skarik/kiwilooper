@@ -25,18 +25,21 @@ function EditorGlobalDeleteSelection()
 				m_tilemap.DeleteTileIndex(tileIndex);
 				m_tilemap.RemoveHeightSlow(tileHeight);
 				bRebuildTiles = true;
+				EditorGlobalSignalObjectDeleted(kEditorSelection_Tile, true);
 				break;
 				
 			case kEditorSelection_Prop:
 				m_propmap.RemoveProp(currentSelection.object);
 				delete currentSelection.object;
 				bRebuildProps = true;
+				EditorGlobalSignalObjectDeleted(kEditorSelection_Prop, true);
 				break;
 				
 			case kEditorSelection_Splat:
 				m_splatmap.RemoveSplat(currentSelection.object);
 				delete currentSelection.object;
 				bRebuildProps = true;
+				EditorGlobalSignalObjectDeleted(kEditorSelection_Splat, true);
 				break;
 				
 			case kEditorSelection_Primitive:
@@ -48,6 +51,7 @@ function EditorGlobalDeleteSelection()
 					bRebuildSolids = true;
 				}
 				EditorGlobalMarkDirtyGeometry();
+				EditorGlobalSignalObjectDeleted(kEditorSelection_Primitive, true);
 				break;
 			}
 		}
@@ -56,6 +60,7 @@ function EditorGlobalDeleteSelection()
 		{
 			m_entityInstList.Remove(currentSelection); // Remove it from the entlist.
 			idelete(currentSelection);
+			EditorGlobalSignalObjectDeleted(kEditorSelection_None, true);
 		}
 	}
 	
@@ -108,53 +113,48 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 			panel.InitUpdateEntityInfoTransform(entity);
 		}
 		
-		if (!deferMeshBuilds)
+		// If the incoming ent is a prop, we gotta rebuild prop meshes
+		if (is_struct(entity)) // assume struct inputs are props
 		{
-			// If the incoming ent is a prop, we gotta rebuild prop meshes
-			if (is_struct(entity)) // assume struct inputs are props
+			if (type == kEditorSelection_Prop)
 			{
-				if (type == kEditorSelection_Prop)
-				{
+				if (!deferMeshBuilds)
 					MapRebuilPropsOnly();
-				}
-				else if (type == kEditorSelection_Splat)
-				{
+			}
+			else if (type == kEditorSelection_Splat)
+			{
+				if (!deferMeshBuilds)
 					MapRebuildSplats();
-				}
-				else if (type == kEditorSelection_Primitive)
-				{
-					EditorGlobalMarkDirtyGeometry();
+			}
+			else if (type == kEditorSelection_Primitive)
+			{
+				EditorGlobalMarkDirtyGeometry();
 					
-					var solid_id = array_get_index(m_state.map.solids, entity);
-					assert(solid_id != null);
+				var solid_id = array_get_index(m_state.map.solids, entity);
+				assert(solid_id != null);
+				if (!deferMeshBuilds)
+				{
 					MapRebuildSolidsOnly(solid_id);
 				}
-			}
-			// otherwise, may need to request rebuilding gizmo meshes
-			else if (iexists(entity))
-			{
-				if (!is_undefined(entity.entity.gizmoMesh) && entity.entity.gizmoMesh.shape == kGizmoMeshWireCube)
+				else
 				{
-					if (valueType == kValueTypeScale)
-					{
-						// Find the renderer & update it
-						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
-					}
+					m_wantRebuildSolids = true;
+					array_push(m_solidUpdateRequestList, solid_id);
 				}
 			}
 		}
-		else
+		// otherwise, may need to request rebuilding gizmo meshes
+		else if (iexists(entity))
 		{
-			if (is_struct(entity)) // assume struct inputs are all a type of object
+			// Update all gizmos
+			m_gizmoObject.m_entBillboards.m_dirty = true;
+				
+			if (!is_undefined(entity.entity.gizmoMesh) && entity.entity.gizmoMesh.shape == kGizmoMeshWireCube)
 			{
-				if (type == kEditorSelection_Primitive)
+				if (valueType == kValueTypeScale)
 				{
-					EditorGlobalMarkDirtyGeometry();
-					
-					m_wantRebuildSolids = true;
-					var solid_id = array_get_index(m_state.map.solids, entity);
-					assert(solid_id != null);
-					array_push(m_solidUpdateRequestList, solid_id);
+					// Find the renderer & update it
+					m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
 				}
 			}
 		}
@@ -166,12 +166,12 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 {
 	with (EditorGet())
 	{
-		if (!deferMeshBuilds)
+		// If the incoming ent is a prop, we gotta rebuild prop meshes
+		if (is_struct(entity)) // assume struct inputs are props
 		{
-			// If the incoming ent is a prop, we gotta rebuild prop meshes
-			if (is_struct(entity)) // assume struct inputs are props
+			if (type == kEditorSelection_Prop)
 			{
-				if (type == kEditorSelection_Prop)
+				if (!deferMeshBuilds)
 				{
 					// Rebuild props when changing the index
 					if (property[0] == "index")
@@ -179,18 +179,44 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 						MapRebuilPropsOnly();
 					}
 				}
-				else if (type == kEditorSelection_Splat)
-				{
-					MapRebuildSplats();
-				}
 			}
-			// otherwise, may need to request rebuilding gizmo meshes
-			else if (iexists(entity))
+			else if (type == kEditorSelection_Splat)
 			{
-				
+				if (!deferMeshBuilds)
+					MapRebuildSplats();
 			}
 		}
+		// otherwise, may need to request rebuilding gizmo meshes
+		else if (iexists(entity))
+		{
+			// Update all gizmos
+			m_gizmoObject.m_entBillboards.m_dirty = true;
+		}
 	}
+}
+
+function EditorGlobalSignalObjectCreated(entity, type, deferMeshBuilds=false)
+{
+	if (is_struct(entity))
+	{
+	}
+	else if (iexists(entity))
+	{
+		EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
+	}
+}
+
+function EditorGlobalSignalObjectDeleted(type, deferMeshBuilds=false)
+{
+	if (type == kEditorSelection_None)
+	{
+		EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
+	}
+}
+
+function EditorGlobalSignalLoaded(deferMeshBuilds=false)
+{
+	EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
 }
 
 //=============================================================================
@@ -287,6 +313,8 @@ function EditorGlobalLoadMap_Work(filepath)
 	
 	// Setup all callbacks for the entities now.
 	EditorEntities_SetupCallbacks();
+	// Force everything to update
+	EditorGlobalSignalLoaded();
 }
 
 function EditorGlobalNewMap()
@@ -343,6 +371,9 @@ function EditorGlobalNukeMap_Work()
 		// TODO: Is there a beter way to do this
 		MapRebuildGraphics();
 	}
+	
+	// Force everything to update
+	EditorGlobalSignalLoaded();
 }
 
 //=============================================================================

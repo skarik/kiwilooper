@@ -138,6 +138,9 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 					EditorEntity_SetupCallback(ent);
 					
 					m_editor.m_entityInstList.Add(ent);
+					
+					// entity created, signal to editor
+					EditorGlobalSignalObjectCreated(ent, kEditorSelection_None, true);
 				}
 			}
 			else if (keyboard_check_pressed(vk_backspace)
@@ -271,6 +274,8 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 				
 				m_editor.MapRebuilPropsOnly();
 				
+				// prop created, signal to editor
+				EditorGlobalSignalObjectCreated(prop, kEditorSelection_Prop, true);
 			}
 			else if (keyboard_check_pressed(vk_backspace)
 				|| keyboard_check_pressed(vk_delete)
@@ -405,6 +410,9 @@ function AEditorToolStateMakeSplat() : AEditorToolState() constructor
 				// TODO: Create splat
 				idelete(ob_splatter);
 				m_editor.m_splatmap.SpawnSplats();
+				
+				// splat created, signal to editor
+				EditorGlobalSignalObjectCreated(splat, kEditorSelection_Splat, true);
 			}
 			else if (keyboard_check_pressed(vk_backspace)
 				|| keyboard_check_pressed(vk_delete)

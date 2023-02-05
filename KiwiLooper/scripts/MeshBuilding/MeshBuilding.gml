@@ -136,3 +136,16 @@ function meshb_CreateEmptyMesh()
 	meshb_End(mesh);
 	return mesh;
 }
+
+function meshb_VertexPushPosition(mesh, n_position)
+{
+	vertex_position_3d(mesh, n_position.x, n_position.y, n_position.z);
+}
+function meshb_VertexPushTexcoord(mesh, n_texcoord)
+{
+	vertex_texcoord(mesh, n_texcoord.x, n_texcoord.y);
+}
+function meshb_VertexPushNormal(mesh, n_normal)
+{
+	vertex_normal(mesh, n_normal.x, n_normal.y, n_normal.z);
+}
