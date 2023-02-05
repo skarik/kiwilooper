@@ -22,27 +22,29 @@ function EditorGlobalDeleteSelection()
 			case kEditorSelection_Tile:
 				var tileIndex = m_tilemap.GetPositionIndex(currentSelection.object.x, currentSelection.object.y);
 				var tileHeight = m_tilemap.tiles[tileIndex].height;
+				EditorGlobalSignalObjectDeleted(m_tilemap.tiles[tileIndex], kEditorSelection_Tile, true);
 				m_tilemap.DeleteTileIndex(tileIndex);
 				m_tilemap.RemoveHeightSlow(tileHeight);
 				bRebuildTiles = true;
-				EditorGlobalSignalObjectDeleted(kEditorSelection_Tile, true);
 				break;
 				
 			case kEditorSelection_Prop:
+				EditorGlobalSignalObjectDeleted(currentSelection.object, kEditorSelection_Prop, true);
 				m_propmap.RemoveProp(currentSelection.object);
 				delete currentSelection.object;
 				bRebuildProps = true;
-				EditorGlobalSignalObjectDeleted(kEditorSelection_Prop, true);
 				break;
 				
 			case kEditorSelection_Splat:
+				EditorGlobalSignalObjectDeleted(currentSelection.object, kEditorSelection_Splat, true);
 				m_splatmap.RemoveSplat(currentSelection.object);
 				delete currentSelection.object;
 				bRebuildProps = true;
-				EditorGlobalSignalObjectDeleted(kEditorSelection_Splat, true);
 				break;
 				
 			case kEditorSelection_Primitive:
+				EditorGlobalSignalObjectDeleted(currentSelection.object.primitive, kEditorSelection_Primitive, true);
+				
 				var solidIndex = array_get_index(m_state.map.solids, currentSelection.object.primitive);
 				if (solidIndex != null)
 				{
@@ -51,16 +53,15 @@ function EditorGlobalDeleteSelection()
 					bRebuildSolids = true;
 				}
 				EditorGlobalMarkDirtyGeometry();
-				EditorGlobalSignalObjectDeleted(kEditorSelection_Primitive, true);
 				break;
 			}
 		}
 		// Is it an object selection?
 		else if (iexists(currentSelection))
 		{
+			EditorGlobalSignalObjectDeleted(currentSelection, kEditorSelection_None, true);
 			m_entityInstList.Remove(currentSelection); // Remove it from the entlist.
 			idelete(currentSelection);
-			EditorGlobalSignalObjectDeleted(kEditorSelection_None, true);
 		}
 	}
 	
@@ -157,6 +158,11 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 					m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
 				}
 			}
+			
+			if (entity.entity.name == "ai_node")
+			{
+				EditorGlobalMarkDirtyAi();
+			}
 		}
 	}
 }
@@ -191,6 +197,11 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 		{
 			// Update all gizmos
 			m_gizmoObject.m_entBillboards.m_dirty = true;
+			
+			if (entity.entity.name == "ai_node")
+			{
+				EditorGlobalMarkDirtyAi();
+			}
 		}
 	}
 }
@@ -203,20 +214,34 @@ function EditorGlobalSignalObjectCreated(entity, type, deferMeshBuilds=false)
 	else if (iexists(entity))
 	{
 		EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
+		
+		if (entity.entity.name == "ai_node")
+		{
+			EditorGlobalMarkDirtyAi();
+		}
 	}
 }
 
-function EditorGlobalSignalObjectDeleted(type, deferMeshBuilds=false)
+function EditorGlobalSignalObjectDeleted(entity, type, deferMeshBuilds=false)
 {
-	if (type == kEditorSelection_None)
+	if (is_struct(entity))
+	{
+	}
+	else if (iexists(entity))
 	{
 		EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
+		
+		if (entity.entity.name == "ai_node")
+		{
+			EditorGlobalMarkDirtyAi();
+		}
 	}
 }
 
 function EditorGlobalSignalLoaded(deferMeshBuilds=false)
 {
 	EditorGet().m_gizmoObject.m_entBillboards.m_dirty = true;
+	EditorGet().m_gizmoObject.m_aiMapRender.m_dirty = true;
 }
 
 //=============================================================================
@@ -236,6 +261,8 @@ function EditorGlobalMarkDirtyAi()
 	with (EditorGet())
 	{
 		m_state.map.ai_valid = false;
+		
+		m_gizmoObject.m_aiMapRender.m_dirty = true;
 	}
 }
 
@@ -455,6 +482,10 @@ function EditorGlobalRebuildAI()
 			function() {
 				// And we're okay now at the end of it!
 				bNeedsRebuild = false; 
+			}))
+		.addTask(method(EditorGet(),
+			function() {
+				m_gizmoObject.m_aiMapRender.m_dirty = true;
 			}))
 		 // Run the task with 2ms limits to keep the UI responsive
 		.execute(2000);

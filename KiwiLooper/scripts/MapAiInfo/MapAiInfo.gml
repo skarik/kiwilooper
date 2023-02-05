@@ -203,7 +203,39 @@ function AiCanPathNodes(start_node, end_node)
 	var cast_delta_dir = cast_delta.divide(cast_delta_len);
 	
 	var bWasHit = raycast4_tilemap(start_node.position, cast_delta_dir);
-	if (!bWasHit || (bWasHit && raycast4_get_hit_distance() >= cast_delta_len))
+	var smallestHitDistance = bWasHit ? raycast4_get_hit_distance() : (cast_delta_len * 2.0);
+	
+	for (var solidIndex = 0; solidIndex < array_length(EditorGet().m_state.map.solids); ++solidIndex)
+	{
+		var mapSolid = EditorGet().m_state.map.solids[solidIndex];
+				
+		var solidBBox = mapSolid.GetBBox();
+		// Create an AABB for the solid to see if we even hit
+		if (raycast4_box2(solidBBox, start_node.position, cast_delta_dir))
+		{
+			// Let's cast against each face now
+			for (var faceIndex = 0; faceIndex < array_length(mapSolid.faces); ++faceIndex)
+			{
+				var face = mapSolid.faces[faceIndex];
+				// Create an array of positions
+				var face_positions = array_create(array_length(face.indicies));
+				for (var indexIndex = 0; indexIndex < array_length(face.indicies); ++indexIndex)
+				{
+					face_positions[indexIndex] = mapSolid.vertices[face.indicies[indexIndex]].position;
+				}
+						
+				// Now cast against it
+				if (raycast4_polygon(face_positions, start_node.position, cast_delta_dir))
+				{
+					//ds_priority_add(l_priorityHits, [EditorSelectionWrapPrimitive(mapSolid, hitSubobjects ? faceIndex : null), raycast4_get_hit_distance(), raycast4_get_hit_normal()], raycast4_get_hit_distance());
+					smallestHitDistance = min(smallestHitDistance, raycast4_get_hit_distance());
+				}
+			}
+		}
+	}
+	
+	//if (!bWasHit || (bWasHit && smallestHitDistance >= cast_delta_len))
+	if (smallestHitDistance >= cast_delta_len)
 	{
 		pathResult.bPathable = true;
 	

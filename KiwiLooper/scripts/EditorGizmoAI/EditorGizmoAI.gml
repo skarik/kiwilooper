@@ -7,6 +7,7 @@ function AEditorGizmoAiMap() : AEditorGizmoBase() constructor
 	z = 0;
 	
 	m_mesh = meshb_CreateEmptyMesh();
+	m_dirty = false;
 	
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.
@@ -17,7 +18,11 @@ function AEditorGizmoAiMap() : AEditorGizmoBase() constructor
 	
 	Step = function()
 	{
-		UpdateMesh();
+		if (m_dirty)
+		{
+			UpdateMesh();
+			m_dirty = false;
+		}
 	}
 	
 	Draw = function()
