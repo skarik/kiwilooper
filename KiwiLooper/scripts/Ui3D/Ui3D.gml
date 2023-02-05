@@ -253,8 +253,18 @@ function Ui3Shape_Billboard(context, tex, x, y, z, xscale=1.0, yscale=1.0, autos
 	var t_cross_x = frontface_direction.cross(Vector3FromArray(o_Camera3D.m_viewUp));
 	var t_cross_y = frontface_direction.cross(t_cross_x);
 	
-	var cross_x = t_cross_x.multiply(lengthdir_x(1, rotation)).add(t_cross_y.multiply(lengthdir_y(1, rotation)));
-	var cross_y = t_cross_y.multiply(lengthdir_x(1, rotation)).add(t_cross_x.multiply(-lengthdir_y(1, rotation)));
+	return Ui3Shape_Plane(context, tex, x, y, z, t_cross_x, t_cross_y, xscale, yscale, autoscale, rotation, color, alpha);
+}
+
+/// @function Ui3Shape_Plane(context, tex, x, y, z, cross_x, cross_y, xscale=1.0, yscale=1.0, autoscale=false, rotation=0.0, color=c_white, alpha=1.0)
+/// @desc Makes a mesh with the given context and texture
+function Ui3Shape_Plane(context, tex, x, y, z, cross_x, cross_y, xscale=1.0, yscale=1.0, autoscale=false, rotation=0.0, color=c_white, alpha=1.0)
+{
+	var t_cross_x = cross_x;
+	var t_cross_y = cross_y;
+	
+	cross_x = t_cross_x.multiply(lengthdir_x(1, rotation)).add(t_cross_y.multiply(lengthdir_y(1, rotation)));
+	cross_y = t_cross_y.multiply(lengthdir_x(1, rotation)).add(t_cross_x.multiply(-lengthdir_y(1, rotation)));
 
 	if (autoscale)
 	{

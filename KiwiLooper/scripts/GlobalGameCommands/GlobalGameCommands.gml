@@ -94,6 +94,13 @@ function Game_Event_RoomStart()
 	// Create gameplay
 	if (!iexists(Gameplay))
 		inew(Gameplay);
+		
+	// Set up rendering mode (TODO?)
+	if (room != rm_EditorLevel)
+	{
+		Screen.pixelScale = 2;
+		Screen.scaleMode = kScreenscalemode_Match;
+	}
 	
 	// Clear out persistence
 	PersistentStateRoomStart(Game_GetMapId());
@@ -426,6 +433,10 @@ function Game_LoadEditor(fromTestSession)
 	global.game_editorRun = false;
 	global.game_loadingInfo = kGameLoadingNone;
 	global.game_loadingMap = "";
+	
+	// Go back to editor rendering mode
+	Screen.pixelScale = 1;
+	Screen.scaleMode = kScreenscalemode_Expand;
 	
 	// Return to the editor, the state of it should stay saved
 	room_goto(rm_EditorLevel);

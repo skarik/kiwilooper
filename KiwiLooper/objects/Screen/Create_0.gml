@@ -10,8 +10,11 @@ m_initialized = false;
 if (singleton_this()) exit;
 persistent = true;
 
-width = 1280;
-height = 720;
+/*width = 1280;
+height = 720;*/
+// TODO???
+width = 1920;
+height = 1080;
 pixelScale = 2;
 
 #macro kScreenscalemode_Match 0		// Attempts to keep gamewidth & gameheight.
