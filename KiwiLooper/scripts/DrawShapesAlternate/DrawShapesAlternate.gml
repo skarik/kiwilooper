@@ -3,10 +3,12 @@ function DrawSpriteRectangle(x1, y1, x2, y2, outline)
 {
 	if (outline)
 	{
-		draw_sprite_ext(sfx_square, 0, (x1 + x2) * 0.5, y1 + 0.5, (x2 - x1) * 0.5, 0.5, 0.0, draw_get_color(), draw_get_alpha());
-		draw_sprite_ext(sfx_square, 0, (x1 + x2) * 0.5, y2 - 0.5, (x2 - x1) * 0.5, 0.5, 0.0, draw_get_color(), draw_get_alpha());
-		draw_sprite_ext(sfx_square, 0, x1 + 0.5, (y1 + y2) * 0.5, 0.5, (y2 - y1 - 2) * 0.5, 0.0, draw_get_color(), draw_get_alpha());
-		draw_sprite_ext(sfx_square, 0, x2 - 0.5, (y1 + y2) * 0.5, 0.5, (y2 - y1 - 2) * 0.5, 0.0, draw_get_color(), draw_get_alpha());
+		var color = draw_get_color();
+		var alpha = draw_get_alpha();
+		draw_sprite_ext(sfx_square, 0, (x1 + x2) * 0.5, y1 + 0.5, (x2 - x1) * 0.5, 0.5, 0.0, color, alpha);
+		draw_sprite_ext(sfx_square, 0, (x1 + x2) * 0.5, y2 - 0.5, (x2 - x1) * 0.5, 0.5, 0.0, color, alpha);
+		draw_sprite_ext(sfx_square, 0, x1 + 0.5, (y1 + y2) * 0.5, 0.5, (y2 - y1 - 2) * 0.5, 0.0, color, alpha);
+		draw_sprite_ext(sfx_square, 0, x2 - 0.5, (y1 + y2) * 0.5, 0.5, (y2 - y1 - 2) * 0.5, 0.0, color, alpha);
 	}
 	else
 	{

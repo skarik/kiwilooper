@@ -82,10 +82,24 @@ function BBox3(n_center, n_extents) constructor
 }
 
 /// @function BBox3FromMinMax(min, max)
+/// @desc Creates a new BBox3 given the min and max vec3's.
 function BBox3FromMinMax(n_min, n_max)
 {
 	gml_pragma("forceinline");
-	return new BBox3(n_min.add(n_max).multiply(0.5), n_max.subtract(n_min).multiply(0.5));
+	//return new BBox3(n_min.add(n_max).multiply(0.5), n_max.subtract(n_min).multiply(0.5));
+	// Vec3 variant too slow since it's hit repeatedly - so we do it without structs:
+	return new BBox3(
+		new Vector3(
+			(n_min.x + n_max.x) * 0.5,
+			(n_min.y + n_max.y) * 0.5,
+			(n_min.z + n_max.z) * 0.5
+			),
+		new Vector3(
+			(n_max.x - n_min.x) * 0.5,
+			(n_max.y - n_min.y) * 0.5,
+			(n_max.z - n_min.z) * 0.5
+			)
+		);
 }
 
 /// @function BBox2(center, extents) struct;

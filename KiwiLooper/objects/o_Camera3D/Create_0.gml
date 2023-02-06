@@ -62,6 +62,8 @@ positionToView = function(n_x, n_y, n_z)
 	var test_point = input_point.getXYZ();
 	test_point.multiplySelf(1.0 / input_point.w);
 	
+	delete input_point;
+	
 	return [
 		( test_point.x * 0.5 + 0.5) * GameCamera.width,
 		(-test_point.y * 0.5 + 0.5) * GameCamera.height,
@@ -87,6 +89,8 @@ viewToRay = function(n_x, n_y)
 	test_point.multiplySelf(1.0 / input_point.w);
 	test_point.subtractSelf(new Vector3(x, y, z));
 	test_point.normalize();
+	
+	delete input_point;
 	
 	return [
 		test_point.x,

@@ -103,9 +103,9 @@ surface_set_target(buffer_scene3d);
 		var buffer_depth   = surface_create(GameCamera.width, GameCamera.height);
 		
 		surface_clear_color_alpha(buffer_albedo,  c_black, 0.0);
-		surface_clear_color_alpha(buffer_normals, c_black, 0.0);
-		surface_clear_color_alpha(buffer_illumin, c_black, 0.0);
-		surface_clear_color_alpha(buffer_depth, c_black, 0.0);
+		//surface_clear_color_alpha(buffer_normals, c_black, 0.0);
+		//surface_clear_color_alpha(buffer_illumin, c_black, 0.0);
+		//surface_clear_color_alpha(buffer_depth, c_black, 0.0);
 				
 		// set the buffers we're going to render to
 		surface_set_target(buffer_scene3d); // Use 3d scene's depth buffer

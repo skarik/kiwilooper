@@ -27,10 +27,11 @@ function _raycast4_box_inner(center, extents, rayOrigin, rayDir, raySign)
 	var l_boxExtents = extents;
 	
 	var l_rayPos = rayOrigin.subtract(l_boxCenter);
-	var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
+	//var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
+	var l_sign = [-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z)];
 	
 	// Distance to plane
-	var l_d = l_sign.multiplyComponent(l_boxExtents).multiply(raySign).subtract(l_rayPos);
+	var l_d = Vector3FromArray(l_sign).multiplyComponentSelf(l_boxExtents).multiplySelf(raySign).subtractSelf(l_rayPos);
 	l_d.divideComponentSelf(rayDir);
 	
 	// Test all axes at once
@@ -40,17 +41,26 @@ function _raycast4_box_inner(center, extents, rayOrigin, rayDir, raySign)
 		(l_d.z > 0.0) && (abs(l_rayPos.x + rayDir.x * l_d.z) < l_boxExtents.x) && (abs(l_rayPos.y + rayDir.y * l_d.z) < l_boxExtents.y)
 	];
 	
-	l_sign = l_test[0] ? new Vector3(l_sign.x, 0, 0) : (
+	/*l_sign = l_test[0] ? new Vector3(l_sign.x, 0, 0) : (
 			l_test[1] ? new Vector3(0, l_sign.y, 0) : (
 			l_test[2] ? new Vector3(0, 0, l_sign.z) : new Vector3(0, 0, 0))
+		);*/
+	l_sign = l_test[0] ? [l_sign[0], 0, 0] : (
+			l_test[1] ? [0, l_sign[1], 0] : (
+			l_test[2] ? [0, 0, l_sign[2]] : [0, 0, 0])
 		);
 	
 	// Get distance
-	global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
-	global._raycast4_hitnormal		= l_sign.copy();
+	//global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
+	global._raycast4_hitdistance	= (l_sign[0] != 0) ? l_d.x : ((l_sign[1] != 0) ? l_d.y : l_d.z);
+	//global._raycast4_hitnormal		= l_sign.copy();
+	global._raycast4_hitnormal.x = l_sign[0];
+	global._raycast4_hitnormal.y = l_sign[1];
+	global._raycast4_hitnormal.z = l_sign[2];
 
 	// Return if hit.
-	return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
+	//return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
+	return (l_sign[0] != 0) || (l_sign[1] != 0) || (l_sign[2] != 0);
 }
 
 /// @function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
@@ -59,8 +69,8 @@ function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
 {
 	gml_pragma("forceinline");
 	
-	var l_boxCenter = minAB.add(maxAB).multiply(0.5);
-	var l_boxExtents = maxAB.subtract(minAB).multiply(0.5);
+	var l_boxCenter = minAB.add(maxAB).multiplySelf(0.5);
+	var l_boxExtents = maxAB.subtract(minAB).multiplySelf(0.5);
 	l_boxExtents.x = abs(l_boxExtents.x);
 	l_boxExtents.y = abs(l_boxExtents.y);
 	l_boxExtents.z = abs(l_boxExtents.z);
@@ -83,8 +93,8 @@ function raycast4_box_backside(minAB, maxAB, rayOrigin, rayDir)
 	
 	gml_pragma("forceinline");
 	
-	var l_boxCenter = minAB.add(maxAB).multiply(0.5);
-	var l_boxExtents = maxAB.subtract(minAB).multiply(0.5);
+	var l_boxCenter = minAB.add(maxAB).multiplySelf(0.5);
+	var l_boxExtents = maxAB.subtract(minAB).multiplySelf(0.5);
 	l_boxExtents.x = abs(l_boxExtents.x);
 	l_boxExtents.y = abs(l_boxExtents.y);
 	l_boxExtents.z = abs(l_boxExtents.z);

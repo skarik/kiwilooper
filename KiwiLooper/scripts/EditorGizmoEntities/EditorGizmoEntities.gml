@@ -315,6 +315,8 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 	/// @desc Manages renderer instances, updates all the renderer transforms.
 	Step = function()
 	{
+		// TODO: Can mark individual renderers dirty to skip anything that doesn't need the full update check.
+		
 		// Mark all renderers as unused for now
 		CE_ArrayForEach(renderlist,
 			function(renderInfo, index)
@@ -328,7 +330,7 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		{
 			var entInstance = entInstanceList.GetEntity(entIndex);
 			// Skip if object does not exist
-			if (!iexists(entInstance) || entInstance == null)
+			if (entInstance == null || !iexists(entInstance))
 				continue;
 			
 			// Skip if no mesh defined
