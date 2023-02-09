@@ -181,7 +181,7 @@ surface_set_target(buffer_scene3d);
 		
 			gpu_set_blendmode_ext_sepalpha(bm_one, bm_one, bm_zero, bm_one);
 		
-			if (true || global.shadeType == kShadeTypeDebug_Lighting)
+			if (global.shadeType == kShadeTypeDebug_Lighting)
 			{
 				drawShaderSet(sh_lightGeneral);
 				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
@@ -202,12 +202,13 @@ surface_set_target(buffer_scene3d);
 			else // TODO: fix uniform submission
 			{
 				drawShaderSet(sh_lightPoint);
-				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+				lightDeferredPushUniforms_Type(kLightType_Point, lightParams, buffer_albedo, buffer_normals, buffer_depth);
 					// loop through all the lights
 					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_point); ++lightIndex)
 					{
-						lightDeferredPushUniforms_General_Index(lightParams.lightlist_point[lightIndex]);
+						lightDeferredPushUniforms_Type_Index(kLightType_Point, lightParams.lightlist_point[lightIndex]);
 						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
+						// todo: draw clamped quad around the light 2d bbox
 							draw_vertex_texture(-1, -1, 0, 1);
 							draw_vertex_texture(1, -1, 1, 1);
 							draw_vertex_texture(-1, 1, 0, 0);
@@ -217,11 +218,11 @@ surface_set_target(buffer_scene3d);
 				drawShaderReset();
 			
 				drawShaderSet(sh_lightPointSpot);
-				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+				lightDeferredPushUniforms_Type(kLightType_PointSpot, lightParams, buffer_albedo, buffer_normals, buffer_depth);
 					// loop through all the lights
 					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_pointSpot); ++lightIndex)
 					{
-						lightDeferredPushUniforms_General_Index(lightParams.lightlist_pointSpot[lightIndex]);
+						lightDeferredPushUniforms_Type_Index(kLightType_PointSpot, lightParams.lightlist_pointSpot[lightIndex]);
 						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
 							draw_vertex_texture(-1, -1, 0, 1);
 							draw_vertex_texture(1, -1, 1, 1);
@@ -232,11 +233,11 @@ surface_set_target(buffer_scene3d);
 				drawShaderReset();
 			
 				drawShaderSet(sh_lightRect);
-				lightDeferredPushUniforms_General(lightParams, buffer_albedo, buffer_normals, buffer_depth);
+				lightDeferredPushUniforms_Type(kLightType_Rect, lightParams, buffer_albedo, buffer_normals, buffer_depth);
 					// loop through all the lights
 					for (var lightIndex = 0; lightIndex < array_length(lightParams.lightlist_rect); ++lightIndex)
 					{
-						lightDeferredPushUniforms_General_Index(lightParams.lightlist_rect[lightIndex]);
+						lightDeferredPushUniforms_Type_Index(kLightType_Rect, lightParams.lightlist_rect[lightIndex]);
 						draw_primitive_begin_texture(pr_trianglestrip, surface_get_texture(buffer_albedo));
 							draw_vertex_texture(-1, -1, 0, 1);
 							draw_vertex_texture(1, -1, 1, 1);

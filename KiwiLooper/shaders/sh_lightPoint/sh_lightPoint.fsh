@@ -144,6 +144,7 @@ void main()
 			
 			// Do distance attentuation
 			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
+			if (attenuation <= 0.0) discard;
 			
 			// Do surface blending
 			float surface_response = dot(point_to_light / point_to_light_len, pixelNormal);

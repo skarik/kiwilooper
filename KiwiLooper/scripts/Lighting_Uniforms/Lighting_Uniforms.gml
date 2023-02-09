@@ -12,6 +12,7 @@
 #macro kLightType_SphereSpot	(kLightType_Sphere | kLightType_SpotAngle)
 #macro kLightType_Rect			0x08
 #macro kLightType_RectSpot		(kLightType_Rect | kLightType_SpotAngle)
+#macro kLightType_MAX			(kLightType_RectSpot + 1)
 
 ///@function lightInitialize()
 function lightInitialize()
@@ -52,8 +53,13 @@ function lightInitialize()
 		"textureDepth",
 	]);
 	
+	// Query all the uniforms for the light types:
+	global.deferred_light_uniforms = array_create(kLightType_MAX);
+	global.deferred_light_samplers = array_create(kLightType_MAX);
+	global.deferred_light_shaders = array_create(kLightType_MAX, -1);
+	
 	// Ambient lighting shader
-	global.deferred_ambient_uniforms = shaderGetUniforms(sh_lightAmbient,
+	global.deferred_light_uniforms[kLightType_Ambient] = shaderGetUniforms(sh_lightAmbient,
 	[
 		"uLightAmbientColor",
 		"uInverseViewProjection",
@@ -61,7 +67,7 @@ function lightInitialize()
 		"uViewInfo",
 		"uShadeType",
 	]);
-	global.deferred_ambient_samplers = shaderGetSamplers(sh_lightAmbient,
+	global.deferred_light_samplers[kLightType_Ambient] = shaderGetSamplers(sh_lightAmbient,
 	[
 		"textureAlbedo",
 		"textureNormal",
@@ -70,7 +76,40 @@ function lightInitialize()
 	]);
 	
 	// Point lighting shader
-	global.deferred_point_uniforms = shaderGetUniforms(sh_lightPoint,
+	global.deferred_light_shaders[kLightType_Point] = sh_lightPoint;
+	global.deferred_light_shaders[kLightType_PointSpot] = sh_lightPointSpot;
+	global.deferred_light_shaders[kLightType_Rect] = sh_lightRect;
+	
+	for (var i = 1; i < kLightType_MAX; ++i)
+	{
+		var light_shader = global.deferred_light_shaders[i];
+		if (light_shader != -1)
+		{
+			global.deferred_light_uniforms[i] = shaderGetUniforms(light_shader,
+			[
+				"uLightIndex",
+				"uLightPositions",
+				"uLightParams",
+				"uLightColors",
+				"uLightDirections",
+				"uLightOthers",
+				"uInverseViewProjection",
+				"uCameraInfo",
+				"uViewInfo",
+				"uShadeType",
+			]);
+			global.deferred_light_samplers[i] = shaderGetSamplers(light_shader,
+			[
+				"textureAlbedo",
+				"textureNormal",
+				"textureIllum",
+				"textureDepth",
+			]);
+	
+		}
+	}
+	
+	/*global.deferred_light_uniforms[kLightType_Point] = shaderGetUniforms(sh_lightPoint,
 	[
 		"uLightIndex",
 		"uLightPositions",
@@ -80,7 +119,7 @@ function lightInitialize()
 		"uCameraInfo",
 		"uViewInfo",
 	]);
-	global.deferred_point_samplers = shaderGetSamplers(sh_lightPoint,
+	global.deferred_light_samplers[kLightType_Point] = shaderGetSamplers(sh_lightPoint,
 	[
 		"textureAlbedo",
 		"textureNormal",
@@ -88,7 +127,7 @@ function lightInitialize()
 	]);
 	
 	// Rect lighting shader
-	global.deferred_rect_uniforms = shaderGetUniforms(sh_lightRect,
+	global.deferred_light_uniforms[kLightType_Rect] = shaderGetUniforms(sh_lightRect,
 	[
 		"uLightIndex",
 		"uLightPositions",
@@ -100,12 +139,12 @@ function lightInitialize()
 		"uCameraInfo",
 		"uViewInfo",
 	]);
-	global.deferred_rect_samplers = shaderGetSamplers(sh_lightRect,
+	global.deferred_light_samplers[kLightType_Rect] = shaderGetSamplers(sh_lightRect,
 	[
 		"textureAlbedo",
 		"textureNormal",
 		"textureDepth",
-	]);
+	]);*/
 	
 	// General lighting shader
 	global.deferred_general_uniforms = shaderGetUniforms(sh_lightGeneral,
@@ -166,32 +205,32 @@ function lightPushGatherUniforms_Deferred()
 }
 
 ///@function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
-function lightDeferredPushUniforms_Ambient(albedo, normal, illum, depth)
+function lightDeferredPushUniforms_Ambient(albedo, normal, illum, deptht)
 {
 	if (iexists(o_ambientOverride))
 	{
-		shader_set_uniform_f(global.deferred_ambient_uniforms.uLightAmbientColor,
+		shader_set_uniform_f(global.deferred_light_uniforms[kLightType_Ambient].uLightAmbientColor,
 			color_get_red(o_ambientOverride.color) / 255.0,
 			color_get_green(o_ambientOverride.color) / 255.0,
 			color_get_blue(o_ambientOverride.color) / 255.0);
 	}
 	else
 	{
-		shader_set_uniform_f(global.deferred_ambient_uniforms.uLightAmbientColor, 0.2, 0.3, 0.2);
+		shader_set_uniform_f(global.deferred_light_uniforms[kLightType_Ambient].uLightAmbientColor, 0.2, 0.3, 0.2);
 	}
-	shader_set_uniform_f_array(global.deferred_ambient_uniforms.uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
-	shader_set_uniform_f(global.deferred_ambient_uniforms.uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
-	shader_set_uniform_f(global.deferred_ambient_uniforms.uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
+	shader_set_uniform_f_array(global.deferred_light_uniforms[kLightType_Ambient].uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
+	shader_set_uniform_f(global.deferred_light_uniforms[kLightType_Ambient].uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
+	shader_set_uniform_f(global.deferred_light_uniforms[kLightType_Ambient].uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
 	
-	shader_set_uniform_i(global.deferred_ambient_uniforms.uShadeType, global.shadeType);
+	shader_set_uniform_i(global.deferred_light_uniforms[kLightType_Ambient].uShadeType, global.shadeType);
 	
-	texture_set_stage(global.deferred_ambient_samplers.textureAlbedo, surface_get_texture(albedo));
-	texture_set_stage(global.deferred_ambient_samplers.textureNormal, surface_get_texture(normal));
-	texture_set_stage(global.deferred_ambient_samplers.textureIllum,  surface_get_texture(illum));
-	texture_set_stage(global.deferred_ambient_samplers.textureDepth,  surface_get_texture(depth));
+	texture_set_stage(global.deferred_light_samplers[kLightType_Ambient].textureAlbedo, surface_get_texture(albedo));
+	texture_set_stage(global.deferred_light_samplers[kLightType_Ambient].textureNormal, surface_get_texture(normal));
+	texture_set_stage(global.deferred_light_samplers[kLightType_Ambient].textureIllum,  surface_get_texture(illum));
+	texture_set_stage(global.deferred_light_samplers[kLightType_Ambient].textureDepth,  surface_get_texture(deptht));
 }
 ///@function lightDeferredPushUniforms_Point_Index(index)
-function lightDeferredPushUniforms_Point_Index(index)
+/*function lightDeferredPushUniforms_Point_Index(index)
 {
 	shader_set_uniform_i(global.deferred_point_uniforms.uLightIndex, index);
 }
@@ -209,6 +248,33 @@ function lightDeferredPushUniforms_Point(params, albedo, normal, depth)
 	texture_set_stage(global.deferred_point_samplers.textureAlbedo, surface_get_texture(albedo));
 	texture_set_stage(global.deferred_point_samplers.textureNormal, surface_get_texture(normal));
 	texture_set_stage(global.deferred_point_samplers.textureDepth,  surface_get_texture(depth));
+}*/
+
+///@function lightDeferredPushUniforms_Type_Index(type, index)
+function lightDeferredPushUniforms_Type_Index(type, index)
+{
+	shader_set_uniform_i(global.deferred_light_uniforms[type].uLightIndex, index);
+}
+///@function lightDeferredPushUniforms_Type(type, params, albedo, normal, deptht)
+function lightDeferredPushUniforms_Type(type, params, albedo, normal, deptht)
+{
+	// Any unused uniform (-1 location) will be ignored by GM's backend.
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uLightPositions, params.positions);
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uLightParams, params.params);
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uLightColors, params.colors);
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uLightDirections, params.directions);
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uLightOthers, params.others);
+	
+	shader_set_uniform_f_array(global.deferred_light_uniforms[type].uInverseViewProjection, o_Camera3D.m_viewprojectionInverse);
+	shader_set_uniform_f(global.deferred_light_uniforms[type].uCameraInfo, o_Camera3D.znear, o_Camera3D.zfar, 0.0, 0.0);
+	shader_set_uniform_f(global.deferred_light_uniforms[type].uViewInfo, GameCamera.width, GameCamera.height, 0, 0);
+	
+	shader_set_uniform_i(global.deferred_light_uniforms[type].uShadeType, global.shadeType);
+	
+	// Not worth checking sampler is -1 here, as all these textures are required for all types of lights
+	texture_set_stage(global.deferred_light_samplers[type].textureAlbedo, surface_get_texture(albedo));
+	texture_set_stage(global.deferred_light_samplers[type].textureNormal, surface_get_texture(normal));
+	texture_set_stage(global.deferred_light_samplers[type].textureDepth,  surface_get_texture(deptht));
 }
 
 ///@function lightDeferredPushUniforms_General_Index(index)

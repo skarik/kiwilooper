@@ -151,7 +151,8 @@ void main()
 			
 			// Do distance attentuation
 			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
-			
+			if (attenuation <= 0.0) discard;
+
 			// Now do normal-direction attenuation
 			float directional_attenuation = dot(point_to_light_direction, -light_forward);
 			directional_attenuation = clamp((directional_attenuation - light_max_angle) / (light_min_angle - light_max_angle), 0.0, 1.0);

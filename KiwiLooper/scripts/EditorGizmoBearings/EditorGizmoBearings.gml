@@ -27,6 +27,7 @@ function AEditorGizmoAxes() : AEditorGizmoBase() constructor
 		MeshbAddLine(m_mesh, color, kBorderExpand, 4, new Vector3(1, 0, 0), new Vector3(-2, 0, kAxisLength + 6));
 		MeshbAddLine(m_mesh, color, kBorderExpand, 4, new Vector3(1, 0, 0), new Vector3(-2, 0, kAxisLength + 2));
 	meshb_End(m_mesh);
+	vertex_freeze(m_mesh);
 		
 	/// @function Cleanup()
 	/// @desc Cleans up the mesh used for rendering.

@@ -71,6 +71,7 @@ void main()
 			
 			// Do distance attentuation
 			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
+			if (attenuation <= 0.0) discard;
 			
 			// Do surface blending
 			float surface_response = dot(point_to_light / point_to_light_len, pixelNormal);
@@ -102,7 +103,8 @@ void main()
 			
 			// Do distance attentuation
 			float attenuation = clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0);
-			
+			if (attenuation <= 0.0) discard;
+
 			// Now do normal-direction attenuation
 			float directional_attenuation = dot(point_to_light_direction, -light_forward);
 			directional_attenuation = clamp((directional_attenuation - light_max_angle) / (light_min_angle - light_max_angle), 0.0, 1.0);
@@ -151,6 +153,10 @@ void main()
 			vec3 point_closest = point_to_light_center + light_side * side_distance + light_up * up_distance;
 			float point_closest_len = length(point_closest);
 			
+			// Do distance attentuation
+			float attenuation = clamp(1.0 - (point_closest_len * lightParams.y), 0.0, 1.0);
+			if (attenuation <= 0.0) discard;
+
 			// Grab each corner
 			vec3 p0 = point_to_light_center + light_side * -light_width + light_up * light_height;
 			vec3 p1 = point_to_light_center + light_side * -light_width + light_up * -light_height;
@@ -172,10 +178,7 @@ void main()
 			
 			//float total_response = 
 			//	clamp(1.0 - (point_to_light_len * lightParams.y), 0.0, 1.0) * dot(point_to_light / point_to_light_len, pixelNormal)
-			
-			// Do distance attentuation
-			float attenuation = clamp(1.0 - (point_closest_len * lightParams.y), 0.0, 1.0);
-			
+
 			// Do normal attenuation
 			//float normal_response = clamp(dot(normalize(point_closest), pixelNormal), 0.0, 1.0);
 			// Have to solve the "horizon problem":
