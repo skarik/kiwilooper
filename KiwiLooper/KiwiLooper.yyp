@@ -109,6 +109,7 @@
     {"id":{"name":"spr_metalPC","path":"sprites/spr_metalPC/spr_metalPC.yy",},"order":1,},
     {"id":{"name":"PlayerControl_SD","path":"scripts/PlayerControl_SD/PlayerControl_SD.yy",},"order":1,},
     {"id":{"name":"ssy_debug","path":"sprites/ssy_debug/ssy_debug.yy",},"order":13,},
+    {"id":{"name":"LocalizationStorage","path":"scripts/LocalizationStorage/LocalizationStorage.yy",},"order":1,},
     {"id":{"name":"EditorUIToolbarMini","path":"scripts/EditorUIToolbarMini/EditorUIToolbarMini.yy",},"order":9,},
     {"id":{"name":"settingsGameplayLoad","path":"scripts/settingsGameplayLoad/settingsGameplayLoad.yy",},"order":12,},
     {"id":{"name":"Collision4_Materials","path":"scripts/Collision4_Materials/Collision4_Materials.yy",},"order":2,},

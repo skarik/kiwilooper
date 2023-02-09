@@ -72,6 +72,9 @@ debugLog(kLogOutput, "max surface size: " + string(GetLargestSurfaceDims()));
 
 //show_debug_message(os_get_info());
 
+// todo: this correctly
+localizationInit("en");
+
 // Finish and go to next room:
 
 // First, run the command line options

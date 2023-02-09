@@ -59,6 +59,7 @@ function meshb_BeginEdit(mesh, vertex_format=null)
 function meshb_End(mesh)
 {
 	vertex_end(mesh);
+	// Do not attempt vertex_freeze() here, as mesh can be recreated, and there's no way to query this.
 }
 
 /// @function meshb_PushVertex(mesh, vertex)

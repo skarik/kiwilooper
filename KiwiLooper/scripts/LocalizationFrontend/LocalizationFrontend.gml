@@ -14,5 +14,16 @@ function loc_text(key_or_text, text=undefined)
 		l_text = key_or_text;
 	}
 	
+	// Look up the table with the given key
+	var text_table = global._localization_total_table[?l_key];
+	if (!is_undefined(text_table))
+	{
+		// Look up the text
+		var text_translated = text_table[?l_text];
+		if (!is_undefined(text_translated))
+		{
+			return text_translated;
+		}
+	}
 	return l_text;
 }
