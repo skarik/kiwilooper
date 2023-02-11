@@ -65,6 +65,7 @@ window_set_position((display_get_width() - Screen.width) / 2.0 + Settings.startu
 debugLog(kLogOutput, "working_directory: " + working_directory);
 debugLog(kLogOutput, "program_directory: " + program_directory);
 debugLog(kLogOutput, "temp_directory: " + temp_directory);
+debugLog(kLogOutput, "FIO project dir: " + global.fio_projectDir);
 debugLog(kLogOutput, "default depth buffer state: " + (surface_get_depth_disable() ? "off" : "on"));
 
 // Find max texture size

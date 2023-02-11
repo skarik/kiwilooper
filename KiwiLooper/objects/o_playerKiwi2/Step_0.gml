@@ -2,6 +2,53 @@
 
 PlayerControl_Step();
 
+// Do other action toggles
+if (!bInInventoryChanging)
+{
+	if (itemsButton.pressed)
+	{
+		bInInventoryChanging = true;
+		//bInInventory = !bInInventory;
+	}
+}
+
+// Update inventory states
+{
+	// Do inventory toggle nonsense
+	// (it's a blocking toggle, so extra logic to make sure we don't do shit during toggling)
+	if (bInInventoryChanging)
+	{
+		if (!bInInventory)
+		{
+			inInventoryBlend += Time.deltaTime / kInventoryToggleTime;
+			if (inInventoryBlend >= 1.0)
+			{
+				inInventoryBlend = 1.0;
+				bInInventory = true;
+				bInInventoryChanging = false;
+			}
+		}
+		else
+		{
+			inInventoryBlend -= Time.deltaTime / kInventoryToggleTime;
+			if (inInventoryBlend <= 0.0)
+			{
+				inInventoryBlend = 0.0;
+				bInInventory = false;
+				bInInventoryChanging = false;
+			}
+		}
+	}
+	
+	if (bInInventoryChanging || bInInventory)
+	{
+		if (currentMovetype == mvtNormal)
+		{
+			// TODO: set to a no-move movetype
+		}
+	}
+}
+
 // Update control & motion
 Character_Step();
 
@@ -67,7 +114,7 @@ Character_Step();
 	o_Camera3D.x = lengthdir_x(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
 	o_Camera3D.y = lengthdir_y(-kCameraDistance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
 	o_Camera3D.z = lengthdir_y(-kCameraDistance, o_Camera3D.yrotation);
-
+	
 	// Was used for centering in the map
 	//o_Camera3D.x += (m_minPosition.x + m_maxPosition.x) * 0.5;
 	//o_Camera3D.y += (m_minPosition.y + m_maxPosition.y) * 0.5;
@@ -86,7 +133,27 @@ Character_Step();
 	{
 		o_Camera3D.fov_vertical = 60;
 	}
-	
+
+	// Blend to the inventory screen
+	if (inInventoryBlend >= 0.0)
+	{
+		var blend0 = smoothstep(saturate((inInventoryBlend - 0.0) / 0.50));
+		var blend1 = smoothstep(saturate((inInventoryBlend - 0.3) / 0.65));
+		var blend2 = smoothstep(saturate((inInventoryBlend - 0.4) / 0.60));
+		
+		o_Camera3D.yrotation = angle_lerp(o_Camera3D.yrotation, 10, blend1);
+		o_Camera3D.zrotation = angle_lerp(o_Camera3D.zrotation, facingDirection + 15, blend1);
+		
+		o_Camera3D.znear = lerp(o_Camera3D.znear, 1, blend0);
+		o_Camera3D.fov_vertical = lerp(o_Camera3D.fov_vertical, 40, blend2);
+		
+		var kCameraDistance2 = 30;
+		o_Camera3D.x = lerp(o_Camera3D.x, x + lengthdir_x(-kCameraDistance2, o_Camera3D.zrotation + 15) * lengthdir_x(1, o_Camera3D.yrotation), blend0);
+		o_Camera3D.y = lerp(o_Camera3D.y, y + lengthdir_y(-kCameraDistance2, o_Camera3D.zrotation + 15) * lengthdir_x(1, o_Camera3D.yrotation), blend0);
+		o_Camera3D.z = lerp(o_Camera3D.z, z + lengthdir_y(-kCameraDistance2, o_Camera3D.yrotation) + 15.5, blend0);
+	}
+
+	// Update vectors NOW so everything has updated vectors to use
 	o_Camera3D.updateVectors();
 	
 	// Update listener too

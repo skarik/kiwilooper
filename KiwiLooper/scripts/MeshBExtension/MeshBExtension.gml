@@ -299,4 +299,46 @@ function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle
 			]);
 	}
 };
-	
+
+///@function MeshbAddStandingFlatArc(mesh, color, alpha, height, radius, startAngle, endAngle, angleDiv, planarX, planarY, uvs, center)
+function MeshbAddStandingFlatArc(mesh, color, alpha, height, radius, startAngle, endAngle, angleDiv, planarX, planarY, uvs, center)
+{
+	var normal = planarX.cross(planarY);
+	var offset_height = new Vector3(0, 0, height);
+	//for (var i = startAngle; i < endAngle; i += angleDiv)
+	var segment_count = ceil(abs(endAngle - startAngle) / angleDiv);
+	for (var i = 0; i < segment_count; ++i)
+	{
+		var angle_i1 = lerp(startAngle, endAngle, (i+0)/segment_count);
+		var angle_i2 = lerp(startAngle, endAngle, (i+1)/segment_count);
+		
+		var offset_a = planarX.multiply(lengthdir_x(1, angle_i1)).add(planarY.multiply(lengthdir_y(1, angle_i1)));
+		var offset_b = planarX.multiply(lengthdir_x(1, angle_i2)).add(planarY.multiply(lengthdir_y(1, angle_i2)));
+						
+		var u_a = (angle_i1 - startAngle) / (endAngle - startAngle);
+		var u_b = (angle_i2 - startAngle) / (endAngle - startAngle);
+						
+		meshb_AddQuad(mesh, [
+			new MBVertex(
+				center.add(offset_a.multiply(radius)),
+				color, alpha,
+				new Vector2(u_a, 0).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				center.add(offset_a.multiply(radius)).addSelf(offset_height),
+				color, alpha,
+				new Vector2(u_a, 1).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				center.add(offset_b.multiply(radius)),
+				color, alpha,
+				new Vector2(u_b, 0).biasUVSelf(uvs),
+				normal),
+			new MBVertex(
+				center.add(offset_b.multiply(radius)).addSelf(offset_height),
+				color, alpha,
+				new Vector2(u_b, 1).biasUVSelf(uvs),
+				normal),
+			]);
+	}
+};

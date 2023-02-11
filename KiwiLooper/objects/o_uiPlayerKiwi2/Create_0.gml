@@ -5,6 +5,7 @@ m_uiComponents = [];
 	//array_push(m_uiComponents, AKUi_HelloWorld);
 	//array_push(m_uiComponents, AKUi_StatusRectangles);
 	array_push(m_uiComponents, AKUi_ObjectInteraction);
+	array_push(m_uiComponents, AKUi_BeeInventory);
 }
 
 // Convert components to instance
@@ -59,6 +60,8 @@ m_renderEvent = function()
 	gpu_push_state();
 	gpu_set_ztestenable(false);
 	gpu_set_zwriteenable(false); // TODO???
+	gpu_set_blendmode_ext(bm_src_alpha, bm_src_color);
+	//gpu_set_blendmode(bm_add);
 	m_renderer.Draw();
 	gpu_pop_state();
 }

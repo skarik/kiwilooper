@@ -11,3 +11,9 @@ function select(index)
 	assert(index + 1 < argument_count);
 	return argument[index + 1];
 }
+
+/// @function angle_lerp(from, to, t)
+function angle_lerp(from, to, t)
+{
+	return from + angle_difference(to, from) * t;
+}

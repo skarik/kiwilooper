@@ -11,15 +11,40 @@ function g_dcmdInitialize()
 	global.dcmd_Commands = [
 		{
 			command:	"editor",
+			args:		0,
 			func:		function(args){ room_goto(rm_EditorLevel); _Loader.bRoomIsSet = true; return 0; },
 			autocomp:	kDefaultAutoComplete,
 		},
 		{
 			command:	"speedtest",
+			args:		0,
 			func:		function(args){ room_goto(rm_EditorLevel); _Loader.bRoomIsSet = true; Speedtest_Run(); return 0; },
 			autocomp:	kDefaultAutoComplete,
 		},
+		{
+			command:	"map",
+			args:		1,
+			func:		function(args){ Game_LoadMap(args[1]); _Loader.bRoomIsSet = true; return 0; },
+			autocomp:	kDefaultAutoComplete,
+		},
 	];
+}
+
+function _dcmdRunCommand(cmd, arg_array)
+{
+	/*var arg_count = min(array_length(arg_array), cmd.args);
+	
+	switch (arg_count)
+	{
+	case 1: return cmd.func(arg_array[1]);
+	case 2: return cmd.func(arg_array[1], arg_array[2]);
+	case 3: return cmd.func(arg_array[1], arg_array[2], arg_array[3]);
+	case 4: return cmd.func(arg_array[1], arg_array[2], arg_array[3], arg_array[4]);
+	default:
+	case 0:
+		return cmd.func();
+	}*/
+	return cmd.func(arg_array);
 }
 
 function dcmdParse(argument0, argument1)
@@ -41,7 +66,7 @@ function dcmdParse(argument0, argument1)
 			var cmd = global.dcmd_Commands[i];
 			if (l_commandSplit[0] == cmd.command)
 			{
-				return cmd.func();
+				return _dcmdRunCommand(cmd, l_commandSplit);
 			}
 		}
 		/*if (l_commandSplit[0] == "set")

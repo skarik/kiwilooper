@@ -12,6 +12,15 @@ m_uiWorld = inew(o_uiPlayerKiwi2);
 // Set move options
 kMoveSpeed = 40;
 
+// Set other new states
+{
+	kInventoryToggleTime = 0.7;
+	
+	bInInventory = false;
+	bInInventoryChanging = false;
+	inInventoryBlend = 0;
+}
+
 // Change mesh updating to follow character angles
 {
 	m_updateCharacterMesh = function()

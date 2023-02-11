@@ -26,6 +26,7 @@
     {"id":{"name":"spr_metalPDA","path":"sprites/spr_metalPDA/spr_metalPDA.yy",},"order":10,},
     {"id":{"name":"color_multiply","path":"scripts/color_multiply/color_multiply.yy",},"order":0,},
     {"id":{"name":"suie_toolsetObject","path":"sprites/suie_toolsetObject/suie_toolsetObject.yy",},"order":3,},
+    {"id":{"name":"sui_vtos_dots","path":"sprites/sui_vtos_dots/sui_vtos_dots.yy",},"order":0,},
     {"id":{"name":"ssy_effect","path":"sprites/ssy_effect/ssy_effect.yy",},"order":14,},
     {"id":{"name":"audio_register_name","path":"scripts/audio_register_name/audio_register_name.yy",},"order":1,},
     {"id":{"name":"Material_Checks","path":"scripts/Material_Checks/Material_Checks.yy",},"order":5,},
@@ -459,6 +460,7 @@
     {"id":{"name":"DelayHelpers","path":"scripts/DelayHelpers/DelayHelpers.yy",},"order":4,},
     {"id":{"name":"EditorGizmoEditBox","path":"scripts/EditorGizmoEditBox/EditorGizmoEditBox.yy",},"order":4,},
     {"id":{"name":"ob_audioAmbient","path":"objects/ob_audioAmbient/ob_audioAmbient.yy",},"order":0,},
+    {"id":{"name":"KiwiUiPartsInventory","path":"scripts/KiwiUiPartsInventory/KiwiUiPartsInventory.yy",},"order":3,},
     {"id":{"name":"sh_editorFlatShaded","path":"shaders/sh_editorFlatShaded/sh_editorFlatShaded.yy",},"order":1,},
     {"id":{"name":"draw_9slice_flex3","path":"scripts/draw_9slice_flex3/draw_9slice_flex3.yy",},"order":1,},
     {"id":{"name":"MapPersistence","path":"scripts/MapPersistence/MapPersistence.yy",},"order":10,},
@@ -694,6 +696,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"editor","folderPath":"folders/Sprites/ui/editor.yy","order":11,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Tile Sets","folderPath":"folders/Tile Sets.yy","order":74,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Timelines","folderPath":"folders/Timelines.yy","order":68,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"vtos","folderPath":"folders/Sprites/ui/vtos.yy","order":12,},
   ],
   "AudioGroups": [
     {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
