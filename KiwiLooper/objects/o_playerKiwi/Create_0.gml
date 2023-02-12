@@ -20,6 +20,7 @@ m_uiTally = inew(o_uisTallyMarks);
 
 // Set up progression
 m_inventory = {
+	is_big: false,
 	keys: array_create(100, 0),
 };
 

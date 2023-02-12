@@ -228,6 +228,13 @@ function Ui3Tex_RectRect(context, tex, offset_x, offset_y, width, height, outlin
 	DrawSpriteRectangle(tex[8] + offset_x, tex[9] + offset_y, tex[8] + offset_x + width, tex[9] + offset_y + height, outline);
 }
 
+/// @function Ui3Tex_LineRect(context, tex, offset_x, offset_y, offset_x2, offset_y2)
+function Ui3Tex_LineRect(context, tex, offset_x, offset_y, offset_x2, offset_y2)
+{
+	// todo: scissor to tex
+	DrawSpriteLine(tex[8] + offset_x, tex[9] + offset_y, tex[8] + offset_x2, tex[9] + offset_y2);
+}
+
 function Ui3Tex_SpriteRect(context, tex, offset_x, offset_y, sprite, index, xscale=1.0, yscale=1.0, rotation=0.0, color=c_white, alpha=1.0)
 {
 	// todo: scissor to tex
@@ -317,12 +324,12 @@ function Ui3Shape_ArcPlane(context, tex, x, y, z, cross_x, cross_y, radius, angl
 		context.mesh,
 		color, alpha,
 		-tex[7] * yscale,
-		radius,
+		radius * xscale,
 		-angle_start - 90, -angle_end - 90,
 		clamp(round(abs(angle_end - angle_start) / 15), 4, 8),
 		cross_x, cross_z,
 		tex,
-		new Vector3(x, y, z).subtract(cross_z.multiply(radius)).subtract(cross_y.multiply(tex[7]*yscale*0.5))
+		new Vector3(x, y, z).subtract(cross_z.multiply(radius * xscale)).subtract(cross_y.multiply(tex[7]*yscale*0.5))
 	);
 	
 	// Add the quad

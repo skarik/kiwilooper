@@ -23,8 +23,8 @@ pixelScale = 2;
 scaleMode = kScreenscalemode_Match;
 
 // Desired/target resolution for gameplay.
-gamewidth = 1280;
-gameheight = 720;
+gamewidth = 1920;//1280;
+gameheight = 1080;//720;
 
 // Saved size, for tracking changes
 savedwidth = width;

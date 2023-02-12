@@ -14,6 +14,12 @@ kMoveSpeed = 40;
 
 // Set other new states
 {
+	// Overwrite new inventory
+	m_inventory = new AKiwiInventory();
+	// Set up progression
+	m_inventory.keys = array_create(100, 0);
+
+	
 	kInventoryToggleTime = 0.7;
 	
 	bInInventory = false;

@@ -12,6 +12,12 @@ m_onActivation = function(activatedBy)
 	if (iexists(activatedBy) && Game_IsPlayer_safe(activatedBy))
 	{
 		o_playerKiwi.m_inventory.keys[m_lockChannel] = 1;
+		if (o_playerKiwi.m_inventory.is_big)
+		{
+			var item = new AKiwiInventoryItem();
+			item.name = "Keycard";
+			o_playerKiwi.m_inventory.AddItem(item);
+		}
 		idelete_delay(this, 0);
 	}
 }
