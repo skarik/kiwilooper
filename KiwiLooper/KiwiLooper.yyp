@@ -363,6 +363,7 @@
     {"id":{"name":"ob_debugShape3D","path":"objects/ob_debugShape3D/ob_debugShape3D.yy",},"order":0,},
     {"id":{"name":"MapLoaderPropmap","path":"scripts/MapLoaderPropmap/MapLoaderPropmap.yy",},"order":2,},
     {"id":{"name":"sui_tallyMarks","path":"sprites/sui_tallyMarks/sui_tallyMarks.yy",},"order":9,},
+    {"id":{"name":"spriteHelperStuff","path":"scripts/spriteHelperStuff/spriteHelperStuff.yy",},"order":8,},
     {"id":{"name":"debugUntestedCall","path":"scripts/debugUntestedCall/debugUntestedCall.yy",},"order":9,},
     {"id":{"name":"avec2_normalized","path":"scripts/avec2_normalized/avec2_normalized.yy",},"order":5,},
     {"id":{"name":"o_envFxSpark","path":"objects/o_envFxSpark/o_envFxSpark.yy",},"order":0,},
@@ -821,9 +822,9 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kai","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi_old.md2","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.md2","CopyToMask":-1,"filePath":"datafiles/models",},
-    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kch","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest9_solids_bug.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kch","CopyToMask":-1,"filePath":"datafiles/models",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

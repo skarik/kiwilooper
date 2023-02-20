@@ -1,9 +1,10 @@
 #macro kMapGeometryFeature_None				0x0001
-#macro kMapGeometryFeature_PolygonTree		0x0002
-#macro kMapGeometryFeature_Portals			0x0004
-#macro kMapGeometryFeature_PVSGroups		0x0008
+#macro kMapGeometryFeature_TextureFix		0x0002
+#macro kMapGeometryFeature_PolygonTree		0x0004
+#macro kMapGeometryFeature_Portals			0x0008
+#macro kMapGeometryFeature_PVSGroups		0x0010
 
-#macro kMapGeometryFeature_Current	kMapGeometryFeature_None
+#macro kMapGeometryFeature_Current	0x0002
 
 function MapLoadGeometry(filedata, mapGeometry)
 {

@@ -48,7 +48,7 @@ Initialize = function()
 			|| material.type == kTextureTypeSprite)
 		{
 			// Find the sprite resource
-			var pixel_resource = ResourceFindSpriteTexture(material.source);
+			var pixel_resource = ResourceFindSpriteTexture(stl_lab0); //material.source); // issue whenever addning sprites
 			if (is_undefined(pixel_resource))
 			{
 				pixel_resource = ResourceAddTexture(material.GetUID(), material.source);

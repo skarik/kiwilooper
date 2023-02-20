@@ -91,14 +91,14 @@ function AMapSolid() constructor
 		return triangles;
 	}
 	
-	static ReadFromBuffer = function(buffer)
+	static ReadFromBuffer = function(buffer, version)
 	{
 		// faces[]
 		var face_count = buffer_read(buffer, buffer_u8);
 		faces = array_create(face_count);
 		for (var faceIndex = 0; faceIndex < face_count; ++faceIndex)
 		{
-			faces[faceIndex] = (new AMapSolidFace()).ReadFromBuffer(buffer);
+			faces[faceIndex] = (new AMapSolidFace()).ReadFromBuffer(buffer, version);
 		}
 		// vertices[]
 		var vertex_count = buffer_read(buffer, buffer_u8);
@@ -109,13 +109,13 @@ function AMapSolid() constructor
 		}
 		return self;
 	}
-	static WriteToBuffer = function(buffer)
+	static WriteToBuffer = function(buffer, version)
 	{
 		// faces[]
 		buffer_write(buffer, buffer_u8, array_length(faces));
 		for (var faceIndex = 0; faceIndex < array_length(faces); ++faceIndex)
 		{
-			faces[faceIndex].WriteToBuffer(buffer);
+			faces[faceIndex].WriteToBuffer(buffer, version);
 		}
 		// vertices[]
 		buffer_write(buffer, buffer_u8, array_length(vertices));
@@ -133,7 +133,7 @@ function AMapSolidFace() constructor
 	uvinfo = new AMapSolidFaceUVInfo();
 	texture = new AMapSolidFaceTexture();
 	
-	static ReadFromBuffer = function(buffer)
+	static ReadFromBuffer = function(buffer, version)
 	{
 		// Index array
 		var index_count = buffer_read(buffer, buffer_u8);
@@ -147,11 +147,11 @@ function AMapSolidFace() constructor
 		uvinfo.SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
 		
 		// texture
-		texture.SerializeBuffer(buffer, kIoRead, SerializeReadDefault);
+		texture.SerializeBuffer(buffer, kIoRead, SerializeReadDefault, version);
 		
 		return self;
 	}
-	static WriteToBuffer = function(buffer)
+	static WriteToBuffer = function(buffer, version)
 	{
 		// Index array
 		buffer_write(buffer, buffer_u8, array_length(indicies));
@@ -164,7 +164,7 @@ function AMapSolidFace() constructor
 		uvinfo.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
 		
 		// texture
-		texture.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault);
+		texture.SerializeBuffer(buffer, kIoWrite, SerializeWriteDefault, version);
 		
 		return self;
 	}
@@ -286,13 +286,29 @@ function AMapSolidFaceTexture() constructor
 		}
 	}
 	
-	static SerializeBuffer = function(buffer, ioMode, io_ser)
+	static SerializeBuffer = function(buffer, ioMode, io_ser, version)
 	{
 		io_ser(self, "type", buffer, buffer_u8);
 		if (type == kTextureTypeSprite || type == kTextureTypeSpriteTileset)
 		{
-			io_ser(self, "source", buffer, buffer_u64);
-			io_ser(self, "index", buffer, buffer_u16);
+			if (version < kMapEditorFeature_TextureStringsFix)
+			{	// Use the sprite index directly
+				io_ser(self, "source", buffer, buffer_u64);
+				io_ser(self, "index", buffer, buffer_u16);
+				
+				// HACK TO FIX BUG
+				if (source == ssy_ambientAudio)
+				{
+					source = stl_lab0;
+				}
+			}
+			else
+			{	// We want to use the sprite name moving forward.
+				_temp_source = sprite_get_name(source);
+				io_ser(self, "_temp_source", buffer, buffer_string);
+				io_ser(self, "index", buffer, buffer_u16);
+				source = sprite_find_name(_temp_source);
+			}
 		}
 		else if (type == kTextureTypeTexture)
 		{

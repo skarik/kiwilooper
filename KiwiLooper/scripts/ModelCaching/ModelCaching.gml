@@ -53,13 +53,13 @@ function ModelCacheWrite(kch_filename, frame_count, mesh_frames)
 	// Write time of the cache
 	buffer_write(total_output_buffer, buffer_u64, faudioUtilGetCurrentTime());
 	// Write size of meshes
-	buffer_write(total_output_buffer, buffer_u32, frameCount);
+	buffer_write(total_output_buffer, buffer_u32, frame_count);
 	// Write the buffer size info
 	buffer_write(total_output_buffer, buffer_u32, vertex_get_number(mesh_frames[0]));
 	buffer_write(total_output_buffer, buffer_u32, vertex_get_buffer_size(mesh_frames[0]));
 				
 	// Write out all the meshes
-	for (var iframe = 0; iframe < frameCount; ++iframe)
+	for (var iframe = 0; iframe < frame_count; ++iframe)
 	{
 		var frame_buffer = buffer_create_from_vertex_buffer(mesh_frames[iframe], buffer_fixed, 1);
 		buffer_write(total_output_buffer, buffer_u32, buffer_get_size(frame_buffer));

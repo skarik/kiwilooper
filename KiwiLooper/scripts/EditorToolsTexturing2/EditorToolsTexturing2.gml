@@ -217,6 +217,23 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 					{
 						// TODO
 						m_lastSelectedFace = recent_object.object.primitive.faces[recent_object.object.face];
+						
+						// Let's debug the texture name for fixing some stupid bugs:
+						if (m_lastSelectedFace.texture.type == kTextureTypeTexture)
+						{
+							debugLog(kLogVerbose, m_lastSelectedFace.texture.source);
+						}
+						else
+						{
+							if (sprite_exists(m_lastSelectedFace.texture.source))
+							{
+								debugLog(kLogVerbose, sprite_get_name(m_lastSelectedFace.texture.source));
+							}
+							else
+							{
+								debugLog(kLogVerbose, "??? : " + string(m_lastSelectedFace.texture.source));
+							}
+						}
 					}
 				}
 			}

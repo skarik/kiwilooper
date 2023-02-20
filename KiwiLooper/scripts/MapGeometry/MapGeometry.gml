@@ -29,7 +29,7 @@ function AMapGeometry() constructor
 			{
 				if (ioMode == kIoRead) 
 					materials[materialIndex] = new AMapSolidFaceTexture();
-				materials[materialIndex].SerializeBuffer(buffer, ioMode, io_ser);
+				materials[materialIndex].SerializeBuffer(buffer, ioMode, io_ser, (version&kMapGeometryFeature_TextureFix) ? kMapEditorFeature_TextureStringsFix : kMapEditorFeature_DirtyFlagsAndCamToggle);
 			}
 			
 			// triangles[]

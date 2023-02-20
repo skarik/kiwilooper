@@ -65,7 +65,7 @@ function AMapEditorState() constructor
 				map.solids = array_create(solid_count);
 				for (var solidIndex = 0; solidIndex < solid_count; ++solidIndex)
 				{
-					map.solids[solidIndex] = (new AMapSolid()).ReadFromBuffer(buffer);
+					map.solids[solidIndex] = (new AMapSolid()).ReadFromBuffer(buffer, version);
 				}
 			}
 			else if (ioMode = kIoWrite)

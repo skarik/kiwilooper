@@ -2,10 +2,12 @@
 #macro kMapEditorFeature_CameraFirstPerson		0x0002
 #macro kMapEditorFeature_Solids					0x0004
 #macro kMapEditorFeature_DirtyFlagsAndCamToggle	0x0005
-#macro kMapEditorFeature_ViewModeInfo			0x0007
+#macro kMapEditorFeature_TextureStringsFix		0x0006
 #macro kMapEditorFeature_EntityNumbering		0x0008
+#macro kMapEditorFeature_ViewModeInfo			0x0009
 
-#macro kMapEditorFeature_Current	kMapEditorFeature_DirtyFlagsAndCamToggle
+#macro kMapEditorFeature_Current	kMapEditorFeature_TextureStringsFix
+// why did we not have view mode info????
 
 function MapLoadEditor(filedata, editorSavedState)
 {

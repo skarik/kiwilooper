@@ -172,7 +172,7 @@ function ResourceLoadModel(filepath)
 			if (kResources_UseCachedModels)
 			{
 				var kch_filename = string_copy(filepath, 1, string_rpos(".", filepath)) + "kch";
-				ModelCacheWrite(kch_filename);
+				ModelCacheWrite(kch_filename, frameCount, mesh_frames);
 			}
 		}
 		else
