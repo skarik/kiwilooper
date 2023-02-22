@@ -173,6 +173,8 @@ function AMapSolidFace() constructor
 #macro kTextureTypeSprite			0
 #macro kTextureTypeSpriteTileset	1
 #macro kTextureTypeTexture			2
+#macro kTextureTypeSkip				3 // Special texture type. Shorthand for the ssy_Skip sprite. Signifies face will be skipped entirely.
+#macro kTextureTypeClip				4 // Special texture type. Shorthand for the ssy_Clip sprite. Signifies face will be skipped for rendering.
 
 function AMapSolidFaceTexture() constructor
 {
@@ -192,16 +194,40 @@ function AMapSolidFaceTexture() constructor
 	
 	static Equals = function(otherTexture)
 	{
-		return
-			type == otherTexture.type
+		// Types & index same?
+		if (type == otherTexture.type
 			&& source == otherTexture.source
-			&& index == otherTexture.index;
+			&& index == otherTexture.index)
+		{
+			return true;
+		}
+		// Both are SKIP?
+		else if ( ((type == kTextureTypeSprite && source == ssy_Skip) || type == kTextureTypeSkip) &&
+			((otherTexture.type == kTextureTypeSprite && otherTexture.source == ssy_Skip) || otherTexture.type == kTextureTypeSkip) )
+		{
+			return true;
+		}
+		// Both are CLIP?
+		else if ( ((type == kTextureTypeSprite && source == ssy_Clip) || type == kTextureTypeClip) &&
+			((otherTexture.type == kTextureTypeSprite && otherTexture.source == ssy_Clip) || otherTexture.type == kTextureTypeClip) )
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	static BuildUID = function()
 	{
 		gml_pragma("forceinline");
-		if (type == kTextureTypeSpriteTileset || type == kTextureTypeSprite)
+		if ((type == kTextureTypeSprite && source == ssy_Skip) || type == kTextureTypeSkip)
+		{
+			uid = "_SKIP_";
+		}
+		else if ((type == kTextureTypeSprite && source == ssy_Clip) || type == kTextureTypeClip)
+		{
+			uid = "_CLIP_";
+		}
+		else if (type == kTextureTypeSpriteTileset || type == kTextureTypeSprite)
 		{
 			uid = string(type) + sprite_get_name(source) + string(index);
 		}
@@ -233,6 +259,10 @@ function AMapSolidFaceTexture() constructor
 			debugLog(kLogError, "Cannot query AMapSolidFaceTexture size from textures.");
 			return [16, 16];
 		}
+		else if (type == kTextureTypeSkip || type == kTextureTypeClip)
+		{
+			return [64, 64];
+		}
 		else
 		{
 			debugLog(kLogError, "Invalid AMapSolidFaceTexture type \"" + string(type) + "\"");
@@ -263,11 +293,20 @@ function AMapSolidFaceTexture() constructor
 			debugLog(kLogError, "Cannot query AMapSolidFaceTexture UVs from textures.");
 			return [0, 0, 16, 16];
 		}
+		else if (type == kTextureTypeSkip)
+		{
+			return sprite_get_uvs(ssy_Skip, 0);
+		}
+		else if (type == kTextureTypeClip)
+		{
+			return sprite_get_uvs(ssy_Clip, 0);
+		}
 	}
 	static GetTextureSubUVs = function(in_atlas_uvs)
 	{
 		if (type == kTextureTypeSprite
-			|| type == kTextureTypeTexture)
+			|| type == kTextureTypeTexture
+			|| type == kTextureTypeSkip || type == kTextureTypeClip)
 		{
 			return in_atlas_uvs;
 		}
@@ -314,6 +353,14 @@ function AMapSolidFaceTexture() constructor
 		{
 			io_ser(self, "source", buffer, buffer_string);
 			io_ser(self, "index", buffer, buffer_u16);
+		}
+		else if (type == kTextureTypeSkip)
+		{
+			source = ssy_Skip;
+		}
+		else if (type == kTextureTypeClip)
+		{
+			source = ssy_Clip;
 		}
 		else
 		{

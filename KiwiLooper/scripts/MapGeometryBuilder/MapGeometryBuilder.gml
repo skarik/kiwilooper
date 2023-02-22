@@ -59,7 +59,27 @@ function MapGeo_AddMaterial(builderState, geo, material)
 		
 		// And load the resource into resource system for using later
 		var pixel_resource;
-		if (material.type == kTextureTypeSpriteTileset
+		if ((material.type == kTextureTypeSprite && material.source == ssy_Skip)
+			|| material.type == kTextureTypeSkip)
+		{
+			pixel_resource = null;
+			
+			var new_material = new AMapSolidFaceTexture();
+			new_material.type = kTextureTypeSkip;
+			new_material.source = ssy_Skip;
+			geo.materials[array_length(geo.materials) - 1] = new_material;
+		}
+		else if ((material.type == kTextureTypeSprite && material.source == ssy_Clip)
+			|| material.type == kTextureTypeClip)
+		{
+			pixel_resource = null;
+			
+			var new_material = new AMapSolidFaceTexture();
+			new_material.type = kTextureTypeClip;
+			new_material.source = ssy_Clip;
+			geo.materials[array_length(geo.materials) - 1] = new_material;
+		}
+		else if (material.type == kTextureTypeSpriteTileset
 			|| material.type == kTextureTypeSprite)
 		{
 			// Find the sprite resource
@@ -83,6 +103,16 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 	for (var faceIndex = 0; faceIndex < array_length(mapSolid.faces); ++faceIndex)
 	{
 		var face = mapSolid.faces[faceIndex];
+		
+		// Get the material info
+		var material = builderState.materialMap[? face.texture.GetUID()];
+		if (geo.materials[material].type == kTextureTypeSkip || geo.materials[material].type == kTextureTypeClip)
+		{
+			continue; // Skip both clip & skip for now.
+			// TODO: For CLIP:
+			//		Mark this triangle as exists, but make sure it does not render.
+		}
+		
 		var triangleList = mapSolid.TriangulateFace(faceIndex, false);
 			
 		// Create a plane for calculating UVs
@@ -104,7 +134,7 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 			var geoTriangle = new AMapGeometryTriangle();
 			
 			// Set up material first
-			geoTriangle.material = builderState.materialMap[? face.texture.GetUID()];
+			geoTriangle.material = material;
 		
 			// Set up the positions & uvs
 			for (var triCorner = 0; triCorner < 3; ++triCorner)

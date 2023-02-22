@@ -2,6 +2,8 @@ function _sprite_find_name_preache()
 {
 	global._sprite_find_things_first = [
 		stl_lab0,
+		ssy_Skip,
+		ssy_Clip,
 		];
 }
 gml_pragma("global", "_sprite_find_name_preache()");

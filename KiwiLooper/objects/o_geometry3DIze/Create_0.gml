@@ -44,7 +44,11 @@ Initialize = function()
 		
 		// Get the resource for the material
 		var pixel_resource = null;
-		if (material.type == kTextureTypeSpriteTileset
+		if (material.type == kTextureTypeSkip || material.type == kTextureTypeClip)
+		{
+			pixel_resource = null; // No pixel resource to provide.
+		}
+		else if (material.type == kTextureTypeSpriteTileset
 			|| material.type == kTextureTypeSprite)
 		{
 			// Find the sprite resource
@@ -61,25 +65,33 @@ Initialize = function()
 		}
 		
 		// Find the texture in the atlas system, or add it.
-		var atlas_lookup = AtlasFindResource(pixel_resource);
-		if (is_undefined(atlas_lookup))
+		var atlas_lookup = undefined;
+		if (pixel_resource != null)
 		{
-			atlas_lookup = AtlasAddResource(pixel_resource);
+			atlas_lookup = AtlasFindResource(pixel_resource);
+			if (is_undefined(atlas_lookup))
+			{
+				atlas_lookup = AtlasAddResource(pixel_resource);
+			}
 		}
 		
 		// Set up the mesh/atlas arrays now
-		var drawlist_index = array_get_index(m_atlasTextures, atlas_lookup.atlas);
-		if (drawlist_index == null)
+		var drawlist_index = null;
+		if (!is_undefined(atlas_lookup))
 		{
-			drawlist_index = array_length(m_atlasTextures);
-			m_atlasTextures[drawlist_index] = atlas_lookup.atlas;
+			drawlist_index = array_get_index(m_atlasTextures, atlas_lookup.atlas);
+			if (drawlist_index == null)
+			{
+				drawlist_index = array_length(m_atlasTextures);
+				m_atlasTextures[drawlist_index] = atlas_lookup.atlas;
+			}
 		}
 		
 		// Set up the atlas and material information
 		material_atlas_info[matIndex] = {
-			uvs: material.GetTextureSubUVs(AtlasGet(atlas_lookup.atlas).GetUVs(atlas_lookup.index)),
-			atlas_index: atlas_lookup.atlas,
-			atlas_subindex: atlas_lookup.index,
+			uvs: is_undefined(atlas_lookup) ? [0,0,0,0] : material.GetTextureSubUVs(AtlasGet(atlas_lookup.atlas).GetUVs(atlas_lookup.index)),
+			atlas_index: is_undefined(atlas_lookup) ? null : atlas_lookup.atlas,
+			atlas_subindex: is_undefined(atlas_lookup) ? null : atlas_lookup.index,
 			mesh_index: drawlist_index,
 		};
 	}

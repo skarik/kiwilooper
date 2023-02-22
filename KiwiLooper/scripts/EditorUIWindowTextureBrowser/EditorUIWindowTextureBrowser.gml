@@ -106,6 +106,36 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 			array_push(texture_items, textureItem);
 		}
 		
+		// Add the special skip & clip brushes
+		{
+			var textureItem = new ATextureItem();
+			textureItem.type = kTextureTypeSprite;
+			textureItem.displayname = "SKIP";
+			textureItem.resource = ResourceFindSpriteTexture(ssy_Skip);
+			if (is_undefined(textureItem.resource))
+			{	// Add texture w/ hard coded UID for this texture
+				textureItem.resource = ResourceAddTexture("_SKIP_", ssy_Skip);
+			}
+			textureItem.size.x = 64;
+			textureItem.size.y = 64;
+			
+			array_push(texture_items, textureItem);
+		}
+		{
+			var textureItem = new ATextureItem();
+			textureItem.type = kTextureTypeSprite;
+			textureItem.displayname = "CLIP";
+			textureItem.resource = ResourceFindSpriteTexture(ssy_Clip);
+			if (is_undefined(textureItem.resource))
+			{	// Add texture w/ hard coded UID for this texture
+				textureItem.resource = ResourceAddTexture("_CLIP_", ssy_Clip);
+			}
+			textureItem.size.x = 64;
+			textureItem.size.y = 64;
+			
+			array_push(texture_items, textureItem);
+		}
+		
 		// Add the tiles in quadrants at a time
 		for (var iy = 0; iy < 4; ++iy)
 		{
@@ -218,6 +248,8 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 				&& (
 					// Check for tilesets if the resources match
 					(texinfo.type == kTextureTypeSpriteTileset && texinfo.resource.sprite == solidTexture.source)
+					// Check for sprites if the resources match
+					|| (texinfo.type == kTextureTypeSprite && texinfo.resource.sprite == solidTexture.source)
 					// Check for textures if the paths match
 					|| (texinfo.type == kTextureTypeTexture && texinfo.filename == solidTexture.source)
 					)

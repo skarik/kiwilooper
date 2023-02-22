@@ -110,7 +110,8 @@ function EditorSolidsRendererRecreate(solid_id)
 				{
 					// if not, find an atlas to add it to
 					if (face.texture.type == kTextureTypeSpriteTileset
-						|| face.texture.type == kTextureTypeSprite)
+						|| face.texture.type == kTextureTypeSprite
+						|| face.texture.type == kTextureTypeSkip || face.texture.type == kTextureTypeClip)
 					{
 						// Find the sprite resource
 						var sprite_resource = ResourceFindSpriteTexture(face.texture.source);
@@ -282,7 +283,8 @@ function EditorSolidsRendererCreate()
 			{
 				// if not, find an atlas to add it to
 				if (face.texture.type == kTextureTypeSpriteTileset
-					|| face.texture.type == kTextureTypeSprite)
+					|| face.texture.type == kTextureTypeSprite
+					|| face.texture.type == kTextureTypeSkip || face.texture.type == kTextureTypeClip)
 				{
 					// Find the sprite resource
 					var sprite_resource = ResourceFindSpriteTexture(face.texture.source);
@@ -458,83 +460,4 @@ function EditorSolidsRendererCreate()
 			solids = [];
 		}
 	}
-	
-	/*var mesh = meshb_Begin(MapGeometry_CreateVertexFormat());
-	for (var solidIndex = 0; solidIndex < array_length(m_state.map.solids); ++solidIndex)
-	{
-		var mapSolid = m_state.map.solids[solidIndex];
-		for (var faceIndex = 0; faceIndex < array_length(mapSolid.faces); ++faceIndex)
-		{
-			var face = mapSolid.faces[faceIndex];
-			var triangleList = mapSolid.TriangulateFace(faceIndex, false);
-			
-			// Get the atlas UVs used for this face
-			var atlasInfo = face.texture.GetTextureUVs();
-			
-			// Create a plane for calculating UVs
-			var facePlane = Plane3FromNormalOffset(face.uvinfo.normal, new Vector3(0, 0, 0));
-			
-			// Now grab the vertices
-			var faceMesh = array_create(array_length(triangleList) * 3);
-			for (var triangleIndex = 0; triangleIndex < array_length(triangleList); ++triangleIndex)
-			{
-				var triIndices = triangleList[triangleIndex];
-				
-				// Set up the positions & uvs
-				for (var triCorner = 0; triCorner < 3; ++triCorner)
-				{
-					var solidVertex = mapSolid.vertices[triIndices[triCorner]];
-					
-					var meshVert = MBVertexDefault();
-					
-					// Get position
-					meshVert.position.x = solidVertex.position.x;
-					meshVert.position.y = solidVertex.position.y;
-					meshVert.position.z = solidVertex.position.z;
-					
-					// Get UVs
-					var uvPoint = facePlane.flattenPoint(solidVertex.position);
-					face.uvinfo.TransformPoint(uvPoint, face.texture);
-					
-					meshVert.uv.x = uvPoint.x;
-					meshVert.uv.y = uvPoint.y;
-					
-					// Save our new vertex!
-					faceMesh[triangleIndex * 3 + triCorner] = meshVert;
-				}
-				
-				// Calculate normal for this triangle
-				var faceNormal = TriangleGetNormal([Vector3FromTranslation(faceMesh[0].position), Vector3FromTranslation(faceMesh[1].position), Vector3FromTranslation(faceMesh[2].position)]);
-				
-				// Write normals + uvs
-				for (var i = 0; i < 3; ++i)
-				{
-					faceMesh[triangleIndex * 3 + i].normal.x = faceNormal.x;
-					faceMesh[triangleIndex * 3 + i].normal.y = faceNormal.y;
-					faceMesh[triangleIndex * 3 + i].normal.z = faceNormal.z;
-					
-					faceMesh[triangleIndex * 3 + i].atlas = atlasInfo;
-				}
-			}
-			// Now that everything fixed up, add the tri
-			//meshb_AddTris(mesh, faceMesh);
-			for (var i = 0; i < array_length(faceMesh); ++i)
-			{
-				MapGeometry_PushVertex(mesh, faceMesh[i]);
-			}
-		}
-	}
-	
-	meshb_End(mesh);
-	
-	solidsRenderer.m_mesh = mesh;
-	solidsRenderer.m_renderEvent = method(solidsRenderer, function()
-	{
-		var shaderPrev = drawShaderGet();
-		drawShaderSet(sh_editorSolidsDebug);
-		
-			vertex_submit(m_mesh, pr_trianglelist, sprite_get_texture(stl_lab0, 0));
-			
-		drawShaderSet(shaderPrev);
-	});*/
 }

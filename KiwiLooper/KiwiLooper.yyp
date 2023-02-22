@@ -59,6 +59,7 @@
     {"id":{"name":"controlSettingGet","path":"scripts/controlSettingGet/controlSettingGet.yy",},"order":1,},
     {"id":{"name":"spr_roboWalk","path":"sprites/spr_roboWalk/spr_roboWalk.yy",},"order":4,},
     {"id":{"name":"ModelCaching","path":"scripts/ModelCaching/ModelCaching.yy",},"order":4,},
+    {"id":{"name":"ssy_Skip","path":"sprites/ssy_Skip/ssy_Skip.yy",},"order":32,},
     {"id":{"name":"quintInOut","path":"scripts/quintInOut/quintInOut.yy",},"order":6,},
     {"id":{"name":"Settings","path":"objects/Settings/Settings.yy",},"order":11,},
     {"id":{"name":"ssy_nodeAi","path":"sprites/ssy_nodeAi/ssy_nodeAi.yy",},"order":22,},
@@ -329,6 +330,7 @@
     {"id":{"name":"o_3DLightPowerstate","path":"objects/o_3DLightPowerstate/o_3DLightPowerstate.yy",},"order":2,},
     {"id":{"name":"spr_metalBottleGround0","path":"sprites/spr_metalBottleGround0/spr_metalBottleGround0.yy",},"order":12,},
     {"id":{"name":"EditorGizmoMovers","path":"scripts/EditorGizmoMovers/EditorGizmoMovers.yy",},"order":1,},
+    {"id":{"name":"ssy_Clip","path":"sprites/ssy_Clip/ssy_Clip.yy",},"order":33,},
     {"id":{"name":"ob_character","path":"objects/ob_character/ob_character.yy",},"order":0,},
     {"id":{"name":"suie_actionsetTextures","path":"sprites/suie_actionsetTextures/suie_actionsetTextures.yy",},"order":10,},
     {"id":{"name":"script_register_name","path":"scripts/script_register_name/script_register_name.yy",},"order":1,},
@@ -825,6 +827,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest9_solids_bug.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kch","CopyToMask":-1,"filePath":"datafiles/models",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest11.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",
