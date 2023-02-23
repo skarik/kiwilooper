@@ -1,4 +1,4 @@
-/// Builder for AMapGeometry from editor's Solids input
+	/// Builder for AMapGeometry from editor's Solids input
 
 function AMapGeoBuilderState() constructor
 {
@@ -106,11 +106,13 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 		
 		// Get the material info
 		var material = builderState.materialMap[? face.texture.GetUID()];
-		if (geo.materials[material].type == kTextureTypeSkip || geo.materials[material].type == kTextureTypeClip)
+		if (geo.materials[material].type == kTextureTypeSkip)
 		{
-			continue; // Skip both clip & skip for now.
-			// TODO: For CLIP:
-			//		Mark this triangle as exists, but make sure it does not render.
+			continue; // Skip any SKIP material.
+		}
+		else if (geo.materials[material].type == kTextureTypeClip)
+		{
+			material = kGeoMaterialIndex_Clip; // Go ahead with CLIP, but make sure to set special index.
 		}
 		
 		var triangleList = mapSolid.TriangulateFace(faceIndex, false);
@@ -122,7 +124,14 @@ function MapGeo_BuildAddSolid(builderState, geo, mapSolid)
 		var scaleInfo;
 		{
 			var resource = builderState.resourceMap[? face.texture.GetUID()];
-			scaleInfo = [sprite_get_width(resource.sprite), sprite_get_height(resource.sprite)];
+			if (is_struct(resource))
+			{
+				scaleInfo = [sprite_get_width(resource.sprite), sprite_get_height(resource.sprite)];
+			}
+			else
+			{	// Do some sensible defaults.
+				scaleInfo = [16, 16];
+			}
 		}
 			
 		// Now grab the vertices

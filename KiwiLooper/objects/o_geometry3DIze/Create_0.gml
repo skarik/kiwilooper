@@ -108,6 +108,10 @@ Initialize = function()
 	for (var tri = 0; tri < array_length(m_geometry.triangles); ++tri)
 	{
 		var triangle = m_geometry.triangles[tri];
+		if (triangle.material == kGeoMaterialIndex_Clip)
+		{
+			continue; // Skip CLIP brushes from rendering.
+		}
 		for (var corner = 0; corner < 3; ++corner)
 		{
 			// Save atlas information

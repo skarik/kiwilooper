@@ -58,6 +58,11 @@ function AMapGeometry() constructor
 	}
 }
 
+// Special material indicies.
+// Must be positive since it's stored as a u16.
+#macro kGeoMaterialIndex_Clip	(0xFFFF)
+#macro kGeoMaterialIndex_None	(0xFFFF - null + 1)
+
 function AMapGeometryTriangle() constructor
 {
 	// MBVertex[3]
