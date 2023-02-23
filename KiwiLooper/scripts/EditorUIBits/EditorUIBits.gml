@@ -64,6 +64,13 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "normals", function() { global.shadeType = kShadeTypeDebug_Normals; }, null));
 	}
 	
+	// Create shortcuts (TODO)
+	/*{
+		m_shortcuts = new AShortcutManager();
+		m_shortcuts.AddShortcut(ord("["), "Smaller Grid", EditorToolGridSmaller, null, null);
+		m_shortcuts.AddShortcut(ord("]"), "Larger Grid", EditorToolGridLarger, null, null);
+	}*/
+	
 	// Create status bar
 	m_statusbar = new AEditorStatusbar(this);
 	

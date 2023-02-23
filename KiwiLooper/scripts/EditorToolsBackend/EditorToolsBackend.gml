@@ -149,6 +149,15 @@ function EditorToolsUpdate_CheckShortcuts()
 		{
 			toolCurrentRequested = kEditorToolScale;
 		}
+		
+		if (keyboard_check_pressed(/*vk_oem_4*/0xDB))
+		{
+			EditorToolGridSmaller();
+		}
+		if (keyboard_check_pressed(/*vk_oem_6*/0xDD))
+		{
+			EditorToolGridLarger();
+		}
 	}
 	
 	// Hard-coded command overrides:
