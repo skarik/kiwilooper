@@ -691,7 +691,7 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 					if (axis == kAxisX)
 						rotation = m_dragStart[axis] - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
 					else if (axis == kAxisY)
-						rotation = m_dragStart[axis] - angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
+						rotation = m_dragStart[axis] + angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
 					else if (axis == kAxisZ)
 						rotation = m_dragStart[axis] - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
 				}
