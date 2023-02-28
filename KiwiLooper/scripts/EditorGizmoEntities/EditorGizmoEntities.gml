@@ -287,6 +287,7 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		
 		bHasEntTransform	= is_struct(n_object.entity.gizmoMesh) ? (variable_struct_exists(n_object.entity.gizmoMesh, "transform") && is_array(n_object.entity.gizmoMesh.transform)) : false;
 		bHasLitOverride		= (is_struct(n_object.entity.gizmoMesh) && variable_struct_exists(n_object.entity.gizmoMesh, "litOverride")) ? true : false;
+		bHasVisibilityCheck	= is_struct(n_object.entity.gizmoMesh) ? variable_struct_exists(n_object.entity.gizmoMesh, "whenVisible") : false;
 	};
 	
 	rendermap = ds_map_create();
@@ -364,6 +365,17 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 				renderInfo.renderer.lit = renderInfo.bHasLitOverride ? entInstance.entity.gizmoMesh.litOverride : entInstance.lit;
 			if (renderInfo.bHasTranslucency)
 				renderInfo.renderer.translucent = entInstance.translucent;
+			if (renderInfo.bHasVisibilityCheck)
+			{
+				if (entInstance.entity.gizmoMesh.whenVisible == kGizmoMeshVisibleAlways)
+					renderInfo.renderer.visible = true;
+				else if (entInstance.entity.gizmoMesh.whenVisible == kGizmoMeshVisibleWhenSelected)
+					renderInfo.renderer.visible = EditorSelectionContains(entInstance);
+				else
+					assert(false);
+			}
+			else
+				renderInfo.renderer.visible = true;
 			// Apply custom transforms
 			if (renderInfo.bHasEntTransform)
 			{
@@ -527,6 +539,57 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3(-0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
 					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3( 0.5, -0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
 					MeshbAddLine3(m_mesh, color, 1.0, zface_scale, entHullsize, new Vector3(0, 0, 1), (new Vector3( 0.5,  0.5, -0.5)).add(entOffset).multiply(entHullsize), uvs);
+				}
+				else if (entMesh.shape == kGizmoMeshLightSphere)
+				{
+					var radius = m_renderInstance.range;
+					var color = m_renderInstance.color;
+					// Add 3 arcs around the shape for the light
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), uvs); 
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
+				}
+				else if (entMesh.shape == kGizmoMeshLightCone)
+				{
+					var radius = m_renderInstance.range;
+					var color = m_renderInstance.color;
+					var inner_angle = m_renderInstance.inner_angle;
+					var outer_angle = m_renderInstance.outer_angle;
+					
+					// Add arcs for the light ending
+					MeshbAddArc3(m_mesh, color, 0.1, 0.5, radius, -outer_angle, outer_angle, (outer_angle / 4), new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), uvs);
+					MeshbAddArc3(m_mesh, color, 0.1, 0.5, radius, -outer_angle, outer_angle, (outer_angle / 4), new Vector3(1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
+					
+					// Add arcs for outer
+					MeshbAddArc3(m_mesh, color, 0.1, 0.5, radius * sin(degtorad(outer_angle)), 0, 360, (360 / 16), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(radius * cos(degtorad(outer_angle)), 0, 0), uvs);
+					// Draw lines for outer
+					MeshbAddLine3(m_mesh, color, 0.1, 0.5, radius, new Vector3(cos(degtorad(outer_angle)),  sin(degtorad(outer_angle)), 0), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.1, 0.5, radius, new Vector3(cos(degtorad(outer_angle)), -sin(degtorad(outer_angle)), 0), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.1, 0.5, radius, new Vector3(cos(degtorad(outer_angle)), 0,  sin(degtorad(outer_angle))), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.1, 0.5, radius, new Vector3(cos(degtorad(outer_angle)), 0, -sin(degtorad(outer_angle))), new Vector3(0, 0, 0), uvs);
+					
+					// Add arcs for inner
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius * sin(degtorad(inner_angle)), 0, 360, (360 / 16), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(radius * cos(degtorad(inner_angle)), 0, 0), uvs);
+					// Draw lines for inner
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)),  sin(degtorad(inner_angle)), 0), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), -sin(degtorad(inner_angle)), 0), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), 0,  sin(degtorad(inner_angle))), new Vector3(0, 0, 0), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), 0, -sin(degtorad(inner_angle))), new Vector3(0, 0, 0), uvs);
+				
+				}
+				else if (entMesh.shape == kGizmoMeshLightRect)
+				{
+					var radius = m_renderInstance.range;
+					// TODO: each corner gets 2 arcs
+					
+					// Since this uses scaling, the actual math will get really funky - so for now let's not even bother with making this.
+					
+					var radius = m_renderInstance.range;
+					var color = m_renderInstance.color;
+					// Add 3 arcs around the shape for the light
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), uvs); 
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
 				}
 				else
 				{

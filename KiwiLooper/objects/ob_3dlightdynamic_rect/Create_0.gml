@@ -12,7 +12,9 @@ UpdateVectors = function()
 	upVector.copyFrom(forwardAndUp[1]);
 	delete forwardAndUp[0];
 	delete forwardAndUp[1];
-	//debugMessage(upVector.toString());
+	// Z is reversed since Vector3ForwardAndUpFromAngles is used for camera. Fix it.
+	facingVector.z = -facingVector.z;
+	upVector.z = -upVector.z;
 }
 
 parent_onPostLevelLoad = onPostLevelLoad;

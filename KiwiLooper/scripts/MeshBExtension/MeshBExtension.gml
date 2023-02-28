@@ -246,7 +246,7 @@ function MeshbAddQuadUVs(mesh, color, alpha, xsize, ysize, uvs, position)
 			(new Vector2(1.0, 1.0)).biasUVSelf(uvs),
 			normal),
 		]);
-};
+}
 	
 ///@function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
 function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
@@ -261,7 +261,22 @@ function MeshbAddArc(mesh, color, width, radius, startAngle, endAngle, angleDiv,
 			center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i)))
 			);
 	}
-};
+}
+///@function MeshbAddArc3(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center, uvs)
+function MeshbAddArc3(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center, uvs)
+{
+	for (var i = startAngle; i < endAngle; i += angleDiv)
+	{
+		MeshbAddLine3(
+			mesh, color, alpha,
+			width,
+			radius * 2 * pi * (angleDiv / 360),
+			planarX.multiply(lengthdir_x(1, i + 90 + angleDiv * 0.5)).add(planarY.multiply(lengthdir_y(1, i + 90 + angleDiv * 0.5))),
+			center.add(planarX.multiply(lengthdir_x(radius, i))).add(planarY.multiply(lengthdir_y(radius, i))),
+			uvs
+			);
+	}
+}
 	
 ///@function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
 function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle, angleDiv, planarX, planarY, center)
@@ -298,7 +313,7 @@ function MeshbAddFlatArc(mesh, color, alpha, width, radius, startAngle, endAngle
 				normal),
 			]);
 	}
-};
+}
 
 ///@function MeshbAddStandingFlatArc(mesh, color, alpha, height, radius, startAngle, endAngle, angleDiv, planarX, planarY, uvs, center)
 function MeshbAddStandingFlatArc(mesh, color, alpha, height, radius, startAngle, endAngle, angleDiv, planarX, planarY, uvs, center)
@@ -341,4 +356,4 @@ function MeshbAddStandingFlatArc(mesh, color, alpha, height, radius, startAngle,
 				normal),
 			]);
 	}
-};
+}

@@ -16,6 +16,9 @@ UpdateVectors = function()
 	upVector.copyFrom(forwardAndUp[1]);
 	delete forwardAndUp[0];
 	delete forwardAndUp[1];
+	// Z is reversed since Vector3ForwardAndUpFromAngles is used for camera. Fix it.
+	facingVector.z = -facingVector.z;
+	upVector.z = -upVector.z;
 	
 	// Update angle precomputation
 	innerAngleCos = cos(degtorad(inner_angle));

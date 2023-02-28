@@ -150,12 +150,26 @@ function EditorGlobalSignalTransformChange(entity, type, valueType, deferMeshBui
 			// Update all gizmos
 			m_gizmoObject.m_entBillboards.m_dirty = true;
 				
-			if (!is_undefined(entity.entity.gizmoMesh) && entity.entity.gizmoMesh.shape == kGizmoMeshWireCube)
+			if (!is_undefined(entity.entity.gizmoMesh))
 			{
-				if (valueType == kValueTypeScale)
+				if (entity.entity.gizmoMesh.shape == kGizmoMeshWireCube)
 				{
-					// Find the renderer & update it
-					m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
+					if (valueType == kValueTypeScale)
+					{
+						// Find the renderer & update it
+						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
+					}
+				}
+				else if (entity.entity.gizmoMesh.shape == kGizmoMeshLightSphere 
+					|| entity.entity.gizmoMesh.shape == kGizmoMeshLightCone
+					|| entity.entity.gizmoMesh.shape == kGizmoMeshLightRect)
+				{
+					// Change mesh if the scale changed:
+					if (valueType == kValueTypeScale)
+					{
+						// Find the renderer & update it
+						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
+					}
 				}
 			}
 			
@@ -197,6 +211,23 @@ function EditorGlobalSignalPropertyChange(entity, type, property, value, deferMe
 		{
 			// Update all gizmos
 			m_gizmoObject.m_entBillboards.m_dirty = true;
+			
+			if (!is_undefined(entity.entity.gizmoMesh))
+			{
+				if (entity.entity.gizmoMesh.shape == kGizmoMeshLightSphere 
+					|| entity.entity.gizmoMesh.shape == kGizmoMeshLightCone
+					|| entity.entity.gizmoMesh.shape == kGizmoMeshLightRect)
+				{
+					// Change mesh if the light radius or color changed (color is via vertex colors):
+					if (property[0] == "range" || property[0] == "color"
+						// For spotlights, change if the shape changed at all
+						|| property[0] == "inner_angle" || property[0] == "outer_angle")
+					{
+						// Find the renderer & update it
+						m_gizmoObject.m_entRenderObjects.RequestUpdate(entity);
+					}
+				}
+			}
 			
 			if (entity.entity.name == "ai_node")
 			{

@@ -19,6 +19,9 @@ function _EntityInfoInit()
 	#macro kGizmoMeshShapeCube 1
 	#macro kGizmoMeshShapeQuadFloor 2
 	#macro kGizmoMeshWireCube 3
+	#macro kGizmoMeshLightSphere	4
+	#macro kGizmoMeshLightRect		5
+	#macro kGizmoMeshLightCone		6
 	
 	#macro kGizmoMeshTransformTranslateX 0
 	#macro kGizmoMeshTransformTranslateY 1
@@ -27,6 +30,9 @@ function _EntityInfoInit()
 	#macro kGizmoMeshTransformScaleY 4
 	#macro kGizmoMeshTransformScaleZ 5
 	#macro kGizmoMeshTransformRotateZ 8
+	
+	#macro kGizmoMeshVisibleAlways 0
+	#macro kGizmoMeshVisibleWhenSelected 1
 	
 	#macro kGizmoOriginCenter 0
 	#macro kGizmoOriginBottom 1
@@ -110,6 +116,15 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 0,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshLightSphere,
+				color:	c_white,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+				whenVisible: kGizmoMeshVisibleWhenSelected,
+			},
 			
 			hullsize: 8,
 			
@@ -138,6 +153,7 @@ function _EntityInfoInit()
 			gizmoSprite: suie_gizmoEnts,
 			gizmoIndex: 1,
 			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoMesh: undefined,
 			
 			hullsize: 8,
 			
@@ -154,6 +170,16 @@ function _EntityInfoInit()
 			objectIndex: ob_3DLightDynamic_Rect,
 			proxy: kProxyTypeNone,
 			
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshLightRect,
+				color:	c_white,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+				whenVisible: kGizmoMeshVisibleWhenSelected,
+			},
+			
 			hullsize: 1,
 			
 			properties:
@@ -168,6 +194,16 @@ function _EntityInfoInit()
 			desc: "Dynamic 3D Spot Light",
 			objectIndex: ob_3DLightDynamic_Spot,
 			proxy: kProxyTypeNone,
+			
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshLightCone,
+				color:	c_white,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+				whenVisible: kGizmoMeshVisibleWhenSelected,
+			},
 			
 			hullsize: 8,
 			

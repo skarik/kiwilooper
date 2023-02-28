@@ -221,6 +221,30 @@ function EditorSelectionGetAveragePosition()
 	return positionAcculm.divide(array_length(editor.m_selection));
 }
 
+/// @function EditorSelectionContains(entity_or_array)
+function EditorSelectionContains(entity_or_array)
+{
+	var editor = EditorGet();
+
+	if (!is_array(entity_or_array))
+	{
+		var entity = entity_or_array;
+		return array_contains_pred(editor.m_selection, entity,
+			function(array_value, value)
+			{
+				if (is_struct(array_value))
+					return array_value.object == value;
+				else
+					return array_value == value;
+			});
+	}
+	else
+	{
+		// TODO
+		return false;
+	}
+}
+
 /// @function EditorSelectionEqual(value1, value2)
 function EditorSelectionEqual(value1, value2)
 {
