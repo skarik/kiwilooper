@@ -209,6 +209,7 @@
     {"id":{"name":"ob_usableCorpse","path":"objects/ob_usableCorpse/ob_usableCorpse.yy",},"order":1,},
     {"id":{"name":"sh_unlitWater_EdgeFind","path":"shaders/sh_unlitWater_EdgeFind/sh_unlitWater_EdgeFind.yy",},"order":4,},
     {"id":{"name":"biasStep","path":"scripts/biasStep/biasStep.yy",},"order":0,},
+    {"id":{"name":"o_livelyCameraInfo","path":"objects/o_livelyCameraInfo/o_livelyCameraInfo.yy",},"order":13,},
     {"id":{"name":"EditorUIWindowProperties","path":"scripts/EditorUIWindowProperties/EditorUIWindowProperties.yy",},"order":4,},
     {"id":{"name":"o_usablePC","path":"objects/o_usablePC/o_usablePC.yy",},"order":2,},
     {"id":{"name":"sfx_splatterBlood0","path":"sprites/sfx_splatterBlood0/sfx_splatterBlood0.yy",},"order":0,},

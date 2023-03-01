@@ -133,6 +133,32 @@ Character_Step();
 	{
 		o_Camera3D.fov_vertical = 60;
 	}
+	
+	// Set up camera volume stuff
+	var cameraVolumeInfo = World_CameraInfoGet(x, y, z + 2);
+	if (!is_undefined(cameraVolumeInfo))
+	{
+		var bBlend = cameraVolumeInfo.blendTime > 0.0;
+		
+		o_Camera3D.xrotation = cameraVolumeInfo.angle.x;
+		o_Camera3D.yrotation = cameraVolumeInfo.angle.y;
+		o_Camera3D.zrotation = cameraVolumeInfo.angle.z;
+		
+		//o_Camera3D.znear = max(0.1, ln(cameraVolumeInfo.distance) * 10.0);
+		o_Camera3D.znear = max(0.1, cameraVolumeInfo.distance / 5.0);
+		
+		o_Camera3D.x = lengthdir_x(-cameraVolumeInfo.distance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
+		o_Camera3D.y = lengthdir_y(-cameraVolumeInfo.distance, o_Camera3D.zrotation) * lengthdir_x(1, o_Camera3D.yrotation);
+		o_Camera3D.z = lengthdir_y(-cameraVolumeInfo.distance, o_Camera3D.yrotation);
+		
+		// Center around player
+		o_Camera3D.x += lerp(x, xstart, saturate(smoothstep(deathTimer)));
+		o_Camera3D.y += lerp(y, ystart, saturate(smoothstep(deathTimer)));
+		o_Camera3D.z += lerp(z, zstart, saturate(smoothstep(deathTimer)));
+		
+		o_Camera3D.orthographic = false;
+		o_Camera3D.fov_vertical = cameraVolumeInfo.fov;
+	}
 
 	// Blend to the inventory screen
 	if (inInventoryBlend >= 0.0)

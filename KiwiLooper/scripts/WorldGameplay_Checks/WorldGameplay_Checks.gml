@@ -106,3 +106,38 @@ function World_WaterBelowDistance(x, y, z)
 	}
 	return min_dist;
 }
+
+
+/// @function World_CameraInfoGet(x, y, z)
+/// @param x {Real}
+/// @param y {Real}
+/// @param z {Real}
+/// @desc Checks if the given position is inside of a camera info volume. If it is, returns volume info. If not, returns undefined.
+function World_CameraInfoGet(x, y, z)
+{
+	var found_caminfo = null;
+	var caminfoCount = instance_number(o_livelyCameraInfo);
+	for (var caminfoIndex = 0; caminfoIndex < caminfoCount; ++caminfoIndex)
+	{
+		var caminfoInstance = instance_find(o_livelyCameraInfo, caminfoIndex);
+		
+		if (x >= caminfoInstance.x - caminfoInstance.xscale * 0.5 && x <= caminfoInstance.x + caminfoInstance.xscale * 0.5
+			&& y >= caminfoInstance.y - caminfoInstance.yscale * 0.5 && y <= caminfoInstance.y + caminfoInstance.yscale * 0.5
+			&& z >= caminfoInstance.z - caminfoInstance.zscale * 0.5 && z <= caminfoInstance.z + caminfoInstance.zscale * 0.5)
+		{
+			if (found_caminfo == null || caminfoInstance.priority < found_caminfo.priority)
+			{
+				found_caminfo = caminfoInstance;
+			}
+		}
+	}
+	
+	if (found_caminfo != null)
+	{
+		return found_caminfo.m_camInfo;
+	}
+	else
+	{
+		return undefined;
+	}
+}

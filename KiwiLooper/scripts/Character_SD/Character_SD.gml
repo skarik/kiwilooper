@@ -53,6 +53,7 @@ function Character_Create()
 	xspeed = 0.0;
 	yspeed = 0.0;
 	zspeed = 0.0;
+	facingReferenceDirection = 0;
 	facingDirection = 0;
 	currentMovetype = mvtNormal;
 	previousMovetype = mvtNormal;

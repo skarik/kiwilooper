@@ -1,10 +1,17 @@
 function mvtNormal()
 {
+	// Set up reference angle when no input is held
+	if (xAxis.previous == 0.0 && yAxis.previous == 0.0) // TODO: check deadzones
+	{
+		facingReferenceDirection = iexists(o_Camera3D) ? o_Camera3D.zrotation : 0;
+	}
+	
 	var inputAxis = new Vector2(xAxis.value, yAxis.value);
+	
 	// If the player, we need to rotate the motion to match the view
 	if (isPlayer && iexists(o_Camera3D))
 	{
-		inputAxis.rotateSelf(o_Camera3D.zrotation - 90);
+		inputAxis.rotateSelf(facingReferenceDirection - 90);
 	}
 	
 	// Update speed

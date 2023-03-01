@@ -486,6 +486,43 @@ function _EntityInfoInit()
 			],
 		},
 		
+		// Camera volume
+		{
+			name: "lively_camerainfo",
+			parent: "lively_base",
+			objectIndex: o_livelyCameraInfo,
+			
+			gizmoSprite: suie_gizmoEnts,
+			gizmoIndex: 11,
+			gizmoDrawmode: kGizmoDrawmodeBillboard,
+			gizmoMesh:
+			{
+				shape:	kGizmoMeshWireCube,
+				color:	c_lime,
+				sprite:	sfx_square,
+				index:	0,
+				litOverride: false, // want gizmo unlit
+			},
+			// TODO: second gizmo to show where we are?
+			
+			hullsize: 1,
+			
+			properties:
+			[
+				["", kValueTypeScale, new Vector3(32, 32, 32)],
+				["cameraAngle", kValueTypeRotation, new Vector3(0, 60, 0)],
+				["cameraDistance", kValueTypeFloat, 600],
+				["cameraFieldOfView", kValueTypeFloat, 10],
+				
+				["enabled", kValueTypeBoolean, true],
+				["toggleOnActivation", kValueTypeBoolean, true],
+				["toggleOnce", kValueTypeBoolean, true],
+				["timeToBlendTo", kValueTypeFloat, 0.0],
+				
+				["priority", kValueTypeInteger, 1],
+			],
+		},
+		
 		// Water
 		{
 			name: "lively_water",
