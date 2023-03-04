@@ -3,11 +3,19 @@
 m_buffer = faudioBufferLoad(m_sound);
 if (m_buffer == nullptr)
 {
-	// TODO: make this less of a death-knell error
-	show_error("Could not load sound: \"" + m_sound + "\"", true);
+	debugLog(kLogError, "Could not load sound: \"" + m_sound + "\"");
+	idelete_delay(this);
+	exit;
 }
 
 m_source = faudioSourceCreate(m_buffer);
+if (m_source == nullptr)
+{
+	debugLog(kLogError, "Could not create source for sound: \"" + m_sound + "\"");
+	idelete_delay(this);
+	exit;
+}
+
 faudioSourceSetLooped(m_source, loop);
 
 faudioSourceSetFalloffModel(

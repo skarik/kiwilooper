@@ -40,3 +40,8 @@ if (m_source != nullptr)
 		}
 	}
 }
+else
+{	// Lost track of source, somehow. We'll just delyeet it.
+	idelete(this);
+	exit;
+}

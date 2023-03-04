@@ -485,7 +485,6 @@
     {"id":{"name":"suie_actionsetBasic","path":"sprites/suie_actionsetBasic/suie_actionsetBasic.yy",},"order":8,},
     {"id":{"name":"ob_3DLight","path":"objects/ob_3DLight/ob_3DLight.yy",},"order":0,},
     {"id":{"name":"avec2_divide","path":"scripts/avec2_divide/avec2_divide.yy",},"order":1,},
-    {"id":{"name":"idelete_delay","path":"scripts/idelete_delay/idelete_delay.yy",},"order":0,},
     {"id":{"name":"spr_metalBoard","path":"sprites/spr_metalBoard/spr_metalBoard.yy",},"order":6,},
     {"id":{"name":"ob_3DLightDynamic_Spot","path":"objects/ob_3DLightDynamic_Spot/ob_3DLightDynamic_Spot.yy",},"order":6,},
     {"id":{"name":"EditorUIOptions","path":"scripts/EditorUIOptions/EditorUIOptions.yy",},"order":17,},

@@ -11,6 +11,18 @@ function idelete(argument0)
 	return 0;
 }
 
+/// @function idelete_delay(object, delay=0)
+/// @param object
+/// @param delay {Real, seconds}
+function idelete_delay(object, delay=0)
+{
+	var deleter = inew(_delete_delay);
+		deleter.delay = delay;
+		deleter.target = object;
+	
+	return deleter;
+}
+
 /// iexists(object_to_check)
 function iexists(argument0)
 {
