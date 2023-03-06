@@ -307,7 +307,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
-		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
+		if ((event & kEditorToolButtonStateMake) && mouse_position == kWindowMousePositionContent)
 		{
 			if (button == mb_left)
 			{
@@ -336,7 +336,7 @@ function AEditorWindowTextureBrowser() : AEditorWindow() constructor
 				drag_now = true;
 			}
 		}
-		else if (event == kEditorToolButtonStateBreak)
+		else if ((event & kEditorToolButtonStateBreak))
 		{
 			// Stop all drags
 			drag_now = false;

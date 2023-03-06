@@ -18,8 +18,8 @@
 #macro kEditorToolButtonStateMake	0x02
 #macro kEditorToolButtonStateHeld	0x04
 #macro kEditorToolButtonStateBreak	0x08
-#macro kEditorToolButtonFlagInside	0x00
-#macro kEditorToolButtonFlagOutside	0x10
+#macro kEditorToolButtonFlagInside	0x10
+#macro kEditorToolButtonFlagOutside	0x20
 
 #macro kEditorButtonWheelUp		0x1001
 #macro kEditorButtonWheelDown	0x1002

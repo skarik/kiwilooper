@@ -319,7 +319,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	{
 		var ui_scale = EditorGetUIScale();
 		
-		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
+		if ((event & kEditorToolButtonStateMake) && mouse_position == kWindowMousePositionContent)
 		{
 			// If mouse wheel, attempt scroll
 			if (button == kEditorButtonWheelUp || button == kEditorButtonWheelDown)
@@ -426,7 +426,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 				drag_now = true;
 			}
 		}
-		else if (event == kEditorToolButtonStateBreak)
+		else if ((event & kEditorToolButtonStateBreak))
 		{
 			// Stop all drags
 			drag_now = false;

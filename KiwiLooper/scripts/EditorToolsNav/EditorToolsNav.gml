@@ -381,7 +381,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 	
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
-		if (buttonState == kEditorToolButtonStateMake)
+		if ((buttonState & kEditorToolButtonStateMake))
 		{
 			if (button == mb_left)
 			{
@@ -390,7 +390,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				m_leftClickStart.y = m_editor.toolFlatY;
 			}
 		}
-		if (buttonState == kEditorToolButtonStateHeld)
+		if ((buttonState & kEditorToolButtonStateHeld))
 		{
 			if (button == mb_left)
 			{
@@ -398,7 +398,7 @@ function AEditorToolStateSelect() : AEditorToolState() constructor
 				m_leftClickEnd.y = m_editor.toolFlatY;
 			}
 		}
-		if (buttonState == kEditorToolButtonStateBreak)
+		if ((buttonState & kEditorToolButtonStateBreak))
 		{
 			if (button == mb_left)
 			{
@@ -777,7 +777,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 	}
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
-		if (buttonState == kEditorToolButtonStateMake)
+		if ((buttonState & kEditorToolButtonStateMake))
 		{
 			if (button == mb_left)
 				m_mouseLeft = true;
@@ -786,7 +786,7 @@ function AEditorToolStateCamera() : AEditorToolState() constructor
 			else if (button = mb_middle)
 				m_mouseMiddle = true;
 		}
-		else if (buttonState == kEditorToolButtonStateBreak)
+		else if ((buttonState & kEditorToolButtonStateBreak))
 		{	
 			if (button == mb_left)
 				m_mouseLeft = false;

@@ -107,7 +107,7 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 	}
 	static onMouseEvent = function(mouseX, mouseY, button, event)
 	{
-		if (event == kEditorToolButtonStateMake && mouse_position == kWindowMousePositionContent)
+		if ((event & kEditorToolButtonStateMake) && mouse_position == kWindowMousePositionContent)
 		{
 			if (item_mouseover != null)
 			{
@@ -121,7 +121,7 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 				item_focused = null;
 			}
 		}
-		else if (event == kEditorToolButtonStateBreak)
+		else if ((event & kEditorToolButtonStateBreak))
 		{
 			if (item_mousedown)
 			{

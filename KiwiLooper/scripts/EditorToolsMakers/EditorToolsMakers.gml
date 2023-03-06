@@ -159,14 +159,17 @@ function AEditorToolStateMakeEntity() : AEditorToolState() constructor
 	
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
-		if (!m_hasEntityToMake)
+		if ((button == mb_left || button == mb_middle) && (buttonState & kEditorToolButtonStateMake))
 		{
-			m_hasEntityToMake = true;
+			if (!m_hasEntityToMake)
+			{
+				m_hasEntityToMake = true;
 			
-			// set up initial MAKE position
-			m_gizmo.x = worldPosition.x;
-			m_gizmo.y = worldPosition.y;
-			m_gizmo.z = worldPosition.z;
+				// set up initial MAKE position
+				m_gizmo.x = worldPosition.x;
+				m_gizmo.y = worldPosition.y;
+				m_gizmo.z = worldPosition.z;
+			}
 		}
 	};
 	
@@ -293,14 +296,17 @@ function AEditorToolStateMakeProp() : AEditorToolState() constructor
 	
 	onClickWorld = function(button, buttonState, screenPosition, worldPosition)
 	{
-		if (!m_hasPropToMake)
+		if ((button == mb_left || button == mb_middle) && (buttonState & kEditorToolButtonStateMake))
 		{
-			m_hasPropToMake = true;
+			if (!m_hasPropToMake)
+			{
+				m_hasPropToMake = true;
 			
-			// set up initial MAKE position
-			m_gizmo.x = worldPosition.x;
-			m_gizmo.y = worldPosition.y;
-			m_gizmo.z = worldPosition.z;
+				// set up initial MAKE position
+				m_gizmo.x = worldPosition.x;
+				m_gizmo.y = worldPosition.y;
+				m_gizmo.z = worldPosition.z;
+			}
 		}
 	};
 }

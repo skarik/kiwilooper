@@ -24,7 +24,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 		// Initial waiting for input:
 		if (!m_hasShapeReady)
 		{
-			if (button == mb_left && buttonState == kEditorToolButtonStateMake)
+			if (button == mb_left && (buttonState & kEditorToolButtonStateMake))
 			{
 				// Begin dragging:
 				m_hasShapeReady = true;
@@ -48,7 +48,7 @@ function AEditorToolStateTileEditor() : AEditorToolState() constructor
 		// Dragging state:
 		else if (m_isDraggingShape)
 		{
-			if (button == mb_left && buttonState == kEditorToolButtonStateBreak)
+			if (button == mb_left && (buttonState & kEditorToolButtonStateBreak))
 			{
 				// On release, stop dragging.
 				m_isDraggingShape = false;
