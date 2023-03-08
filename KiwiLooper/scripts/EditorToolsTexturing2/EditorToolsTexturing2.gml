@@ -8,6 +8,9 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	m_lastSelectedTile = null;
 	m_lastSelectedFace = null;
 	
+	m_pickerLastClickList = [];
+	m_pickerLastClickIndex = null;
+	
 	onBegin = function()
 	{
 		if (m_windowBrowser == null)
@@ -320,7 +323,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	/// @desc Runs the picker.
 	static PickerRun = function(bAdditive, bTransitiveCheck)
 	{
-		if (!bAdditive && !bTransitiveCheck)
+		/*if (!bAdditive && !bTransitiveCheck)
 		{
 			m_editor.m_selection = [];
 			m_editor.m_selectionSingle = true;
@@ -348,6 +351,88 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			else
 			{
 				return hitObjects[0];//EditorSelectionWrapTileFace(m_editor.m_tilemap.tiles[tile_index], hitNormal);
+			}
+		}
+		
+		return null;*/
+		
+		// If not additive, then reset the selection
+		if (!bAdditive)
+		{
+			m_editor.m_selection = [];
+			m_editor.m_selectionSingle = true;
+		}
+		
+		var pixelX = m_editor.uPosition - GameCamera.view_x;
+		var pixelY = m_editor.vPosition - GameCamera.view_y;
+		
+		// Get a ray
+		var rayStart = new Vector3(o_Camera3D.x, o_Camera3D.y, o_Camera3D.z);
+		var rayDir = Vector3FromArray(o_Camera3D.viewToRay(pixelX, pixelY));
+		
+		var closestEnt = null;
+		
+		// Cast against all objects in that specific ray
+		var hitObjects = [];
+		var hitDists = [];
+		var hitCount = EditorPickerCast2(rayStart, rayDir, hitObjects, hitDists, kPickerHitMaskTilemap, true);
+		if (hitCount > 0)
+		{
+			if (!bTransitiveCheck)
+			{
+				if (!bAdditive)
+				{
+					// if in single click mode, then we run through the list
+					if (array_is_mismatch(m_pickerLastClickList, hitObjects, EditorSelectionEqual))
+					{
+						m_pickerLastClickList = CE_ArrayClone(hitObjects);
+						m_pickerLastClickIndex = 0;
+					}
+					else
+					{
+						m_pickerLastClickIndex = (m_pickerLastClickIndex + 1) % hitCount;
+					}
+					closestEnt = hitObjects[m_pickerLastClickIndex];
+				}
+				else
+				{
+					// if in additive mode, then we just add the last one
+					m_pickerLastClickList = [];
+					m_pickerLastClickIndex = null;
+				
+					closestEnt = hitObjects[0];
+				
+					// TODO: if it's already in the list, remove it.
+				}
+			}
+			else
+			{
+				return hitObjects[0];
+			}
+		}
+		
+		// If we hit something, save it
+		if (is_struct(closestEnt))
+		{
+			// Not additive, just set up the selection
+			if (!bAdditive)
+			{
+				m_editor.m_selection = [closestEnt];
+				m_editor.m_selectionSingle = true;
+			}
+			// Additive, add/remove selection to end
+			else
+			{
+				var selection_index = array_get_index_pred(m_editor.m_selection, closestEnt, EditorSelectionEqual);
+				if (selection_index == null)
+				{
+					array_push(m_editor.m_selection, closestEnt);
+				}
+				else
+				{
+					array_delete(m_editor.m_selection, selection_index, 1);
+				}
+				m_editor.m_selectionSingle = array_length(m_editor.m_selection) <= 1;
 			}
 		}
 		
