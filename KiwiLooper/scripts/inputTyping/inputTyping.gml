@@ -47,8 +47,29 @@ function inputPollTyping(value, cursor)
 	for (var key = ord("0"); key <= ord("9"); ++key)
 	{
 		if (keyboard_check_pressed(key)) {
-			value = string_insert(chr(key), value, cursor + 1);
-			cursor++;
+			if (!keyboard_check(vk_shift)) {
+				value = string_insert(chr(key), value, cursor + 1);
+				cursor++;
+			}
+			else {
+				// US keyboard layout:
+				var ch = "";
+				switch (key - ord("0"))
+				{
+					case 1: ch = "!"; break;
+					case 2: ch = "@"; break;
+					case 3: ch = "#"; break;
+					case 4: ch = "$"; break;
+					case 5: ch = "%"; break;
+					case 6: ch = "^"; break;
+					case 7: ch = "&"; break;
+					case 8: ch = "*"; break;
+					case 9: ch = "("; break;
+					case 0: ch = ")"; break;
+				}
+				value = string_insert(ch, value, cursor + 1);
+				cursor++;
+			}
 		}
 	}
 	// Check numpad
@@ -68,7 +89,18 @@ function inputPollTyping(value, cursor)
 	}
 	// Check symbols
 	{
-		if (keyboard_check_pressed(0xBD))
+		if (keyboard_check_pressed(0xBB)) //VK_OEM_PLUS
+		{
+			if (keyboard_check(vk_shift)) {
+				value = string_insert("+", value, cursor + 1);
+				cursor++;
+			}
+			else {
+				value = string_insert("=", value, cursor + 1);
+				cursor++;
+			}
+		}
+		if (keyboard_check_pressed(0xBD)) //VK_OEM_MINUS
 		{
 			if (keyboard_check(vk_shift)) {
 				value = string_insert("_", value, cursor + 1);
@@ -79,7 +111,7 @@ function inputPollTyping(value, cursor)
 				cursor++;
 			}
 		}
-		if (keyboard_check_pressed(0xBC))
+		if (keyboard_check_pressed(0xBC)) ///VK_OEM_COMMA
 		{
 			if (keyboard_check(vk_shift)) {
 				value = string_insert("<", value, cursor + 1);
@@ -90,7 +122,7 @@ function inputPollTyping(value, cursor)
 				cursor++;
 			}
 		}
-		if (keyboard_check_pressed(0xBE))
+		if (keyboard_check_pressed(0xBE)) //VK_OEM_PERIOD
 		{
 			if (keyboard_check(vk_shift)) {
 				value = string_insert(">", value, cursor + 1);
@@ -166,6 +198,23 @@ function inputPollTyping(value, cursor)
 				value = string_insert("'", value, cursor + 1);
 				cursor++;
 			}
+		}
+		
+		if (keyboard_check_pressed(vk_add)) {
+			value = string_insert("+", value, cursor + 1);
+			cursor++;
+		}
+		if (keyboard_check_pressed(vk_subtract)) {
+			value = string_insert("-", value, cursor + 1);
+			cursor++;
+		}
+		if (keyboard_check_pressed(vk_multiply)) {
+			value = string_insert("*", value, cursor + 1);
+			cursor++;
+		}
+		if (keyboard_check_pressed(vk_divide)) {
+			value = string_insert("/", value, cursor + 1);
+			cursor++;
 		}
 	}
 	// Check space
