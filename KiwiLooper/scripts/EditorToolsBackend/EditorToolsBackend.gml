@@ -351,7 +351,7 @@ function EditorToolGetInstance(type)
 {
 	with (EditorGet())
 	{
-		return toolStates[toolCurrent];
+		return toolStates[type];
 	}
 	return null;
 }

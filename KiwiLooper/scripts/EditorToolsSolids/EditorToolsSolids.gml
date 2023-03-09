@@ -195,6 +195,20 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 				
 				// TODO: fix the normals on all the faces
 				// TODO: pull in call to the UV tool to world-map every face
+				var texturing_tool = EditorToolGetInstance(kEditorToolTextureSolids);
+				if (is_struct(texturing_tool))
+				{
+					var new_solid_face_selection = array_create(array_length(newSolid.faces));
+					for (var i = 0; i < array_length(newSolid.faces); ++i)
+					{
+						new_solid_face_selection[i] = EditorSelectionWrapPrimitive(newSolid, i);
+					}
+					/*var params = {};
+					texturing_tool.UV_ForEachFaceIn(undefined, new_solid_face_selection, params, function(mapSolid, face, params) 
+					{
+					});*/
+					texturing_tool.UVAlignToWorld(new_solid_face_selection); // Also applies new normals
+				}
 				
 				array_push(map.solids, newSolid);
 				

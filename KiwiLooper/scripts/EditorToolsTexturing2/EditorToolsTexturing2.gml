@@ -561,9 +561,11 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	
 	static UVAlignToWorld = function(input_selection=undefined)
 	{
-		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
+		var selectionArray = is_undefined(input_selection) ? m_editor.m_selection : input_selection;
+		
+		for (var iSelection = 0; iSelection < array_length(selectionArray); ++iSelection)
 		{
-			var selection = m_editor.m_selection[iSelection];
+			var selection = selectionArray[iSelection];
 			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
 				continue;
 			
@@ -604,9 +606,11 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 	{
 		var solidsEdited = [];
 		
-		for (var iSelection = 0; iSelection < array_length(m_editor.m_selection); ++iSelection)
+		var selectionArray = is_undefined(input_selection) ? m_editor.m_selection : input_selection;
+		
+		for (var iSelection = 0; iSelection < array_length(selectionArrayn); ++iSelection)
 		{
-			var selection = m_editor.m_selection[iSelection];
+			var selection = selectionArray[iSelection];
 			if (!is_struct(selection) || selection.type != kEditorSelection_Primitive)
 				continue;
 			
