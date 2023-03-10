@@ -157,6 +157,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 						m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
 						m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
 						m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
+						m_editor.toolTextureInfo.mapping = face.uvinfo.mapping;
 					}
 					// Selected an entire solid
 					else
@@ -184,6 +185,7 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 							m_editor.toolTextureInfo.scale.copyFrom(face.uvinfo.scale);
 							m_editor.toolTextureInfo.offset.copyFrom(face.uvinfo.offset);
 							m_editor.toolTextureInfo.rotation = face.uvinfo.rotation;
+							m_editor.toolTextureInfo.mapping = face.uvinfo.mapping;
 						}
 					}
 					// TODO: mapping
