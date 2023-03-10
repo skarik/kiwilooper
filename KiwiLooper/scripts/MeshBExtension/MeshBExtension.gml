@@ -136,7 +136,7 @@ function MeshbAddLine3(mesh, color, alpha, width, length, normal, position, uvs)
 ///@function MeshbAddBillboardTriangle(mesh, color, width, length, normal, position)
 function MeshbAddBillboardTriangle(mesh, color, width, length, normal, position)
 {
-	var frontface_direction = new Vector3(m_editor.viewrayForward[0], m_editor.viewrayForward[1], m_editor.viewrayForward[2]);
+	var frontface_direction = new Vector3(o_Camera3D.m_viewForward[0], o_Camera3D.m_viewForward[1], o_Camera3D.m_viewForward[2]);
 	var cross_x = frontface_direction.cross(normal);
 	cross_x.normalize();
 		
@@ -159,7 +159,7 @@ function MeshbAddBillboardTriangle(mesh, color, width, length, normal, position)
 	
 function MeshbAddBillboardUVs(mesh, color, width, height, uvs, normal, position)
 { 
-	var frontface_direction = new Vector3(m_editor.viewrayForward[0], m_editor.viewrayForward[1], m_editor.viewrayForward[2]);
+	var frontface_direction = new Vector3(o_Camera3D.m_viewForward[0], o_Camera3D.m_viewForward[1], o_Camera3D.m_viewForward[2]);
 	// TODO: just pull this data from the camera matrix Left and Up itself
 	var cross_x = frontface_direction.cross(new Vector3(0, 0, 1));
 	var cross_y = frontface_direction.cross(cross_x);
