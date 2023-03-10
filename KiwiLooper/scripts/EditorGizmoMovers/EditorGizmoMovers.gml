@@ -1002,31 +1002,45 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 			//var lastCenter = lastPosition;
 			
 			// Rotate viewray delta into current space
-			var viewrayDelta = new Vector3(m_editor.viewrayPixel[0] - m_dragViewrayStart[0], m_editor.viewrayPixel[1] - m_dragViewrayStart[1], m_editor.viewrayPixel[2] - m_dragViewrayStart[2]);
-			var kRotationInvert = CE_MatrixClone(kRotation);
-			CE_MatrixInverse(kRotationInvert);
-			viewrayDelta.transformAMatrixSelf(kRotationInvert);
+			//var viewrayDelta = new Vector3(m_editor.viewrayPixel[0] - m_dragViewrayStart[0], m_editor.viewrayPixel[1] - m_dragViewrayStart[1], m_editor.viewrayPixel[2] - m_dragViewrayStart[2]);
+			//var kRotationInvert = CE_MatrixClone(kRotation);
+			//CE_MatrixInverse(kRotationInvert);
+			//viewrayDelta.transformAMatrixSelf(kRotationInvert);
+			
+			// Create reference rays
+			var startRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_dragViewrayStart));
+			var currentRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_editor.viewrayPixel));
 			
 			// Perform the drags
 			if (m_dragX)
 			{
-				show_debug_message(string(bbox.extents.x) + " * " + string(xscale));
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(1, 0, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
 				
-				var xsize = m_dragStart[0] + viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
+				var xsize = m_dragStart[0] + (currentResult.a - startResult.a) * m_dragXSign * 0.5; //viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
 				if (bLocalSnap) xsize = round_nearest(xsize, m_editor.toolGridSize / 2); // halved because extents are halved
 				xscale = xsize / max(0.001, bbox.extents.x);
 				lastCenter.addSelf(kX.multiply(m_dragXSign * (xsize - m_dragStart[0])));
 			}
 			if (m_dragY)
 			{
-				var ysize = m_dragStart[1] + viewrayDelta.y * 600 * m_dragYSign * kScreensizeFactor;
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 1, 0));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				var ysize = m_dragStart[1] + (currentResult.a - startResult.a) * m_dragYSign * 0.5;//+ viewrayDelta.y * 600 * m_dragYSign * kScreensizeFactor;
 				if (bLocalSnap) ysize = round_nearest(ysize, m_editor.toolGridSize / 2);
 				yscale = ysize / max(0.001, bbox.extents.y);
 				lastCenter.addSelf(kY.multiply(m_dragYSign * (ysize - m_dragStart[1])));
 			}
 			if (m_dragZ)
 			{
-				var zsize = m_dragStart[2] + viewrayDelta.z * 600 * m_dragZSign * kScreensizeFactor;
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 0, 1));
+				var startResult = axisDrag.getClosestOnRay(startRay);
+				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				
+				var zsize = m_dragStart[2] + (currentResult.a - startResult.a) * m_dragZSign * 0.5; //+ viewrayDelta.z * 600 * m_dragZSign * kScreensizeFactor;
 				if (bLocalSnap) zsize = round_nearest(zsize, m_editor.toolGridSize / 2);
 				zscale = zsize / max(0.001, bbox.extents.z);
 				lastCenter.addSelf(kZ.multiply(m_dragZSign * (zsize - m_dragStart[2])));

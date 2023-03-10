@@ -272,53 +272,80 @@ function AEditorGizmo3DEditBox() : AEditorGizmoSelectBox3D() constructor // AEdi
 					m_min.copyFrom(m_editMinStart);
 					m_max.copyFrom(m_editMaxStart);
 					
+					// Create reference rays
+					var startRay	= new Ray3(Vector3FromTranslation(o_Camera3D), m_editDragStart);
+					var currentRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_editor.viewrayPixel));
+					
 					var bLocalSnap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 				
-					var kScreensizeFactor = CalculateScreensizeFactor();
+					//var kScreensizeFactor = CalculateScreensizeFactor();
 					// TODO: Project these rays onto the working plane
-					var dragDelta = m_editDragStart.subtract(new Vector3(m_editor.viewrayPixel[0], m_editor.viewrayPixel[1], m_editor.viewrayPixel[2]));
-					dragDelta.multiplySelf(1200 * kScreensizeFactor);
+					//var dragDelta = m_editDragStart.subtract(new Vector3(m_editor.viewrayPixel[0], m_editor.viewrayPixel[1], m_editor.viewrayPixel[2]));
+					//dragDelta.multiplySelf(1200 * kScreensizeFactor);
 				
-					if (m_editDragIndex == 0)
-					{
-						m_min.x -= dragDelta.x;
-						m_min.x = !bLocalSnap ? m_min.x : round_nearest(m_min.x, m_editor.toolGridSize); 
-					}
-					else if (m_editDragIndex == 1)
-					{
-						m_max.x -= dragDelta.x;
-						m_max.x = !bLocalSnap ? m_max.x : round_nearest(m_max.x, m_editor.toolGridSize); 
-					}
+					// Based on drag index, select side & main drag plane
+					var dragAxis = kAxisX;
+					var dragMin = true;
+					var dragAll = false;
 					
-					else if (m_editDragIndex == 2)
-					{
-						m_min.y -= dragDelta.y;
-						m_min.y = !bLocalSnap ? m_min.y : round_nearest(m_min.y, m_editor.toolGridSize); 
-					}
-					else if (m_editDragIndex == 3)
-					{
-						m_max.y -= dragDelta.y;
-						m_max.y = !bLocalSnap ? m_max.y : round_nearest(m_max.y, m_editor.toolGridSize); 
-					}
+					if (m_editDragIndex == 0 || m_editDragIndex == 1)
+						dragAxis = kAxisX;
+					else if (m_editDragIndex == 2 || m_editDragIndex == 3)
+						dragAxis = kAxisY;
+					else if (m_editDragIndex == 7 || m_editDragIndex == 8)
+						dragAxis = kAxisZ;
+						
+					if (m_editDragIndex == 0 || m_editDragIndex == 2 || m_editDragIndex == 7)
+						dragMin = true;
+					else
+						dragMin = false;
+						
+					if (m_editDragIndex == kDragBoxIndex)
+						dragAll = true;
 					
-					else if (m_editDragIndex == 7)
+					// Drag a single axis
+					if (!dragAll)
 					{
-						m_min.z -= dragDelta.z;
-						m_min.z = !bLocalSnap ? m_min.z : round_nearest(m_min.z, m_editor.toolGridSize); 
-					}
-					else if (m_editDragIndex == 8)
-					{
-						m_max.z -= dragDelta.z;
-						m_max.z = !bLocalSnap ? m_max.z : round_nearest(m_max.z, m_editor.toolGridSize); 
-					}
+						// Based on the axis, create a ray to project to
+						var axisDrag = new Ray3(m_min.add(m_max).multiplySelf(0.5), Vector3FromAxis(dragAxis));
+						var startResult = axisDrag.getClosestOnRay(startRay);
+						var currentResult = axisDrag.getClosestOnRay(currentRay);
 					
-					else if (m_editDragIndex == kDragBoxIndex)
+						if (dragMin)
+						{
+							m_min.setElement(dragAxis, m_editMinStart.getElement(dragAxis) + (currentResult.a - startResult.a));
+							m_min.setElement(dragAxis, !bLocalSnap ? m_min.getElement(dragAxis) : round_nearest(m_min.getElement(dragAxis), m_editor.toolGridSize));
+						}
+						else if (!dragMin)
+						{
+							m_max.setElement(dragAxis, m_editMaxStart.getElement(dragAxis) + (currentResult.a - startResult.a));
+							m_max.setElement(dragAxis, !bLocalSnap ? m_max.getElement(dragAxis) : round_nearest(m_max.getElement(dragAxis), m_editor.toolGridSize));
+						}
+					}
+					// Drag the entire volume
+					else
 					{
-						m_min.x -= !bLocalSnap ? dragDelta.x : round_nearest(dragDelta.x, m_editor.toolGridSize);
-						m_max.x -= !bLocalSnap ? dragDelta.x : round_nearest(dragDelta.x, m_editor.toolGridSize);
-					
-						m_min.y -= !bLocalSnap ? dragDelta.y : round_nearest(dragDelta.y, m_editor.toolGridSize);
-						m_max.y -= !bLocalSnap ? dragDelta.y : round_nearest(dragDelta.y, m_editor.toolGridSize);
+						// Project our rays onto a 2D plane centered around our friend.
+						var planeNormalAxis = Vector3FromAxis(vec3_largest_axis(Vector3FromArray(m_editor.viewrayForward)));
+						var planeNormal = new Vector3(
+							planeNormalAxis.x * -sign(m_editor.viewrayForward[0]),
+							planeNormalAxis.y * -sign(m_editor.viewrayForward[1]),
+							planeNormalAxis.z * -sign(m_editor.viewrayForward[2]));
+						var planeDrag = Plane3FromNormalOffset(planeNormal, m_min.add(m_max).multiplySelf(0.5));
+						var startDistance = raycast4_plane(planeDrag, startRay.point, startRay.direction) ? raycast4_get_hit_distance() : 0;
+						var currentDistance = raycast4_plane(planeDrag, currentRay.point, currentRay.direction) ? raycast4_get_hit_distance() : 0;
+						
+						// Get the XYZ offset for the drag
+						var startPoint = startRay.point.add(startRay.direction.multiply(startDistance));
+						var currentPoint = currentRay.point.add(currentRay.direction.multiply(currentDistance));
+						var deltaDrag = currentPoint.subtract(startPoint);
+						
+						for (var i = 0; i < 3; ++i)
+						{
+							var deltaDragAmount = !bLocalSnap ? deltaDrag.getElement(i) : round_nearest(deltaDrag.getElement(i), m_editor.toolGridSize);
+							m_min.setElement(i, m_editMinStart.getElement(i) + deltaDragAmount);
+							m_max.setElement(i, m_editMaxStart.getElement(i) + deltaDragAmount);
+						}
 					}
 					
 					// Update cursor as well

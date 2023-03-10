@@ -30,6 +30,15 @@ function Vector3(n_x = 0.0, n_y = 0.0, n_z = 0.0) constructor
 		return undefined;
 	}
 	
+	///@function setElement(index, value)
+	static setElement = function(index, value)
+	{
+		gml_pragma("forceinline");
+		if (index == 0) x = value;
+		else if (index == 1) y = value;
+		else if (index == 2) z = value;
+	}
+	
 	///@function copy()
 	static copy = function()
 	{
@@ -338,6 +347,17 @@ function Vector3FromScale(structure)
 {
 	gml_pragma("forceinline");
 	return new Vector3(structure.xscale, structure.yscale, structure.zscale);
+}
+
+/// @function Vector3FromAxis(axis)
+/// @desc Return a vector from the given axis
+function Vector3FromAxis(axis)
+{
+	gml_pragma("forceinline");
+	return new Vector3(
+		(axis == kAxisX) ? 1.0 : 0.0,
+		(axis == kAxisY) ? 1.0 : 0.0,
+		(axis == kAxisZ) ? 1.0 : 0.0);
 }
 
 /// @function Vector3ForwardFromAngles(yangle, zangle)

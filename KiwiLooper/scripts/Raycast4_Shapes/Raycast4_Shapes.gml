@@ -285,6 +285,9 @@ function raycast4_axisplane(axis, offset, rayOrigin, rayDir)
 }
 
 /// @function raycast4_plane(plane, rayOrigin, rayDir)
+/// @param plane {Plane3}
+/// @param rayOrigin {Vector3}
+/// @param rayDir {Vector3}
 /// @desc Performs a raycast on the given plane.
 function raycast4_plane(plane, rayOrigin, rayDir)
 {
