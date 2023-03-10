@@ -14,8 +14,8 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 	m_title = "";
 	m_modal = true; // TODO: check m_modal in the windowing system
 	
-	m_size.x = 140;
-	m_size.y = 60;
+	m_size.x = 140 * EditorGetUIScale();
+	m_size.y = 60 * EditorGetUIScale();
 	
 	// Center the window
 	m_position.x = round((GameCamera.width - m_size.x) / 2);
@@ -77,20 +77,22 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 	
 	static onMouseMove = function(mouseX, mouseY)
 	{
+		var ui_scale = EditorGetUIScale();
+		
 		if (mouse_position == kWindowMousePositionContent)
 		{
 			item_mouseover = null;
 			
 			// Check buttons
 			var button_count = array_length(choices);
-			var button_total_w = kButtonWidth * button_count + kContentMargin * (button_count - 1);
+			var button_total_w = kButtonWidth * button_count * ui_scale + kContentMargin * (button_count - 1);
 			var start_x = m_position.x + (m_size.x - button_total_w) / 2;
-			var start_y = m_position.y + m_size.y - kContentMargin - kButtonHeight;
+			var start_y = m_position.y + m_size.y - kContentMargin - kButtonHeight * ui_scale;
 			for (var i = 0; i < button_count; ++i)
 			{
-				var current_x = start_x + (kButtonWidth + kContentMargin) * i;
+				var current_x = start_x + (kButtonWidth * ui_scale + kContentMargin) * i;
 				
-				if (point_in_rectangle(mouseX, mouseY, current_x, start_y, current_x + kButtonWidth, start_y + kButtonHeight))
+				if (point_in_rectangle(mouseX, mouseY, current_x, start_y, current_x + kButtonWidth * ui_scale, start_y + kButtonHeight * ui_scale))
 				{
 					item_mouseover = i;
 				}
@@ -150,36 +152,38 @@ function AEditorWindowDialog() : AEditorWindow() constructor
 	{
 		drawWindow();
 		
+		var ui_scale = EditorGetUIScale();
+		
 		// Draw content
 		draw_set_color(focused ? c_white : c_gray);
 		draw_set_halign(fa_left);
 		draw_set_valign(fa_top);
-		draw_set_font(f_04b03);
+		draw_set_font(EditorGetUIFont());
 		draw_text_ext(m_position.x + kContentMargin, m_position.y + kContentMargin, content, -1, m_size.x - kContentMargin * 2);
 		
 		// Draw buttons
 		var button_count = array_length(choices);
-		var button_total_w = kButtonWidth * button_count + kContentMargin * (button_count - 1);
+		var button_total_w = kButtonWidth * button_count * ui_scale + kContentMargin * (button_count - 1);
 		var start_x = m_position.x + (m_size.x - button_total_w) / 2;
-		var start_y = m_position.y + m_size.y - kContentMargin - kButtonHeight;
+		var start_y = m_position.y + m_size.y - kContentMargin - kButtonHeight * ui_scale;
 		for (var i = 0; i < button_count; ++i)
 		{
-			var current_x = start_x + (kButtonWidth + kContentMargin) * i;
+			var current_x = start_x + (kButtonWidth * ui_scale + kContentMargin) * i;
 			
 			// draw background
 			draw_set_color((item_mouseover == i) ? kAccentColor : kFocusedBGColor);
-			draw_rectangle(current_x, start_y, current_x + kButtonWidth, start_y + kButtonHeight, false);
+			draw_rectangle(current_x, start_y, current_x + kButtonWidth * ui_scale, start_y + kButtonHeight * ui_scale, false);
 			
 			// draw focus outline
 			draw_set_color((item_focused == i) ? (item_mousedown ? c_white : kAccentColor) : kFocusedBGColor);
-			draw_rectangle(current_x, start_y, current_x + kButtonWidth, start_y + kButtonHeight, true);
+			draw_rectangle(current_x, start_y, current_x + kButtonWidth * ui_scale, start_y + kButtonHeight * ui_scale, true);
 			
 			// draw the text
 			draw_set_color(focused ? c_white : c_gray);
 			draw_set_halign(fa_center);
 			draw_set_valign(fa_middle);
-			draw_set_font(f_04b03);
-			draw_text(current_x + kButtonWidth * 0.5, start_y + kButtonHeight * 0.5, choices[i].text);
+			draw_set_font(EditorGetUIFont());
+			draw_text(current_x + kButtonWidth * 0.5 * ui_scale, start_y + kButtonHeight * 0.5 * ui_scale, choices[i].text);
 		}
 	}
 }
