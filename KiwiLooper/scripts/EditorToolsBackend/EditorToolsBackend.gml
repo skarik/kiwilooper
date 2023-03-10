@@ -119,76 +119,78 @@ function EditorToolsSetup()
 			toolStates[i].m_editor = this;
 		}
 	}
+	
+	// Set up shortcuts now as well
+	EditorToolsSetup_Shortcuts();
+}
+
+/// @function AEditorToolShortcut(name, keypress, modifiers, action)
+/// @param name {String}
+/// @param keypress {VKCode}
+/// @param modifiers {Undefined or VKCode Array}
+/// @param action {Function}
+function AEditorToolShortcut(name, keypress, modifiers, action) constructor
+{
+	m_name = name;
+	m_keypress = keypress;
+	m_hasModifiers = !is_undefined(modifiers) && is_array(modifiers);
+	m_modifiers = modifiers;
+	m_action = action;
+}
+
+/// @desc Sets up all keyboard shortcuts in the editor
+function EditorToolsSetup_Shortcuts()
+{
+	toolShortcuts = [
+		new AEditorToolShortcut("Select Tool", ord("Q"), undefined, function(){ toolCurrentRequested = kEditorToolSelect; }),
+		new AEditorToolShortcut("Translate Tool", ord("W"), undefined, function(){ toolCurrentRequested = kEditorToolTranslate; }),
+		new AEditorToolShortcut("Rotate Tool", ord("E"), undefined, function(){ toolCurrentRequested = kEditorToolRotate; }),
+		new AEditorToolShortcut("Scale Tool", ord("R"), undefined, function(){ toolCurrentRequested = kEditorToolScale; }),
+		new AEditorToolShortcut("Translate Tool", ord("E"), [vk_control], EditorCameraCenterOnSelection),
+		
+		new AEditorToolShortcut("Grid Smaller", /*vk_oem_4*/0xDB, undefined, EditorToolGridSmaller),
+		new AEditorToolShortcut("Grid Larger", /*vk_oem_6*/0xDD, undefined, EditorToolGridLarger),
+		
+		new AEditorToolShortcut("Copy Selection", ord("C"), [vk_control], function(){ if (toolCurrent != kEditorToolCamera) EditorClipboardSelectionUpdate(); }),
+		new AEditorToolShortcut("Paste", ord("V"), [vk_control], function(){ if (toolCurrent != kEditorToolCamera) EditorClipboardSelectionPaste(); }),
+		new AEditorToolShortcut("Delete Selection", vk_delete, undefined, function(){ if (toolCurrent != kEditorToolCamera) EditorGlobalDeleteSelection(); }),
+		new AEditorToolShortcut("Clear Selection", vk_escape, undefined, function(){ if (toolCurrent != kEditorToolCamera) EditorGlobalClearSelection(); }),
+		
+		new AEditorToolShortcut("Save", ord("S"), [vk_control], EditorGlobalSaveMap),
+		new AEditorToolShortcut("Load", ord("O"), [vk_control], EditorGlobalLoadMap),
+		new AEditorToolShortcut("New", ord("N"), [vk_control], EditorGlobalNukeMap),
+	];
 }
 
 function EditorToolsUpdate_CheckShortcuts()
 {
-	// Hard-coded shortcuts:
 	if (!WindowingHasConsumingFocus())
 	{
-		if (keyboard_check_pressed(ord("Q")))
+		for (var shortcutIndex = 0; shortcutIndex < array_length(toolShortcuts); ++shortcutIndex)
 		{
-			toolCurrentRequested = kEditorToolSelect;
-		}
-		if (keyboard_check_pressed(ord("W")))
-		{
-			toolCurrentRequested = kEditorToolTranslate;
-		}
-		if (keyboard_check_pressed(ord("E")))
-		{
-			if (keyboard_check(vk_control))
+			var shortcut = toolShortcuts[shortcutIndex];
+			
+			if (keyboard_check_pressed(shortcut.m_keypress))
 			{
-				EditorCameraCenterOnSelection();
+				var bCanPress = true;
+				if (shortcut.m_hasModifiers)
+				{
+					// Ensure all modifiers are held
+					for (var keyIndex = 0; keyIndex < array_length(shortcut.m_modifiers); ++keyIndex)
+					{
+						if (!keyboard_check(shortcut.m_modifiers[keyIndex]))
+						{
+							bCanPress = false;
+							break;
+						}
+					}
+				}
+				
+				// If marked Can Press, then execute the action
+				var shortcut_action = shortcut.m_action;
+				shortcut_action();
 			}
-			else
-			{
-				toolCurrentRequested = kEditorToolRotate;
-			}
 		}
-		if (keyboard_check_pressed(ord("R")))
-		{
-			toolCurrentRequested = kEditorToolScale;
-		}
-		
-		if (keyboard_check_pressed(/*vk_oem_4*/0xDB))
-		{
-			EditorToolGridSmaller();
-		}
-		if (keyboard_check_pressed(/*vk_oem_6*/0xDD))
-		{
-			EditorToolGridLarger();
-		}
-	}
-	
-	// Hard-coded command overrides:
-	
-	// Copy selected objects
-	if (keyboard_check(vk_control) && keyboard_check_pressed(ord("C"))
-		&& toolCurrent != kEditorToolCamera
-		&& !WindowingHasConsumingFocus())
-	{
-		EditorClipboardSelectionUpdate();
-	}
-	// Paste selected objects
-	if (keyboard_check(vk_control) && keyboard_check_pressed(ord("V"))
-		&& toolCurrent != kEditorToolCamera
-		&& !WindowingHasConsumingFocus())
-	{
-		EditorClipboardSelectionPaste();
-	}
-	// Delete selected objects
-	if (keyboard_check_pressed(vk_delete)
-		&& toolCurrent != kEditorToolCamera
-		&& !WindowingHasConsumingFocus())
-	{
-		EditorGlobalDeleteSelection();
-	}
-	// Clear selection
-	if (keyboard_check_pressed(vk_escape)
-		&& toolCurrent != kEditorToolCamera
-		&& !WindowingHasFocus())
-	{
-		EditorGlobalClearSelection();
 	}
 	
 	// Special state override:

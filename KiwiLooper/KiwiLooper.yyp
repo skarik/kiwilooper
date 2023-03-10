@@ -174,6 +174,7 @@
     {"id":{"name":"ob_userInterfaceElement","path":"objects/ob_userInterfaceElement/ob_userInterfaceElement.yy",},"order":0,},
     {"id":{"name":"EditorUIWindowEntSpawn","path":"scripts/EditorUIWindowEntSpawn/EditorUIWindowEntSpawn.yy",},"order":5,},
     {"id":{"name":"EditorToolsSolids","path":"scripts/EditorToolsSolids/EditorToolsSolids.yy",},"order":5,},
+    {"id":{"name":"suie_actionsetRendering","path":"sprites/suie_actionsetRendering/suie_actionsetRendering.yy",},"order":12,},
     {"id":{"name":"effectControllerShake","path":"scripts/effectControllerShake/effectControllerShake.yy",},"order":1,},
     {"id":{"name":"GLSLRandomNoise","path":"scripts/GLSLRandomNoise/GLSLRandomNoise.yy",},"order":6,},
     {"id":{"name":"controlSettingSet","path":"scripts/controlSettingSet/controlSettingSet.yy",},"order":2,},
@@ -828,6 +829,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"sewers1_doors_solid.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"kiwi.kch","CopyToMask":-1,"filePath":"datafiles/models",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest11.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest12_solids2.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

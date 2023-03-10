@@ -57,11 +57,11 @@ function EditorUIBitsSetup()
 		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetBasic, 12, "Rebuild navigation information", "Cook AI", EditorGlobalRebuildAI, null, function(){ return m_state.map.geometry_valid; })); // TODO: make a ui popup in case this takes forever
 		// experimental stuff w/ view modes
 		m_actionbar.AddElement(AToolbarElementAsSpacer());
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "def", function() { global.shadeType = kShadeTypeDefault; }, null));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "albedo", function() { global.shadeType = kShadeTypeDebug_Albedo; }, null));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "albedo2", function() { global.shadeType = kShadeTypeDebug_AlbedoDarken; }, null));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "lighting", function() { global.shadeType = kShadeTypeDebug_Lighting; }, null));
-		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(null, 0, null, "normals", function() { global.shadeType = kShadeTypeDebug_Normals; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetRendering, 0, "Default", null, function() { global.shadeType = kShadeTypeDefault; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetRendering, 2, "Albedo", null, function() { global.shadeType = kShadeTypeDebug_Albedo; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetRendering, 3, "Albedo LD Utility", null, function() { global.shadeType = kShadeTypeDebug_AlbedoDarken; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetRendering, 1, "Lighting", null, function() { global.shadeType = kShadeTypeDebug_Lighting; }, null));
+		m_actionbar.AddElement(AToolbarElementAsButtonInfo2(suie_actionsetRendering, 4, "Normals", null, function() { global.shadeType = kShadeTypeDebug_Normals; }, null));
 	}
 	
 	// Create shortcuts (TODO)
