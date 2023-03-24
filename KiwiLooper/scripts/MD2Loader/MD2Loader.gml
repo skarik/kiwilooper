@@ -385,13 +385,17 @@ function AMD2FileParser() constructor
 			// Skins in MD2 are just file names - which makes loading pretty much trivial
 			for (var i = 0; i < m_loader.m_header.num_skins; ++i)
 			{
-				// TODO error handle missing files
-				//m_textures[i] = sprite_add(m_loader.m_skins[i], 1, false, false, 0, 0);
+				// TODO error handle missing files better
 				var loaded_texture = ResourceLoadTexture(m_loader.m_skins[i], m_loader.m_header.skinwidth, m_loader.m_header.skinheight);
 				if (!is_undefined(loaded_texture))
 				{
 					m_textures[i] = loaded_texture;
 					ResourceAddReference(loaded_texture); // Add ref until we're done with it.
+				}
+				else
+				{
+					debugLog(kLogError, "Could not find MD2 skin with filename \"" + m_loader.m_skins[i] + "\"");
+					m_textures[i] = undefined; // TODO show this as error
 				}
 			}
 			return true;

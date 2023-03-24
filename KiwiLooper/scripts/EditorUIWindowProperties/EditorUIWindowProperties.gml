@@ -27,7 +27,7 @@ function AEditorWindowProperties() : AEditorWindow() constructor
 	drag_y = 0;
 	drag_y_target = 0;
 	
-	m_size.x = 150 * EditorGetUIScale();
+	m_size.x = 200 * EditorGetUIScale();
 	m_size.y = 180 * EditorGetUIScale();
 	m_size.roundSelf();
 	

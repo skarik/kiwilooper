@@ -106,6 +106,20 @@ function _EntityInfoInit()
 			proxy: kProxyTypeNone,
 		},
 		
+		// Tests:
+		{
+			hidden: false,
+			name: "prop_static",
+			parent: "lively_base",
+			objectIndex: ot_3DModel_StaticProxy,
+			proxy: kProxyTypeNone,
+			
+			properties:
+			[
+				["modelFile", kValueTypeString],
+			],
+		},
+		
 		// Lights:
 		{
 			name: "light",

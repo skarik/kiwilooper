@@ -57,6 +57,21 @@ function buffer_read_byte_array_as_terminated_string(buffer, length)
 	return str;
 }
 
+/// @function buffer_to_string(buffer)
+/// @desc Reads the entire buffer as a byte array.
+function buffer_to_string(buffer)
+{
+	var str = "";
+	var i;
+	var length = buffer_get_size(buffer);
+	for (i = 0; i < length; ++i)
+	{
+		var ch = buffer_read(buffer, buffer_u8);
+		str += ansi_char(ch);
+	}
+	return str;
+}
+
 /// @function buffer_read_string_line(buffer)
 /// @desc Reads a byte array until hitting a null character or endline. Will not ensure encoding sticks.
 function buffer_read_string_line(buffer)
@@ -131,4 +146,19 @@ function buffer_write_buffer(destBuffer, srcBuffer)
 	// TODO: verify this
 	var new_dest_start = buffer_tell(destBuffer);
 	assert(old_dest_start + src_size == new_dest_start);
+}
+
+/// @function buffer_create_from_string(str)
+/// @desc Creates a buffer from a string.
+function buffer_create_from_string(str)
+{
+	var length = string_length(str);
+	var buffer = buffer_create(length, buffer_fixed, 1);
+	
+	for (var i = 1; i <= length; ++i)
+	{
+		buffer_write(buffer, buffer_u8, string_ord_at(str, i));
+	}
+	
+	return buffer;
 }

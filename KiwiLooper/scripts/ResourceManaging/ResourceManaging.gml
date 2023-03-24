@@ -3,6 +3,7 @@
 #macro kResourceTypeMD2			2
 #macro kResourceTypePNG			3
 #macro kResourceTypeInternalSprite	4
+#macro kResourceTypeGLTF		5
 
 function ResourceMapInit()
 {
@@ -30,6 +31,12 @@ function ResourceGetType(filepath)
 	
 	//{{{137 80 78 71 13 10 26 10 }}}
 	case 0x89504E47:	return kResourceTypePNG; // TODO: verify this
+	}
+	
+	var file_extension = string_lower(filename_ext(filepath));
+	if (file_extension == ".gltf")
+	{
+		return kResourceTypeGLTF;
 	}
 	
 	return kResourceTypeInvalid;
@@ -63,7 +70,7 @@ function ResourceLoadModel(filepath)
 	}
 	
 	var resourceType = ResourceGetType(filepath);
-	if (resourceType == kResourceTypeMDL || kResourceTypeMD2)
+	if (resourceType == kResourceTypeMDL || resourceType == kResourceTypeMD2 || resourceType == kResourceTypeGLTF)
 	{
 		var l_load_time_start = 0;
 		if (kResources_TimeModelLoader)
@@ -93,6 +100,10 @@ function ResourceLoadModel(filepath)
 		else if (resourceType == kResourceTypeMD2)
 		{
 			parser = new AMD2FileParser();
+		}
+		else if (resourceType == kResourceTypeGLTF)
+		{
+			parser = new AGLTFFileParser();
 		}
 		
 		// Load model
@@ -317,15 +328,15 @@ function ResourceFindTexture(filepath)
 	return undefined;
 }
 
-///@function ResourceAddReference(resource)
-///@desc Incremenets refcount of resource. Remember to pair properly with ResourceRemoveReference!
+/// @function ResourceAddReference(resource)
+/// @desc Incremenets refcount of resource. Remember to pair properly with ResourceRemoveReference!
 function ResourceAddReference(resource)
 {
 	resource.references += 1;
 	resource.last_used = Time.time;
 }
-///@function ResourceRemoveReference(resource)
-///@desc Decrements refcount of resource.
+/// @function ResourceRemoveReference(resource)
+/// @desc Decrements refcount of resource.
 function ResourceRemoveReference(resource)
 {
 	resource.references -= 1;
