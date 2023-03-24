@@ -89,29 +89,8 @@ function AFileGLTFReader() constructor
 	}
 	static CloseFile = function()
 	{
-		//buffer_delete(m_blob);
-		//m_blob = null;
+		// TODO?
 	}
-	
-	/*static b64_to_bytes = function(b64)
-	{
-	    var len, pad, tab, str, i, bin;
-	    len = string_length(b64);
-	    pad = "=";
-	    tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	    str = "";
-	    while (string_length(b64) mod 4) b64 += pad;
-	    for(i=0; i<len; i+=4) {
-	        bin[0] = string_pos(string_char_at(b64,i+1),tab)-1;
-	        bin[1] = string_pos(string_char_at(b64,i+2),tab)-1;
-	        bin[2] = string_pos(string_char_at(b64,i+3),tab)-1;
-	        bin[3] = string_pos(string_char_at(b64,i+4),tab)-1;
-	        str += chr(255&(bin[0]<<2)|(bin[1]>>4));
-	        if (bin[2] >= 0) str += chr(255&(bin[1]<<4)|(bin[2]>>2));
-	        if (bin[3] >= 0) str += chr(255&(bin[2]<<6)|(bin[3]));
-	    }
-	    return str;
-	}*/
 	
 	static LoadBuffers = function()
 	{
@@ -146,45 +125,46 @@ function AFileGLTFReader() constructor
 		var scene = m_object.scenes[sceneIndex];
 		for (var nodeIndex = 0; nodeIndex < array_length(scene.nodes); ++nodeIndex)
 		{
-			CollectNode(nodeIndex, [0, 0, 0], [0, 0, 0, 1], [16, 16, 16]);
+			CollectNode(scene.nodes[nodeIndex], [0, 0, 0], [0, 0, 0, 1], [16, 16, 16]);
 		}
 		return true;
 	}
 	
 	static CollectNode = function(nodeIndex, translation, rotation, scale)
 	{
+		debugLog(kLogVerbose, "Collecting GLTF node " + string(nodeIndex));
+		
 		var node = m_object.nodes[nodeIndex];
+		
+		// Aggregate TRS changes
+		var l_translate = CE_ArrayClone(translation);
+		var l_rotation = CE_ArrayClone(rotation);
+		var l_scale = CE_ArrayClone(scale);
+			
+		if (variable_struct_exists(node, "translation"))
+		{
+			l_translate[0] += node.translation[0];
+			l_translate[1] += node.translation[1];
+			l_translate[2] += node.translation[2];
+		}
+		if (variable_struct_exists(node, "rotation"))
+		{
+			l_rotation = aquat_multiply(l_rotation, node.rotation);
+		}
+		if (variable_struct_exists(node, "scale"))
+		{
+			l_scale[0] *= node.scale[0];
+			l_scale[1] *= node.scale[1];
+			l_scale[2] *= node.scale[2];
+		}
+		if (variable_struct_exists(node, "matrix"))
+		{
+			debugLog(kLogWarning, "\"matrix\" is ignored in the GLTF loader!");
+		}
+		
 		// Load the mesh up
 		if (variable_struct_exists(node, "mesh"))
-		{
-			//var l_translate = new Vector3(0, 0, 0);
-			//var l_rotation = new Vector3(0, 0, 0);
-			//var l_scale = new Vector3(16, 16, 16);
-			var l_translate = CE_ArrayClone(translation);
-			var l_rotation = CE_ArrayClone(rotation);
-			var l_scale = CE_ArrayClone(scale);
-			
-			if (variable_struct_exists(node, "translation"))
-			{
-				l_translate[0] += node.translation[0];
-				l_translate[1] += node.translation[1];
-				l_translate[2] += node.translation[2];
-			}
-			if (variable_struct_exists(node, "rotation"))
-			{
-				l_rotation = aquat_multiply(l_rotation, node.rotation);
-			}
-			if (variable_struct_exists(node, "scale"))
-			{
-				l_scale[0] *= node.scale[0];
-				l_scale[1] *= node.scale[1];
-				l_scale[2] *= node.scale[2];
-			}
-			if (variable_struct_exists(node, "matrix"))
-			{
-				debugLog(kLogWarning, "\"matrix\" is ignored in the GLTF loader!");
-			}
-			
+		{	
 			var mesh_name = node.name;
 			var mesh_index = node.mesh;
 			
@@ -196,7 +176,7 @@ function AFileGLTFReader() constructor
 		{
 			for (var subnodeIndex = 0; subnodeIndex < array_length(node.children); ++subnodeIndex)
 			{
-				CollectNode(subnodeIndex);
+				CollectNode(node.children[subnodeIndex], translation, rotation, scale);
 			}
 		}
 	}

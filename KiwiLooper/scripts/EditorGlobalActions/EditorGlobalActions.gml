@@ -320,6 +320,17 @@ function EditorGlobalSaveMap()
 }
 function EditorGlobalSaveMap_Work(filepath)
 {
+	// Patch up all entity required values
+	for (var entIndex = 0; entIndex < EditorGet().m_entityInstList.GetEntityCount(); ++entIndex)
+	{
+		var instance = EditorGet().m_entityInstList.GetEntity(entIndex);
+		if (!variable_instance_exists(instance, "entityMapIndex"))
+		{
+			instance.entityMapIndex = EditorState_GetNextEntityIdentifier();
+		}
+	}
+	
+	// Save data
 	var filedata = new AMapFiledata();
 	
 	MapSaveTilemap(filedata, EditorGet().m_tilemap);

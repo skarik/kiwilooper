@@ -169,6 +169,7 @@ function EditorClipboardSelectionPaste()
 				variable_instance_set_if_not_exists(ent, "yrotation", 0.0);
 				variable_instance_set_if_not_exists(ent, "zrotation", 0.0);
 				ent.entity = clipboard_entry.object.ent;
+				ent.entityMapIndex = EditorState_GetNextEntityIdentifier();
 				
 				for (var propertyIndex = 0; propertyIndex < array_length(clipboard_entry.object.ent.properties); ++propertyIndex)
 				{

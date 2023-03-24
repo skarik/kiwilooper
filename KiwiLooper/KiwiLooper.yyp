@@ -839,6 +839,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Locker.gltf","CopyToMask":-1,"filePath":"datafiles/models/metal",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Locker Bench.gltf","CopyToMask":-1,"filePath":"datafiles/models/metal",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"Locker Bench.kch","CopyToMask":-1,"filePath":"datafiles/models/metal",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"gametest13_staticprops.kmf","CopyToMask":-1,"filePath":"datafiles/maps",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",
