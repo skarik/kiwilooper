@@ -6,3 +6,4 @@
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.gltf filter=lfs diff=lfs merge=lfs -text
+*.bbmodel filter=lfs diff=lfs merge=lfs -text
