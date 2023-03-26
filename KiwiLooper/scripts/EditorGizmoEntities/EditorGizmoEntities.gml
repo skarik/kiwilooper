@@ -376,6 +376,15 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 			}
 			else
 				renderInfo.renderer.visible = true;
+			// Do specific shapes
+			if (entInstance.entity.gizmoMesh.shape == kGizmoMeshLightSphere
+				|| entInstance.entity.gizmoMesh.shape == kGizmoMeshLightCone
+				|| entInstance.entity.gizmoMesh.shape == kGizmoMeshLightRect)
+			{
+				renderInfo.renderer.xscale = 1.0;
+				renderInfo.renderer.yscale = 1.0;
+				renderInfo.renderer.zscale = 1.0;
+			}
 			// Apply custom transforms
 			if (renderInfo.bHasEntTransform)
 			{
@@ -575,21 +584,45 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), -sin(degtorad(inner_angle)), 0), new Vector3(0, 0, 0), uvs);
 					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), 0,  sin(degtorad(inner_angle))), new Vector3(0, 0, 0), uvs);
 					MeshbAddLine3(m_mesh, color, 0.3, 0.5, radius, new Vector3(cos(degtorad(inner_angle)), 0, -sin(degtorad(inner_angle))), new Vector3(0, 0, 0), uvs);
-				
 				}
 				else if (entMesh.shape == kGizmoMeshLightRect)
 				{
 					var radius = m_renderInstance.range;
-					// TODO: each corner gets 2 arcs
-					
-					// Since this uses scaling, the actual math will get really funky - so for now let's not even bother with making this.
-					
-					var radius = m_renderInstance.range;
 					var color = m_renderInstance.color;
-					// Add 3 arcs around the shape for the light
-					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), uvs); 
-					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
-					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 360, (360 / 16), new Vector3(1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, 0), uvs);
+					
+					// Draw lines at each planar edge
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(0, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5 + radius), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(0, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5 - radius), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(0, m_renderInstance.yscale * 0.5 + radius, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(0, -m_renderInstance.yscale * 0.5 - radius, -m_renderInstance.zscale * 0.5), uvs);
+					
+					// Draw lines at each extruded edge
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(radius, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(radius, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(radius, m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(radius, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(-radius, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.yscale, new Vector3(0, 1, 0), new Vector3(-radius, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(-radius, m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddLine3(m_mesh, color, 0.3, 0.5, m_renderInstance.zscale, new Vector3(0, 0, 1), new Vector3(-radius, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					
+					// Draw curves to connect the corners
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 90, 180, (90 / 4), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0.0, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 180, 270, (90 / 4), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0.0, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 270, 360, (90 / 4), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0.0, m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 0, 90, (90 / 4), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(0.0, m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					
+					// Draw curves to connect to the front on Y
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, -90, 90, (90 / 4), new Vector3(0, 1, 0), new Vector3(1, 0, 0), new Vector3(0.0, m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, -90, 90, (90 / 4), new Vector3(0, 1, 0), new Vector3(1, 0, 0), new Vector3(0.0, m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 90, 270, (90 / 4), new Vector3(0, 1, 0), new Vector3(1, 0, 0), new Vector3(0.0, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 90, 270, (90 / 4), new Vector3(0, 1, 0), new Vector3(1, 0, 0), new Vector3(0.0, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					
+					// Draw curves to connect to the front on Z
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, -90, 90, (90 / 4), new Vector3(0, 0, 1), new Vector3(1, 0, 0), new Vector3(0.0, -m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, -90, 90, (90 / 4), new Vector3(0, 0, 1), new Vector3(1, 0, 0), new Vector3(0.0, m_renderInstance.yscale * 0.5, m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 90, 270, (90 / 4), new Vector3(0, 0, 1), new Vector3(1, 0, 0), new Vector3(0.0, -m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
+					MeshbAddArc3(m_mesh, color, 0.3, 0.5, radius, 90, 270, (90 / 4), new Vector3(0, 0, 1), new Vector3(1, 0, 0), new Vector3(0.0, m_renderInstance.yscale * 0.5, -m_renderInstance.zscale * 0.5), uvs);
 				}
 				else
 				{

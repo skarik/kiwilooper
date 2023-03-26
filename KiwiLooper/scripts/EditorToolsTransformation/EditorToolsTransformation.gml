@@ -740,7 +740,7 @@ function AEditorToolStateScale() : AEditorToolStateTranslate() constructor
 			{
 				if (bCanScale)
 				{
-					var snap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
+					//var snap = m_editor.toolGrid && !m_editor.toolGridTemporaryDisable;
 					/*var next_x = m_transformGizmo.m_dragX ? (snap ? round_nearest(m_transformGizmo.xscale, 0.1) : m_transformGizmo.xscale) : target.xscale;
 					var next_y = m_transformGizmo.m_dragY ? (snap ? round_nearest(m_transformGizmo.yscale, 0.1) : m_transformGizmo.yscale) : target.yscale;
 					var next_z = m_transformGizmo.m_dragZ ? (snap ? round_nearest(m_transformGizmo.zscale, 0.1) : m_transformGizmo.zscale) : target.zscale;*/

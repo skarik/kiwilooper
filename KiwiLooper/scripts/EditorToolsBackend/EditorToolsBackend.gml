@@ -146,7 +146,7 @@ function EditorToolsSetup_Shortcuts()
 		new AEditorToolShortcut("Translate Tool", ord("W"), undefined, function(){ toolCurrentRequested = kEditorToolTranslate; }),
 		new AEditorToolShortcut("Rotate Tool", ord("E"), undefined, function(){ toolCurrentRequested = kEditorToolRotate; }),
 		new AEditorToolShortcut("Scale Tool", ord("R"), undefined, function(){ toolCurrentRequested = kEditorToolScale; }),
-		new AEditorToolShortcut("Translate Tool", ord("E"), [vk_control], EditorCameraCenterOnSelection),
+		new AEditorToolShortcut("Center Selection", ord("E"), [vk_control], EditorCameraCenterOnSelection),
 		
 		new AEditorToolShortcut("Grid Smaller", /*vk_oem_4*/0xDB, undefined, EditorToolGridSmaller),
 		new AEditorToolShortcut("Grid Larger", /*vk_oem_6*/0xDD, undefined, EditorToolGridLarger),
@@ -187,8 +187,11 @@ function EditorToolsUpdate_CheckShortcuts()
 				}
 				
 				// If marked Can Press, then execute the action
-				var shortcut_action = shortcut.m_action;
-				shortcut_action();
+				if (bCanPress)
+				{
+					var shortcut_action = shortcut.m_action;
+					shortcut_action();
+				}
 			}
 		}
 	}

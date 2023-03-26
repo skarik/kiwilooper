@@ -353,6 +353,7 @@ function CE_MatrixTranspose(_m)
 	CE_ArraySwap(_m, 6, 9);
 	CE_ArraySwap(_m, 7, 13);
 	CE_ArraySwap(_m, 11, 14);
+	return _m;
 }
 
 /// @func CE_MatrixTranslate(_matrix, _x[, _y, _z])

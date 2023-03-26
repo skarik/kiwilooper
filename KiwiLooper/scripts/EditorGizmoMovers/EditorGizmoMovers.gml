@@ -565,6 +565,13 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 		var kInnerWidth = 8 * kScreensizeFactor;
 		var kInnerLength = kAxisLength - kInnerWidth;
 		
+		// Setup local XYZ as it's needed for both collisions and gizmos
+		var bIsDragging = m_dragX || m_dragY || m_dragZ;
+		var kRotation = matrix_build_rotation(bIsDragging ? {xrotation:m_dragStart[0], yrotation:m_dragStart[1], zrotation:m_dragStart[2]} : self);
+		var kX = (new Vector3(1, 0, 0)).transformAMatrixSelf(kRotation);
+		var kY = (new Vector3(0, 1, 0)).transformAMatrixSelf(kRotation);
+		var kZ = (new Vector3(0, 0, 1)).transformAMatrixSelf(kRotation);
+		
 		var pixelX = m_editor.uPosition - GameCamera.view_x;
 		var pixelY = m_editor.vPosition - GameCamera.view_y;
 		
@@ -672,7 +679,7 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 					var l_screenStart = o_Camera3D.positionToView(o_Camera3D.x + m_dragViewrayStart[0], o_Camera3D.y + m_dragViewrayStart[1], o_Camera3D.z + m_dragViewrayStart[2]);
 					var l_screenCurrent = o_Camera3D.positionToView(o_Camera3D.x + m_editor.viewrayPixel[0], o_Camera3D.y + m_editor.viewrayPixel[1], o_Camera3D.z + m_editor.viewrayPixel[2]);
 					
-					rotation = m_dragStart[axis] - angle_difference(
+					rotation = /*m_dragStart[axis]*/ - angle_difference(
 						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenStart[0], l_screenStart[1]),
 						point_direction(l_screenCenter[0], l_screenCenter[1], l_screenCurrent[0], l_screenCurrent[1]));
 				}
@@ -689,36 +696,41 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 					
 					// calculate angle difference in the world
 					if (axis == kAxisX)
-						rotation = m_dragStart[axis] - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
+						rotation = /*m_dragStart[axis]*/ - angle_difference(point_direction(y, z, l_worldStart.y, l_worldStart.z), point_direction(y, z, l_worldCurrent.y, l_worldCurrent.z));
 					else if (axis == kAxisY)
-						rotation = m_dragStart[axis] + angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
+						rotation = /*m_dragStart[axis] +*/ angle_difference(point_direction(x, z, l_worldStart.x, l_worldStart.z), point_direction(x, z, l_worldCurrent.x, l_worldCurrent.z));
 					else if (axis == kAxisZ)
-						rotation = m_dragStart[axis] - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
+						rotation = /*m_dragStart[axis]*/ - angle_difference(point_direction(x, y, l_worldStart.x, l_worldStart.y), point_direction(x, y, l_worldCurrent.x, l_worldCurrent.y));
 				}
 				
-				if (axis == kAxisX)
-					xrotation = rotation;
-				else if (axis == kAxisY)
-					yrotation = rotation;
-				else if (axis == kAxisZ)
-					zrotation = rotation;
+				return rotation;
 			}
 			
+			var delta_rotationX = 0;
+			var delta_rotationY = 0;
+			var delta_rotationZ = 0;
 			if (m_dragX)
 			{
-				DoDragRotateOnAxis(kAxisX, kRotateInScreenspace);
-				if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
+				delta_rotationX = DoDragRotateOnAxis(kAxisX, kRotateInScreenspace);
+				//if (bLocalSnap) xrotation = round_nearest(xrotation, 15);
 			}
 			if (m_dragY)
 			{
-				DoDragRotateOnAxis(kAxisY, kRotateInScreenspace);
-				if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
+				delta_rotationY = DoDragRotateOnAxis(kAxisY, kRotateInScreenspace);
+				//if (bLocalSnap) yrotation = round_nearest(yrotation, 15);
 			}
 			if (m_dragZ)
 			{
-				DoDragRotateOnAxis(kAxisZ, kRotateInScreenspace);
-				if (bLocalSnap) zrotation = round_nearest(zrotation, 15);
+				delta_rotationZ = DoDragRotateOnAxis(kAxisZ, kRotateInScreenspace);
+				//if (bLocalSnap) zrotation = round_nearest(zrotation, 15);
 			}
+			if (bLocalSnap) delta_rotationX = round_nearest(delta_rotationX, 15);
+			if (bLocalSnap) delta_rotationY = round_nearest(delta_rotationY, 15);
+			if (bLocalSnap) delta_rotationZ = round_nearest(delta_rotationZ, 15);
+			
+			xrotation = m_dragStart[0] + delta_rotationX;
+			yrotation = m_dragStart[1] + delta_rotationY;
+			zrotation = m_dragStart[2] + delta_rotationZ;
 		}
 		
 		if (MouseCheckButtonReleased(mb_left) || !m_active)
@@ -764,6 +776,9 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 				
 				// Following listings are in XYZ order:
 				var kPlanarListing = [
+					//[kY, kZ],
+					//[kZ, kX],
+					//[kX, kY],
 					[new Vector3(0, 1, 0), new Vector3(0, 0, 1)],
 					[new Vector3(0, 0, 1), new Vector3(1, 0, 0)],
 					[new Vector3(1, 0, 0), new Vector3(0, 1, 0)],
@@ -849,9 +864,12 @@ function AEditorGizmoPointRotate() : AEditorGizmoPointMove() constructor
 			}
 			else
 			{
-				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
-				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
-				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
+				//MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(1, 0, 0), new Vector3(x,y,z));
+				//MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 1, 0), new Vector3(x,y,z));
+				//MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, new Vector3(0, 0, 1), new Vector3(x,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, kX, new Vector3(x,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, kY, new Vector3(x,y,z));
+				MeshbAddLine(m_mesh, c_gray, kBorderExpand, kAxisLength, kZ, new Vector3(x,y,z));
 			}
 		meshb_End(m_mesh);
 	};
@@ -999,13 +1017,6 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 		{
 			var lastPosition = Vector3FromArray(m_dragStartPosition);
 			var lastCenter = bbox.center.add(lastPosition);
-			//var lastCenter = lastPosition;
-			
-			// Rotate viewray delta into current space
-			//var viewrayDelta = new Vector3(m_editor.viewrayPixel[0] - m_dragViewrayStart[0], m_editor.viewrayPixel[1] - m_dragViewrayStart[1], m_editor.viewrayPixel[2] - m_dragViewrayStart[2]);
-			//var kRotationInvert = CE_MatrixClone(kRotation);
-			//CE_MatrixInverse(kRotationInvert);
-			//viewrayDelta.transformAMatrixSelf(kRotationInvert);
 			
 			// Create reference rays
 			var startRay	= new Ray3(Vector3FromTranslation(o_Camera3D), Vector3FromArray(m_dragViewrayStart));
@@ -1014,33 +1025,33 @@ function AEditorGizmoPointScale() : AEditorGizmoPointMove() constructor
 			// Perform the drags
 			if (m_dragX)
 			{
-				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(1, 0, 0));
-				var startResult = axisDrag.getClosestOnRay(startRay);
-				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), kX);
+				var startResult		= axisDrag.getClosestOnRay(startRay);
+				var currentResult	= axisDrag.getClosestOnRay(currentRay);
 				
-				var xsize = m_dragStart[0] + (currentResult.a - startResult.a) * m_dragXSign * 0.5; //viewrayDelta.x * 600 * m_dragXSign * kScreensizeFactor;
+				var xsize = m_dragStart[0] + (currentResult.a - startResult.a) * m_dragXSign * 0.5;
 				if (bLocalSnap) xsize = round_nearest(xsize, m_editor.toolGridSize / 2); // halved because extents are halved
 				xscale = xsize / max(0.001, bbox.extents.x);
 				lastCenter.addSelf(kX.multiply(m_dragXSign * (xsize - m_dragStart[0])));
 			}
 			if (m_dragY)
 			{
-				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 1, 0));
-				var startResult = axisDrag.getClosestOnRay(startRay);
-				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), kY);
+				var startResult		= axisDrag.getClosestOnRay(startRay);
+				var currentResult	= axisDrag.getClosestOnRay(currentRay);
 				
-				var ysize = m_dragStart[1] + (currentResult.a - startResult.a) * m_dragYSign * 0.5;//+ viewrayDelta.y * 600 * m_dragYSign * kScreensizeFactor;
+				var ysize = m_dragStart[1] + (currentResult.a - startResult.a) * m_dragYSign * 0.5;
 				if (bLocalSnap) ysize = round_nearest(ysize, m_editor.toolGridSize / 2);
 				yscale = ysize / max(0.001, bbox.extents.y);
 				lastCenter.addSelf(kY.multiply(m_dragYSign * (ysize - m_dragStart[1])));
 			}
 			if (m_dragZ)
 			{
-				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), new Vector3(0, 0, 1));
-				var startResult = axisDrag.getClosestOnRay(startRay);
-				var currentResult = axisDrag.getClosestOnRay(currentRay);
+				var axisDrag	= new Ray3(Vector3FromArray(m_dragStart), kZ);
+				var startResult		= axisDrag.getClosestOnRay(startRay);
+				var currentResult	= axisDrag.getClosestOnRay(currentRay);
 				
-				var zsize = m_dragStart[2] + (currentResult.a - startResult.a) * m_dragZSign * 0.5; //+ viewrayDelta.z * 600 * m_dragZSign * kScreensizeFactor;
+				var zsize = m_dragStart[2] + (currentResult.a - startResult.a) * m_dragZSign * 0.5;
 				if (bLocalSnap) zsize = round_nearest(zsize, m_editor.toolGridSize / 2);
 				zscale = zsize / max(0.001, bbox.extents.z);
 				lastCenter.addSelf(kZ.multiply(m_dragZSign * (zsize - m_dragStart[2])));

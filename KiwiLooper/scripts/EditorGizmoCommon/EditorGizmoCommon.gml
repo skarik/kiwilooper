@@ -96,7 +96,7 @@ function AEditorGizmoBase() constructor
 	}
 	
 	/// @function CalculateScreensizeFactor()
-	/// @desc Calculates the screen scaling factor so that the item can remain roughly constant size at 360p
+	/// @desc Calculates the screen scaling factor so that the item can remain roughly constant size at 720p
 	CalculateScreensizeFactor = function()
 	{
 		var raylength = sqr(x - o_Camera3D.x) + sqr(y - o_Camera3D.y) + sqr(z - o_Camera3D.z);
@@ -105,7 +105,7 @@ function AEditorGizmoBase() constructor
 			+ sqr(m_editor.viewrayTopLeft[1] - m_editor.viewrayBottomRight[1])
 			+ sqr(m_editor.viewrayTopLeft[2] - m_editor.viewrayBottomRight[2])));
 			
-		var size_factor = screendelta / 360 * Screen.windowScale;
+		var size_factor = screendelta / 720 * Screen.windowScale;
 		
 		return size_factor;
 	};
