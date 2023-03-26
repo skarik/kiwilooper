@@ -137,9 +137,9 @@ function AFileGLTFReader() constructor
 		var node = m_object.nodes[nodeIndex];
 		
 		// Aggregate TRS changes
-		var l_translate = CE_ArrayClone(translation);
-		var l_rotation = CE_ArrayClone(rotation);
-		var l_scale = CE_ArrayClone(scale);
+		var l_translate	= CE_ArrayClone(translation);
+		var l_rotation	= CE_ArrayClone(rotation);
+		var l_scale		= CE_ArrayClone(scale);
 			
 		if (variable_struct_exists(node, "translation"))
 		{
@@ -149,7 +149,7 @@ function AFileGLTFReader() constructor
 		}
 		if (variable_struct_exists(node, "rotation"))
 		{
-			l_rotation = aquat_multiply(l_rotation, node.rotation);
+			l_rotation = aquat_multiply(node.rotation, l_rotation);
 		}
 		if (variable_struct_exists(node, "scale"))
 		{
@@ -168,7 +168,7 @@ function AFileGLTFReader() constructor
 			var mesh_name = node.name;
 			var mesh_index = node.mesh;
 			
-			CollectMesh(mesh_index, translation, rotation, scale); 
+			CollectMesh(mesh_index, l_translate, l_rotation, l_scale); 
 		}
 		
 		// Load children up
@@ -176,7 +176,7 @@ function AFileGLTFReader() constructor
 		{
 			for (var subnodeIndex = 0; subnodeIndex < array_length(node.children); ++subnodeIndex)
 			{
-				CollectNode(node.children[subnodeIndex], translation, rotation, scale);
+				CollectNode(node.children[subnodeIndex], l_translate, l_rotation, l_scale); 
 			}
 		}
 	}
@@ -199,7 +199,7 @@ function AFileGLTFReader() constructor
 				
 				// Collect it in the primitive list
 				array_push(m_primitives, primitive);
-				array_push(m_primitiveTransforms, [translation, rotation, scale]);
+				array_push(m_primitiveTransforms, [CE_ArrayClone(translation), CE_ArrayClone(rotation), CE_ArrayClone(scale)]);
 			}
 			else
 			{
@@ -390,6 +390,7 @@ function AGLTFFileParser() constructor
 				{
 					var primitive = m_loader.m_primitives[primitiveIndex];
 					var primitive_tf = m_loader.m_primitiveTransforms[primitiveIndex];
+					var primitive_hasRotation = (primitive_tf[1][0] != 0.0) || (primitive_tf[1][1] != 0.0) || (primitive_tf[1][2] != 0.0) || (primitive_tf[1][3] != 1.0);
 					
 					var l_POSITION = m_loader.m_accessorData[primitive.attributes.POSITION];
 					var l_NORMAL = m_loader.m_accessorData[primitive.attributes.NORMAL];
@@ -405,12 +406,26 @@ function AGLTFFileParser() constructor
 								
 							if (kMD2_IsFlatAttributeArrays)
 							{
-								frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = l_POSITION[index * 3 + 0] * primitive_tf[2][0] + primitive_tf[0][0];
-								frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = l_POSITION[index * 3 + 2] * primitive_tf[2][2] + primitive_tf[0][2];
-								frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = l_POSITION[index * 3 + 1] * primitive_tf[2][1] + primitive_tf[0][1];
-								frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = l_NORMAL[index * 3 + 0];
-								frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = l_NORMAL[index * 3 + 2];
-								frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = l_NORMAL[index * 3 + 1];
+								if (primitive_hasRotation)
+								{
+									var l_position	= aquat_multiply_avec3(primitive_tf[1], [l_POSITION[index * 3 + 0],	l_POSITION[index * 3 + 1],	l_POSITION[index * 3 + 2]]);
+									var l_normal	= aquat_multiply_avec3(primitive_tf[1], [l_NORMAL[index * 3 + 0],	l_NORMAL[index * 3 + 1],	l_NORMAL[index * 3 + 2]]);
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = (l_position[0] + primitive_tf[0][0]) * primitive_tf[2][0];
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = (l_position[2] + primitive_tf[0][2]) * primitive_tf[2][2];
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = (l_position[1] + primitive_tf[0][1]) * primitive_tf[2][1];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = l_normal[0];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = l_normal[2];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = l_normal[1];
+								}
+								else
+								{
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = (l_POSITION[index * 3 + 0] + primitive_tf[0][0]) * primitive_tf[2][0];
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = (l_POSITION[index * 3 + 2] + primitive_tf[0][2]) * primitive_tf[2][2];
+									frame.vertices[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = (l_POSITION[index * 3 + 1] + primitive_tf[0][1]) * primitive_tf[2][1];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 0] = l_NORMAL[index * 3 + 0];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 1] = l_NORMAL[index * 3 + 2];
+									frame.normals[(outTriangleIndex * 3 + cornerIndex) * 3 + 2] = l_NORMAL[index * 3 + 1];
+								}
 								frame.texcoords[(outTriangleIndex * 3 + cornerIndex) * 2 + 0] = l_TEXCOORD_0[index * 2 + 0];
 								frame.texcoords[(outTriangleIndex * 3 + cornerIndex) * 2 + 1] = l_TEXCOORD_0[index * 2 + 1];
 								
@@ -421,9 +436,9 @@ function AGLTFFileParser() constructor
 							else
 							{
 								frame.vertices[outTriangleIndex * 3 + cornerIndex] = array_create(3);
-								frame.vertices[outTriangleIndex * 3 + cornerIndex][0] = l_POSITION[index * 3 + 0] * primitive_tf[2][0] + primitive_tf[0][0];
-								frame.vertices[outTriangleIndex * 3 + cornerIndex][1] = l_POSITION[index * 3 + 2] * primitive_tf[2][2] + primitive_tf[0][2];
-								frame.vertices[outTriangleIndex * 3 + cornerIndex][2] = l_POSITION[index * 3 + 1] * primitive_tf[2][1] + primitive_tf[0][1];
+								frame.vertices[outTriangleIndex * 3 + cornerIndex][0] = (l_POSITION[index * 3 + 0] + primitive_tf[0][0]) * primitive_tf[2][0];
+								frame.vertices[outTriangleIndex * 3 + cornerIndex][1] = (l_POSITION[index * 3 + 2] + primitive_tf[0][2]) * primitive_tf[2][2];
+								frame.vertices[outTriangleIndex * 3 + cornerIndex][2] = (l_POSITION[index * 3 + 1] + primitive_tf[0][1]) * primitive_tf[2][1];
 								frame.normals[outTriangleIndex * 3 + cornerIndex] = array_create(3);
 								frame.normals[outTriangleIndex * 3 + cornerIndex][0] = l_NORMAL[index * 3 + 0];
 								frame.normals[outTriangleIndex * 3 + cornerIndex][1] = l_NORMAL[index * 3 + 2];

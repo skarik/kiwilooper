@@ -18,6 +18,6 @@ function aquat_multiply_avec3(q, v)
 	var qr = q;
 	var qri = aquat_invert(qr);
 	var qv = [v[0], v[1], v[2], 0];
-	var qf = aquat_multiply(aquat_multiply(qr, qv), qri);
+	var qf = aquat_multiply(aquat_multiply(qri, qv), qr);
 	return [qf[0], qf[1], qf[2]];
 }
