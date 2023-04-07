@@ -207,6 +207,7 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 					texturing_tool.UV_ForEachFaceIn(undefined, new_solid_face_selection, params, function(mapSolid, face, params) 
 					{
 					});*/
+					texturing_tool.TextureApplyToSelection();
 					texturing_tool.UVAlignToWorld(new_solid_face_selection); // Also applies new normals
 				}
 				

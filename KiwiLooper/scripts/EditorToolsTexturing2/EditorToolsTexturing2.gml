@@ -246,21 +246,6 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 			// Right click apply texture.
 			if (button == mb_right)
 			{
-				/*if (!keyboard_check(vk_control))
-				{
-					var selection = PickerRun(false, true);
-					if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
-					{
-						if (TextureApplyToSelectObject(selection))
-						{
-							TextureUpdateMapVisuals();
-						}
-					}
-				}
-				else
-				{
-					TextureApplyToSelection();
-				}*/
 				var selection = PickerRun(false, true);
 				if (is_struct(selection) && selection.type == kEditorSelection_Primitive)
 				{
@@ -453,29 +438,38 @@ function AEditorToolStateTextureSolids() : AEditorToolState() constructor
 		{
 			if (selection.object.face == null)
 			{
-				debugLog(kLogError, "Invalid face applied.");
-				return false;
-			}
-			var face = selection.object.primitive.faces[selection.object.face];
-		
-			if (face.texture.type != new_texture.type
-				|| face.texture.index != new_texture.index
-				|| face.texture.source != new_texture.source
-				//|| (face.texture.type == kTextureTypeTexture && face.texture.source != new_texture.source)
-				//|| (face.texture.type != kTextureTypeTexture && face.texture.source != new_texture.source)
-				)
-			{
-				bHasTextureChange = true;
-				
-				face.texture.type = new_texture.type;
-				face.texture.index = new_texture.index;
-				if (face.texture.type == kTextureTypeTexture)
-				{	// Copy over the filename. Let resource system handle the rest.
-					face.texture.source = new_texture.source; // TODO: check??
+				// Apply texture changes to all faces
+				for (var i = 0; i < array_length(selection.object.primitive.faces); ++i)
+				{
+					if (TextureApplyToSelectObject(EditorSelectionWrapPrimitive(selection.object.primitive, i)))
+					{
+						bHasTextureChange = true;
+					}
 				}
-				else
-				{	// Pull the sprite directly
-					face.texture.source = new_texture.source; // TODO: check??
+			}
+			else
+			{
+				var face = selection.object.primitive.faces[selection.object.face];
+		
+				if (face.texture.type != new_texture.type
+					|| face.texture.index != new_texture.index
+					|| face.texture.source != new_texture.source
+					//|| (face.texture.type == kTextureTypeTexture && face.texture.source != new_texture.source)
+					//|| (face.texture.type != kTextureTypeTexture && face.texture.source != new_texture.source)
+					)
+				{
+					bHasTextureChange = true;
+				
+					face.texture.type = new_texture.type;
+					face.texture.index = new_texture.index;
+					if (face.texture.type == kTextureTypeTexture)
+					{	// Copy over the filename. Let resource system handle the rest.
+						face.texture.source = new_texture.source; // TODO: check??
+					}
+					else
+					{	// Pull the sprite directly
+						face.texture.source = new_texture.source; // TODO: check??
+					}
 				}
 			}
 		}
