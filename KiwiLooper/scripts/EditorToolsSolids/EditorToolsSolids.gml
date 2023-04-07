@@ -193,6 +193,9 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 				newSolid.faces[4].indicies = [1, 2, 6, 5];
 				newSolid.faces[5].indicies = [3, 0, 4, 7];
 				
+				// Add to map ASAP in case we need the in-place array for texturing
+				array_push(map.solids, newSolid);
+				
 				// TODO: fix the normals on all the faces
 				// TODO: pull in call to the UV tool to world-map every face
 				var texturing_tool = EditorToolGetInstance(kEditorToolTextureSolids);
@@ -207,11 +210,9 @@ function AEditorToolStateMakeSolids() : AEditorToolState() constructor
 					texturing_tool.UV_ForEachFaceIn(undefined, new_solid_face_selection, params, function(mapSolid, face, params) 
 					{
 					});*/
-					texturing_tool.TextureApplyToSelection();
+					texturing_tool.TextureApplyToSelectObject(EditorSelectionWrapPrimitive(newSolid, null));
 					texturing_tool.UVAlignToWorld(new_solid_face_selection); // Also applies new normals
 				}
-				
-				array_push(map.solids, newSolid);
 				
 				m_editor.MapRebuildSolidsOnly();
 				
