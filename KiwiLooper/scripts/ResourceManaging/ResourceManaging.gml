@@ -60,13 +60,30 @@ function ResourceGetTypeIsTexture(resource)
 
 function ResourceLoadModel(filepath)
 {
-	var filepath_indexer = string_lower(filepath);
+	var filepath_indexer = filepath;
 	
 	// Check if already loaded the model
 	var existing_resource = global.resourceMap[?filepath_indexer];
 	if (!is_undefined(existing_resource))
 	{
 		return existing_resource;
+	}
+	else
+	{
+		// Check lowercase indexer and connect it if it does exist.
+		var common_filepath_indexer = string_lower(filepath);
+		
+		existing_resource = global.resourceMap[?common_filepath_indexer];
+		if (!is_undefined(existing_resource))
+		{
+			debugLog(kLogVerbose, "Adding resource redirect: \"" + filepath_indexer + "\" -> \"" + common_filepath_indexer + "\"");
+			// Connect the indexer to the existing resource.
+			global.resourceMap[?filepath_indexer] = existing_resource;
+			return existing_resource;
+		}
+		
+		// Otherwise, our actual indexer should be the lowercase one:
+		filepath_indexer = common_filepath_indexer;
 	}
 	
 	var resourceType = ResourceGetType(filepath);

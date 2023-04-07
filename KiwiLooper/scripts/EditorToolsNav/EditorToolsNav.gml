@@ -1,4 +1,5 @@
 #macro kPickerHitMaskTilemap	0x01 // Works on solids as well
+#macro kPickerHitMaskSolids		0x01
 #macro kPickerHitMaskEntity		0x02
 #macro kPickerHitMaskProp		0x04
 #macro kPickerHitMaskSplat		0x08
@@ -144,11 +145,29 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 		
 		// Cast against solids second
 		{
-			for (var solidIndex = 0; solidIndex < array_length(EditorGet().m_state.map.solids); ++solidIndex)
+			var solids_count = array_length(EditorGet().m_state.map.solids);
+			
+			// Cache the bounding boxes since they're a bit slow to recompute each frame
+			var cached_bboxes = EditorGet().m_state.map.cached_solids_bboxes;
+			if (array_length(cached_bboxes) != solids_count)
+			{
+				cached_bboxes = array_create(solids_count);
+				
+				for (var solidIndex = 0; solidIndex < solids_count; ++solidIndex)
+				{
+					var mapSolid = EditorGet().m_state.map.solids[solidIndex];
+					cached_bboxes[solidIndex] = mapSolid.GetBBox();
+				}
+				
+				EditorGet().m_state.map.cached_solids_bboxes = cached_bboxes;
+			}
+			
+			// Check against all solids now
+			for (var solidIndex = 0; solidIndex < solids_count; ++solidIndex)
 			{
 				var mapSolid = EditorGet().m_state.map.solids[solidIndex];
+				var solidBBox = cached_bboxes[solidIndex];
 				
-				var solidBBox = mapSolid.GetBBox();
 				// Create an AABB for the solid to see if we even hit
 				if (raycast4_box2(solidBBox, rayStart, rayDir))
 				{

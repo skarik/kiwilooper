@@ -1,3 +1,5 @@
+#macro COL4_USE_ARRAY_OPTIMIZATION true
+
 function _raycast4_init()
 {
 	global._raycast4_hitdistance = 0;
@@ -22,45 +24,73 @@ function raycast4_get_hit_normal()
 function _raycast4_box_inner(center, extents, rayOrigin, rayDir, raySign)
 {
 	// Implementation borrowed from http://www.jcgt.org/published/0007/03/04/paper-lowres.pdf
+	if (!COL4_USE_ARRAY_OPTIMIZATION)
+	{
+		var l_boxCenter = center;
+		var l_boxExtents = extents;
 	
-	var l_boxCenter = center;
-	var l_boxExtents = extents;
+		var l_rayPos = rayOrigin.subtract(l_boxCenter);
+		var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
 	
-	var l_rayPos = rayOrigin.subtract(l_boxCenter);
-	//var l_sign = new Vector3(-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z));
-	var l_sign = [-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z)];
+		// Distance to plane
+		var l_d = l_sign.multiplyComponentSelf(l_boxExtents).multiplySelf(raySign).subtractSelf(l_rayPos);
+		l_d.divideComponentSelf(rayDir);
 	
-	// Distance to plane
-	var l_d = Vector3FromArray(l_sign).multiplyComponentSelf(l_boxExtents).multiplySelf(raySign).subtractSelf(l_rayPos);
-	l_d.divideComponentSelf(rayDir);
+		// Test all axes at once
+		var l_test = [
+			(l_d.x > 0.0) && (abs(l_rayPos.y + rayDir.y * l_d.x) < l_boxExtents.y) && (abs(l_rayPos.z + rayDir.z * l_d.x) < l_boxExtents.z),
+			(l_d.y > 0.0) && (abs(l_rayPos.z + rayDir.z * l_d.y) < l_boxExtents.z) && (abs(l_rayPos.x + rayDir.x * l_d.y) < l_boxExtents.x),
+			(l_d.z > 0.0) && (abs(l_rayPos.x + rayDir.x * l_d.z) < l_boxExtents.x) && (abs(l_rayPos.y + rayDir.y * l_d.z) < l_boxExtents.y)
+		];
 	
-	// Test all axes at once
-	var l_test = [
-		(l_d.x > 0.0) && (abs(l_rayPos.y + rayDir.y * l_d.x) < l_boxExtents.y) && (abs(l_rayPos.z + rayDir.z * l_d.x) < l_boxExtents.z),
-		(l_d.y > 0.0) && (abs(l_rayPos.z + rayDir.z * l_d.y) < l_boxExtents.z) && (abs(l_rayPos.x + rayDir.x * l_d.y) < l_boxExtents.x),
-		(l_d.z > 0.0) && (abs(l_rayPos.x + rayDir.x * l_d.z) < l_boxExtents.x) && (abs(l_rayPos.y + rayDir.y * l_d.z) < l_boxExtents.y)
-	];
+		l_sign = l_test[0] ? new Vector3(l_sign.x, 0, 0) : (
+				 l_test[1] ? new Vector3(0, l_sign.y, 0) : (
+				 l_test[2] ? new Vector3(0, 0, l_sign.z) : new Vector3(0, 0, 0))
+			);
 	
-	/*l_sign = l_test[0] ? new Vector3(l_sign.x, 0, 0) : (
-			l_test[1] ? new Vector3(0, l_sign.y, 0) : (
-			l_test[2] ? new Vector3(0, 0, l_sign.z) : new Vector3(0, 0, 0))
-		);*/
-	l_sign = l_test[0] ? [l_sign[0], 0, 0] : (
-			l_test[1] ? [0, l_sign[1], 0] : (
-			l_test[2] ? [0, 0, l_sign[2]] : [0, 0, 0])
-		);
-	
-	// Get distance
-	//global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
-	global._raycast4_hitdistance	= (l_sign[0] != 0) ? l_d.x : ((l_sign[1] != 0) ? l_d.y : l_d.z);
-	//global._raycast4_hitnormal		= l_sign.copy();
-	global._raycast4_hitnormal.x = l_sign[0];
-	global._raycast4_hitnormal.y = l_sign[1];
-	global._raycast4_hitnormal.z = l_sign[2];
+		// Get distance
+		global._raycast4_hitdistance	= (l_sign.x != 0) ? l_d.x : ((l_sign.y != 0) ? l_d.y : l_d.z);
+		global._raycast4_hitnormal		= l_sign.copy();
 
-	// Return if hit.
-	//return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
-	return (l_sign[0] != 0) || (l_sign[1] != 0) || (l_sign[2] != 0);
+		// Return if hit.
+		return (l_sign.x != 0) || (l_sign.y != 0) || (l_sign.z != 0);
+	}
+	else // COL4_USE_ARRAY_OPTIMIZATION
+	{
+		var l_boxCenter = center;
+		var l_boxExtents = extents;
+	
+		var l_rayPos = [rayOrigin.x - l_boxCenter.x, rayOrigin.y - l_boxCenter.y, rayOrigin.z - l_boxCenter.z];
+		var l_sign = [-sign(rayDir.x), -sign(rayDir.y), -sign(rayDir.z)];
+	
+		// Distance to plane
+		var l_d = [
+			(l_sign[0] * l_boxExtents.x * raySign - l_rayPos[0]) / rayDir.x,
+			(l_sign[1] * l_boxExtents.y * raySign - l_rayPos[1]) / rayDir.y,
+			(l_sign[2] * l_boxExtents.z * raySign - l_rayPos[2]) / rayDir.z,
+		];
+	
+		// Test all axes at once
+		var l_test = [
+			(l_d[0] > 0.0) && (abs(l_rayPos AVEC_Y + rayDir.y * l_d[0]) < l_boxExtents.y) && (abs(l_rayPos AVEC_Z + rayDir.z * l_d[0]) < l_boxExtents.z),
+			(l_d[1] > 0.0) && (abs(l_rayPos AVEC_Z + rayDir.z * l_d[1]) < l_boxExtents.z) && (abs(l_rayPos AVEC_X + rayDir.x * l_d[1]) < l_boxExtents.x),
+			(l_d[2] > 0.0) && (abs(l_rayPos AVEC_X + rayDir.x * l_d[2]) < l_boxExtents.x) && (abs(l_rayPos AVEC_Y + rayDir.y * l_d[2]) < l_boxExtents.y)
+		];
+	
+		l_sign = l_test[0] ? [l_sign[0], 0, 0] : (
+				 l_test[1] ? [0, l_sign[1], 0] : (
+				 l_test[2] ? [0, 0, l_sign[2]] : [0, 0, 0])
+			);
+	
+		// Get distance
+		global._raycast4_hitdistance	= (l_sign[0] != 0) ? l_d[0] : ((l_sign[1] != 0) ? l_d[1] : l_d[2]);
+		global._raycast4_hitnormal.x = l_sign[0];
+		global._raycast4_hitnormal.y = l_sign[1];
+		global._raycast4_hitnormal.z = l_sign[2];
+
+		// Return if hit.
+		return (l_sign[0] != 0) || (l_sign[1] != 0) || (l_sign[2] != 0);
+	}
 }
 
 /// @function raycast4_box(minAB, maxAB, rayOrigin, rayDir)
@@ -364,64 +394,133 @@ function raycast4_triangle(points, rayOrigin, rayDir, cullback=false)
 /// @function raycast4_polygon(points, rayOrigin, rayDir)
 function raycast4_polygon(points, rayOrigin, rayDir)
 {
-	var edge1 = new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z);
-	var edge2 = new Vector3(points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z);
-	
-	var normal = edge1.cross(edge2);
-	if (normal.sqrMagnitude() < KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER) // Degenerate case
-		return false;
-		
-	// Now that we have point[0] and normal, we have a plane. Collide with plane to get point
-	var offsetToPlane = rayOrigin.subtract(points[0]);
-	
-	var planeProjectRaydir = rayDir.dot(normal);
-	var planeProjectOffset = -offsetToPlane.dot(normal);
-	
-	if (abs(planeProjectRaydir) < KINDA_SMALL_NUMBER) // Ray is parallel to the checking plane
-		return false;
-		
-	var distance = planeProjectOffset / planeProjectRaydir;
-	if (distance < 0.0) // Ray points away
-		return false;
-		
-	// Get the hit point
-	var hitPoint = rayOrigin.add(rayDir.multiply(distance));
-	
-	// Check against all edges smushed to 2D
-	var axis_dropped = 
-		(abs(normal.x) > abs(normal.y)) 
-			? ((abs(normal.x) > abs(normal.z)) ? kAxisX : kAxisZ)
-			: ((abs(normal.y) > abs(normal.z)) ? kAxisY : kAxisZ);
-	var axis_dropped_sign = sign(normal.getElement(axis_dropped));
-	
-	var edge_count = array_length(points);
-	var edge_index = 0;
-	while (edge_index < edge_count)
+	if (!COL4_USE_ARRAY_OPTIMIZATION)
 	{
-		var point1 = points[(edge_index + 1) % edge_count];
-		var point0 = points[edge_index];
-		
-		var edge = 
-			(axis_dropped == kAxisX) ? [point1.y - point0.y, point1.z - point0.z] : (
-			(axis_dropped == kAxisY) ? [point1.z - point0.z, point1.x - point0.x] : (
-			/*axis_dropped == kAxisZ*/ [point1.x - point0.x, point1.y - point0.y]
-			));
-		var compare =
-			(axis_dropped == kAxisX) ? [hitPoint.y - point0.y, hitPoint.z - point0.z] : (
-			(axis_dropped == kAxisY) ? [hitPoint.z - point0.z, hitPoint.x - point0.x] : (
-			/*axis_dropped == kAxisZ*/ [hitPoint.x - point0.x, hitPoint.y - point0.y]
-			));
-		
-		// Cross product to check sine between two angles. 
-		if ((edge[0] * compare[1] - edge[1] * compare[0]) * axis_dropped_sign < 0.0) // Is on the wrong side of the edge
-			return false;
-			
-		edge_index++; // Next edge, let's go
-	}
+		var edge1 = new Vector3(points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z);
+		var edge2 = new Vector3(points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z);
 	
-	// Otherwise, we're at the right spot
-	global._raycast4_hitdistance = distance;
-	global._raycast4_hitnormal = normal.copy(); // TODO
+		var normal = edge1.cross(edge2);
+		if (normal.sqrMagnitude() < KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER) // Degenerate case
+			return false;
+		
+		// Now that we have point[0] and normal, we have a plane. Collide with plane to get point
+		var offsetToPlane = rayOrigin.subtract(points[0]);
+	
+		var planeProjectRaydir = rayDir.dot(normal);
+		var planeProjectOffset = -offsetToPlane.dot(normal);
+	
+		if (abs(planeProjectRaydir) < KINDA_SMALL_NUMBER) // Ray is parallel to the checking plane
+			return false;
+		
+		var distance = planeProjectOffset / planeProjectRaydir;
+		if (distance < 0.0) // Ray points away
+			return false;
+		
+		// Get the hit point
+		var hitPoint = rayOrigin.add(rayDir.multiply(distance));
+	
+		// Check against all edges smushed to 2D
+		var axis_dropped = 
+			(abs(normal.x) > abs(normal.y)) 
+				? ((abs(normal.x) > abs(normal.z)) ? kAxisX : kAxisZ)
+				: ((abs(normal.y) > abs(normal.z)) ? kAxisY : kAxisZ);
+		var axis_dropped_sign = sign(normal.getElement(axis_dropped));
+	
+		var edge_count = array_length(points);
+		var edge_index = 0;
+		while (edge_index < edge_count)
+		{
+			var point1 = points[(edge_index + 1) % edge_count];
+			var point0 = points[edge_index];
+		
+			var edge = 
+				(axis_dropped == kAxisX) ? [point1.y - point0.y, point1.z - point0.z] : (
+				(axis_dropped == kAxisY) ? [point1.z - point0.z, point1.x - point0.x] : (
+				/*axis_dropped == kAxisZ*/ [point1.x - point0.x, point1.y - point0.y]
+				));
+			var compare =
+				(axis_dropped == kAxisX) ? [hitPoint.y - point0.y, hitPoint.z - point0.z] : (
+				(axis_dropped == kAxisY) ? [hitPoint.z - point0.z, hitPoint.x - point0.x] : (
+				/*axis_dropped == kAxisZ*/ [hitPoint.x - point0.x, hitPoint.y - point0.y]
+				));
+		
+			// Cross product to check sine between two angles. 
+			if ((edge[0] * compare[1] - edge[1] * compare[0]) * axis_dropped_sign < 0.0) // Is on the wrong side of the edge
+				return false;
+			
+			edge_index++; // Next edge, let's go
+		}
+	
+		// Otherwise, we're at the right spot
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal = normal.copy(); // TODO
 
-	return true;
+		return true;
+	}
+	else //COL4_USE_ARRAY_OPTIMIZATION
+	{
+		var edge1 = [points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z];
+		var edge2 = [points[2].x - points[0].x, points[2].y - points[0].y, points[2].z - points[0].z];
+	
+		var normal = [0, 0, 0];
+		avec3_cross(edge1, edge2, normal);
+		if (avec3_sqrMagnitude(normal) < KINDA_SMALL_NUMBER * KINDA_SMALL_NUMBER) // Degenerate case
+			return false;
+		
+		// Now that we have point[0] and normal, we have a plane. Collide with plane to get point
+		var offsetToPlane = [rayOrigin.x - points[0].x, rayOrigin.y - points[0].y, rayOrigin.z - points[0].z];
+	
+		var planeProjectRaydir = avec3_dot3a(rayDir, normal);
+		var planeProjectOffset = -avec3_dot(offsetToPlane, normal);
+	
+		if (abs(planeProjectRaydir) < KINDA_SMALL_NUMBER) // Ray is parallel to the checking plane
+			return false;
+		
+		var distance = planeProjectOffset / planeProjectRaydir;
+		if (distance < 0.0) // Ray points away
+			return false;
+		
+		// Get the hit point
+		var hitPoint = [rayOrigin.x + rayDir.x * distance, rayOrigin.y + rayDir.y * distance, rayOrigin.z + rayDir.z * distance];
+	
+		// Check against all edges smushed to 2D
+		var axis_dropped = 
+			(abs(normal[0]) > abs(normal[1])) 
+				? ((abs(normal[0]) > abs(normal[2])) ? kAxisX : kAxisZ)
+				: ((abs(normal[1]) > abs(normal[2])) ? kAxisY : kAxisZ);
+		var axis_dropped_sign = sign(normal[axis_dropped]);
+	
+		var edge_count = array_length(points);
+		var edge_index = 0;
+		while (edge_index < edge_count)
+		{
+			var point1 = points[(edge_index + 1) % edge_count];
+			var point0 = points[edge_index];
+		
+			var edge = 
+				(axis_dropped == kAxisX) ? [point1.y - point0.y, point1.z - point0.z] : (
+				(axis_dropped == kAxisY) ? [point1.z - point0.z, point1.x - point0.x] : (
+				/*axis_dropped == kAxisZ*/ [point1.x - point0.x, point1.y - point0.y]
+				));
+			var compare =
+				(axis_dropped == kAxisX) ? [hitPoint AVEC_Y - point0.y, hitPoint AVEC_Z - point0.z] : (
+				(axis_dropped == kAxisY) ? [hitPoint AVEC_Z - point0.z, hitPoint AVEC_X - point0.x] : (
+				/*axis_dropped == kAxisZ*/ [hitPoint AVEC_X - point0.x, hitPoint AVEC_Y - point0.y]
+				));
+		
+			// Cross product to check sine between two angles. 
+			if ((edge[0] * compare[1] - edge[1] * compare[0]) * axis_dropped_sign < 0.0) // Is on the wrong side of the edge
+				return false;
+			
+			edge_index++; // Next edge, let's go
+		}
+	
+		// Otherwise, we're at the right spot
+		global._raycast4_hitdistance = distance;
+		global._raycast4_hitnormal.x = normal[0];
+		global._raycast4_hitnormal.y = normal[1];
+		global._raycast4_hitnormal.z = normal[2];
+
+		return true;
+	}
 }

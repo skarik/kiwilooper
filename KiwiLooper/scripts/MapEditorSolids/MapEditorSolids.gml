@@ -8,7 +8,8 @@ function AMapSolid() constructor
 		var min_pos = vertices[0].position.copy();
 		var max_pos = vertices[0].position.copy();
 		
-		for (var i = 1; i < array_length(vertices); ++i)
+		var vertex_count = array_length(vertices);
+		for (var i = 1; i < vertex_count; ++i)
 		{
 			min_pos.x = min(min_pos.x, vertices[i].position.x);
 			min_pos.y = min(min_pos.y, vertices[i].position.y);
@@ -27,7 +28,8 @@ function AMapSolid() constructor
 		var min_pos = vertices[faces[faceIndex].indicies[0]].position.copy();
 		var max_pos = vertices[faces[faceIndex].indicies[0]].position.copy();
 		
-		for (var i = 1; i < array_length(faces[faceIndex].indicies); ++i)
+		var index_count = array_length(faces[faceIndex].indicies);
+		for (var i = 1; i < index_count; ++i)
 		{
 			min_pos.x = min(min_pos.x, vertices[faces[faceIndex].indicies[i]].position.x);
 			min_pos.y = min(min_pos.y, vertices[faces[faceIndex].indicies[i]].position.y);

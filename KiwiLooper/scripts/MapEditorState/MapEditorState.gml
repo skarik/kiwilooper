@@ -32,7 +32,10 @@ function AMapEditorState() constructor
 		ai_valid:		false,
 		lighting_valid:	false,
 		
+		// Nonserialized:
+		
 		last_valid_entIdentifier:	0x0FFF,
+		cached_solids_bboxes:		array_create(0),
 	};
 	
 	static serializeBuffer = function(version, buffer, ioMode, io_ser)

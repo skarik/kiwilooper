@@ -1,5 +1,6 @@
 function EditorGet()
 {
+	gml_pragma("forceinline");
 	return instance_find(o_EditorLevel, 0);
 }
 
@@ -284,6 +285,8 @@ function EditorGlobalMarkDirtyGeometry()
 		m_state.map.geometry_valid = false;
 		m_state.map.ai_valid = false;
 		m_state.map.lighting_valid = false;
+		
+		m_state.cached_solids_bboxes = array_create(0);
 	}
 }
 
@@ -363,6 +366,8 @@ function EditorGlobalLoadMap()
 		}
 		
 		EditorState_UpdateLastEntityIdentifier(); // Update indetifier for new ents.
+		// Clear out the other state that needs to be recreated:
+		EditorGet().m_state.cached_solids_bboxes = array_create(0);
 	}
 }
 function EditorGlobalLoadMap_Work(filepath)

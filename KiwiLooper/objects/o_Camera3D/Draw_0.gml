@@ -63,7 +63,7 @@ surface_set_target(buffer_scene3d);
 		{
 			if (visible && !translucent && lit)
 			{
-				var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
+				/*var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
 				var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
 				var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
 				var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
@@ -74,7 +74,9 @@ surface_set_target(buffer_scene3d);
 				mat_object = matrix_multiply(mat_object, mat_object_roty);
 				mat_object = matrix_multiply(mat_object, mat_object_rotz);
 				mat_object = matrix_multiply(mat_object, mat_object_pos);
-				matrix_set(matrix_world, mat_object);
+				matrix_set(matrix_world, mat_object);*/
+				Core3DObject_RenderUpdateTransform();
+				matrix_set(matrix_world, m_renderState.m_cachedTransform);
 				m_renderEvent();
 			}
 		}
@@ -303,7 +305,7 @@ surface_set_target(buffer_scene3d);
 	{
 		if (visible && translucent)
 		{
-			var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
+			/*var mat_object_pos = matrix_build(x, y, z, 0, 0, 0, 1, 1, 1);
 			var mat_object_scal = matrix_build(0, 0, 0, 0, 0, 0, xscale, yscale, zscale);
 			var mat_object_rotx = matrix_build(0, 0, 0, xrotation, 0, 0, 1, 1, 1);
 			var mat_object_roty = matrix_build(0, 0, 0, 0, yrotation, 0, 1, 1, 1);
@@ -314,7 +316,9 @@ surface_set_target(buffer_scene3d);
 			mat_object = matrix_multiply(mat_object, mat_object_roty);
 			mat_object = matrix_multiply(mat_object, mat_object_rotz);
 			mat_object = matrix_multiply(mat_object, mat_object_pos);
-			matrix_set(matrix_world, mat_object);
+			matrix_set(matrix_world, mat_object);*/
+			Core3DObject_RenderUpdateTransform();
+			matrix_set(matrix_world, m_renderState.m_cachedTransform);
 			m_renderEvent();
 		}
 	}
