@@ -13,7 +13,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 	{
 		for (var entTypeIndex = 0; entTypeIndex <= entlistIterationLength(); ++entTypeIndex)
 		{
-			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient, entProxyType;
+			var entTypeInfo, entType, entHhsz, entGizmoType, entOrient, entProxyType, entGizmoSprite;
 			if (entTypeIndex != entlistIterationLength())
 			{
 				entTypeInfo		= entlistIterationGet(entTypeIndex);
@@ -22,6 +22,7 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 				entGizmoType	= entTypeInfo.gizmoDrawmode;
 				entOrient		= entTypeInfo.gizmoOrigin;
 				entProxyType	= entTypeInfo.proxy;
+				entGizmoSprite	= entTypeInfo.gizmoSprite;
 				
 				// Skip proxies:
 				if (entProxyType != kProxyTypeNone) continue;
@@ -45,15 +46,38 @@ function EditorPickerCast(rayStart, rayDir, outHitObjects, outHitDistances, outH
 					entHhsz			= entTypeInfo.hullsize * 0.5;
 					entGizmoType	= entTypeInfo.gizmoDrawmode;
 					entOrient		= entTypeInfo.gizmoOrigin;
+					entGizmoSprite	= entTypeInfo.gizmoSprite;
 				}
 				
-				// Get offset center
-				var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
-				var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
+				var bHasCollision = false;
 				
-				if (raycast4_box(new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
-									new Vector3(entCenter.x + entHSize.y, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
-									rayStart, rayDir))
+				// If hullsize is <1.0, then we should cast against the icon & edges only.
+				var bCollideIconAndEdges = (entHhsz <= 1.0) && sprite_exists(entGizmoSprite);
+				
+				if (!bCollideIconAndEdges)
+				{
+					// Get offset bbox
+					var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
+					var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
+					// Check if box was hit
+					bHasCollision = raycast4_box(
+						new Vector3(entCenter.x - entHSize.x, entCenter.y - entHSize.y, entCenter.z - entHSize.z),
+						new Vector3(entCenter.x + entHSize.x, entCenter.y + entHSize.y, entCenter.z + entHSize.z),
+						rayStart, rayDir);
+				}
+				else
+				{
+					// Get offset bbox
+					var entHSize = new Vector3(entHhsz * ent.xscale, entHhsz * ent.yscale, entHhsz * ent.zscale);
+					var entCenter = entGetSelectionCenter(ent, entOrient, entHSize);
+					// Check if box was hit
+					bHasCollision = raycast4_box(
+						new Vector3(entCenter.x - 8, entCenter.y - 8, entCenter.z - 8),
+						new Vector3(entCenter.x + 8, entCenter.y + 8, entCenter.z + 8),
+						rayStart, rayDir);
+				}
+				
+				if (bHasCollision)
 				{
 					if (!array_contains_pred(ignoreList, ent, EditorSelectionEqual))
 					{
