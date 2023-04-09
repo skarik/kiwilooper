@@ -22,6 +22,14 @@
 #define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
 
+#define kLightFalloff_StepMask		(0x07)
+#define kLightFalloff_Smooth_Mask	(0x18)
+#define kLightFalloff_Smooth_None	(0x00)
+#define kLightFalloff_Smooth_Brights (0x08)
+#define kLightFalloff_Smooth_Darks	(0x10)
+//#define kLightFalloff_Smooth_All	(kLightFalloff_Smooth_Brights | kLightFalloff_Smooth_Darks)
+#define kLightFalloff_Smooth_All	(0x18)
+
 // Default shade types
 #ifndef SHADE_TYPE
 #define SHADE_TYPE kShadeType_Dynamic
@@ -63,7 +71,6 @@ uniform sampler2D textureNormal;
 uniform sampler2D textureDepth;
 
 #pragma include("LightingCommon.glsli")
-
 vec3 calculate_world_position( float depth )
 {
 	// Start with view coords
@@ -102,6 +109,32 @@ float RectangleSolidAngle( vec3 worldPos, vec3 p0, vec3 p1, vec3 p2, vec3 p3)
 
 	// Sum the angles
 	return g0 + g1 + g2 + g3 - 2.0 * 3.1415;
+}
+
+float LevelTotalLight( in float light, in float levels, in int style )
+{
+	float light_leveled = ceil(light * levels) / levels;
+
+	float kLightLevelThreshold = 1.0 / levels;
+	
+	if (style == 0)
+	{
+		return light_leveled;
+	}
+	else if (style == kLightFalloff_Smooth_Brights)
+	{
+		return (light >  kLightLevelThreshold) ? light : light_leveled;
+	}
+	else if (style == kLightFalloff_Smooth_Darks)
+	{
+		return (light <= kLightLevelThreshold) ? light : light_leveled;
+	}
+	else if (style == kLightFalloff_Smooth_All)
+	{
+		return light;
+	}
+	
+	return light_leveled;
 }// include("LightingCommon.glsli")
 
 void main()
@@ -137,6 +170,13 @@ void main()
 		vec4 lightParams	= uLightParams[lightIndex];
 		vec4 lightDirection	= uLightDirections[lightIndex];
 		vec4 lightOther		= uLightOthers[lightIndex];
+		
+		// Get common light info
+		int lightSmoothBits = int(lightColors.w + 0.5);
+		//float	light_levels = float(lightSmoothBits & kLightFalloff_StepMask) + 1.0;
+		float	light_levels = fract(float(lightSmoothBits) / float(kLightFalloff_StepMask + 1)) * float(kLightFalloff_StepMask + 1);
+		//int		light_smoothstyle = lightSmoothBits & kLightFalloff_Smooth_Mask;
+		int		light_smoothstyle = (lightSmoothBits / int(kLightFalloff_StepMask + 1)) * int(kLightFalloff_StepMask + 1);
 
 		{
 			// Grab light parameters needed
@@ -165,7 +205,7 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * directional_attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
+			total_response = LevelTotalLight(total_response, light_levels, light_smoothstyle);
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;

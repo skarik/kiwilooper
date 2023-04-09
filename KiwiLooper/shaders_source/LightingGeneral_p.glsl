@@ -60,6 +60,13 @@ void main()
 		vec4 lightParams	= uLightParams[lightIndex];
 		vec4 lightDirection	= uLightDirections[lightIndex];
 		vec4 lightOther		= uLightOthers[lightIndex];
+		
+		// Get common light info
+		int lightSmoothBits = int(lightColors.w + 0.5);
+		//float	light_levels = float(lightSmoothBits & kLightFalloff_StepMask) + 1.0;
+		float	light_levels = fract(float(lightSmoothBits) / float(kLightFalloff_StepMask + 1)) * float(kLightFalloff_StepMask + 1);
+		//int		light_smoothstyle = lightSmoothBits & kLightFalloff_Smooth_Mask;
+		int		light_smoothstyle = (lightSmoothBits / int(kLightFalloff_StepMask + 1)) * int(kLightFalloff_StepMask + 1);
 
 #if LIGHT_TYPE == kLightType_Dynamic
 		if (lightType == kLightType_Point)
@@ -80,7 +87,7 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
+			total_response = LevelTotalLight(total_response, light_levels, light_smoothstyle);
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
@@ -117,7 +124,7 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * directional_attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
+			total_response = LevelTotalLight(total_response, light_levels, light_smoothstyle);
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;
@@ -198,7 +205,7 @@ void main()
 			
 			// Get total response
 			float total_response = attenuation * surface_response;
-			total_response = ceil(total_response * 4.0) / 4.0;
+			total_response = LevelTotalLight(total_response, light_levels, light_smoothstyle);
 			
 			// Acculmulate this light's lighting
 			totalLighting = lightColors.rgb * total_response * lightParams.x;

@@ -19,6 +19,14 @@
 #define kLightType_Rect				0x08
 #define kLightType_RectSpot			(kLightType_Rect | kLightType_SpotAngle)
 
+#define kLightFalloff_StepMask		(0x07)
+#define kLightFalloff_Smooth_Mask	(0x18)
+#define kLightFalloff_Smooth_None	(0x00)
+#define kLightFalloff_Smooth_Brights (0x08)
+#define kLightFalloff_Smooth_Darks	(0x10)
+//#define kLightFalloff_Smooth_All	(kLightFalloff_Smooth_Brights | kLightFalloff_Smooth_Darks)
+#define kLightFalloff_Smooth_All	(0x18)
+
 // Default shade types
 #ifndef SHADE_TYPE
 #define SHADE_TYPE kShadeType_Dynamic

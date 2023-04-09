@@ -156,6 +156,9 @@ function _EntityInfoInit()
 						["Blink Slow", kLightModeBlinkSlow],
 					],
 				],
+				["range", kValueTypeInteger, 4],
+				["smooth_inner", kValueTypeBoolean, false],
+				["smooth_outer", kValueTypeBoolean, false],
 			],
 		},
 		{

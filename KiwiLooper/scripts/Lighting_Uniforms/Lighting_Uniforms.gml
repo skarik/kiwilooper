@@ -14,6 +14,13 @@
 #macro kLightType_RectSpot		(kLightType_Rect | kLightType_SpotAngle)
 #macro kLightType_MAX			(kLightType_RectSpot + 1)
 
+#macro kLightFalloff_StepMask		(0x07)
+#macro kLightFalloff_Smooth_Mask	(0x18)
+#macro kLightFalloff_Smooth_None	(0x00)
+#macro kLightFalloff_Smooth_Brights	(0x08)
+#macro kLightFalloff_Smooth_Darks	(0x10)
+#macro kLightFalloff_Smooth_All		(kLightFalloff_Smooth_Brights | kLightFalloff_Smooth_Darks)
+
 ///@function lightInitialize()
 function lightInitialize()
 {
@@ -430,10 +437,14 @@ function lightGatherLights_Deferred()
 		light_params_array[i * 4 + 0] = light.intensity * light.brightness; // TODO make this not here? should precalculate
 		light_params_array[i * 4 + 1] = 1.0 / light.range;
 		
-		// Color {R, G, B}
-		light_color_array[i * 4 + 0] = color_get_red(lights[i].color) / 255.0;
-		light_color_array[i * 4 + 1] = color_get_green(lights[i].color) / 255.0;
-		light_color_array[i * 4 + 2] = color_get_blue(lights[i].color) / 255.0;
+		// Color {R, G, B, FadeBitInfo}
+		light_color_array[i * 4 + 0] = color_get_red(light.color) / 255.0;
+		light_color_array[i * 4 + 1] = color_get_green(light.color) / 255.0;
+		light_color_array[i * 4 + 2] = color_get_blue(light.color) / 255.0;
+		light_color_array[i * 4 + 3] = 
+			(max(light.falloff_levels - 1, 0) & kLightFalloff_StepMask)
+			| (light.smooth_inner ? kLightFalloff_Smooth_Brights : 0)
+			| (light.smooth_outer ? kLightFalloff_Smooth_Darks : 0);
 		
 		// todo: clean up this conditional and try to simplify branches
 		
