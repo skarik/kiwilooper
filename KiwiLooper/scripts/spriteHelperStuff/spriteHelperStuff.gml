@@ -20,5 +20,5 @@ function sprite_find_name(sprite_name)
 			return spr;
 		}
 	}
-	return stl_lab0; // TODO
+	return undefined; // TODO
 }

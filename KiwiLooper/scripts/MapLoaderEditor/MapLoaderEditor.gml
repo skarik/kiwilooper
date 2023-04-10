@@ -6,7 +6,7 @@
 #macro kMapEditorFeature_EntityNumbering		0x0008
 #macro kMapEditorFeature_ViewModeInfo			0x0009
 
-#macro kMapEditorFeature_Current	kMapEditorFeature_TextureStringsFix
+#macro kMapEditorFeature_Current	kMapEditorFeature_EntityNumbering
 // why did we not have view mode info????
 
 function MapLoadEditor(filedata, editorSavedState)

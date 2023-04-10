@@ -196,6 +196,13 @@ function AAtlas() constructor
 				for (var entry_index = 0; entry_index < array_length(entries); ++entry_index)
 				{
 					var test_entry = entries[entry_index];
+					// BBox out of the texture, failure
+					if (test_x + width > self.width
+						|| test_y + height > self.height)
+					{
+						test_isOkay = false;
+						break;
+					}
 					// BBoxes overlap, failure
 					if (test_x + width > test_entry.x
 						&& test_x < test_entry.x + test_entry.width
@@ -286,8 +293,11 @@ function AAtlas() constructor
 	/// @function _RenderToSurface(DO NOT CALL)
 	static _RenderToSurface = function()
 	{
+		var old_state = gpu_get_state();
+		
 		surface = surface_create(width, height);
 		surface_set_target(surface);
+		gpu_set_blendmode_ext_sepalpha(bm_one, bm_zero, bm_one, bm_zero);
 		for (var i = 0; i < array_length(entries); ++i)
 		{
 			var entry = entries[i];
@@ -302,5 +312,8 @@ function AAtlas() constructor
 			}
 		}
 		surface_reset_target();
+		
+		gpu_set_state(old_state);
+		ds_map_destroy(old_state);
 	}
 }

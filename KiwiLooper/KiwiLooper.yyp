@@ -849,6 +849,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"lightfixture1.kch","CopyToMask":-1,"filePath":"datafiles/models/metal",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"cone_yellow.gltf","CopyToMask":-1,"filePath":"datafiles/models/rubber",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"cone_yellow.kch","CopyToMask":-1,"filePath":"datafiles/models/rubber",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"WasteMWall1.png","CopyToMask":-1,"filePath":"datafiles/tex/WasteM",},
   ],
   "MetaData": {
     "IDEVersion": "2022.0.0.19",

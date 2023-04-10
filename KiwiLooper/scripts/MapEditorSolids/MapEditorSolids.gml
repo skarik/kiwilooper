@@ -349,6 +349,13 @@ function AMapSolidFaceTexture() constructor
 				io_ser(self, "_temp_source", buffer, buffer_string);
 				io_ser(self, "index", buffer, buffer_u16);
 				source = sprite_find_name(_temp_source);
+				
+				// Error handle: this seems to get fucked up a lot.
+				if (source == undefined)
+				{
+					debugLog(kLogError, "Could not find sprite \"" + _temp_source + "\" [" + string(index) + "] as sprite");
+					source = stl_lab0;
+				}
 			}
 		}
 		else if (type == kTextureTypeTexture)

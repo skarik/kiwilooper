@@ -123,6 +123,8 @@ function EditorSolidsRendererRecreate(solid_id)
 						// Add sprite to atlas & store it
 						var atlas_id = AtlasAddResource(sprite_resource);
 						texture_to_atlas[?face.texture.GetUID()] = atlas_id;
+						
+						debugLog(kLogVerbose, "atlas collected sprite \"" + face.texture.GetUID() + "\"");
 					}
 					else
 					{
@@ -131,6 +133,8 @@ function EditorSolidsRendererRecreate(solid_id)
 						// Add the texture to the atlas
 						var atlas_id = AtlasAddResource(texture_resource);
 						texture_to_atlas[?face.texture.GetUID()] = atlas_id;
+						
+						debugLog(kLogVerbose, "atlas collected texture \"" + face.texture.GetUID() + "\"");
 					}
 				}
 			}
@@ -296,6 +300,8 @@ function EditorSolidsRendererCreate()
 					// Add sprite to atlas & store it
 					var atlas_id = AtlasAddResource(sprite_resource);
 					texture_to_atlas[?face.texture.GetUID()] = atlas_id;
+					
+					debugLog(kLogVerbose, "atlas collected sprite \"" + face.texture.GetUID() + "\"");
 				}
 				else
 				{
@@ -304,6 +310,8 @@ function EditorSolidsRendererCreate()
 					// Add the texture to the atlas
 					var atlas_id = AtlasAddResource(texture_resource);
 					texture_to_atlas[?face.texture.GetUID()] = atlas_id;
+					
+					debugLog(kLogVerbose, "atlas collected texture \"" + face.texture.GetUID() + "\"");
 				}
 			}
 		}

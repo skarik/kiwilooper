@@ -97,6 +97,13 @@ function ARectFitter(in_width, in_height) constructor
 				for (var entry_index = 0; entry_index < array_length(entries); ++entry_index)
 				{
 					var test_entry = entries[entry_index];
+					// BBox out of the texture, failure
+					if (test_x + width > self.width
+						|| test_y + height > self.height)
+					{
+						test_isOkay = false;
+						break;
+					}
 					// BBoxes overlap, failure
 					if (test_x + width > test_entry.x
 						&& test_x < test_entry.x + test_entry.width
