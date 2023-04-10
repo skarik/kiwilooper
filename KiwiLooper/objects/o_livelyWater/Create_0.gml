@@ -37,13 +37,13 @@ executeNextStep(method(id,function()
 function DefineLocalFunctions()
 {
 	// Set up getters
-	static s_getBbox = function()
+	
+	/// @function GetBBox()
+	/// @desc Returns the BBox of the given object.
+	GetBBox = function()
 	{
 		gml_pragma("forceinline");
 		return new BBox3(Vector3FromTranslation(this), new Vector3(xscale * 0.5, yscale * 0.5, zscale * 0.5));
 	}
-	/// @function GetBBox()
-	/// @desc Returns the BBox of the given object.
-	GetBBox = s_getBbox;
 }
 DefineLocalFunctions();

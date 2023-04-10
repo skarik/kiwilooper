@@ -17,3 +17,15 @@ function angle_lerp(from, to, t)
 {
 	return from + angle_difference(to, from) * t;
 }
+
+/// @function is_defined_struct(value)
+function is_defined_struct(value)
+{
+	return !is_undefined(value) && is_struct(value);
+}
+
+/// @function is_defined_array(value)
+function is_defined_array(value)
+{
+	return !is_undefined(value) && is_array(value);
+}

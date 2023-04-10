@@ -179,6 +179,16 @@ function AToolbarElementSpinner(tooltip, label, onChange, initialValue) : AToolb
 		// Update the string now that we're done editing.
 		PropertyUpdateDisplayString();
 	}
+	static PropertyChangeCancelEnd = function()
+	{
+		// Reset as if invalid input
+		PropertyUpdateValue(propertyOldValue);
+		propertyEditing = false;
+		propertyEditCursor = null;
+			
+		// Update the string now that we're done editing.
+		PropertyUpdateDisplayString();
+	}
 	static PropertyUpdateValueFromString = function()
 	{
 		// Convert the value type

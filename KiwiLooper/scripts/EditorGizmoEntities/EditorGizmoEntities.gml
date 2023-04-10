@@ -285,9 +285,10 @@ function AEditorGizmoEntityRenderObjects() : AEditorGizmoBase() constructor
 		bHasLit				= variable_instance_exists(n_object, "lit");
 		bHasTranslucency	= variable_instance_exists(n_object, "translucent");
 		
-		bHasEntTransform	= is_struct(n_object.entity.gizmoMesh) ? (variable_struct_exists(n_object.entity.gizmoMesh, "transform") && is_array(n_object.entity.gizmoMesh.transform)) : false;
-		bHasLitOverride		= (is_struct(n_object.entity.gizmoMesh) && variable_struct_exists(n_object.entity.gizmoMesh, "litOverride")) ? true : false;
-		bHasVisibilityCheck	= is_struct(n_object.entity.gizmoMesh) ? variable_struct_exists(n_object.entity.gizmoMesh, "whenVisible") : false;
+		var n_gizmoMesh = n_object.entity.gizmoMesh;
+		bHasEntTransform	= is_defined_struct(n_gizmoMesh) ? (variable_struct_exists(n_gizmoMesh, "transform") && is_defined_array(n_gizmoMesh.transform)) : false;
+		bHasLitOverride		= (is_defined_struct(n_gizmoMesh) && variable_struct_exists(n_gizmoMesh, "litOverride")) ? true : false;
+		bHasVisibilityCheck	= is_defined_struct(n_gizmoMesh) ? variable_struct_exists(n_gizmoMesh, "whenVisible") : false;
 	};
 	
 	rendermap = ds_map_create();

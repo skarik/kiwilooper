@@ -119,7 +119,7 @@ m_renderEvent = function()
 		else
 		{
 			// todo: proper error model here
-			delete(this);
+			idelete(this);
 		}
 	}
 }
